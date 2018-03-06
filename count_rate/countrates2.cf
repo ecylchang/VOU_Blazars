@@ -1,0 +1,39 @@
+SATELLITE   ROSAT RASS
+INSTRUMENT  PSPC-B/FOV_mid
+FILTER      -
+FLUX_ENERGY_RANGE 0.1 2.4
+COUNTS_ENERGY_RANGE 0.1 2.4
+FILE_EFF_AREA /count_rate/pspcb_effective_area_mid.dat
+SOFT_ENERGY_BAND  0.1 0.4
+MEDIUM_ENERGY_BAND 0.4 1.0
+HARD_ENERGY_BAND  1.0 2.4
+----------------------------------------------------------------
+SATELLITE   ROSAT (BMW)
+INSTRUMENT  HRI
+FILTER      -
+FLUX_ENERGY_RANGE 0.5 7.
+COUNTS_ENERGY_RANGE 0.5 7.
+FILE_EFF_AREA /count_rate/hri_effective_area.dat
+SOFT_ENERGY_BAND  0.1 0.5
+MEDIUM_ENERGY_BAND 0.5 1.0
+HARD_ENERGY_BAND  1.0 2.0
+----------------------------------------------------------------
+SATELLITE   EINSTEIN
+INSTRUMENT  IPC
+FILTER      -
+FLUX_ENERGY_RANGE 0.2 3.5
+COUNTS_ENERGY_RANGE 0.2 3.5
+FILE_EFF_AREA /count_rate/ipc_effective_area.dat
+SOFT_ENERGY_BAND  0.3 0.5
+MEDIUM_ENERGY_BAND 0.5 2.0
+HARD_ENERGY_BAND  2.0 3.3
+----------------------------------------------------------------
+SATELLITE   Swift (cts in 0.3-10.0 keV band)
+INSTRUMENT  XRT
+FILTER      -
+FLUX_ENERGY_RANGE 0.3 10.
+COUNTS_ENERGY_RANGE 0.3 10.
+FILE_EFF_AREA /count_rate/xrt_PC_0-12_final.dat
+SOFT_ENERGY_BAND  0.3 1.0
+MEDIUM_ENERGY_BAND 1.0 2.0
+HARD_ENERGY_BAND  2.0 10.0

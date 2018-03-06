@@ -1,0 +1,535 @@
+#!/bin/bash
+#To run the tool, R.A. Dec. searching radius is mandatory to input. R.A. Dec. in degrees, and radius in
+#arcmin. Then the user could specify nH column density in cm^2. After that, one or two error circle or
+#elliptical may be specified. The error circle radius, error elliptical semi-major axis and semi-minor axis
+#are in arcsec. The position angle are in degrees, north-east on sky. Note that if the user want to specify
+#a circle and a elliptical, the circle error radius type first, and the error axes for elliptical.
+#### add some examples!!!!!!!!!!!!!!!
+#source activate eada2
+
+#check if docker and heasoft are installed
+dockerthere=`which docker`
+nhthere=`which nh`
+
+#read the parameters input
+echo $# parameters input.
+#rm -f 4tex/*eps
+#rm -f 4tex/*pdf
+#message when output parameters are less than 3 or too many parameters input
+until [ $# -ge 3 -a $# -le 11 ]
+do
+   read -p "Please enter the ra, dec, radius, (nh: only if when heasoft are not installed), (error_major_axis, error_minor_axis, position_angle/error circle radius) " ra dec radius nhval rr1 major1 minor1 angle1 rr2 major2 minor2 angle2
+   set $ra $dec $radius $nhval $rr1 $major1 $minor1 $angle1 $rr2 $major2 $minor2 $angle2
+   echo $#
+done
+
+#check if the number 4 parameter are nh value or not
+if [ $# -ge 4 ]; then
+   ttt=`echo $4 | grep '[eE]'`
+   if [ -z $ttt ]; then
+      ttnh=wonh
+   else
+      ttnh=wnh
+   fi
+else
+   ttnh=wonh
+fi
+
+#read the nh, or set the default nh value
+if [ -z $nhthere ]; then
+   nhval=5.E20
+   if [ $# -eq 3 -o $ttnh != wnh ]; then
+      echo set default nh 5.E20
+   fi
+else
+   nh equinox=2000 ra=$1 dec=$2 > nhvalue.txt
+   nhval=`tail -1 nhvalue.txt |  awk '{print $7}'`
+   rm -f nhvalue.txt
+fi
+
+#read the parameters input
+if [ $# -eq 3 ]; then
+   set $1 $2 $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. f
+   echo set default error elliptical axes and angle: 0. 0. 0.
+elif [ $# -eq 4 -a $ttnh == wnh ]; then
+   set $1 $2 $3 $4 0. 0. 0. 0. 0. 0. 0. 0. f
+   echo set default error elliptical axes and angle: 0. 0. 0.
+elif [ $# -eq 4 -a $ttnh != wnh -a $4 != s ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. f
+elif [ $# -eq 4 -a $ttnh != wnh -a $4 == s ]; then
+   set $1 $2 $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. $4
+   echo set default error elliptical axes and angle: 0. 0. 0.
+   echo SED plotting mode
+elif [ $# -eq 5 -a $ttnh == wnh -a $5 != s ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. 0. 0. 0. 0. f
+elif [ $# -eq 5 -a $ttnh == wnh -a $5 == s ]; then
+   set $1 $2 $3 $4 0. 0. 0. 0. 0. 0. 0. 0. $5
+   echo SED plotting mode
+elif [ $# -eq 5 -a $ttnh != wnh -a $5 != s ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. $5 0. 0. 0. f
+elif [ $# -eq 5 -a $ttnh != wnh -a $5 == s ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. $5
+   echo SED plotting mode
+elif [ $# -eq 6 -a $ttnh != wnh -a $6 != s ]; then
+   set $1 $2 $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. f
+elif [ $# -eq 6 -a -a $ttnn != wnh -a $6 == s ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. $5 0. 0. 0. $6
+   echo SED plotting mode
+elif [ $# -eq 6 -a $ttnh == wnh -a $6 != s ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. $6 0. 0. 0. f
+elif [ $# -eq 6 -a $ttnh == wnh -a $6 == s ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. 0. 0. 0. 0. $6
+   echo SED plotting mode
+elif [ $# -eq 7 -a $ttnh != wnh -a $7 == s ]; then
+   set $1 $2 $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. $7
+   echo SED plotting mode
+elif [ $# -eq 7 -a $ttnh != wnh -a $7 != s ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 f
+elif [ $# -eq 7 -a $ttnh == wnh -a $7 != s ]; then
+   set $1 $2 $3 $4 0. $5 $6 $7 0. 0. 0. 0. f
+elif [ $# -eq 7 -a $ttnh == wnh -a $7 == s ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. $6 0. 0. 0. $7
+   echo SED plotting mode
+elif [ $# -eq 8 -a $ttnh == wnh -a $8 != s ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. 0. $6 $7 $8 f
+elif [ $# -eq 8 -a $ttnh != wnh ]; then
+   set $1 $2 $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 $8
+   echo SED plotting mode
+elif [ $# -eq 8 -a $ttnh == wnh -a $8 == s ]; then
+   set $1 $2 $3 $4 0. $5 $6 $7 0. 0. 0. 0. $8
+   echo SED plotting mode
+elif [ $# -eq 9 -a $ttnh == wnh ]; then
+   set $1 $2 $3 $4 $5 0. 0. 0. 0. $6 $7 $8 $9
+   echo SED plotting mode
+elif [ $# -eq 9 -a $ttnh != wnh ]; then
+   set $1 $2 $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 f
+elif [ $# -eq 10 -a $ttnh == wnh ]; then
+   set $1 $2 $3 $4 0. $5 $6 $7 0. $8 $9 ${10} f
+elif [ $# -eq 10 -a $ttnh != wnh ]; then
+   set $1 $2 $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 ${10}
+   echo SED plotting mode
+elif [ $# -eq 11 ]; then
+   set $1 $2 $3 $4 0. $5 $6 $7 0. $8 $9 ${10} ${11}
+   echo SED plotting mode
+fi
+
+#if the radius of the circle smaller than the elliptical semi-major axis
+if [ $5 != 0. -a ${11} != 0. ]; then
+   up=`echo $5 | cut -d'.' -f1`
+   low=`echo ${11} | cut -d'.' -f1`
+   if [ $up -lt $low ]; then
+      set $1 $2 $3 $4 $9 ${10} ${11} ${12} $5 $6 $7 $8 ${13}
+   elif [ $up -eq $low ]; then
+      up=`echo $5 | cut -d'.' -f2`
+      low=`echo ${11} | cut -d'.' -f2`
+      if [ $up -lt $low ]; then
+         set $1 $2 $3 $4 $9 ${10} ${11} ${12} $5 $6 $7 $8 ${13}
+      fi
+   fi
+fi
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
+
+#analyzing the XRT Deepsky data
+#if [ -n $dockerthere ]; then
+#alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
+#swift_deepsky --ra $1 --dec $2 --radius $3
+#echo finish searching swift deep data
+#fi
+
+#read the XRT Deepsky name and create the file to store the results
+raxrt=`echo $1 | sed 's/\./_/g'`
+decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
+rrxrt=`echo $3 | sed 's/\./_/g'`
+xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
+test ! -d Results && mkdir Results
+test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+
+#check if the same RA, Dec, radius are ran sucessfully before
+#if [ -s $xrtnm/output1.csv ]; then
+#   skip1=ok
+#else
+#   skip1=nono
+#fi
+
+#FIRST phase data retrieving, runing the conesearch 1st phase
+rm -f *.1.csv
+echo conesearch --db cats1.ini --catalog NVSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o nvss.1.csv > vosearch.txt
+echo conesearch --db cats1.ini --catalog FIRST --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o first.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o sumss.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o sxps.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog RASS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o rass.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog XMMSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o xmmsl.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog 3XMM --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o 3xmm.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog BMW --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o bmw.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog WGACAT --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o wgacat.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog IPC2E --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ipc.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog IPCSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ipcsl.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog CHANDRA --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o chandra.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog ZWCLUSTERS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o zw.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog PSZ2 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o psz2.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog ABELL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o abell.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog MCXC --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o mcxc.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog 5BZCat --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o 5bzcat.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog SDSSWHL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o whl.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog SWXCS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o swxcs.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o 3hsp.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o crates.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o pulsar.1.csv >> vosearch.txt
+echo conesearch --db cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o f2psr.1.csv >> vosearch.txt
+
+# CLEAN visearch.txt
+
+#check if the phase 1 data is already there
+ncat1=`cat vosearch.txt | wc -l`
+#if [ $skip1 == ok ]; then
+#   echo phase 1 data ran before with same ra, dec, and radius!
+#   rm -f vosearch.txt
+#else
+sh queue.sh -f vosearch.txt -n $ncat1 #2> voerror #!2>&1
+#   cat voerror | grep 'ERROR'
+   echo
+   echo finish conesearch phase 1
+   rm -f vosearch.txt
+#fi
+
+
+
+
+###############################
+# End of search 1st phase data
+###############################
+
+
+
+
+#read the data
+ls *.1.csv > catlist1.txt
+#copy the XRTDEEP result and add to the catlist1
+rm -f xrtdeep.csv
+if [ -s work/$xrtnm/table_flux_detections.csv ]; then
+   cat work/$xrtnm/table_flux_detections.csv | sed 's/;/,/g' | sed 's/:/ /g' > xrtdeep.csv
+fi
+[ -s xrtdeep.csv ] && echo xrtdeep.csv >> catlist1.txt
+#if [ $skip1 == ok ]; then
+#   cat $xrtnm/output1.csv | sed '2,2c nH= $4   Error circle or elliptical= $5 $6 $7 $8' > output1.csv
+#else
+   rm -f output1.csv
+   echo
+   [ -s catlist1.txt ] && ./readcat catlist1.txt output1.csv $1 $2 $3 $4 $5 $6 $7 $8
+#fi
+
+#running the PHASAE 1
+rm -f *temp.txt
+if [ ${13} == s ]; then
+   ./find_candidates1 output1 0 > phase1
+   echo
+   cat phase1
+else
+   ./find_candidates1 output1 1 > phase1
+   echo
+   cat phase1
+
+#plot the result, candidates map and radio-X-ray source map
+   rm -f candidates.*ps
+   rm -f RX_map.*ps
+   sort -n -k 3 RX_temp.txt > RX_sorted.txt
+   rm -f RX_temp.txt
+   ./gnomo_plot_types RX_sorted.txt,RX_map.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ps2eps -B -q RX_map.ps
+   open RX_map.eps
+   ps2eps -B -q candidates.ps
+   open candidates.eps
+   rm -f candidates.ps
+   rm -f RX_map.ps
+fi
+
+
+############################
+#end of the phase 1
+############################
+
+
+#begining for Intermediate phase
+# Intermediate phase needs to be described:
+# * what is the purpose of this phase,
+# * why is it necessary,
+#
+rm -f Intermediate_out.txt
+if [ -s no_matched_temp.txt ]; then
+
+#check the error circle
+   if [ $5 != 0. -a $6 == 0. ]; then
+      radint=$5
+   elif [ $5 == 0. -a $6 != 0. ]; then
+      radint=$6
+   else
+      radint=1.
+      echo
+      echo set default error circle area to 1 arcmin in Intermediate phase
+   fi
+#   echo $radint
+   radcrit=`echo $radint | cut -d'.' -f 1`
+#   echo $radcrit
+   process=y
+#   declare -i radint
+   if [ $radcrit -ge 20 ]; then
+      echo
+      echo Warning! Large searching radius in Intermediate phase for conesearch.
+      read -p "Press ENTER key to continue! To stop processing Intermediate phase, type n " process
+      [ -z $process ] && process=y
+      [ $process == n ] && echo Not searching sources in Intermediate phase.
+   fi
+
+#running conesearch for Intermediate phase
+   if [ $process != n ]; then
+      rm -f *.i.csv
+      ln=`cat no_matched_temp.txt | wc -l`
+      declare -i cc
+      cc=0
+      for (( jj=1; jj<=$ln; jj=jj+1 ))
+      do
+         raint=`head -$jj no_matched_temp.txt | tail -1 |  awk '{print $5}'`
+         decint=`head -$jj no_matched_temp.txt | tail -1 |  awk '{print $6}'`
+         typeint=`head -$jj no_matched_temp.txt | tail -1 |  awk '{print $8}'`
+         #declare -i typeint
+         if [ $typeint -lt 20 ]; then
+            cc=$cc+1
+         fi
+      done
+      echo conesearch --db cats2.ini --catalog GALEX --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o galex.i.csv > vosearch.txt
+#      echo conesearch --db cats2.ini --catalog Fermi8YL --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o fermi8yr.i.csv >> vosearch.txt
+      echo conesearch --db cats2.ini --catalog PMN --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o pmn.i.csv >> vosearch.txt
+      echo conesearch --db cats2.ini --catalog GB6 --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o gb6.i.csv >> vosearch.txt
+      echo Searching further data in intermediate phase for $cc source
+      ncatint=`cat vosearch.txt | wc -l`
+      sh queue.sh -f vosearch.txt -n $ncatint 1> voerror 2>&1
+      cat voerror | grep 'ERROR'
+      echo
+      echo finish conesearch intermediate phase
+      rm -f vosearch.txt
+
+#read the Intermediate phase data
+      ls *.i.csv > catlist_int.txt
+      rm -f outputint.csv
+      echo
+      [ -s catlist_int.txt ] && ./readcat catlist_int.txt output_int.csv $1 $2 $3 $4 $5 $6 $7 $8
+
+#run the Intermediate phase
+      echo
+      ./find_candidates_int output_int
+   fi
+fi
+
+#transfer the data from Intermediate phase to 2 phase
+if [ -s Intermediate_out.txt ]; then
+   nint=`tail -1 Intermediate_out.txt | awk '{print $1}' `
+#   declare -i nint
+   head -$nint Intermediate_out.txt >> find_out_temp.txt
+   nnllint=`cat Intermediate_out.txt | wc -l`
+   declare -i nsedl=$nnllint-$nint
+   declare -i nsedu=$nnllint-$nint-1
+   tail -$nsedl Intermediate_out.txt | head -$nsedu >> Sed_temp.txt
+
+#plot the candidates again with Intermediate phase finish
+   rm -f candidates.*ps
+   ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ps2eps -B -q candidates.ps
+   open candidates.eps
+   rm -f candidates.ps
+fi
+
+#save the phase 1 and phase intermediate results in the folder
+[ -d Results/$xrtnm ] && cp candidates.eps Results/$xrtnm/candidates.eps
+[ -d Results/$xrtnm ] && cp RX_map.eps Results/$xrtnm/RX_map.eps
+[ -f output1.csv -a -d Results/$xrtnm ] && cp output1.csv Results/$xrtnm/output1.csv
+[ -f output_int.csv -a -d Results/$xrtnm ] && cp output_int.csv Results/$xrtnm/output_int.csv
+
+#######################################################
+#
+# END OF INTERMEDIATE PHASE
+#
+# goal: we have to correct non-matching source. Why?...
+#######################################################
+
+
+#begin phase 2 setup
+
+source=1
+rm -f *.2.csv
+#read the number interested
+until [ $source == sed -o $source == q ]
+do
+   if [ ${13} != s ]; then
+      echo
+      cat phase1
+      read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) " source zoomin showsed
+      ln=`cat find_out_temp.txt | wc -l`
+   else
+      ln=1
+      source=sed
+      [ ! -f find_out_temp.txt ] && echo $1 $2 99 > find_out_temp.txt
+      zoomin=$3
+   fi
+
+   [ -z $showsed ] && showsed=nosed
+   if [ $zoomin ]; then
+      if [ $zoomin == osed ]; then
+         zoomin=30.
+         showsed=osed
+      fi
+   fi
+
+#read the find_out list and the second phase ra dec
+   declare -i nn
+   nn=0
+   for (( ii=1; ii<=$ln; ii=ii+1 ))
+   do
+      if [ ${13} != s ]; then
+         rar=`head -$ii find_out_temp.txt | tail -1 |  awk '{print $1}'`
+         decr=`head -$ii find_out_temp.txt | tail -1 |  awk '{print $2}'`
+         typer=`head -$ii find_out_temp.txt | tail -1 |  awk '{print $3}'`
+      else
+         rar=$1
+         decr=$2
+         typer=99
+         echo the mode $source
+      fi
+
+#check if the source is BZ/WHSP already has matched, and echo the conessearch
+# 99 for sed moed, -9999 for pulsar
+      if  [ $typer -gt 10000 -o $typer -lt -40000 -o $typer -eq 99 -o $typer -eq -9999 ]; then
+         nn=$nn+1
+         if [ $nn = $source -o $source == sed ]; then
+            echo conesearch --db cats2.ini --catalog PMN --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o pmn.$nn.2.csv > vosearch.txt
+            echo conesearch --db cats2.ini --catalog GB6 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o gb6.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog GB87 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o gb87.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog AT20G --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o at20.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog ATPMN --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o atpmn.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog CRATES --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o crates.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog NORTH20 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o north20.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS44 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs44.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS70 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs70.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS100 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs100.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS143 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs143.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS217 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs217.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PCCS353 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs353.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog WISE --ra $rar --dec $decr --radius 8 --runit arcsec --columns default -o wise.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 8 --runit arcsec --columns default -o 2mass.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o spire250.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog SPIRE350 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o spire350.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog SPIRE500 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o spire500.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog SDSS --ra $rar --dec $decr --radius 6 --runit arcsec --columns default -o sdss.$nn.2.csv >> vosearch.txt
+            #echo conesearch --db cats2.ini --catalog USNO --ra $rar --dec $decr --radius 6 --runit arcsec --columns default -o usno.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog HSTGSC --ra $rar --dec $decr --radius 6 --runit arcsec --columns default -o hst.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog PanSTARRS --ra $rar --dec $decr --radius 6 --runit arcsec --columns default -o panstarrs.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog GAIA --ra $rar --dec $decr --radius 6 --runit arcsec --columns default -o gaia.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog GALEX --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o galex.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog XMMOM --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o xmmom.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog UVOT --ra $rar  --dec $decr --radius 10 --runit arcsec --columns default -o uvot.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog CMA --ra $rar  --dec $decr --radius 30 --runit arcsec --columns default -o cma.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog XRTSPEC --ra $rar --dec $decr --radius 12 --runit arcsec --columns default -o xrtspec.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 8 --runit arcmin --columns default -o bat105.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o 3fgl.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o 2fhl.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog Fermi8YL --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o fermi8yr.$nn.2.csv >> vosearch.txt
+            echo conesearch --db cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o 3fhl.$nn.2.csv >> vosearch.txt
+            #echo conesearch --db cats2.ini --catalog 1bigb --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o 1bigb.$nn.2.csv
+            echo $rar $decr $typer $nn
+            racand=$rar
+            deccand=$decr
+         fi
+      fi
+   done
+
+#check if the number input are not valid, or the user want to quit
+   if [ ! -f vosearch.txt -a $source != q ]; then
+      source=nosource
+   fi
+   if [ $source == nosource ]; then
+      echo NO SOURCE NUMBER FIND!
+   elif [ $source == q ]; then
+      echo STOP !!!!Exit the source exploring routine!!!!
+
+#check if the phase 2 data are already there, if no, retrieving PHASE 2 data
+   else
+      ncat2=`cat vosearch.txt | wc -l`
+      catthere=`ls *.$source.2.csv | wc -l`
+      if [ $catthere != 0 ]; then
+         echo
+         echo data already downloaded!
+         rm -f vosearch.txt
+      else
+         sh queue.sh -f vosearch.txt -n $ncat2 1> voerror 2>&1
+         cat voerror | grep 'ERROR'
+#         [ $tterror ] && echo $tterror
+         rm -f vosearch.txt
+         echo
+      fi
+      echo finish conesearch phase 2
+      echo ra , dec = $racand , $deccand
+
+#the nh value in phase 2
+      if [ -z $nhthere ]; then
+         nhval=$4
+      else
+         nh equinox=2000 ra=$racand dec=$deccand > nhvalue.txt
+         nhval=`tail -1 nhvalue.txt |  awk '{print $7}'`
+         rm -f nhvalue.txt
+      fi
+
+#read the phase 2 data
+      ls *.2.csv > catlist2.txt
+      rm -f output2.csv
+      echo
+      [ -s catlist2.txt ] && ./readcat catlist2.txt output2.csv $racand $deccand $3 $nhval 0. 0. 0. 0.
+
+#running the PHASAE 2
+      rm -f sed.txt
+      rm -f error_map.txt
+      ./find_candidates2 output2 $source > phase2
+      echo
+      cat phase2
+      #open sed.txt
+
+#plot the PHASE 2 error map and set default area 1 arcmin
+      if [ -z $zoomin ]; then
+         zoomin=60.
+         echo set default second phase zoomin area to 1.0 arcmin.
+      fi
+      rm -f error_map.*ps
+      rm -f sed.*ps
+      ./gnomo_plot_types error_map.txt,error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+      ps2eps -B -q error_map.ps
+      open error_map.eps
+
+#plot the SED
+      echo
+      ./plot_sed $source
+      ps2eps -B -q sed.ps -R +
+      rm -f error_map.ps
+      rm -f sed.ps
+      open sed.eps
+      [ $showsed == 'osed' ] && open Sed.txt
+      rm -f Out4SedTool.txt
+      ./convert_sed Sed.txt Out4SedTool.txt
+
+#save the results as a tex pdf
+      #cp sed.eps 4tex/sed$source.eps
+      #cp error_map.eps 4tex/error_map$source.eps
+      #cp candidates.eps 4tex/.
+      #cp RX_map.eps 4tex/.
+
+#save the phase 2 results in the folder
+      [ -d Results/$xrtnm ] && cp sed.eps Results/$xrtnm/$source"_"sed.eps
+      [ -d Results/$xrtnm ] && cp error_map.eps Results/$xrtnm/$source"_"error_map.eps
+      [ -d Results/$xrtnm ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
+
+   fi
+done
+
+#remove the vo files from various catalogs
+rm -f *.1.csv
+rm -f *.i.csv
+rm -f *.2.csv
+rm -f xrtdeep.csv
