@@ -1,0 +1,22 @@
+#!/bin/bash
+############
+#requirement: python, PGPlot, X11, eada, gfortran
+
+############
+#the compile file, ini files, 5 program, voblazars, nhdeabsorb2, count_rate, mylib
+
+############PGPlot
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install pgplot
+
+############eada/conesearch
+# before running this script, install the eada package first
+# install the package under anaconda
+# and then go to the eada-master folder or the package folder that you unzip
+conda create -n eada2 ipython python=3 astropy
+conda create -n eada2 ipython python=2 astropy
+source activate eada2
+pip install astropy
+pip install pyvo
+pip install pyyaml
+python setup.py develop
