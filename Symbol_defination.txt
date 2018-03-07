@@ -1,0 +1,87 @@
+Figure 1 : Candidates.eps
+File : find_out_temp.txt
+
+Columns: RA / Dec. / Code
+
+
+###########################################
+Figure 2 : RX_map.eps
+File : RX_sorted.txt
+
+Columns: RA / Dec. / Code
+
+
+
+###########################################
+Figure 3 : sed.eps
+File : Sed.txt
+
+!!!!First line is the ra, dec, and source type.
+Columns: frequency / Flux / Flux upper error bar / Flux lower error bar / data type
+
+For source type 1, the color is orange
+Type 2, the color is light blue
+Type 3, the color is dark blue
+Type 4, the color is green.
+For type 0, the color is purple
+
+
+###########################################
+Figure 4 : error_map.eps
+File : error_map.txt
+
+Columns: RA / Dec. / Code / position error
+
+
+
+###########################################
+UNIT
+
+RA, Dec in degrees
+Flux in erg cm-2 s-1
+Position error in arcsec
+
+
+###########################################
+Definition of the plotting code
+
+For error_map: 
+The first digit is the wavelength.
+The second digit is the survey
+The last two digit are the intensity (divided into 99 levels)
+
+First digit is 1, use rad hallow circle
+5, use orange
+6, use gold
+7, use green
+8, use blue
+9, use purple
+The size of the hallow circle is divided into 99 level with the intensity
+
+Position error plot with dash line circle, radius is the position error
+
+###########################################
+For candidates_map and RX_map:
+If the code = -9999 or -8888, means pulsar, use purple pentagon; otherwise, 
+The first digit is the sources type: 
+1 HSP, use orange color
+2 ISP, use light blue color
+3 LSP, use dark blue color
+4 non-jet AGN, use green color
+5 unknown type, use black
+-1 3HSP, gold star
+-2 BZCat, gold diamond
+-3 Crate, blue square
+-4 Cluster
+-5 3HSP without radio and X-ray matched, same as code -1, but add red circle if it has radio counterpart
+-6 5BZCat without radio and X-ray matched, same as code -2, but add red circle if it has radio counterpart
+-7 Crates without radio and X-ray matched, same as code -3, but add red circle if it has radio counterpart
+-8 X-ray sources, use blue hallow circle
+-9 radio sources, use red filled circle
+
+The next two digits are the radio component, and the last two digits are the X-ray component, divided into 99 levels.
+The radio components is represent with red filled circle, and the X-ray component is represent with hallow circle. 
+The size of the both circles are divided into 99 level with the intensity
+
+
+
