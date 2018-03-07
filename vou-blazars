@@ -1,12 +1,43 @@
 #!/bin/bash
-#To run the tool, R.A. Dec. searching radius is mandatory to input. R.A. Dec. in degrees, and radius in
-#arcmin. Then the user could specify nH column density in cm^2. After that, one or two error circle or
-#elliptical may be specified. The error circle radius, error elliptical semi-major axis and semi-minor axis
-#are in arcsec. The position angle are in degrees, north-east on sky. Note that if the user want to specify
-#a circle and a elliptical, the circle error radius type first, and the error axes for elliptical.
-#### add some examples!!!!!!!!!!!!!!!
-#source activate eada2
+#To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals.
+#The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
 
+#The error radius could be :
+#-one circle or two circle. (error radius)
+#-one elliptical or two elliptical (major axis, minor axis, angle)
+#-One circle and one elliptical (circle first)
+#-nothing
+
+#The R.A. Dec. are in degrees, and searching radius is in arcmin.
+#nH is in cm^2
+#The radius of the error circles and the axes of the error ellipticals are in arcmin.
+#The position angle is in degree, north-east on sky.
+
+#The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft)
+#The error radius are set to 0. If not specify.
+
+#output EXAMPLES
+#e.g.: source vaivocatalog2 153.76 49.43 30.
+#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21
+#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
+#e.g.: source vaivocatalog2 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
+#e.g.: source vaivocatalog2 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
+#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
+#e.g.: source vaivocatalog2 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
+#Note that if you specify one circle and one elliptical, circle go first.
+#e.g. source vaivocatalog2 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
+#e.g. source vaivocatalog2 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
+
+
+
+
+
+
+##############################################################
+# Initial set up, read the parameters input
+##############################################################
+
+#source activate eada2
 #check if docker and heasoft are installed
 dockerthere=`which docker`
 nhthere=`which nh`
@@ -151,6 +182,15 @@ test ! -d Results/$xrtnm && mkdir Results/$xrtnm
 #   skip1=nono
 #fi
 
+
+
+
+
+##############################################################
+# FIRST PHASE
+# aim: find the candidates from available radio and X-ray sources
+##############################################################
+
 #FIRST phase data retrieving, runing the conesearch 1st phase
 rm -f *.1.csv
 echo conesearch --db cats1.ini --catalog NVSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o nvss.1.csv > vosearch.txt
@@ -177,8 +217,6 @@ echo conesearch --db cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --r
 echo conesearch --db cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o pulsar.1.csv >> vosearch.txt
 echo conesearch --db cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o f2psr.1.csv >> vosearch.txt
 
-# CLEAN visearch.txt
-
 #check if the phase 1 data is already there
 ncat1=`cat vosearch.txt | wc -l`
 #if [ $skip1 == ok ]; then
@@ -191,16 +229,6 @@ sh queue.sh -f vosearch.txt -n $ncat1 #2> voerror #!2>&1
    echo finish conesearch phase 1
    rm -f vosearch.txt
 #fi
-
-
-
-
-###############################
-# End of search 1st phase data
-###############################
-
-
-
 
 #read the data
 ls *.1.csv > catlist1.txt
@@ -229,6 +257,7 @@ else
    echo
    cat phase1
 
+###############################PLOTTING###############################
 #plot the result, candidates map and radio-X-ray source map
    rm -f candidates.*ps
    rm -f RX_map.*ps
@@ -242,22 +271,20 @@ else
    open candidates.eps
    rm -f candidates.ps
    rm -f RX_map.ps
+##############################################################
 fi
 
 
-############################
-#end of the phase 1
-############################
 
 
-#begining for Intermediate phase
-# Intermediate phase needs to be described:
-# * what is the purpose of this phase,
-# * why is it necessary,
-#
+
+##############################################################
+# Intermediate PHASE
+# aim: find more available candiates from single radio/ single X-ray sources.
+##############################################################
+
 rm -f Intermediate_out.txt
 if [ -s no_matched_temp.txt ]; then
-
 #check the error circle
    if [ $5 != 0. -a $6 == 0. ]; then
       radint=$5
@@ -303,8 +330,8 @@ if [ -s no_matched_temp.txt ]; then
       echo conesearch --db cats2.ini --catalog GB6 --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o gb6.i.csv >> vosearch.txt
       echo Searching further data in intermediate phase for $cc source
       ncatint=`cat vosearch.txt | wc -l`
-      sh queue.sh -f vosearch.txt -n $ncatint 1> voerror 2>&1
-      cat voerror | grep 'ERROR'
+      sh queue.sh -f vosearch.txt -n $ncatint #1> voerror 2>&1
+#      cat voerror | grep 'ERROR'
       echo
       echo finish conesearch intermediate phase
       rm -f vosearch.txt
@@ -331,7 +358,7 @@ if [ -s Intermediate_out.txt ]; then
    declare -i nsedu=$nnllint-$nint-1
    tail -$nsedl Intermediate_out.txt | head -$nsedu >> Sed_temp.txt
 
-#plot the candidates again with Intermediate phase finish
+#plot the candidates again with Intermediate phase finish ???
    rm -f candidates.*ps
    ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    ps2eps -B -q candidates.ps
@@ -345,16 +372,17 @@ fi
 [ -f output1.csv -a -d Results/$xrtnm ] && cp output1.csv Results/$xrtnm/output1.csv
 [ -f output_int.csv -a -d Results/$xrtnm ] && cp output_int.csv Results/$xrtnm/output_int.csv
 
-#######################################################
-#
-# END OF INTERMEDIATE PHASE
-#
-# goal: we have to correct non-matching source. Why?...
-#######################################################
 
+
+
+
+
+#######################################################
+# Second PHASE
+# aim: Plot the SED and error circle map for a specified source
+#######################################################
 
 #begin phase 2 setup
-
 source=1
 rm -f *.2.csv
 #read the number interested
@@ -372,6 +400,7 @@ do
       zoomin=$3
    fi
 
+#check if need to output the SED file or not
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
       if [ $zoomin == osed ]; then
@@ -460,9 +489,8 @@ do
          echo data already downloaded!
          rm -f vosearch.txt
       else
-         sh queue.sh -f vosearch.txt -n $ncat2 1> voerror 2>&1
-         cat voerror | grep 'ERROR'
-#         [ $tterror ] && echo $tterror
+         sh queue.sh -f vosearch.txt -n $ncat2 #1> voerror 2>&1
+#         cat voerror | grep 'ERROR'
          rm -f vosearch.txt
          echo
       fi
@@ -492,6 +520,7 @@ do
       cat phase2
       #open sed.txt
 
+###############################PLOTTING###############################
 #plot the PHASE 2 error map and set default area 1 arcmin
       if [ -z $zoomin ]; then
          zoomin=60.
@@ -513,6 +542,7 @@ do
       [ $showsed == 'osed' ] && open Sed.txt
       rm -f Out4SedTool.txt
       ./convert_sed Sed.txt Out4SedTool.txt
+##############################################################
 
 #save the results as a tex pdf
       #cp sed.eps 4tex/sed$source.eps

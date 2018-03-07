@@ -80,6 +80,7 @@ do
   LINES[$CNT]="$LINE"
 done < $LIST
 
+echo
 [ "$VERBOSE" = "1" ] && echo "Searching $CNT catalogs"
 
 # Check if any halo was found. If not, finish the run..
@@ -92,6 +93,7 @@ PIDs=()
 CNTs=()
 NJOBS=0
 
+declare -i nncc=0
 while [ "$NJOBS" -le "$CNT" ]
 do
   # IF queue is not full && we have not reached to top yet..
@@ -101,7 +103,7 @@ do
 
     # each entry in '-f input_list' is expeted to be a json filename
     LINE_COMMAND=${LINES[$NJOBS]}
-    $LINE_COMMAND &
+    1>/dev/null $LINE_COMMAND &
 
     PID=$!
     PIDs[$PID]=$PID
@@ -117,16 +119,16 @@ do
     if [ "$(check_process $PID)" -ne "0" ]; then
       _cnt=${CNTs[$PID]}
       _file=${LINES[$_cnt]}
-
       # get the result status of PID and then remove from queue
       wait $PID
       PSTS=$?
+      cats=`echo $_file | awk '{print $5}'`
       if [[ $PSTS -eq 0 ]]; then
-        echo "SUCCESS: Processing '$_file' complete"
+         nncc=$nncc+1
+         echo "( $nncc / $NJOBS ) Processing '$cats' complete : SUCCESS"
       else
-#         cat 1>&2 | grep -v 'ERROR'
-         echo "No sources found: Processing '$_file' complete"
-#        1>&2 echo "No sources found: Processing '$_file' complete"
+         nncc=$nncc+1
+         1>&2 echo "( $nncc / $NJOBS ) Processing '$cats' complete : NO SOUCES FOUND"
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]
