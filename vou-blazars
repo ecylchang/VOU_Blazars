@@ -358,12 +358,14 @@ if [ -s Intermediate_out.txt ]; then
    declare -i nsedu=$nnllint-$nint-1
    tail -$nsedl Intermediate_out.txt | head -$nsedu >> Sed_temp.txt
 
+###############################PLOTTING###############################
 #plot the candidates again with Intermediate phase finish ???
    rm -f candidates.*ps
    ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    ps2eps -B -q candidates.ps
    open candidates.eps
    rm -f candidates.ps
+######################################################################
 fi
 
 #save the phase 1 and phase intermediate results in the folder
