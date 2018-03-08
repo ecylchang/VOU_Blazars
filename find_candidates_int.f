@@ -315,11 +315,11 @@ c      write(*,*) i4p8,iuv,igam
       enddo
 
       if ((ipass .eq. 0) .and. (isource .ne. 0)) then
-         print *,achar(27),'[35;1m Sorry, no candidates were found in intermediate phase',achar(27),'[0m'
+         print *,achar(27),'[35;1m No candidates were found in intermediate phase',achar(27),'[0m'
          stop
       endif
       if (ipass+isource .eq. 0) then
-         print *,achar(27),'[31;1m Sorry, no candidates were found',achar(27),'[0m'
+         print *,achar(27),'[31;1m Unfortunatelly, no any candidates were found',achar(27),'[0m'
          stop
       endif
 

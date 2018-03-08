@@ -1860,7 +1860,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          CALL graphic_code (xflux(i),flux_source(i)/rrconst(i),ttsource(i),code)
          write(11,'(f9.5,2x,f9.5,2x,i6)') ra_source(i),dec_source(i),int(code)
       enddo
-      IF (ifound  ==  0) print *,achar(27),'[31;1m Sorry, no radio/X-ray matches were found ',achar(27),'[0m'
+      IF (ifound  ==  0) print *,achar(27),'[31;1m No radio/X-ray matches were found.',achar(27),'[0m'
 
       savemjy(1:iother)=25.
       DO l=1,iother
@@ -2041,8 +2041,8 @@ cccccc for skip the phase 1
          endif
       enddo
       do j=1,ixmm
-         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
-         if (xmm_type(i) == 2) min_dist_xmm=4./3600.
+         if (xmm_type(j) == 1) min_dist_xmm=15./3600.
+         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          call DIST_SKY(ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist)
          if ( dist .lt. min_dist_xmm ) then
             if (xmm_type(j) == 1) then
