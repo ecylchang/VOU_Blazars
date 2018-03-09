@@ -1,0 +1,28 @@
+#!/bin/bash
+declare -i par=$#-1
+if [ $par -eq 3 ]; then
+   pid=$4
+   set $1 $2 $3
+elif [ $par -eq 4 ]; then
+   pid=$5
+   set $1 $2 $3 $4
+elif [ $par -eq 5 ]; then
+   pid=$6
+   set $1 $2 $3 $4 $5
+elif [ $par -eq 6 ]; then
+   pid=$7
+   set $1 $2 $3 $4 $5 $6
+elif [ $par -eq 7 ]; then
+   pid=$8
+   set $1 $2 $3 $4 $5 $6 $7
+elif [ $par -eq 8 ]; then
+   pid=$9
+   set $1 $2 $3 $4 $5 $6 $7 $8
+elif [ $par -eq 9 ]; then
+   pid=${10}
+   set $1 $2 $3 $4 $5 $6 $7 $8 $9
+elif [ $par -eq 10 ]; then
+   pid=${11}
+   set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
+fi
+source vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
