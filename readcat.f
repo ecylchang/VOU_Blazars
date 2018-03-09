@@ -55,14 +55,14 @@ c the catalog without source name
                is=0
                ie=index(value(1:len(value)),',')
             endif
-            if ((catalog(1:it-1) == 'crates') .and. (ns .ne. 0)) then !check crates counterpart
+            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) then !check crates counterpart
                read(value(is+1:ie-1),'(a)') cratecheck
-c               if (cratecheck == '1') then
+               if ((cratecheck == '1') .or. (cratecheck == '0')) then
                   is=ie
                   ie=index(value(is+1:len(value)),',')+is
-c               else
-c                  goto 300
-c               endif
+               else
+                  goto 300
+               endif
             endif
             if ((catalog(1:it-1) == 'cma') .or. (catalog(1:it-1) == 'north20')) then
                is=ie

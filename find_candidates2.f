@@ -38,7 +38,7 @@ c
       REAL*8 ra_pccs100(200),dec_pccs100(200),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000)
       real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000)
-      REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
+      REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
@@ -1957,7 +1957,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
          ii2=0
          do i=1,iir
             call DIST_SKY(ra_source(j),dec_source(j),ra_ir(i),dec_ir(i),dist)
-            !write(*,*) dist*3600.
+            matchradius=sqrt(epos(1,j)**2+poserr_ir(i)**2)
+            !write(*,*) matchradius,epos(1,j),poserr_ir(i),ir_type(i),dist*3600.
             IF (( dist*3600. < max(epos(1,j)*1.3,2.) )  .and. (ir_type(i) == 'WISE')) THEN
                ii1=ii1+1
                iirfound=iirfound+1
