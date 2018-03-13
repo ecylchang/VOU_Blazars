@@ -125,10 +125,10 @@ do
       cats=`echo $_file | awk '{print $5}'`
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
-         echo "\033[32;1m $cats : SUCCESS\033[0m ( $nncc / $NJOBS ) "
+         echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m "
       else
          nncc=$nncc+1
-         1>&2 echo "$cats : NO SOUCES FOUND ( $nncc / $NJOBS ) "
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOUCES FOUND "
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]
