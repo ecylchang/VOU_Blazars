@@ -557,6 +557,14 @@ do
       [ -d Results/$xrtnm ] && cp error_map.eps Results/$xrtnm/$source"_"error_map.eps
       [ -d Results/$xrtnm ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
 
+#PID number for online versio
+     if [ $pid ]; then
+         echo PID number = $pid
+         cp candidates.eps $pid"_"candidates.eps
+         cp RX_map.eps $pid"_"RX_map.eps
+         cp sed.eps $pid"_"$source"_"sed.eps
+         cp error_map.eps $pid"_"$source"_"error_map.eps
+     fi
    fi
 done
 
