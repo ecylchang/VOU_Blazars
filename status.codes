@@ -1,0 +1,24 @@
+*  ok__ ! success code
+      integer ok__
+      parameter (ok__=0)
+*  error__ ! general error code
+      integer error__
+      parameter (error__=1)
+*  eof__ ! end-of-file code
+      integer eof__
+      parameter (eof__=-1)
+*  warning__ ! general warning code
+      integer warning__
+      parameter (warning__=2)
+*  flnf__ ! file not found
+      integer flnf__
+      parameter (flnf__=29)
+*  opnf__ ! file open failure
+      integer opnf__
+      parameter (opnf__=30)
+*  uopn__ ! unit already open
+      integer uopn__
+      parameter (uopn__=34)
+*  nxrec__ ! non-existent record
+      integer nxrec__
+      parameter (nxrec__=36)

@@ -1,1 +1,1 @@
-gfortran -o $1 $1.f -ffixed-line-length-132 /Users/yulingchang/PhD/tsed/mylib.o nhdeabsorb2.o -lpgplot
+gfortran -o $1 $1.f -ffixed-line-length-132 mylib.o nhdeabsorb2.o -lpgplot
