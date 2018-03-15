@@ -1,9 +1,7 @@
 #!/bin/bash
 ############
-#requirement: python, PGPlot, X11, eada, gfortran
-
-############
-#the compile file, ini files, 5 program, voblazars, nhdeabsorb2, count_rate, mylib
+#requirement: python, anaconda
+#clone everthing from: https://github.com/chbrandt/eada
 
 ############PGPlot
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
