@@ -1,23 +1,23 @@
       subroutine nhdeabsorb2(flag_nh,emin,emax,alpha,anh,reduce,iflag)
 c
 c    Calculates cont-rate to flux conversion and nh obsrptoin correction factors
-c    for various satellites, instruments and filters 
+c    for various satellites, instruments and filters
 c
       IMPLICIT none
       INTEGER*4  max_sat , length
       PARAMETER (max_sat=200)
       CHARACTER*80 file_eff_area , string
       CHARACTER*80 f_eff_area(max_sat)
-      CHARACTER*40 satellite(max_sat), instrument(max_sat) 
+      CHARACTER*40 satellite(max_sat), instrument(max_sat)
       CHARACTER*1 yesno
-      INTEGER*4 lu_input , model , ifear , ifl , itype 
-      INTEGER*4 i , j 
+      INTEGER*4 lu_input , model , ifear , ifl , itype
+      INTEGER*4 i , j
       INTEGER*4 lu_pf, in, lenact
       INTEGER*4 iflag, ii, flag_nh
       REAL*4 nh , emin_area , emax_area , emin , emax
       REAL*4 emin_areas, emax_areas, emin_aream, emax_aream,nufnu
-      REAL*4 emin_areah, emax_areah, fekev, conv 
-      REAL*4 energy 
+      REAL*4 emin_areah, emax_areah, fekev, conv
+      REAL*4 energy
       REAL*4 eff_area , anh , alpha , alpha1 , bbreak_energy , redshift
       REAL*4 tt , ak , aa7 , alpha2 , gamm , bk , t , gamma1 , gamma2
       REAL*4 break_energy, umalpha
@@ -33,7 +33,7 @@ c
       EXTERNAL espec
       EXTERNAL eacma
       COMMON /filt  / energy(5000) , eff_area(5000)
-      COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 , 
+      COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 ,
      &                gamma2 , break_energy
       ok = .TRUE.
 c      flag_nh = 1
@@ -50,14 +50,14 @@ c     &           '' 0 for count-rate flux conversion factor (d/f='',i2,'') '',$
 c         READ (*,'(a)') string
 c         IF (string.NE.' ') read (string(1:lenact(string)),*) flag_nh
 c      ENDIF
-c Open configuration file 
+c Open configuration file
 c      lu_pf = 15
-      webprograms='.'
+      webprograms='./bin/fort'
       filename = webprograms(1:lenact(webprograms)) //
      &'/count_rate/countrates2.cf'
       OPEN (15,FILE=filename,STATUS='old')
       i=0
-c read configuration file 
+c read configuration file
       DO WHILE(ok)
          string=' '
          READ (15,'(a)',end=100) string
@@ -98,14 +98,14 @@ c read configuration file
          ENDIF
       ENDDO
 100   CONTINUE
-      IF (flag_nh .NE. 1) THEN 
+      IF (flag_nh .NE. 1) THEN
 c         WRITE (*,*) ' Available satellites/instruments '
 c         DO ii =1,i
 c           write (*,'(2x,i2,2x,a,2x,a)') ii,satellite(ii),instrument(ii)
 c         ENDDO
 c         WRITE (*,'(''Enter satellite/detector number :'',$)')
 c         READ (*,*) iflag
-         file_eff_area=f_eff_area(iflag) 
+         file_eff_area=f_eff_area(iflag)
 c         emin=eemin(iflag)
 c         emax=eemax(iflag)
          emin_area=emin!eemin_area(iflag)
@@ -124,7 +124,7 @@ c         lu_input = 11
             READ (16,*,END=200) energy(i),eff_area(i)
             i = i + 1
          ENDDO
- 200     CONTINUE 
+ 200     CONTINUE
 c         write (*,*) ' lines in eff_area ',i-1
          DO j = i , 5000
            energy(j) = energy(i-1)
@@ -132,7 +132,7 @@ c         write (*,*) ' lines in eff_area ',i-1
          ENDDO
          CLOSE (16)
          CALL frelun(16)
-c      ELSE 
+c      ELSE
 c        emin = 0.3
 c        emax = 2.0
       ENDIF
@@ -184,15 +184,15 @@ c         READ (*,*) anh
 c      ENDIF
       IF ( alpha.EQ.1 ) alpha = alpha + 0.0001
       umalpha=1.-alpha
-      IF (umalpha.eq.0.) THEN 
+      IF (umalpha.eq.0.) THEN
          conv=ekev**(-alpha)*1./log(emax/emin)/(ekev*2.418E-12)
       ELSE
          conv=umalpha*ekev**(-alpha)/(emax**umalpha-emin**umalpha)/
      &                                             (ekev*2.418E-12)
       ENDIF
-      IF (flag_nh == 1) THEN 
+      IF (flag_nh == 1) THEN
 c
-c NH correction factor here 
+c NH correction factor here
 c
          ifear = 1
 c ifear = 1 => flux NOT corrected for Galactic absorption
@@ -206,7 +206,7 @@ c ifear = 0 => flux corrected for Galactic absorption
      &      alpha2,bbreak_energy)
 c         WRITE(*,'(''Integrated flux correction factor ='',f8.2)') aa8/ak
          reduce=aa8/ak
-         IF (lenact(stringin) == 0 ) THEN 
+         IF (lenact(stringin) == 0 ) THEN
             WRITE(*,'("Conversion factor for nuFnu flux at ",f5.2,"keV :",
      &             1pe10.3)') ekev,conv*ekev*ekev*2.418e-12
          ENDIF
@@ -286,20 +286,20 @@ C  ifear = 1 for fluxes at the earth
 C  ifear = 0 for fluxes corrected for galactic absorption
 C
 c
-c  emin_area minumum value of energy in effective area table 
-c  emax_area maximum value of energy in effective area table 
+c  emin_area minumum value of energy in effective area table
+c  emax_area maximum value of energy in effective area table
 c
       implicit none
       EXTERNAL espec
       EXTERNAL eacma
 c      integer*4 ifl, iifl, itype, nmax, ifear, n4, n7
-      integer*4 ifl, iifl, itype, nmax, ifear 
+      integer*4 ifl, iifl, itype, nmax, ifear
       integer*4 iitype
       REAL*4 nhydr, nh, t, tt, gamm, ggamm, gamma1, ggamma1, gamma2
       real*4 ggamma2, break_energy, bk, hys , aa4, aa8, ra48
       real*4 emin_flux, emax_flux, emin_area, emax_area, flxog, crate
       real*4 bbreak_energy
-      COMMON /esp   / nh, gamm, bk, ifl, t, itype, gamma1, 
+      COMMON /esp   / nh, gamm, bk, ifl, t, itype, gamma1,
      &                gamma2, break_energy
       ifl = iifl
       t = tt
@@ -318,18 +318,18 @@ c      integer*4 ifl, iifl, itype, nmax, ifear, n4, n7
       CALL stup1(espec,emin_flux,emax_flux,aa4,nmax)
       nh = (nhydr+hys)*1.E-22
       gamm = gamm + 1.
-      gamma1 = gamma1 + 1. 
-      gamma2 = gamma2 + 1. 
-      IF (crate > 0.) THEN 
-c crate < 0. forGalactice NH correction only, it avoids integral with effective area that 
-c is not necessary 
+      gamma1 = gamma1 + 1.
+      gamma2 = gamma2 + 1.
+      IF (crate > 0.) THEN
+c crate < 0. forGalactice NH correction only, it avoids integral with effective area that
+c is not necessary
          CALL stup1(eacma,emin_area,emax_area,aa8,nmax)
       ELSE
          aa8=1.
       ENDIF
       gamm = gamm - 1.
-      gamma1 = gamma1 - 1. 
-      gamma2 = gamma2 - 1. 
+      gamma1 = gamma1 - 1.
+      gamma2 = gamma2 - 1.
       ra48 = aa4/aa8*1.602192E-9
       flxog = ra48*crate
       RETURN
@@ -340,7 +340,7 @@ c is not necessary
       integer*4 itype, ifl
       REAL*4 nh, absor , ener, atten, effa, gamm, eacma, es, bk, t
       real*4 emean, sigma, break_energy, gamma1, gamma2, effective_area
-      COMMON /esp   / nh, gamm, bk, ifl, t, itype, 
+      COMMON /esp   / nh, gamm, bk, ifl, t, itype,
      &                gamma1, gamma2, break_energy
       absor = atten(ener,nh,itype,1.,1.)
       effa = effective_area(ener)
@@ -405,9 +405,9 @@ C ** in the interval xmin-xmax using the stupid trapezoidal rule.
 C ** the only difference between this and other "smarter" routines
 C ** is that this one always works while others too often don't!
 c
-      INTEGER*4 nloops , i , last 
+      INTEGER*4 nloops , i , last
       REAL*4 aloo , h , xmax , xmin , first , func , result , xw
-      REAL*4 fi , xl  
+      REAL*4 fi , xl
       aloo = nloops - 1
       h = (xmax-xmin)/aloo
       first = func(xmin)/2.
@@ -454,12 +454,12 @@ c
 C   this function returns the effective area at a given energy e
 c
       INTEGER*4 j , k , kk
-      REAL*4 r , effective_area, e,energy, area 
+      REAL*4 r , effective_area, e,energy, area
       COMMON /filt  / energy(5000) , area(5000)
       j=1
-      DO WHILE ( e.GE.energy(j) ) 
+      DO WHILE ( e.GE.energy(j) )
          k = j
-         j=j+1 
+         j=j+1
       ENDDO
       kk = k - 1
       IF ( kk.LE.0 ) THEN
@@ -504,41 +504,41 @@ C  c   0.28384
 C  he  0.0243
 C  h   0.0136
       INTEGER*4 j1 , itype , j , k , kk , i
-      REAL*4 e , ex , r , xs , sig , axs , raox , oxy , eng , absr2 , 
+      REAL*4 e , ex , r , xs , sig , axs , raox , oxy , eng , absr2 ,
      &       coef , e1 , xd
       REAL*4 sg , dex , rafe , fe , fct
       DIMENSION ex(40) , sig(40) , e1(22) , sg(22,3)
       DIMENSION coef(15,3) , eng(16)
-      DATA ex/.0136 , .0177 , .02 , .0243 , .0243 , .03 , .035 , .045 , 
-     &     .07 , .1 , .2 , .2838 , .2838 , .4016 , .4016 , .5320 , 
-     &     .5320 , .8669 , .8669 , 1.3050 , 1.3050 , 1.8389 , 1.8389 , 
-     &     2.4720 , 2.4720 , 3.2029 , 3.2029 , 4. , 4. , 5. , 5. , 6. , 
+      DATA ex/.0136 , .0177 , .02 , .0243 , .0243 , .03 , .035 , .045 ,
+     &     .07 , .1 , .2 , .2838 , .2838 , .4016 , .4016 , .5320 ,
+     &     .5320 , .8669 , .8669 , 1.3050 , 1.3050 , 1.8389 , 1.8389 ,
+     &     2.4720 , 2.4720 , 3.2029 , 3.2029 , 4. , 4. , 5. , 5. , 6. ,
      &     6. , 7. , 7. , 8. , 8. , 9. , 10. , 12./
                                    !mmcc
-      DATA sig/.15 , .172 , .175 , .17 , .25 , .32 , .35 , .41 , .51 , 
-     &     .58 , .63 , .60 , .70 , .67 , .75 , .74 , 1.63 , 1.72 , 
-     &     2.01 , 2.16 , 2.28 , 2.4 , 2.74 , 2.89 , 3.3 , 3.45 , 3.71 , 
-     &     3.86 , 3.86 , 3.92 , 3.92 , 3.95 , 3.95 , 3.95 , 3.95 , 
+      DATA sig/.15 , .172 , .175 , .17 , .25 , .32 , .35 , .41 , .51 ,
+     &     .58 , .63 , .60 , .70 , .67 , .75 , .74 , 1.63 , 1.72 ,
+     &     2.01 , 2.16 , 2.28 , 2.4 , 2.74 , 2.89 , 3.3 , 3.45 , 3.71 ,
+     &     3.86 , 3.86 , 3.92 , 3.92 , 3.95 , 3.95 , 3.95 , 3.95 ,
      &     3.94 , 3.94 , 3.92 , 3.90 , 3.90/
-      DATA e1/.3 , .5320 , .5320 , .8669 , .8669 , 1.3050 , 1.3050 , 
-     &     1.8389 , 1.8389 , 2.4720 , 2.4720 , 3.2029 , 3.2029 , 
-     &     4.0381 , 4.0381 , 5.9892 , 5.9892 , 7.1120 , 7.1120 , 
+      DATA e1/.3 , .5320 , .5320 , .8669 , .8669 , 1.3050 , 1.3050 ,
+     &     1.8389 , 1.8389 , 2.4720 , 2.4720 , 3.2029 , 3.2029 ,
+     &     4.0381 , 4.0381 , 5.9892 , 5.9892 , 7.1120 , 7.1120 ,
      &     8.3328 , 8.3328 , 10./
-      DATA sg/0.8 , 0.9 , 1.9 , 2.0 , 2.4 , 2.6 , 2.8 , 2.9 , 3.2 , 
-     &     3.5 , 3.9 , 4.1 , 4.3 , 4.6 , 4.7 , 5.0 , 5.1 , 5.3 , 10.6 , 
-     &     11.2 , 11.8 , 12.3 , 0.7 , 0.9 , 1.4 , 1.7 , 2.0 , 2.4 , 
-     &     2.6 , 2.8 , 3.0 , 3.4 , 3.9 , 4.1 , 4.3 , 4.6 , 4.7 , 5.0 , 
-     &     5.1 , 5.3 , 10.6 , 11.2 , 11.8 , 12.3 , 0.6 , 0.7 , 0.8 , 
-     &     1.1 , 1.5 , 1.9 , 2.1 , 2.4 , 2.7 , 3.3 , 3.9 , 4.1 , 4.3 , 
+      DATA sg/0.8 , 0.9 , 1.9 , 2.0 , 2.4 , 2.6 , 2.8 , 2.9 , 3.2 ,
+     &     3.5 , 3.9 , 4.1 , 4.3 , 4.6 , 4.7 , 5.0 , 5.1 , 5.3 , 10.6 ,
+     &     11.2 , 11.8 , 12.3 , 0.7 , 0.9 , 1.4 , 1.7 , 2.0 , 2.4 ,
+     &     2.6 , 2.8 , 3.0 , 3.4 , 3.9 , 4.1 , 4.3 , 4.6 , 4.7 , 5.0 ,
+     &     5.1 , 5.3 , 10.6 , 11.2 , 11.8 , 12.3 , 0.6 , 0.7 , 0.8 ,
+     &     1.1 , 1.5 , 1.9 , 2.1 , 2.4 , 2.7 , 3.3 , 3.9 , 4.1 , 4.3 ,
      &     4.6 , 4.7 , 5.0 , 5.1 , 5.3 , 10.6 , 11.2 , 11.8 , 12.3/
-      DATA coef/17.3 , 34.6 , 78.1 , 71.4 , 95.5 , 308.9 , 120.6 , 
-     &     141.3 , 202.7 , 342.7 , 352.2 , 433.9 , 629.0 , 701.2 , 
-     &     953.0 , 608.1 , 267.9 , 18.8 , 66.8 , 145.8 , -380.6 , 
-     &     169.3 , 146.8 , 104.7 , 18.7 , 18.7 , -2.4 , 30.9 , 25.2 , 
-     &     0.0 , -2150. , -476.1 , 4.3 , -51.4 , -61.1 , 294.0 , -47.7 , 
+      DATA coef/17.3 , 34.6 , 78.1 , 71.4 , 95.5 , 308.9 , 120.6 ,
+     &     141.3 , 202.7 , 342.7 , 352.2 , 433.9 , 629.0 , 701.2 ,
+     &     953.0 , 608.1 , 267.9 , 18.8 , 66.8 , 145.8 , -380.6 ,
+     &     169.3 , 146.8 , 104.7 , 18.7 , 18.7 , -2.4 , 30.9 , 25.2 ,
+     &     0.0 , -2150. , -476.1 , 4.3 , -51.4 , -61.1 , 294.0 , -47.7 ,
      &     -31.5 , -17.0 , 0.0 , 0.0 , 0.75 , 0.0 , 0.0 , 0.0/
-      DATA eng/0.03 , 0.1 , 0.284 , 0.4 , 0.532 , 0.707 , 0.867 , 
-     &     1.303 , 1.84 , 2.471 , 3.21 , 4.038 , 7.111 , 8.331 , 10.0 , 
+      DATA eng/0.03 , 0.1 , 0.284 , 0.4 , 0.532 , 0.707 , 0.867 ,
+     &     1.303 , 1.84 , 2.471 , 3.21 , 4.038 , 7.111 , 8.331 , 10.0 ,
      &     100.0/
       j1 = 9
       IF ( itype.EQ.0 .OR. itype.EQ.4 ) THEN
@@ -605,8 +605,8 @@ c
 c  oxygen
 c
       integer*4 j,k,kk
-      real*4 eox(8), sox(8), r, e , oxy 
-      DATA sox, eox/1.79, 2.74, 3.30, 85.53, 104.36, 123.76, 144.71, 
+      real*4 eox(8), sox(8), r, e , oxy
+      DATA sox, eox/1.79, 2.74, 3.30, 85.53, 104.36, 123.76, 144.71,
      &     155.37, 0.10, 0.30, 0.5320, 0.5320, 1., 2., 5., 10./
       DO j = 1, 8
          k = j
@@ -631,10 +631,10 @@ c
 c
 c  iron
 c
-      integer*4 j,k,kk 
-      real*4 efe(12), sfe(12), e, fe, r 
-      DATA sfe, efe/2.15, 7.74, 23.9, 34.9, 50.6, 59.7, 69.7, 74.5, 
-     &     593., 626.9, 686.1, 772.5, .3, .6, 1., 1.5, 2.4, 3.5, 5.0, 
+      integer*4 j,k,kk
+      real*4 efe(12), sfe(12), e, fe, r
+      DATA sfe, efe/2.15, 7.74, 23.9, 34.9, 50.6, 59.7, 69.7, 74.5,
+     &     593., 626.9, 686.1, 772.5, .3, .6, 1., 1.5, 2.4, 3.5, 5.0,
      &     7.112, 7.112, 8., 10., 15./
       IF ( e.LE..2 ) THEN
          fe = 0.
@@ -664,8 +664,8 @@ c
 c  auxiliary ism routine
 c
       integer*4 j,k,kk,itype
-      real*4 eq(7), f(7,3) , e , r , fct 
-      DATA f/7*1., .155, .70, .86, .93, .98, 1., 1., .187, .317, .587, 
+      real*4 eq(7), f(7,3) , e , r , fct
+      DATA f/7*1., .155, .70, .86, .93, .98, 1., 1., .187, .317, .587,
      &     .77, .93, 1., 1./
       DATA eq/.3, .6, 1., 1.5, 2.4, 3., 4./
       DO j = 1, 7
@@ -687,10 +687,10 @@ c
 **==ESPEC.FOR
       FUNCTION espec(ener)
       INTEGER*4 itype , ifl
-      REAL*4 nh , absor , ener , atten , espec , gamm , es , bk , t , 
+      REAL*4 nh , absor , ener , atten , espec , gamm , es , bk , t ,
      &       emean
       REAL*4 sigma , break_energy , gamma1 , gamma2
-      COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 , 
+      COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 ,
      &                gamma2 , break_energy
       absor = atten(ener,nh,itype,1.,1.)
       IF ( ifl.EQ.1 ) THEN
