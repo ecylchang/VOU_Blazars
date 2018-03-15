@@ -30,7 +30,10 @@
 
 
 
-
+# Directory where the fortran binaries are:
+#
+HERE=$(cd `dirname $BASH_SOURCE`; pwd)
+BINF="${HERE}/fort"
 
 
 ##############################################################
@@ -249,11 +252,11 @@ fi
 #running the PHASAE 1
 rm -f *temp.txt
 if [ ${13} == s ]; then
-   ./find_candidates1 output1 0 > phase1
+   ${BINF}/find_candidates1 output1 0 > phase1
    echo
    cat phase1
 else
-   ./find_candidates1 output1 1 > phase1
+   ${BINF}/find_candidates1 output1 1 > phase1
    echo
    cat phase1
 
@@ -263,8 +266,8 @@ else
    rm -f RX_map.*ps
    sort -n -k 3 RX_temp.txt > RX_sorted.txt
    rm -f RX_temp.txt
-   ./gnomo_plot_types RX_sorted.txt,RX_map.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
-   ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ${BINF}/gnomo_plot_types RX_sorted.txt,RX_map.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    ps2eps -B -q RX_map.ps
    open RX_map.eps
    ps2eps -B -q candidates.ps
@@ -344,7 +347,7 @@ if [ -s no_matched_temp.txt ]; then
 
 #run the Intermediate phase
       echo
-      ./find_candidates_int output_int
+      ${BINF}/find_candidates_int output_int
    fi
 fi
 
@@ -361,7 +364,7 @@ if [ -s Intermediate_out.txt ]; then
 ###############################PLOTTING###############################
 #plot the candidates again with Intermediate phase finish ???
    rm -f candidates.*ps
-   ./gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    ps2eps -B -q candidates.ps
    open candidates.eps
    rm -f candidates.ps
@@ -517,7 +520,7 @@ do
 #running the PHASAE 2
       rm -f sed.txt
       rm -f error_map.txt
-      ./find_candidates2 output2 $source > phase2
+      ${BINF}/find_candidates2 output2 $source > phase2
       echo
       cat phase2
       #open sed.txt
@@ -530,20 +533,20 @@ do
       fi
       rm -f error_map.*ps
       rm -f sed.*ps
-      ./gnomo_plot_types error_map.txt,error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+      ${BINF}/gnomo_plot_types error_map.txt,error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
       ps2eps -B -q error_map.ps
       open error_map.eps
 
 #plot the SED
       echo
-      ./plot_sed $source
+      ${BINF}/plot_sed $source
       ps2eps -B -q sed.ps -R +
       rm -f error_map.ps
       rm -f sed.ps
       open sed.eps
       [ $showsed == 'osed' ] && open Sed.txt
       rm -f Out4SedTool.txt
-      ./convert_sed Sed.txt Out4SedTool.txt
+      ${BINF}/convert_sed Sed.txt Out4SedTool.txt
 ##############################################################
 
 #save the results as a tex pdf
