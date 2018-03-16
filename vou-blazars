@@ -172,8 +172,10 @@ raxrt=`echo $1 | sed 's/\./_/g'`
 decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
 rrxrt=`echo $3 | sed 's/\./_/g'`
 xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
-test ! -d Results && mkdir Results
-test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+if [ -z $pid ]; then
+   test ! -d Results && mkdir Results
+   test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+fi
 
 #check if the same RA, Dec, radius are ran sucessfully before
 #if [ -s $xrtnm/output1.csv ]; then
@@ -561,10 +563,14 @@ do
 #PID number for online versio
      if [ $pid ]; then
          echo PID number = $pid
-         [ -f candidates.eps ] && cp candidates.eps $pid"_"candidates.eps
-         [ -f RX_map.eps ] && cp RX_map.eps $pid"_"RX_map.eps
-         [ -f sed.eps ] && cp sed.eps $pid"_"$source"_"sed.eps
-         [ -f error_map.eps ] && cp error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f candidates.eps ] && mv candidates.eps $pid"_"candidates.eps
+         [ -f RX_map.eps ] && mv RX_map.eps $pid"_"RX_map.eps
+         [ -f sed.eps ] && mv sed.eps $pid"_"$source"_"sed.eps
+         [ -f error_map.eps ] && mv error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f error_map.txt ] && mv error_map.txt $pid"_"$source"_"error_map.txt
+         [ -f Sed.txt ] && mv Sed.txt $pid"_"$source"_"sed.txt
+         [ -f find_out_temp.txt ] && mv find_out_temp.txt $pid"_"find_out_temp.txt
+         [ -f Out4SedTool.txt ] && mv Out4SedTool.txt $pid"_"$source"_"Out4SedTool.txt
      fi
    fi
 done

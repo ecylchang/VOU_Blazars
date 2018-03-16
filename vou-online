@@ -33,5 +33,11 @@ elif [ $par -eq 11 ]; then
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
 source vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
+rm -f output*.csv
+rm -f Sed*.txt
+rm -f no_matched_temp.txt
+rm -f RX*.txt
+rm -f phase*
+rm -f catlist*
 unset pid
 
