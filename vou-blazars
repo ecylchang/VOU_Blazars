@@ -369,8 +369,8 @@ if [ -s Intermediate_out.txt ]; then
 fi
 
 #save the phase 1 and phase intermediate results in the folder
-[ -d Results/$xrtnm ] && cp candidates.eps Results/$xrtnm/candidates.eps
-[ -d Results/$xrtnm ] && cp RX_map.eps Results/$xrtnm/RX_map.eps
+[ -f candidates.eps -a -d Results/$xrtnm ] && cp candidates.eps Results/$xrtnm/candidates.eps
+[ -f RX_map.eps -a -d Results/$xrtnm ] && cp RX_map.eps Results/$xrtnm/RX_map.eps
 [ -f output1.csv -a -d Results/$xrtnm ] && cp output1.csv Results/$xrtnm/output1.csv
 [ -f output_int.csv -a -d Results/$xrtnm ] && cp output_int.csv Results/$xrtnm/output_int.csv
 
@@ -399,7 +399,8 @@ do
       ln=1
       source=sed
       [ ! -f find_out_temp.txt ] && echo $1 $2 99 > find_out_temp.txt
-      zoomin=$3
+      declare -i zoomin=${3}*60
+      echo $zoomin
    fi
 
 #check if need to output the SED file or not
@@ -560,10 +561,10 @@ do
 #PID number for online versio
      if [ $pid ]; then
          echo PID number = $pid
-         cp candidates.eps $pid"_"candidates.eps
-         cp RX_map.eps $pid"_"RX_map.eps
-         cp sed.eps $pid"_"$source"_"sed.eps
-         cp error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f candidates.eps ] && cp candidates.eps $pid"_"candidates.eps
+         [ -f RX_map.eps ] && cp RX_map.eps $pid"_"RX_map.eps
+         [ -f sed.eps ] && cp sed.eps $pid"_"$source"_"sed.eps
+         [ -f error_map.eps ] && cp error_map.eps $pid"_"$source"_"error_map.eps
      fi
    fi
 done

@@ -1,6 +1,10 @@
 #!/bin/bash
 declare -i par=$#-1
-if [ $par -eq 3 ]; then
+echo $par
+if [ $par -eq 2 ]; then
+   pid=$3
+   set $1 $2 1 s
+elif [ $par -eq 3 ]; then
    pid=$4
    set $1 $2 $3
 elif [ $par -eq 4 ]; then
@@ -24,7 +28,10 @@ elif [ $par -eq 9 ]; then
 elif [ $par -eq 10 ]; then
    pid=${11}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
+elif [ $par -eq 11 ]; then
+   pid=${12}
+   set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
-source vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
+source vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 unset pid
 
