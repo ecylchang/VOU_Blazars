@@ -175,6 +175,7 @@ xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
 if [ -z $pid ]; then
    test ! -d Results && mkdir Results
    test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+   test ! -d Results/SEDtool && mkdir Results/SEDtool
 fi
 
 #check if the same RA, Dec, radius are ran sucessfully before
@@ -402,7 +403,6 @@ do
       source=sed
       [ ! -f find_out_temp.txt ] && echo $1 $2 99 > find_out_temp.txt
       declare -i zoomin=${3}*60
-      echo $zoomin
    fi
 
 #check if need to output the SED file or not
@@ -545,9 +545,14 @@ do
       rm -f sed.ps
       open sed.eps
       [ $showsed == 'osed' ] && open Sed.txt
-      rm -f Out4SedTool.txt
-      ./convert_sed Sed.txt Out4SedTool.txt
 ##############################################################
+
+#for SED and future catalog
+      rm -f Out4SedTool.txt
+      rased=`echo $racand | sed 's/\./_/g'`
+      decsed=`echo $deccand | sed 's/\./_/g' | sed 's/-/m/g'`
+      ./convert_sed Sed.txt Out4SedTool.txt
+      [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
 
 #save the results as a tex pdf
       #cp sed.eps 4tex/sed$source.eps
@@ -558,10 +563,11 @@ do
 #save the phase 2 results in the folder
       [ -d Results/$xrtnm ] && cp sed.eps Results/$xrtnm/$source"_"sed.eps
       [ -d Results/$xrtnm ] && cp error_map.eps Results/$xrtnm/$source"_"error_map.eps
+      [ -d Results/$xrtnm ] && cp Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
 
 #PID number for online versio
-     if [ $pid ]; then
+      if [ $pid ]; then
          echo PID number = $pid
          [ -f candidates.eps ] && mv candidates.eps $pid"_"candidates.eps
          [ -f RX_map.eps ] && mv RX_map.eps $pid"_"RX_map.eps
