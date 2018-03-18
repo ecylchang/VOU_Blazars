@@ -35,8 +35,8 @@ c
       REAL*8 ra_chandra(500),dec_chandra(500),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
       real*8 ra_cat(100),dec_cat(100)
       REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(500,5),radian
-      REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500,3),flux_x,nh,ppss(5000)
-      REAL*4 frequency_xmm(5000,6),frequency_bmw(500,3),frequency_rosat(1000)
+      REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
+      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000)
       REAL*4 frequency_chandra(500,5),frequency_swift(5000,4),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra
@@ -51,7 +51,7 @@ c
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(5000,4),FluxU_swift(5000,4),FluxL_swift(5000,4),poserr_swift(5000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
-      real*4 Ferr_bmw(500,3),FluxU_bmw(500,3),FluxL_bmw(500,3),poserr_bmw(500)
+      real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500)
       real*4 Ferr_chandra(500,5),FluxU_chandra(500,5),FluxL_chandra(500,5),poserr_chandra(500)
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
@@ -91,7 +91,7 @@ c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
 c 40 arcsecs
       min_dist_xmm=15./3600.
       !min_dist_xmmsl=15./3600.
-      min_dist_swift=10./3600.
+      min_dist_swift=7./3600.
       min_dist_bmw=10./3600.
       min_dist_chandra=5./3600.
 c 10 arcsecs
@@ -554,7 +554,8 @@ c PG end
             is=ie
             ie=index(string(is+1:len(string)),' ')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_xmm(ixmm)
-            if ((xmm_type(ixmm) == 1 ) .and. (poserr_xmm(ixmm) .lt. 12.)) poserr_xmm(ixmm)=12.
+            if ((xmm_type(ixmm) == 1 )) poserr_xmm(ixmm)=sqrt((8**2)+(poserr_xmm(ixmm)**2))
+            poserr_xmm(ixmm)=poserr_xmm(ixmm)*2
 c PG
             CALL RXgraphic_code(flux_xmm(ixmm,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_xmm(ixmm),dec_xmm(ixmm),int(code)
@@ -911,7 +912,7 @@ c end PG
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_ipc(iipc)
-               poserr_ipc(iipc)=50.
+               poserr_ipc(iipc)=72. !!!!90% error
             else
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -945,104 +946,29 @@ c end PG
             dec_bmw(ibmw)=dec
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_bmw(ibmw)
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_bmw(ibmw)
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_bmw(ibmw,1)
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_bmw(ibmw,1)
-            !call fluxtofdens(0.9,0.5,7.,flux_bmw(ibmw,1),1.,fdens,nudens)
-            FluxU_bmw(ibmw,1)=flux_bmw(ibmw,1)+Ferr_bmw(ibmw,1)
-            FluxL_bmw(ibmw,1)=flux_bmw(ibmw,1)-Ferr_bmw(ibmw,1)
-            call nhdeabsorb2 (0,0.5,7.,0.9,nh,reduce,2)
-            flux_bmw(ibmw,1)=flux_bmw(ibmw,1)*reduce
-            FluxU_bmw(ibmw,1)=FluxU_bmw(ibmw,1)*reduce
-            FluxL_bmw(ibmw,1)=FluxL_bmw(ibmw,1)*reduce
-            call fluxtofdens(0.9,0.5,7.,flux_bmw(ibmw,1),1.,fdens,nudens)
-            flux_bmw(ibmw,1)=fdens
-            frequency_bmw(ibmw,1)=nudens
-            call fluxtofdens(0.9,0.5,7.,FluxU_bmw(ibmw,1),1.,fdens,nudens)
-            FluxU_bmw(ibmw,1)=fdens
-            call fluxtofdens(0.9,0.5,7.,FluxL_bmw(ibmw,1),1.,fdens,nudens)
-            FluxL_bmw(ibmw,1)=fdens
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_bmw(ibmw,2) !soft
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_bmw(ibmw,2)
-            FluxU_bmw(ibmw,2)=flux_bmw(ibmw,2)+Ferr_bmw(ibmw,2)
-            FluxL_bmw(ibmw,2)=flux_bmw(ibmw,2)-Ferr_bmw(ibmw,2)
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_bmw(ibmw,3) !hard!!
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_bmw(ibmw)
             is=ie
             ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_bmw(ibmw,3)
-            !call fluxtofdens(0.9,2.,7.,flux_bmw(ibmw,3),4.5,fdens,nudens)
-            FluxU_bmw(ibmw,3)=flux_bmw(ibmw,3)+Ferr_bmw(ibmw,3)
-            FluxL_bmw(ibmw,3)=flux_bmw(ibmw,3)-Ferr_bmw(ibmw,3)
-            !write(*,*) FluxU_bmw(ibmw,3),flux_bmw(ibmw,3),FluxL_bmw(ibmw,3)
-            if (flux_bmw(ibmw,1) .eq. 0.) THEN
-               if (flux_bmw(ibmw,2) .ne. 0.) THEN
-                  flux_bmw(ibmw,1)=flux_bmw(ibmw,2)
-                  Ferr_bmw(ibmw,1)=Ferr_bmw(ibmw,2)
-                  FluxU_bmw(ibmw,1)=flux_bmw(ibmw,1)+Ferr_bmw(ibmw,1)
-                  FluxL_bmw(ibmw,1)=flux_bmw(ibmw,1)-Ferr_bmw(ibmw,1)
-                  call nhdeabsorb2 (0,0.5,2.,0.9,nh,reduce,2)
-                  flux_bmw(ibmw,1)=flux_bmw(ibmw,1)*reduce
-                  FluxU_bmw(ibmw,1)=FluxU_bmw(ibmw,1)*reduce
-                  FluxL_bmw(ibmw,1)=FluxL_bmw(ibmw,1)*reduce
-                  call fluxtofdens(0.9,0.5,2.,flux_bmw(ibmw,1),1.,fdens,nudens)
-                  flux_bmw(ibmw,1)=fdens
-                  frequency_bmw(ibmw,1)=nudens
-                  call fluxtofdens(0.9,0.5,2.,FluxU_bmw(ibmw,1),1.,fdens,nudens)
-                  FluxU_bmw(ibmw,1)=fdens
-                  call fluxtofdens(0.9,0.5,2.,FluxL_bmw(ibmw,1),1.,fdens,nudens)
-                  FluxL_bmw(ibmw,1)=fdens
-               else if (flux_bmw(ibmw,3) .ne. 0.) THEN
-                  flux_bmw(ibmw,1)=flux_bmw(ibmw,3)
-                  Ferr_bmw(ibmw,1)=Ferr_bmw(ibmw,3)
-                  FluxU_bmw(ibmw,1)=flux_bmw(ibmw,1)+Ferr_bmw(ibmw,1)
-                  FluxL_bmw(ibmw,1)=flux_bmw(ibmw,1)-Ferr_bmw(ibmw,1)
-                  call nhdeabsorb2 (0,2.,7.,0.9,nh,reduce,2)
-                  flux_bmw(ibmw,1)=flux_bmw(ibmw,1)*reduce
-                  FluxU_bmw(ibmw,1)=FluxU_bmw(ibmw,1)*reduce
-                  FluxL_bmw(ibmw,1)=FluxL_bmw(ibmw,1)*reduce
-                  call fluxtofdens(0.9,2.,7.,flux_bmw(ibmw,1),1.,fdens,nudens)
-                  flux_bmw(ibmw,1)=fdens
-                  frequency_bmw(ibmw,1)=nudens
-                  call fluxtofdens(0.9,2.,7.,FluxU_bmw(ibmw,1),1.,fdens,nudens)
-                  FluxU_bmw(ibmw,1)=fdens
-                  call fluxtofdens(0.9,2.,7.,FluxL_bmw(ibmw,1),1.,fdens,nudens)
-                  FluxL_bmw(ibmw,1)=fdens
-               endif
-            endif
-            call nhdeabsorb2 (0,0.5,2.,0.9,nh,reduce,2)
-            flux_bmw(ibmw,2)=flux_bmw(ibmw,2)*reduce
-            FluxU_bmw(ibmw,2)=FluxU_bmw(ibmw,2)*reduce
-            FluxL_bmw(ibmw,2)=FluxL_bmw(ibmw,2)*reduce
-            call fluxtofdens(0.9,0.5,2.,flux_bmw(ibmw,2),1.25,fdens,nudens)
-            flux_bmw(ibmw,2)=fdens
-            frequency_bmw(ibmw,2)=nudens
-            call fluxtofdens(0.9,0.5,2.,FluxU_bmw(ibmw,2),1.25,fdens,nudens)
-            FluxU_bmw(ibmw,2)=fdens
-            call fluxtofdens(0.9,0.5,2.,FluxL_bmw(ibmw,2),1.25,fdens,nudens)
-            FluxL_bmw(ibmw,2)=fdens
-            call nhdeabsorb2 (0,2.,7.,0.9,nh,reduce,2)
-            flux_bmw(ibmw,3)=flux_bmw(ibmw,3)*reduce
-            FluxU_bmw(ibmw,3)=FluxU_bmw(ibmw,3)*reduce
-            FluxL_bmw(ibmw,3)=FluxL_bmw(ibmw,3)*reduce
-            call fluxtofdens(0.9,2.,7.,flux_bmw(ibmw,3),4.5,fdens,nudens)
-            flux_bmw(ibmw,3)=fdens
-            frequency_bmw(ibmw,3 )=nudens
-            call fluxtofdens(0.9,2.,7.,FluxU_bmw(ibmw,3),4.5,fdens,nudens)
-            FluxU_bmw(ibmw,3)=fdens
-            call fluxtofdens(0.9,2.,7.,FluxL_bmw(ibmw,3),4.5,fdens,nudens)
-            FluxL_bmw(ibmw,3)=fdens
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_bmw(ibmw)
+            !call fluxtofdens(0.9,0.5,7.,flux_bmw(ibmw,1),1.,fdens,nudens)
+            FluxU_bmw(ibmw)=flux_bmw(ibmw)+Ferr_bmw(ibmw)
+            FluxL_bmw(ibmw)=flux_bmw(ibmw)-Ferr_bmw(ibmw)
+            call nhdeabsorb2 (0,0.1,2.4,0.9,nh,reduce,2)
+            flux_bmw(ibmw)=flux_bmw(ibmw)*reduce
+            FluxU_bmw(ibmw)=FluxU_bmw(ibmw)*reduce
+            FluxL_bmw(ibmw)=FluxL_bmw(ibmw)*reduce
+            call fluxtofdens(0.9,0.1,2.4,flux_bmw(ibmw),1.,fdens,nudens)
+            flux_bmw(ibmw)=fdens
+            frequency_bmw(ibmw)=nudens
+            call fluxtofdens(0.9,0.1,2.4,FluxU_bmw(ibmw),1.,fdens,nudens)
+            FluxU_bmw(ibmw)=fdens
+            call fluxtofdens(0.9,0.1,2.4,FluxL_bmw(ibmw),1.,fdens,nudens)
+            FluxL_bmw(ibmw)=fdens
 c PG
-            CALL RXgraphic_code(flux_bmw(ibmw,1),'X',code)
+            CALL RXgraphic_code(flux_bmw(ibmw),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_bmw(ibmw),dec_bmw(ibmw),int(code)
 c end PG
          ELSE IF (catalog(1:7) == 'chandra') THEN
@@ -1053,7 +979,7 @@ c end PG
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_chandra(ichandra)
-            !write(*,*) poserr_chandra(ichandra)
+            poserr_chandra(ichandra)=sqrt((poserr_chandra(ichandra)**2)+(0.8**2))
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_chandra(ichandra,1)
@@ -1065,35 +991,15 @@ c end PG
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_chandra(ichandra,2) !h
-            call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
-            flux_chandra(ichandra,2)=flux_chandra(ichandra,2)*reduce
-            call fluxtofdens(0.9,2.,7.,flux_chandra(ichandra,2),4.5,fdens,nudens)
-            flux_chandra(ichandra,2)=fdens
-            frequency_chandra(ichandra,2)=nudens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_chandra(ichandra,3) !m
-            call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
-            flux_chandra(ichandra,3)=flux_chandra(ichandra,3)*reduce
-            call fluxtofdens(0.9,1.2,2.,flux_chandra(ichandra,3),1.6,fdens,nudens)
-            flux_chandra(ichandra,3)=fdens
-            frequency_chandra(ichandra,3)=nudens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_chandra(ichandra,4) !s
-            call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
-            flux_chandra(ichandra,4)=flux_chandra(ichandra,4)*reduce
-            call fluxtofdens(0.9,0.5,1.2,flux_chandra(ichandra,4),0.85,fdens,nudens)
-            flux_chandra(ichandra,4)=fdens
-            frequency_chandra(ichandra,4)=nudens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_chandra(ichandra,5) !us
-            call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
-            flux_chandra(ichandra,5)=flux_chandra(ichandra,5)*reduce
-            call fluxtofdens(0.9,0.2,0.5,flux_chandra(ichandra,5),0.35,fdens,nudens)
-            flux_chandra(ichandra,5)=fdens
-            frequency_chandra(ichandra,5)=nudens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxU_chandra(ichandra,1)
@@ -1108,37 +1014,21 @@ c end PG
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxU_chandra(ichandra,2) !h
             if ((flux_chandra(ichandra,2) .eq. 0.) .and. (FluxU_chandra(ichandra,2) .ne. 0.))
      &             FluxU_chandra(ichandra,2)=FluxU_chandra(ichandra,2)*3.
-            call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
-            FluxU_chandra(ichandra,2)=FluxU_chandra(ichandra,2)*reduce
-            call fluxtofdens(0.9,2.,7.,fluxU_chandra(ichandra,2),4.5,fdens,nudens)
-            FluxU_chandra(ichandra,2)=fdens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxU_chandra(ichandra,3) !m
             if ((flux_chandra(ichandra,3) .eq. 0.) .and. (FluxU_chandra(ichandra,3) .ne. 0.))
      &             FluxU_chandra(ichandra,3)=FluxU_chandra(ichandra,3)*3.
-            call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
-            FluxU_chandra(ichandra,3)=FluxU_chandra(ichandra,3)*reduce
-            call fluxtofdens(0.9,1.2,2.,fluxU_chandra(ichandra,3),1.6,fdens,nudens)
-            FluxU_chandra(ichandra,3)=fdens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxU_chandra(ichandra,4) !s
             if ((flux_chandra(ichandra,4) .eq. 0.) .and. (FluxU_chandra(ichandra,4) .ne. 0.))
      &             FluxU_chandra(ichandra,4)=FluxU_chandra(ichandra,4)*3.
-            call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
-            FluxU_chandra(ichandra,4)=FluxU_chandra(ichandra,4)*reduce
-            call fluxtofdens(0.9,0.5,1.2,fluxU_chandra(ichandra,4),0.85,fdens,nudens)
-            FluxU_chandra(ichandra,4)=fdens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxU_chandra(ichandra,5) !us
             if ((flux_chandra(ichandra,5) .eq. 0.) .and. (FluxU_chandra(ichandra,5) .ne. 0.))
      &             FluxU_chandra(ichandra,5)=FluxU_chandra(ichandra,5)*3.
-            call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
-            FluxU_chandra(ichandra,5)=FluxU_chandra(ichandra,5)*reduce
-            call fluxtofdens(0.9,0.2,0.5,fluxU_chandra(ichandra,5),0.35,fdens,nudens)
-            FluxU_chandra(ichandra,5)=fdens
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,1)
@@ -1149,27 +1039,126 @@ c end PG
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,2) !h
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,3) !m
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,4) !s
+            is=ie
+            ie=index(string(is+1:len(string)),' ')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxL_chandra(ichandra,5) !us
+            if (flux_chandra(ichandra,1) .eq. 0.) then
+               if (flux_chandra(ichandra,4) .ne. 0.) then
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,4)
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,4)
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,4)
+                  call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,1)*reduce
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,1)*reduce
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,1)*reduce
+                  call fluxtofdens(0.9,0.5,1.2,flux_chandra(ichandra,1),1.,fdens,nudens)
+                  flux_chandra(ichandra,1)=fdens
+                  frequency_chandra(ichandra,1)=nudens
+                  call fluxtofdens(0.9,0.5,1.2,fluxU_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxU_chandra(ichandra,1)=fdens
+                  call fluxtofdens(0.9,0.5,1.2,fluxL_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxL_chandra(ichandra,1)=fdens
+               ELSE if (flux_xmm(ixmm,3) .ne. 0) then
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,3)
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,3)
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,3)
+                  call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,1)*reduce
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,1)*reduce
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,1)*reduce
+                  call fluxtofdens(0.9,1.2,2.,flux_chandra(ichandra,1),1.,fdens,nudens)
+                  flux_chandra(ichandra,1)=fdens
+                  frequency_chandra(ichandra,1)=nudens
+                  call fluxtofdens(0.9,1.2,2.,fluxU_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxU_chandra(ichandra,1)=fdens
+                  call fluxtofdens(0.9,1.2,2.,fluxL_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxL_chandra(ichandra,1)=fdens
+               ELSE if (flux_xmm(ixmm,5) .ne. 0) then
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,5)
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,5)
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,5)
+                  call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,1)*reduce
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,1)*reduce
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,1)*reduce
+                  call fluxtofdens(0.9,0.2,0.5,flux_chandra(ichandra,1),1.,fdens,nudens)
+                  flux_chandra(ichandra,1)=fdens
+                  frequency_chandra(ichandra,1)=nudens
+                  call fluxtofdens(0.9,0.2,0.5,fluxU_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxU_chandra(ichandra,1)=fdens
+                  call fluxtofdens(0.9,0.2,0.5,fluxL_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxL_chandra(ichandra,1)=fdens
+               ELSE
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,2)
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,2)
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,2)
+                  call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
+                  flux_chandra(ichandra,1)=flux_chandra(ichandra,1)*reduce
+                  FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,1)*reduce
+                  FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,1)*reduce
+                  call fluxtofdens(0.9,2.,7.,flux_chandra(ichandra,1),1.,fdens,nudens)
+                  flux_chandra(ichandra,1)=fdens
+                  frequency_chandra(ichandra,1)=nudens
+                  call fluxtofdens(0.9,2.,7.,fluxU_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxU_chandra(ichandra,1)=fdens
+                  call fluxtofdens(0.9,2.,7.,fluxL_chandra(ichandra,1),1.,fdens,nudens)
+                  FluxL_chandra(ichandra,1)=fdens
+               endif
+            endif
+            call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
+            flux_chandra(ichandra,2)=flux_chandra(ichandra,2)*reduce
+            call fluxtofdens(0.9,2.,7.,flux_chandra(ichandra,2),4.5,fdens,nudens)
+            flux_chandra(ichandra,2)=fdens
+            frequency_chandra(ichandra,2)=nudens
+            call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
+            flux_chandra(ichandra,3)=flux_chandra(ichandra,3)*reduce
+            call fluxtofdens(0.9,1.2,2.,flux_chandra(ichandra,3),1.6,fdens,nudens)
+            flux_chandra(ichandra,3)=fdens
+            frequency_chandra(ichandra,3)=nudens
+            call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
+            flux_chandra(ichandra,4)=flux_chandra(ichandra,4)*reduce
+            call fluxtofdens(0.9,0.5,1.2,flux_chandra(ichandra,4),0.85,fdens,nudens)
+            flux_chandra(ichandra,4)=fdens
+            frequency_chandra(ichandra,4)=nudens
+            call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
+            flux_chandra(ichandra,5)=flux_chandra(ichandra,5)*reduce
+            call fluxtofdens(0.9,0.2,0.5,flux_chandra(ichandra,5),0.35,fdens,nudens)
+            flux_chandra(ichandra,5)=fdens
+            frequency_chandra(ichandra,5)=nudens
+            call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
+            FluxU_chandra(ichandra,2)=FluxU_chandra(ichandra,2)*reduce
+            call fluxtofdens(0.9,2.,7.,fluxU_chandra(ichandra,2),4.5,fdens,nudens)
+            FluxU_chandra(ichandra,2)=fdens
+            call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
+            FluxU_chandra(ichandra,3)=FluxU_chandra(ichandra,3)*reduce
+            call fluxtofdens(0.9,1.2,2.,fluxU_chandra(ichandra,3),1.6,fdens,nudens)
+            FluxU_chandra(ichandra,3)=fdens
+            call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
+            FluxU_chandra(ichandra,4)=FluxU_chandra(ichandra,4)*reduce
+            call fluxtofdens(0.9,0.5,1.2,fluxU_chandra(ichandra,4),0.85,fdens,nudens)
+            FluxU_chandra(ichandra,4)=fdens
+            call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
+            FluxU_chandra(ichandra,5)=FluxU_chandra(ichandra,5)*reduce
+            call fluxtofdens(0.9,0.2,0.5,fluxU_chandra(ichandra,5),0.35,fdens,nudens)
+            FluxU_chandra(ichandra,5)=fdens
             call nhdeabsorb2 (1,2.,7.,0.9,nh,reduce,100)
             FluxL_chandra(ichandra,2)=FluxL_chandra(ichandra,2)*reduce
             call fluxtofdens(0.9,2.,7.,fluxL_chandra(ichandra,2),4.5,fdens,nudens)
             FluxL_chandra(ichandra,2)=fdens
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,3) !m
             call nhdeabsorb2 (1,1.2,2.,0.9,nh,reduce,100)
             FluxL_chandra(ichandra,3)=FluxL_chandra(ichandra,3)*reduce
             call fluxtofdens(0.9,1.2,2.,fluxL_chandra(ichandra,3),1.6,fdens,nudens)
             FluxL_chandra(ichandra,3)=fdens
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)FluxL_chandra(ichandra,4) !s
             call nhdeabsorb2 (1,0.5,1.2,0.9,nh,reduce,100)
             FluxL_chandra(ichandra,4)=FluxL_chandra(ichandra,4)*reduce
             call fluxtofdens(0.9,0.5,1.2,fluxL_chandra(ichandra,4),0.85,fdens,nudens)
             FluxL_chandra(ichandra,4)=fdens
-            is=ie
-            ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxL_chandra(ichandra,5) !us
             call nhdeabsorb2 (1,0.2,0.5,0.9,nh,reduce,100)
             FluxL_chandra(ichandra,5)=FluxL_chandra(ichandra,5)*reduce
             call fluxtofdens(0.9,0.2,0.5,fluxL_chandra(ichandra,5),0.35,fdens,nudens)
@@ -1384,29 +1373,21 @@ c end PG
             IF (dist < min_dist) THEN
                found = .TRUE.
                xray_type = 7
-               flux_x = flux_x + flux_bmw(i,1)
+               flux_x = flux_x + flux_bmw(i)
                ix = ix +1
-               flux_1kev(ix,k)=flux_bmw(i,1)
-               uflux_1kev(ix,k)=FluxU_bmw(i,1)
-               lflux_1kev(ix,k)=FluxL_bmw(i,1)
+               flux_1kev(ix,k)=flux_bmw(i)
+               uflux_1kev(ix,k)=FluxU_bmw(i)
+               lflux_1kev(ix,k)=FluxL_bmw(i)
                ra_1kev(ix,k)=ra_bmw(i)
                dec_1kev(ix,k)=dec_bmw(i)
                poserr_1kev(ix,k)=poserr_bmw(i)
                distrx(ix,k)=dist*3600.
                spec_type(ix,k)=xray_type+10
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
-     &                             xray_type,flux_bmw(i,1),const(k),ra_center,dec_center,source_type)
+     &                             xray_type,flux_bmw(i),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN 
                   types(source_type) = types(source_type) + 1
                ENDIF
-               do l=2,3
-                  xpts=xpts+1
-                  flux_xpts(xpts,k)=flux_bmw(i,l)
-                  uflux_xpts(xpts,k)=FluxU_bmw(i,l)
-                  lflux_xpts(xpts,k)=FluxL_bmw(i,l)
-                  frequency_xpts(xpts,k)=frequency_bmw(i,l)
-                  spec_xpts(xpts,k)=xray_type
-               enddo
             ENDIF
          ENDDO
          DO i=1,ichandra
@@ -1795,21 +1776,13 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             CALL DIST_SKY(ra_center,dec_center,ra_bmw(i),dec_bmw(i),dist)
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
-                  write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i,1),flux_bmw(i,1),
-     &              FluxU_bmw(i,1),FluxL_bmw(i,1),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
-                  do s=2,3
-                     write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i,s),flux_bmw(i,s),
-     &                FluxU_bmw(i,s),FluxL_bmw(i,s),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+50
-                  enddo
+                  write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i),flux_bmw(i),
+     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
-                  write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i,1),flux_bmw(i,1),
-     &              FluxU_bmw(i,1),FluxL_bmw(i,1),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
-                  do s=2,3
-                     write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i,s),flux_bmw(i,s),
-     &               FluxU_bmw(i,s),FluxL_bmw(i,s),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+50
-                  enddo
+                  write(14,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(i),flux_bmw(i),
+     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
                endif
             endif
          endif
@@ -1992,12 +1965,8 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
                call DIST_SKY(ra_other(l),dec_other(l),ra_bmw(j),dec_bmw(j),dist)
                if (dist < min_dist_bmw) THEN
                   xray_type=7
-                  write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j,1),flux_bmw(j,1),
-     &                 FluxU_bmw(j,1),FluxL_bmw(j,1),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
-                  do s=2,3
-                     write(12,'(4(es10.3,2x),i2)') frequency_bmw(j,s),flux_bmw(j,s),FluxU_bmw(j,s),
-     &                     FluxL_bmw(j,s),xray_type
-                  enddo
+                  write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
+     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
                endif
             enddo
             do j=1,ichandra
@@ -2109,12 +2078,8 @@ cccccc for skip the phase 1
          call DIST_SKY(ra_center,dec_center,ra_bmw(j),dec_bmw(j),dist)
          if ( dist .lt. min_dist_bmw ) then
             xray_type=7
-            write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j,1),flux_bmw(j,1),
-     &                 FluxU_bmw(j,1),FluxL_bmw(j,1),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
-            do s=2,3
-               write(12,'(4(es10.3,2x),i2)') frequency_bmw(j,s),flux_bmw(j,s),FluxU_bmw(j,s),
-     &                     FluxL_bmw(j,s),xray_type
-            enddo
+            write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
+     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
          endif
       enddo
       do j=1,ichandra
