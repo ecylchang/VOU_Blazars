@@ -23,7 +23,7 @@ $ ./compile.sh
 $ cd ../..
 ```
 
-### Setup EADA/Conesearch pipline
+### Setup EADA/Conesearch pipeline
 
 If you use [Anaconda Python Distribution](https://www.anaconda.com/download/), you can install EADA in its own (virtual) environment:
 
@@ -50,7 +50,7 @@ $ brew install pgplot
 
 ## Running VOU-Blazars
 
-*Guarantee EADA's `conesearch` tool is available in your environment -- If you're using Anaconda or have installed EADA in a different (virtual) environment from the deafult one, check you're in the right one.*
+> Guarantee EADA's `conesearch` tool is available in your environment -- check this note's section [Setup EADA/Conesearch pipeline](#Setup-EADA/Conesearch-pipeline).
 
 To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals. The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
 
