@@ -1,14 +1,63 @@
 # VOU_Blazars
 
-To run the tool, 
-Gfortran comopiler, PGPlot, Python, are need to be installed.
-Anaconda and conesearch pipline also are need.
+VOU-Blazars is an extremely alpha version of blazars search tool.
 
-All the files should be put to the same folder. The requried files are ;
-vou-blazars, vueue.sh
-find_candidates1, find_candidates2, find_candidates_int, readcat, plot_sed, gnomo_plot_types, connvert_sed.f
-mylib.f nhdeabsorb2.f
-cats1.ini, cats2.ini, count_rate folder, status.code
+## Install
+
+### Dependencies
+
+See below for dependencies setup.
+
+* [PGPlot](http://www.astro.caltech.edu/~tjp/pgplot/)
+* GFortran
+* Python 2.7
+* [EADA](https://github.com/chbrandt/eada)
+
+**Once** the dependencies have been satisfied, go inside `VOU_Blazars/bin/fort` and run the `compile.sh` script:
+
+```bash
+$ git clone https://github.com/ecylchang/VOU_Blazars.git
+$ cd VOU_Blazars
+$ cd bin/fort
+$ ./compile.sh
+$ cd ../..
+```
+
+### Setup EADA
+
+If you use [Anaconda Python Distribution](https://www.anaconda.com/download/), you can install EADA in its own (virtual) environment:
+
+```bash
+$ conda create -n eada2 python=2 pip
+$ source activate eada2
+$ pip install astropy
+$ pip install pyvo
+$ pip install pyyaml
+$
+$ git clone https://github.com/chbrandt/eada
+$ cd eada
+$ pip install .
+```
+
+### Setup PGPlot - MACOS
+
+MacOS users are advised to use [brew](https://brew.sh/)
+ 
+```bash
+$ brew install pgplot
+```
+
+
+## Running VOU-Blazars
+
+*Guarantee EADA's `conesearch` tool is available in your environment -- If you're using Anaconda or have installed EADA in a different (virtual) environment from the deafult one, check you're in the right one.*
+
+```
+$ cd VOU_Blazars
+$ ./bin/vou-blazars
+```
+
+### Help/Usage
 
 ############CONESEARCH
 Eada environment and conesearch pipline (need anaconda and python)
