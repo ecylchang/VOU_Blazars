@@ -36,15 +36,15 @@ HERE=$(cd `dirname $BASH_SOURCE`; pwd)
 BINF="${HERE}/fort"
 
 handle_ps () {
-    [ ! -z "$VOUB_SYSTEM" -a "$VOUB_SYSTEM" == "linux" ] && return 0
+    [ `which ps2eps 2> /dev/null` ] || return 0
     FILE_PS=$1
     if [ $FILE_PS == sed.ps ]; then
        ps2eps -B -q $FILE_PS -R +
     else
        ps2eps -B -q $FILE_PS
     fi
-    open ${FILE_PS%.ps}.eps #&
-    rm -f $FILE_PS
+    [ `which open 2> /dev/null` ] || return 0
+    open ${FILE_PS%.ps}.eps && rm -f $FILE_PS
 }
 
 
@@ -57,7 +57,7 @@ handle_ps () {
 
 #source activate eada2
 #check if docker and heasoft are installed
-dockerthere=`which docker`
+#dockerthere=`which docker`
 nhthere=`which nh`
 
 #read the parameters input
