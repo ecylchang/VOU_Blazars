@@ -60,42 +60,27 @@ $ ./bin/vou-blazars RA DEC RADIUS
 ```
 
 The optional error radius could be :
-
 -one circle or two circle. (error radius)
-
 -one elliptical or two elliptical (major axis, minor axis, angle)
-
 -One circle and one elliptical (circle first)
-
 -nothing
 
-
-
 The R.A. Dec. are in degrees, and searching radius is in arcmin.
-
 nH is in cm^2
-
 The radius of the error circles and the axes of the error ellipticals are in arcmin.
-
 The position angle is in degree, north-east on sky.
-
-
 
 The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft). The error radius are set to 0. If not specify.
 
-
-## Help/Usage
-
-#output EXAMPLES
-#e.g.: source vou-blazars 153.76 49.43 30.
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
-#e.g.: source vou-blazars 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
-#e.g.: source vou-blazars 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
-#e.g.: source vou-blazars 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
-#Note that if you specify one circle and one elliptical, circle go first.
-#e.g. source vou-blazars 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
-#e.g. source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
+## output examples
+e.g.: ./bin/vou-blazars 153.76 49.43 30.
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 3.e21
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
+e.g.: ./bin/vou-blazars 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree) Note that if you specify one circle and one elliptical, circle go first.
+e.g. ./bin/vou-blazars 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
+e.g. ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
 
 
