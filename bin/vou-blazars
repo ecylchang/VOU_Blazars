@@ -17,16 +17,16 @@
 #The error radius are set to 0. If not specify.
 
 #output EXAMPLES
-#e.g.: source vaivocatalog2 153.76 49.43 30.
-#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21
-#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
-#e.g.: source vaivocatalog2 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
-#e.g.: source vaivocatalog2 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
-#e.g.: source vaivocatalog2 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
-#e.g.: source vaivocatalog2 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
+#e.g.: source vou-blazars 153.76 49.43 30.
+#e.g.: source vou-blazars 153.76 49.43 30. 3.e21
+#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
+#e.g.: source vou-blazars 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
+#e.g.: source vou-blazars 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
+#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
+#e.g.: source vou-blazars 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
 #Note that if you specify one circle and one elliptical, circle go first.
-#e.g. source vaivocatalog2 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
-#e.g. source vaivocatalog2 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
+#e.g. source vou-blazars 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
+#e.g. source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
 
 
 
@@ -35,6 +35,13 @@
 HERE=$(cd `dirname $BASH_SOURCE`; pwd)
 BINF="${HERE}/fort"
 
+
+handle_ps () {
+    [ ! -z "$VOUB_SYSTEM" -a "$VOUB_SYSTEM" == "linux" ] && return 0
+    FILE_PS="$1"
+    ps2eps -B -q $FILE_PS
+    open "${FILE_PS%.ps}.eps" &
+}
 
 ##############################################################
 # Initial set up, read the parameters input
@@ -175,8 +182,11 @@ raxrt=`echo $1 | sed 's/\./_/g'`
 decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
 rrxrt=`echo $3 | sed 's/\./_/g'`
 xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
-test ! -d Results && mkdir Results
-test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+if [ -z $pid ]; then
+   test ! -d Results && mkdir Results
+   test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+   test ! -d Results/SEDtool && mkdir Results/SEDtool
+fi
 
 #check if the same RA, Dec, radius are ran sucessfully before
 #if [ -s $xrtnm/output1.csv ]; then
@@ -268,17 +278,12 @@ else
    rm -f RX_temp.txt
    ${BINF}/gnomo_plot_types RX_sorted.txt,RX_map.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
-   #ps2eps -B -q RX_map.ps
-   #open RX_map.eps
-   #ps2eps -B -q candidates.ps
-   #open candidates.eps
+   handle_ps RX_map.ps
+   handle_ps candidates.ps
    #rm -f candidates.ps
    #rm -f RX_map.ps
 ##############################################################
 fi
-
-
-
 
 
 ##############################################################
@@ -365,6 +370,7 @@ if [ -s Intermediate_out.txt ]; then
 #plot the candidates again with Intermediate phase finish ???
    rm -f candidates.*ps
    ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   handle_ps candidates.ps
    # ps2eps -B -q candidates.ps
    # open candidates.eps
    # rm -f candidates.ps
@@ -372,8 +378,8 @@ if [ -s Intermediate_out.txt ]; then
 fi
 
 #save the phase 1 and phase intermediate results in the folder
-[ -d Results/$xrtnm ] && cp candidates.eps Results/$xrtnm/candidates.eps
-[ -d Results/$xrtnm ] && cp RX_map.eps Results/$xrtnm/RX_map.eps
+[ -f candidates.*ps -a -d Results/$xrtnm ] && cp candidates.*ps Results/$xrtnm/.
+[ -f RX_map.*ps -a -d Results/$xrtnm ] && cp RX_map.*ps Results/$xrtnm/.
 [ -f output1.csv -a -d Results/$xrtnm ] && cp output1.csv Results/$xrtnm/output1.csv
 [ -f output_int.csv -a -d Results/$xrtnm ] && cp output_int.csv Results/$xrtnm/output_int.csv
 
@@ -402,7 +408,7 @@ do
       ln=1
       source=sed
       [ ! -f find_out_temp.txt ] && echo $1 $2 99 > find_out_temp.txt
-      zoomin=$3
+      declare -i zoomin=${3}*60
    fi
 
 #check if need to output the SED file or not
@@ -534,19 +540,27 @@ do
       rm -f error_map.*ps
       rm -f sed.*ps
       ${BINF}/gnomo_plot_types error_map.txt,error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+      handle_ps error_map.ps
       # ps2eps -B -q error_map.ps
       # open error_map.eps
 
 #plot the SED
       echo
       ${BINF}/plot_sed $source
+      handle_ps sed.ps
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps
       # rm -f sed.ps
       # open sed.eps
       [ $showsed == 'osed' ] && open Sed.txt
+##############################################################
+
+#for SED and future catalog
       rm -f Out4SedTool.txt
+      rased=`echo $racand | sed 's/\./_/g'`
+      decsed=`echo $deccand | sed 's/\./_/g' | sed 's/-/m/g'`
       ${BINF}/convert_sed Sed.txt Out4SedTool.txt
+      [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
 ##############################################################
 
 #save the results as a tex pdf
@@ -558,15 +572,20 @@ do
 #save the phase 2 results in the folder
       [ -d Results/$xrtnm ] && cp sed.eps Results/$xrtnm/$source"_"sed.eps
       [ -d Results/$xrtnm ] && cp error_map.eps Results/$xrtnm/$source"_"error_map.eps
+      [ -d Results/$xrtnm ] && cp Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
 
 #PID number for online versio
-     if [ $pid ]; then
+      if [ $pid ]; then
          echo PID number = $pid
-         cp candidates.eps $pid"_"candidates.eps
-         cp RX_map.eps $pid"_"RX_map.eps
-         cp sed.eps $pid"_"$source"_"sed.eps
-         cp error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f candidates.eps ] && mv candidates.eps $pid"_"candidates.eps
+         [ -f RX_map.eps ] && mv RX_map.eps $pid"_"RX_map.eps
+         [ -f sed.eps ] && mv sed.eps $pid"_"$source"_"sed.eps
+         [ -f error_map.eps ] && mv error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f error_map.txt ] && mv error_map.txt $pid"_"$source"_"error_map.txt
+         [ -f Sed.txt ] && mv Sed.txt $pid"_"$source"_"sed.txt
+         [ -f find_out_temp.txt ] && mv find_out_temp.txt $pid"_"find_out_temp.txt
+         [ -f Out4SedTool.txt ] && mv Out4SedTool.txt $pid"_"$source"_"Out4SedTool.txt
      fi
    fi
 done
