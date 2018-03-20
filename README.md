@@ -59,11 +59,11 @@ $ cd VOU_Blazars
 $ ./bin/vou-blazars RA DEC RADIUS
 ```
 
-The optional error radius could be :
-*one circle or two circle. (error radius)
-*one elliptical or two elliptical (major axis, minor axis, angle)
-*One circle and one elliptical (circle first)
-*nothing
+The optional error region could be :
+* one circle or two circle. (error radius)
+* one elliptical or two elliptical (major axis, minor axis, angle)
+* One circle and one elliptical (circle first)
+* nothing
 
 The R.A. Dec. are in degrees, and searching radius is in arcmin.
 nH is in cm^2. The radius of the error circles and the axes of the error ellipticals are in arcmin. The position angle is in degree, north-east on sky.
@@ -80,7 +80,7 @@ $ ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 7
 (With 2 error circles, one radius 15, the other radius is 7)
 
 $ ./bin/vou-blazars 153.76 49.43 30. 15 7
-(Same as above, just no specify nh)
+(Same as above, just no nh specified)
 
 $ ./bin/vou-blazars 153.76 49.43 30. 15
 (Only specify one error circle radius, and the other is set to 0.)
