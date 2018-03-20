@@ -52,41 +52,39 @@ $ brew install pgplot
 
 *Guarantee EADA's `conesearch` tool is available in your environment -- If you're using Anaconda or have installed EADA in a different (virtual) environment from the deafult one, check you're in the right one.*
 
+To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals. The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
+
 ```
 $ cd VOU_Blazars
-$ ./bin/vou-blazars
+$ ./bin/vou-blazars RA DEC RADIUS
 ```
 
-### Help/Usage
+The optional error radius could be :
 
-############CONESEARCH
-Eada environment and conesearch pipline (need anaconda and python)
-See setup eada to install the conesearch and set up the eada environment.
-Also, eada environment should be activated before each runing.
+-one circle or two circle. (error radius)
 
-############COPPILE FORTRAN PROGRAMS
-After set up the conesearch and eada, next is to compile all the fortran programs.
-First is to compile the mylib.f and nhdeabsorb2.f into object file, using commend : gfortran -c XXX.f -ffixed-line-length-132
-then compile all the others program (find_candidates1, find_candidates2, find_candidates_int, readcat, plot_sed, gnomo_plot_types, connvert_sed.f),
-using command : source compile XXX
+-one elliptical or two elliptical (major axis, minor axis, angle)
 
-##########To RUN THE Program
-#To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals.
-#The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
+-One circle and one elliptical (circle first)
 
-#The error radius could be :
-#-one circle or two circle. (error radius)
-#-one elliptical or two elliptical (major axis, minor axis, angle)
-#-One circle and one elliptical (circle first)
-#-nothing
+-nothing
 
-#The R.A. Dec. are in degrees, and searching radius is in arcmin.
-#nH is in cm^2
-#The radius of the error circles and the axes of the error ellipticals are in arcmin.
-#The position angle is in degree, north-east on sky.
 
-#The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft)
-#The error radius are set to 0. If not specify.
+
+The R.A. Dec. are in degrees, and searching radius is in arcmin.
+
+nH is in cm^2
+
+The radius of the error circles and the axes of the error ellipticals are in arcmin.
+
+The position angle is in degree, north-east on sky.
+
+
+
+The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft). The error radius are set to 0. If not specify.
+
+
+## Help/Usage
 
 #output EXAMPLES
 #e.g.: source vou-blazars 153.76 49.43 30.

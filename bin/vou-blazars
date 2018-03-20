@@ -35,13 +35,21 @@
 HERE=$(cd `dirname $BASH_SOURCE`; pwd)
 BINF="${HERE}/fort"
 
-
 handle_ps () {
     [ ! -z "$VOUB_SYSTEM" -a "$VOUB_SYSTEM" == "linux" ] && return 0
-    FILE_PS="$1"
-    ps2eps -B -q $FILE_PS
-    open "${FILE_PS%.ps}.eps" &
+    FILE_PS=$1
+    if [ $FILE_PS == sed.ps ]; then
+       ps2eps -B -q $FILE_PS -R +
+    else
+       ps2eps -B -q $FILE_PS
+    fi
+    open ${FILE_PS%.ps}.eps #&
+    rm -f $FILE_PS
 }
+
+
+
+
 
 ##############################################################
 # Initial set up, read the parameters input
@@ -280,10 +288,17 @@ else
    ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    handle_ps RX_map.ps
    handle_ps candidates.ps
-   #rm -f candidates.ps
-   #rm -f RX_map.ps
+#   ps2eps -B -q RX_map.ps
+#   open RX_map.eps
+#   ps2eps -B -q candidates.ps
+#  open candidates.eps
+#   rm -f candidates.ps
+#   rm -f RX_map.ps
 ##############################################################
 fi
+
+
+
 
 
 ##############################################################
@@ -371,9 +386,9 @@ if [ -s Intermediate_out.txt ]; then
    rm -f candidates.*ps
    ${BINF}/gnomo_plot_types find_out_temp.txt,candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    handle_ps candidates.ps
-   # ps2eps -B -q candidates.ps
-   # open candidates.eps
-   # rm -f candidates.ps
+#    ps2eps -B -q candidates.ps
+#    open candidates.eps
+#    rm -f candidates.ps
 ######################################################################
 fi
 
@@ -570,12 +585,12 @@ do
       #cp RX_map.eps 4tex/.
 
 #save the phase 2 results in the folder
-      [ -d Results/$xrtnm ] && cp sed.eps Results/$xrtnm/$source"_"sed.eps
-      [ -d Results/$xrtnm ] && cp error_map.eps Results/$xrtnm/$source"_"error_map.eps
+      [ -d Results/$xrtnm ] && cp sed.*ps Results/$xrtnm/$source"_"sed.eps
+      [ -d Results/$xrtnm ] && cp error_map.*ps Results/$xrtnm/$source"_"error_map.eps
       [ -d Results/$xrtnm ] && cp Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
 
-#PID number for online versio
+#PID number for online version
       if [ $pid ]; then
          echo PID number = $pid
          [ -f candidates.eps ] && mv candidates.eps $pid"_"candidates.eps
