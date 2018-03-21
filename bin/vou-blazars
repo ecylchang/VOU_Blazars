@@ -218,6 +218,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog NVSS --ra $1 --dec $2 --radius 
 echo conesearch --db ${HERE}/cats1.ini --catalog FIRST --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o first.1.csv >> vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o sumss.1.csv >> vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o sxps.1.csv >> vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog SDS82 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o sds82.1.csv >> vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog RASS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o rass.1.csv >> vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog XMMSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o xmmsl.1.csv >> vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog 3XMM --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o 3xmm.1.csv >> vosearch.txt

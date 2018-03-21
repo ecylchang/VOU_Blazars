@@ -3,7 +3,7 @@
       IMPLICIT none
       integer i,j,k,iuv,igam,i4p8,irr,ixx,in,lenact,length,lu_in,ier,icand,filen,is,ie,xpts(2000)
       integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000),xxot_type(10,2000)
-      integer nrep(2000),xrayrepeat(2000,2000),ixxss,ixxrep
+      integer nrep(2000),xrayrepeat(2000,2000),ixxss,ixxrep,track(2000)
       real*8 ra,dec,dist,ra_uv(10000),dec_uv(10000),ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
       real*8 ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000),ra_center,dec_center
       real*4 nh,flux,uflux,lflux,epos,freq,code,radius,flux2nufnu_4p8,fdens,nudens
@@ -224,19 +224,20 @@ c      write(*,*) i4p8,iuv,igam
                if (dist*3600. .lt. 15.) then
                   !write(*,*) 'nearby X-ray',ra_xx(i),dec_xx(i),xx_type(ixx)
                   ixxrep=ixxrep+1
-                  nrep(i)=nrep(i)+1
-                  xrayrepeat(nrep(i),i)=j
-                  !track
+c                  xrayrepeat(nrep(i),i)=j
+                  track(i)=track(j)
+                  nrep(track(i))=nrep(track(i))+1
+c                  write(*,*) i,track(i),nrep(track(i))
                   goto 97
                endif
             enddo
          endif
          ixxss=ixxss+1
+         track(i)=ixxss
+c         write(*,*) i,track(i)
 97    continue
       enddo
-      !write(*,*) nrep(ixx),ixx
-      !write(*,*) ixxss,ixxrep
-      !write(*,*) xrayrepeat(1:nrep(ixx),ixx)
+      if (ixxss+ixxrep .ne. ixx ) write(*,*) 'Warning! may have the wrong number.'
 
       open(12,file='Intermediate_out.txt',status='unknown',iostat=ier)
       ipass=0
@@ -287,13 +288,15 @@ c      write(*,*) i4p8,iuv,igam
          else if (i .gt. irr ) then
             do j=1,iuv
                call DIST_SKY(ra_xx(i-irr),dec_xx(i-irr),ra_uv(j),dec_uv(j),dist)
-               if ((dist*3600. .le. poserr_xx(i-irr)*1.3 ) .and. (poserr_xx(i-irr) .le. 15.) ) then
+               if ((dist*3600. .le. poserr_xx(i-irr)*1.3 ) .and. (poserr_xx(i-irr) .le. 15.)
+     &              .and. (flux_xx(i-irr) .ne. 0. ) ) then
                   if (flux_uv(j,1) .ne. 0.) then
                      auvx = 1.-log10(flux_uv(j,1)/flux_xx(i-irr))/log10(frequency_uv(j,1)/frequency_xx(i-irr))
                   else
                      auvx = 1.-log10(flux_uv(j,2)/flux_xx(i-irr))/log10(frequency_uv(j,2)/frequency_xx(i-irr))
                   endif
-                  if (auvx .le. 1. ) then
+!                  write(*,*) i,auvx
+                  if (auvx .le. 1.4 ) then
                      ii1=ii1+1 !!!remove UV-x slope strange source 0.85
                      if (ii1 .eq. 1) write(*,'(a,i4,a)') "----------------------------------------"
                      if (ii1 .eq. 1) write(*,'(f9.5,2x,f9.5,a,es10.3)') ra_xx(i-irr),dec_xx(i-irr),

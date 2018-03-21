@@ -619,7 +619,8 @@ c PG
             CALL RXgraphic_code(flux_rosat(irosat),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_rosat(irosat),dec_rosat(irosat),int(code)
 c end PG
-         ELSE IF ((catalog(1:4) == 'sxps') .or. (catalog(1:7) == 'xrtdeep'))THEN
+         ELSE IF ((catalog(1:4) == 'sxps') .or. (catalog(1:7) == 'xrtdeep')
+     &             .or. (catalog(1:5) == 'sds82'))THEN
             iswift=iswift+1
             IF (iswift > 5000) Stop 'Too many swift points'
             ra_swift(iswift)=ra
@@ -812,16 +813,18 @@ c end PG
                if ((FluxU_swift(iswift,4) .ne. 0.) .and. (flux_swift(iswift,4) .eq. 0.)) then
                   FluxU_swift(iswift,4)=FluxU_swift(iswift,4)*3.
                endif
-            else if (catalog(1:7) == 'xrtdeep') then
+            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')) then
                xrt_type(iswift)=2
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !nh
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !slope
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !slope err
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !exp
+               if (catalog(1:7) == 'xrtdeep') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !nh
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !slope
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !slope err
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !exp
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is !3kev
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,1)
