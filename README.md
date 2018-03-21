@@ -23,7 +23,7 @@ $ ./compile.sh
 $ cd ../..
 ```
 
-### Setup EADA/Conesearch pipline
+### Setup EADA/Conesearch pipeline
 
 If you use [Anaconda Python Distribution](https://www.anaconda.com/download/), you can install EADA in its own (virtual) environment:
 
@@ -50,19 +50,19 @@ $ brew install pgplot
 
 ## Running VOU-Blazars
 
-*Guarantee EADA's `conesearch` tool is available in your environment -- If you're using Anaconda or have installed EADA in a different (virtual) environment from the deafult one, check you're in the right one.*
+> Guarantee EADA's `conesearch` tool is available in your environment -- check this note's section [Setup EADA/Conesearch pipeline](#setup-eadaconesearch-pipeline).
 
-To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals. The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
+To run the tool, `RA`, `DEC`, `SEARCH_RADIUS` are mandatory to input., and the other parameters, nH and error regions are optionals. The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
 
 ```
 $ cd VOU_Blazars
-$ ./bin/vou-blazars RA DEC RADIUS
+$ ./bin/vou-blazars RA DEC SEARCH_RADIUS
 ```
 
-The optional error region could be :
+The optional error radius could be :
 * one circle or two circle. (error radius)
 * one elliptical or two elliptical (major axis, minor axis, angle)
-* One circle and one elliptical (circle first)
+* one circle and one elliptical (circle first)
 * nothing
 
 The R.A. Dec. are in degrees, and searching radius is in arcmin.
@@ -70,7 +70,8 @@ nH is in cm^2. The radius of the error circles and the axes of the error ellipti
 
 The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft). The error radius are set to 0. If not specify.
 
-## output examples
+## Examples
+
 ```bash
 $ ./bin/vou-blazars 153.76 49.43 30.
 
@@ -89,7 +90,7 @@ $ ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 10 120
 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
 
 $ ./bin/vou-blazars 153.76 49.43 30. 20 15 10 120
-(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
+(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120 degrees)
 Note that if you specify one circle and one elliptical, circle go first.
 
 $ ./bin/vou-blazars 153.76 49.43 30. 3.e21 20 15 10 120
