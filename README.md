@@ -81,7 +81,7 @@ $ ./bin/vou-blazars 153.76 49.43 30. 3.e21 15 7
 (With 2 error circles, one radius 15, the other radius is 7)
 
 $ ./bin/vou-blazars 153.76 49.43 30. 15 7
-(Same as above, just no specify nh)
+(Same as above, just no nh specified)
 
 $ ./bin/vou-blazars 153.76 49.43 30. 15
 (Only specify one error circle radius, and the other is set to 0.)
