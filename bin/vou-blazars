@@ -402,7 +402,7 @@ fi
 
 
 
-
+[ -f Sed_temp.txt ] && `grep "matched source" Sed_temp.txt | awk '{print $1}' | uniq > sources.list`
 
 #######################################################
 # Second PHASE
@@ -417,9 +417,17 @@ until [ $source == sed -o $source == q ]
 do
    if [ ${13} != s ]; then
       echo
-      cat phase1
-      read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) " source zoomin showsed
-      ln=`cat find_out_temp.txt | wc -l`
+      if [ -z "$VOUB_AUTOSED" ]; then
+        cat phase1
+        read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) " source zoomin showsed
+        ln=`cat find_out_temp.txt | wc -l`
+      else
+        [ `wc -l sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
+        source=$(head -n1 sources.list)
+        tail -n +2 sources.list > sources.tmp
+        mv sources.tmp sources.list
+      fi
+    ln=`cat find_out_temp.txt | wc -l`
    else
       ln=1
       source=sed
