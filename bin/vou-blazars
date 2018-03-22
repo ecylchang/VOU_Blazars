@@ -402,6 +402,7 @@ fi
 
 
 
+
 [ -f Sed_temp.txt ] && `grep "matched source" Sed_temp.txt | awk '{print $1}' | uniq > sources.list`
 
 #######################################################
@@ -465,7 +466,8 @@ do
       if  [ $typer -gt 10000 -o $typer -lt -40000 -o $typer -eq 99 -o $typer -eq -9999 ]; then
          nn=$nn+1
          if [ $nn = $source -o $source == sed ]; then
-            echo conesearch --db ${HERE}/cats2.ini --catalog PMN --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o pmn.$nn.2.csv > vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISH352 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o wish352.$nn.2.csv > vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog PMN --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o pmn.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o gb6.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GB87 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o gb87.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog AT20G --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o at20.$nn.2.csv >> vosearch.txt

@@ -25,19 +25,20 @@ c
       IMPLICIT none
       INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,rfound,ir100found,s
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000)
       INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000)
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500)
-      integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000)
+      integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
       REAL*8 ra_pccs100(200),dec_pccs100(200),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
-      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000)
-      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000)
+      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
+      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
+      real*8 ra_lowrcand(5),dec_lowrcand(5)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -55,12 +56,14 @@ c
       real*4 Ferr_pccs100(200),FluxU_pccs100(200),FluxL_pccs100(200),poserr_pccs100(200),Ferr2_pccs100(200)
       real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000)
       real*4 FluxU_ir(1000,4),FluxL_ir(1000,4),poserr_ir(1000),irmagerr(1000,4),intensity
-      real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5)
+      real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,7),FluxL_gam(100,7),poserr_gam(100),Ferr_gam(100,7),Specerr_gam(100,2)
       real*4 uflux_ircand(5,4),lflux_ircand(5,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
       real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(5),epos_usnocand(5),Ferr_xray(5000,2)
-      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2)
+      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(1000)
+      real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
+      real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -68,7 +71,7 @@ c
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100),xray_type(5000)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000)
+      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),lowrcand_type(5)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
       ok = .TRUE.
@@ -76,6 +79,7 @@ c
       nrep(1:5000)=1
       sfound = 0
       iradio=0
+      ilowr=0
       i4p8=0
       iusno=0
       ipccs100=0
@@ -476,6 +480,46 @@ c read the data file
             endif
                !write(*,*) catalog,FluxU_4p8(i4p8,1),flux_4p8(i4p8,1),FluxL_4p8(i4p8,1)
                !write(*,*) catalog,"Flag: ",flag_4p8(i4p8,1),flag_4p8(i4p8,2),flag_4p8(i4p8,3),flag_4p8(i4p8,4)
+         ELSE IF (catalog(1:7) == 'wish352') then
+            write(*,*) 'test wish'
+            ilowr=ilowr+1
+            ra_lowr(ilowr)=ra
+            dec_lowr(ilowr)=dec
+            name_l(ilowr)=catalog
+            filen_l(ilowr)=filen
+            if (ilowr .ne. 1) THEN
+               do j=1,ilowr-1
+                  if ((ra_lowr(j) .eq. ra) .and. (dec_lowr(j) .eq. dec)) THEN
+                     if ((name_l(j) == catalog ) .and. (filen_l(j) .ne. filen)) then
+                        write(*,'(4x,a,i4,3x,2(f9.5,2x),f9.3)') 'The counterpart',
+     &                  j,ra_lowr(j),dec_lowr(j),flux_lowr(j)/(frequency_lowr(j)*1.E-26)
+                        is=ie
+                        ie=index(string(is+1:len(string)),' ')+is
+                        read(string(is+1:ie-1),'(a)') repflux
+                        write(*,'(a,i4,"_",a,2x,2(f9.5,2x),a)') ' Repeated one:',
+     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
+                        ilowr=ilowr-1
+                        goto 300
+                     endif
+                  endif
+               enddo
+            endif
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+            is=ie
+            ie=index(string(is+1:len(string)),' ')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+            FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+            FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+            frequency_lowr(ilowr)=3.52e8
+            flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            posxerr=sqrt(1.5**2+0.12**2)
+            posyerr=sqrt(1+0.09**2)
+            poserr_lowr(ilowr)=sqrt(posxerr**2+posyerr**2)
+            lowr_type(ilowr)='WISH'
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.
      &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353'))  THEN
@@ -540,7 +584,6 @@ c read the data file
                FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*0.7
                FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*0.7
                frequency_pccs100(ipccs100)=7.e10
-
             ELSE if (catalog(1:7) == 'pccs143') then
                flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*1.43 !100 to 143
                FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*1.43
@@ -1877,6 +1920,27 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
          aalphar = 0.
          ir100found=0
          ifarfound=0
+         ilowrfound=0
+
+c         write(*,*) '..................Low frequency Radio....................'
+         do i=1,ilowr
+            call DIST_SKY(ra_source(j),dec_source(j),ra_lowr(i),dec_lowr(i),dist)
+            IF ( dist*3600. < max(epos(1,j)*1.3,2.)) then
+               ilowrfound=ilowrfound+1
+               flux_lowrcand(ilowrfound)=flux_lowr(i)
+               uflux_lowrcand(ilowrfound)=FluxU_lowr(i)
+               lflux_lowrcand(ilowrfound)=FluxL_lowr(i)
+               freq_lowrcand(ilowrfound)=frequency_lowr(i)
+               ra_lowrcand(ilowrfound)=ra_lowr(i)
+               dec_lowrcand(ilowrfound)=dec_lowr(i)
+               epos_lowrcand(ilowrfound)=poserr_lowr(i)
+               lowrdist(ilowrfound)=dist
+               lowrcand_type(ilowrfound)=lowr_type(i)
+            endif
+         enddo
+         IF (ilowrfound == 0) then
+            write(*,'('' NO WISH object within '',f5.2,'' arcsec'')') max(epos(1,j)*1.3,2.)
+         endif
 
          write(*,*) '........................5 GHz Radio......................'
          DO i=1,i4p8
@@ -2377,6 +2441,9 @@ cENDDO
                call graphic_code(flux(i,j),81,code)
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
+         enddo
+         do i=1,ilowrfound
+            write(14,'(4(es10.3,2x),a)') freq_lowrcand(i),flux_lowrcand(i),uflux_lowrcand(i),lflux_lowrcand(i),lowrcand_type(i)
          enddo
          do i=1,i4p8
             if (f4p8part(i) .eq. j) then

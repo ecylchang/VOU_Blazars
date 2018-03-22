@@ -49,8 +49,9 @@ c      write(*,*) ra_center,dec_center,radius,nh
             ie=index(value(is+1:len(value)),',')+is
 c the catalog without source name
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
-     &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtspec')
-     &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')) then
+     &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
+     &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
+     &          .or. (catalog(1:it-1) == 'xrtspec')) then
                is=0
                ie=index(value(1:len(value)),',')
             endif
