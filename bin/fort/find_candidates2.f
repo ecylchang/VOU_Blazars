@@ -276,6 +276,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_4p8(i4p8)
+               poserr_4p8(i4p8)=poserr_4p8(i4p8)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_4p8(i4p8,1)
@@ -337,13 +338,26 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_4p8(i4p8,1)
+               posxerr=(1300./flux_4p8(i4p8,1))**2+(6**2)
+               posyerr=(1100./flux_4p8(i4p8,1))**2+(4**2)
+               if (Ferr_4p8(i4p8,1) .eq. 99.) then
+                  if ((dec_4p8(i4p8) .ge. -87.5) .and. (dec_4p8(i4p8) .lt. -37.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((12.3+0.085*dec_4p8(i4p8))**2+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. 37.) .and. (dec_4p8(i4p8) .lt. -29.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((11.**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. -29.) .and. (dec_4p8(i4p8) .lt. -9.5)) then
+                     Ferr_4p8(i4p8,1)=sqrt((10.5**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. -9.5) .and. (dec_4p8(i4p8) .lt. -10.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((9.1**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  endif
+               endif
                FluxU_4p8(i4p8,1)=flux_4p8(i4p8,1)+Ferr_4p8(i4p8,1)
                FluxL_4p8(i4p8,1)=flux_4p8(i4p8,1)-Ferr_4p8(i4p8,1)
                flux_4p8(i4p8,1)=flux_4p8(i4p8,1)*flux2nufnu_4p8
                FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*flux2nufnu_4p8
                FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*flux2nufnu_4p8
                frequency_4p8(i4p8,1)=4.8e9
-               poserr_4p8(i4p8)=sqrt((15.*15.)+100.) !precision 0.1s 1arcsec
+               poserr_4p8(i4p8)=2.*sqrt(posxerr+posyerr)
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_4p8(i4p8,1)
@@ -425,7 +439,7 @@ c read the data file
                FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*flux2nufnu_4p8*(5/4.8)
                FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*flux2nufnu_4p8*(5/4.8)
                frequency_4p8(i4p8,1)=5.e9
-               poserr_4p8(i4p8)=sqrt(1.81)*2.
+               poserr_4p8(i4p8)=sqrt(1.81)*2. !average 0.9 1
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_4p8(i4p8,2)
@@ -469,7 +483,7 @@ c read the data file
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,3)
                flux_4p8(i4p8,3)=flux_4p8(i4p8,3)*flux2nufnu_4p8*(0.365/4.8)
                frequency_4p8(i4p8,3)=3.65E7
-               poserr_4p8(i4p8)=16. !!!!!!!!!!
+               poserr_4p8(i4p8)=160. !90 accuracy
                FluxU_4p8(i4p8,1)=0.
                FluxL_4p8(i4p8,1)=0.
                FluxU_4p8(i4p8,2)=0.
@@ -518,7 +532,7 @@ c read the data file
             FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
             posxerr=sqrt(1.5**2+0.12**2)
             posyerr=sqrt(1+0.09**2)
-            poserr_lowr(ilowr)=sqrt(posxerr**2+posyerr**2)
+            poserr_lowr(ilowr)=2*sqrt(posxerr**2+posyerr**2)
             lowr_type(ilowr)='WISH'
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.

@@ -86,12 +86,14 @@ c
      &             "e.g. gnomo_plot aa.log,test.ps/cps,4.91583,26.04778,40.,60.0")')
          STOP
       ENDIF
+
       i = 0
       radius= radius/60.
       ellipserot=-ellipserot
       ellipserot_2=-ellipserot_2
       call getlun(lu_infile)
       open(lu_infile,file=filein,status='old')
+
       if (filein == 'error_map.txt') then
       radius=radius/60.
       DO WHILE (ok)

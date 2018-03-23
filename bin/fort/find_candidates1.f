@@ -1530,19 +1530,25 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             DO i=1,iother
                CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_other(i),
      &                       dec_other(i),dist)
-               IF (dist < min_dist_other) THEN 
-                  write(*,'(2x,a,1x,a)') name_other(i)
+               IF (dist < min_dist_other) THEN
                   IF (name_other(i)(1:4) == '3HSP') THEN
-                    type_average = -1
+                     type_average = -1
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:3) == '5BZ') THEN
-                    type_average = -2
+                     type_average = -2
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:6) == 'CRATES') THEN
-                    type_average = -3
+                     type_average = -3
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:3) == 'PSR') THEN
-                    type_average = 0
-                    code=-8888
+                     type_average = 0
+                     code=-8888
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ENDIF
-                  ra_other(i) = -ra_other(i)
                ENDIF
                IF (dist < min_dist_cluster) THEN
                   IF ( (name_other(i)(1:5) == 'ABELL') .OR.

@@ -421,21 +421,19 @@ do
       if [ -z "$VOUB_AUTOSED" ]; then
         cat phase1
         read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) " source zoomin showsed
-        ln=`cat find_out_temp.txt | wc -l`
       else
         [ `wc -l sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
         source=$(head -n1 sources.list)
         tail -n +2 sources.list > sources.tmp
         mv sources.tmp sources.list
       fi
-    ln=`cat find_out_temp.txt | wc -l`
+      ln=`cat find_out_temp.txt | wc -l`
    else
       ln=1
       source=sed
       [ ! -f find_out_temp.txt ] && echo $1 $2 99 > find_out_temp.txt
       declare -i zoomin=${3}*60
    fi
-
 #check if need to output the SED file or not
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
@@ -473,7 +471,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog AT20G --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o at20.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ATPMN --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o atpmn.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog CRATES --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o crates.$nn.2.csv >> vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog NORTH20 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o north20.$nn.2.csv >> vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog NORTH20 --ra $rar --dec $decr --radius 2 --runit arcmin --columns default -o north20.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PCCS44 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs44.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PCCS70 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs70.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PCCS100 --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o pccs100.$nn.2.csv >> vosearch.txt
@@ -495,7 +493,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog UVOT --ra $rar  --dec $decr --radius 15 --runit arcsec --columns default -o uvot.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog CMA --ra $rar  --dec $decr --radius 30 --runit arcsec --columns default -o cma.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog XRTSPEC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o xrtspec.$nn.2.csv >> vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 8 --runit arcmin --columns default -o bat105.$nn.2.csv >> vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 10 --runit arcmin --columns default -o bat105.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o 3fgl.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o 2fhl.$nn.2.csv >> vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YL --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o fermi8yr.$nn.2.csv >> vosearch.txt
