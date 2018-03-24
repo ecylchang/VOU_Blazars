@@ -704,6 +704,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
+               poserr_ir(iir)=poserr_ir(iir)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,1)
@@ -756,6 +757,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
+               poserr_ir(iir)=poserr_ir(iir)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,4)
@@ -976,6 +978,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=2.*poserr_usno(iusno)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -1026,6 +1029,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=2*sqrt(poserr_usno(iusno)**2+(0.0003**2))
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -2808,20 +2812,20 @@ ccccccccccc check nh=2.29e21*Av
         else if (filter(1:3) == 'z  ') then
            lambda=8863.
            const=log10(3631.)-23.
-        else if (filter(1:3) == 'psg') then
-           lambda=4866.
+        else if (filter(1:3) == 'psg') then !tonry et al. 2012
+           lambda=4810.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psr') then
-           lambda=6215.
+           lambda=6170.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psi') then
-           lambda=7545.
+           lambda=7520.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psz') then
-           lambda=8679.
+           lambda=8660.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psy') then
-           lambda=9633.
+           lambda=9620.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'bbG') then
            lambda=6730. !!!Jordi et al. 2010
