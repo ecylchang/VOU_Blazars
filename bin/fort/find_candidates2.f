@@ -918,6 +918,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=poserr_usno(iusno)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -1029,7 +1030,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
-               poserr_usno(iusno)=2*sqrt(poserr_usno(iusno)**2+(0.0003**2))
+               poserr_usno(iusno)=2.*sqrt(poserr_usno(iusno)**2+(0.0003**2))
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -1099,6 +1100,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_uv(iuv)
+               poserr_uv(iuv)=2*sqrt(poserr_uv(iuv)**2+(0.26**2)) !systematic error 0.26
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) uvmagerr(iuv,3)
@@ -1159,6 +1161,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_uv(iuv)
+               poserr_uv(iuv)=2.*sqrt(poserr_uv(iuv)*poserr_uv(iuv)+(0.7**2))
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) uvmag(iuv,2)
@@ -1263,7 +1266,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                   FluxU_xray(ixray,1)=0.
                   FluxL_xray(ixray,1)=0.
                endif
-               poserr_xray(ixray)=5.
+               poserr_xray(ixray)=7.
                xray_type(ixray)='XRTSPEC'
             else if (catalog(1:6) == 'bat105') then
                is=ie
