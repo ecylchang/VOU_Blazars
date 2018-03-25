@@ -1568,6 +1568,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_radio(k),dec_radio(k),int(code)
                ENDIF
                type_average=0
+               code=0
             ENDDO
             t(ifound)=k !!!recourd the former index
             write(*,*) '        '
@@ -1844,7 +1845,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
       enddo
       IF (ifound  ==  0) print *,achar(27),'[31;1m No radio/X-ray matches were found.',achar(27),'[0m'
 
-      savemjy(1:iother)=25.
+      savemjy(1:iother)=0.
       DO l=1,iother
          IF ( ( (name_other(l)(1:3) == '5BZ') .OR. (name_other(l)(1:4) == '3HSP') .or.
      &             (name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:3) == 'PSR'))
@@ -1993,8 +1994,11 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
 100   continue
             if ((type_average .lt. -3)) then
-                call RXgraphic_code(savemjy(l),'R',code)
-                write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
+                if (savemjy(l) .gt. 0.) then
+                   if (savemjy(l) .lt. 20.) savemjy(l)=20.
+                   call RXgraphic_code(savemjy(l),'R',code)
+                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
+                endif
             endif
             if (type_average .ne. 0) CALL graphic_code (1.,1.,type_average,code)
             !if (type_average .eq. -7) CALL graphic_code (1.,savemjy(l),type_average,code)
