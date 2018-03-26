@@ -114,19 +114,22 @@ LOGFILE_GLOB='RUN*.log'
 OUTPUT_JSON = 'results.json'
 
 import os
-import re
 import glob
 import string
 import json
+import re
 
 vou_result_run_dirs = glob.glob('[0-9]*')
 
 cnt_known_blazars = 0
 cnt_new_blazars = 0
 results = {}
+
 for vou_dir in vou_result_run_dirs:
+
     if not os.path.isfile(os.path.join(vou_dir, '1_sed.eps')):
         continue
+
     run_label = vou_dir
     print('Reading output from {}'.format(run_label))
 
@@ -140,18 +143,22 @@ for vou_dir in vou_result_run_dirs:
     logfile = logfile[0]
     
     with open(logfile, 'r') as fp:
+
         sources = {}
         src = 0
         known_blazar = False
         known_3hsp = False
         known_fsrq = False
+
         for line in fp: #.readlines():
             line = line.strip()
 
-#            if re.match('RUNNING FIELD', line):
-#                run_label_lbl = line.split()[-1]
-#                result_run['run_label_lbl'] = run_label_lbl
-
+            # There is a summary block at the first part of the
+            # logfile with information about blazar candidates
+            # regarding Radio and X-Ray emition.
+            # We use this first block to count the number of
+            # candidates we'll deal with.
+            #
             if src == 0:
                 match_source = re.match('.*Match nr.(.*)', line)
                 if match_source:
@@ -167,6 +174,11 @@ for vou_dir in vou_result_run_dirs:
                     sources[int(ll[0])] = {}
                     continue
 
+            # Each source's block begins with '=====...',
+            # when the first or a new block begins we
+            # have to flush any information from the last
+            # source and increment the source-id
+            #
             if re.match('.*=================.*', line):
                 if src in sources:
                     sources[src].update({'known_blazar':known_blazar,
@@ -180,6 +192,9 @@ for vou_dir in vou_result_run_dirs:
             if src == 0 or src not in sources:
                 continue
 
+            # At the beginning of each source's block, get the
+            # respective RA and Dec 
+            #
             if src > 0:
                 match_position = re.match('.*R\.A.*Dec.*=(.*)', line)
                 if match_position:
@@ -188,6 +203,9 @@ for vou_dir in vou_result_run_dirs:
                     sources[src].update({'ra':ll[0], 'dec':ll[1]})
                     continue
 
+            # Here we check the messages at the end of each source's
+            # block which tell whether the sources is a known blazar
+            #
             if src > 0:
                 match_known = re.match('Known blazar', line)
                 if match_known:
@@ -216,13 +234,17 @@ for vou_dir in vou_result_run_dirs:
     # * X_Sed.txt
     #
     for src,dct in result_run['sources'].items():
+
         sed_file = '{:d}_Sed.txt'.format(int(src))
         sed_file = glob.glob(os.path.join(vou_dir, sed_file))[0]
         with open(sed_file, 'r') as fp:
             sed_content = fp.read()
+
         match_deepsky = re.search('XRTDEEP', sed_content)
         deepsky_source = bool(match_deepsky)
         dct.update({'deepsky_source':deepsky_source})
+
+        dct.update({'sed_file':sed_file})
 
     results[run_label] = result_run['sources']
     print(json.dumps(result_run, indent=4))
@@ -233,3 +255,4 @@ with open(OUTPUT_JSON,'w') as fp:
 
 print('Known blazars: ', cnt_known_blazars)
 print('NEW Blazars: ', cnt_new_blazars)
+
