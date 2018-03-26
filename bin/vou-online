@@ -32,12 +32,13 @@ elif [ $par -eq 11 ]; then
    pid=${12}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
-source vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
-rm -f output*.csv
-rm -f Sed*.txt
-rm -f no_matched_temp.txt
-rm -f RX*.txt
-rm -f phase*
-rm -f catlist*
+source ./bin/vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
+rm -f $pid"_"output*.csv
+rm -f $pid"_"Sed*.txt
+rm -f $pid"_"no_matched_temp.txt
+rm -f $pid"_"RX*.txt
+rm -f $pid"_"phase*
+rm -f $pid"_"catlist*
+rm -f $pid"_"Intermediate_out.txt
 unset pid
 

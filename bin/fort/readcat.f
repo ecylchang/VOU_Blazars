@@ -1,7 +1,7 @@
       program readcat
 c this program read the output from vo tool and make a input for find candidates
       implicit none
-      integer*4 icat,i,is,ie,ia,it,in,ip,out
+      integer*4 icat,i,is,ie,ia,it,in,ip,out,iskip
       integer*4 rah,ram,decd,decm,length,ns,lenact
       real*8 radeg,decdeg,ra_center,dec_center,errrad,errmaj,errmin,errang
       real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh,ra1,ra2,dec1,dec2
@@ -16,8 +16,11 @@ c this program read the output from vo tool and make a input for find candidates
       call rmvlbk(string)
       in=index(string(1:length),' ')
       inputlist=string(1:in-1)
+
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
+      iskip=index(outputlist(1:len(outputlist)),'_')
+c      write(*,*) iskip
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
 c      write(*,*) ra_center,dec_center,radius,nh
@@ -30,16 +33,20 @@ c      write(*,*) ra_center,dec_center,radius,nh
       ok=.true.
       do i=1,2000
          icat=0
-         read(11,'(a)',end=100) catalog
-         it=index(catalog(1:len(catalog)),'.')
-         if (inputlist(1:12) == "catlist2.txt") then
+         read(11,'(a)',end=100) string
+         is=index(string(1:len(string)),'_')
+         it=index(string(1:len(string)),'.')
+         read(string(is+1:it-1),'(a)') catalog
+c         write(*,*) catalog
+         if (inputlist(iskip+1:iskip+12) == "catlist2.txt") then
             is=it
-            ie=index(catalog(is+1:len(catalog)),'.')+is
-            read(catalog(is+1:ie-1),*) ns
+            ie=index(string(is+1:len(string)),'.')+is
+c            write(*,*) is,ie
+            read(string(is+1:ie-1),*) ns
          else
             ns=0
          endif
-         open(12,file=catalog,status='old')
+         open(12,file=string,status='old')
          read(12,'(a)') head
          do while (ok)
 300         continue

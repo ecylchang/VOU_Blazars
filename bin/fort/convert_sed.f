@@ -5,7 +5,7 @@ c to the format required by the ASDC SED tool
 c
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, lu_out, lenact,sfound,rtype
+      INTEGER*4 ier, lu_in, lu_out, lenact,sfound,rtype,im,in,length
       REAL*4 mjd, freq, one, err_up,err_lo
       REAL*4 flux,flux_err
       real*8 rra,rdec
@@ -19,7 +19,13 @@ c
       !READ (*,'(a)') input_file
       !WRITE (*,'('' Enter output file '',$)')
       !READ (*,'(a)') output_file
-      input_file='Sed.txt'
+
+      call rdforn(string,length)
+      call rmvlbk(string)
+      in=index(string(1:length),' ')
+      input_file=string(1:in-1)
+      output_file=string(in+1:length)
+
       mjd = 55000
       lu_in = 10
       lu_out = 11
@@ -35,7 +41,6 @@ c
       ENDIF
       READ(lu_in,'(i4,2x,a,2(2x,f9.5),2x,i2)',end=99) sfound,stringin,rra,rdec,rtype
 c      write(*,*) rra,rdec
-      output_file='Out4SedTool.txt'
       open(lu_out,file=output_file,status='unknown',iostat=ier)
       DO WHILE(ok)
          ul = '  '

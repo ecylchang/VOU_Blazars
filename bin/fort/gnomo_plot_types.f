@@ -4,7 +4,7 @@ c
       IMPLICIT NONE
       INTEGER*4  max_sat,max_en
       PARAMETER (max_sat=100,max_en=1e5)
-      INTEGER*4 symbol, i,n,m,in,j
+      INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
       INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(2000)
@@ -63,7 +63,14 @@ c
       IF ( length.NE.0 ) then
          in = index(stringin(1:length),',')
          filein=stringin(1:in-1)
-
+         if (filein(1:5) == 'error') then
+            iskip=0
+         else if (filein(1:4) == 'find') then
+            iskip=0
+         else
+            iskip=index(filein(1:len(filein)),'_')
+         endif
+c         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
 
@@ -94,7 +101,7 @@ c
       call getlun(lu_infile)
       open(lu_infile,file=filein,status='old')
 
-      if (filein == 'error_map.txt') then
+      if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
       DO WHILE (ok)
          i = i + 1
@@ -561,7 +568,7 @@ c              cs = max(1.0,cradio*8./99.)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-            if ((filein == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
+            if ((filein(iskip+1:iskip+27) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN

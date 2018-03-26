@@ -23,7 +23,7 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000)
+      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000),im
       INTEGER*4 radio_type(5000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000)
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
@@ -56,7 +56,7 @@ c
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000)
-      CHARACTER*80 input_file,output_file,output_file2
+      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
@@ -104,14 +104,20 @@ c 15 arcsecs
          CALL rmvlbk(string)
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
-         read(string(in+1:length),*) aim
-         !write(*,*) 'the aim',aim
-      ELSE 
-         WRITE (*,'('' Enter query results file '',$)')
-         READ (*,'(a)') input_file
+         im=index(string(in+1:length),' ')+in
+         output_file=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file2=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file3=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file4=string(in+1:im-1)
+         read(string(im+1:length),*) aim
+c         write(*,*) 'the aim',aim
       ENDIF
-      output_file='find_out_temp.txt'
-      output_file2='RX_temp.txt'
       lu_in = 10
       !lu_output=11
       in = index(input_file(1:lenact(input_file)),'.')
@@ -126,9 +132,9 @@ c 15 arcsecs
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
-      open(14,file='no_matched_temp.txt',status='unknown',iostat=ier)
+      open(14,file=output_file4,status='unknown',iostat=ier)
       !write(*,*) ier
-      open(12,file='Sed_temp.txt',status='unknown')
+      open(12,file=output_file3,status='unknown')
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF

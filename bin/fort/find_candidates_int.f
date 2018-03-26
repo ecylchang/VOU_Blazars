@@ -1,7 +1,7 @@
       PROGRAM find_candidates_int
 
       IMPLICIT none
-      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,lenact,length,lu_in,ier,icand,filen,is,ie,xpts(2000)
+      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,icand,filen,is,ie,xpts(2000)
       integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000),xxot_type(10,2000)
       integer nrep(2000),back(2000,2000),ixxss,ixxrep,track(2000),repnumber(2000),nnuvx,posind(2000)
       real*8 ra,dec,dist,ra_uv(10000),dec_uv(10000),ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
@@ -17,9 +17,9 @@
       real*4 uvmag(10000,2),uvmagerr(10000,2),slope_gam(50),specerr_gam(50)
       real*4 frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),poserr_gam(50),Ferr_gam(50)
       real*4 aruv,auvx,min_dist_uv,min_dist_4p8,min_dist_gam,alphar
-      character*30 input_file
+      character*80 input_file,input_file2,input_file3,output_file
       character*10 catalog,type_4p8(500)
-      character*300 string
+      character*800 string
       LOGICAL there,ok,found
       ok = .TRUE.
       found = .FALSE.
@@ -30,7 +30,14 @@
 
       CALL rdforn(string,length)
       CALL rmvlbk(string)
-      input_file=string(1:len_trim(string))
+      in=index(string(1:length),' ')
+      input_file=string(1:in-1)
+      im=index(string(in+1:length),' ')+in
+      input_file2=string(in+1:im-1)
+      in=im
+      im=index(string(in+1:length),' ')+in
+      input_file3=string(in+1:im-1)
+      output_file=string(im+1:length)
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
       INQUIRE (FILE=input_file,EXIST=there)
@@ -42,8 +49,8 @@
 
       lu_in = 10
       open(lu_in,file=input_file,status='old',iostat=ier)
-      open(11,file='no_matched_temp.txt',status='old',iostat=ier)
-      open(13,file='find_out_temp.txt',status='old',iostat=ier)
+      open(11,file=input_file2,status='old',iostat=ier)
+      open(13,file=input_file3,status='old',iostat=ier)
       IF (ier.NE.0) THEN
          write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF
@@ -283,7 +290,7 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
 c         write(*,*) i,posind(i),ra_xxss(i),dec_xxss(i),nrep(i),back(i,1:nrep(i))
       enddo
 
-      open(12,file='Intermediate_out.txt',status='unknown',iostat=ier)
+      open(12,file=output_file,status='unknown',iostat=ier)
       ipass=0
       do i=1,irr
          ii1=0

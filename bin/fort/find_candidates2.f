@@ -23,7 +23,7 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,rfound,ir100found,s
+      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns
       INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr
@@ -67,7 +67,8 @@ c
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),input_file,output_file
+      CHARACTER*30 name_other(10000)
+      character*80 input_file,output_file,input_file2,input_file3,output_file2
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100),xray_type(5000)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
@@ -109,7 +110,19 @@ c 15 arcsecs
          CALL rmvlbk(string)
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
-         read(string(in+1:length),'(a)') aim
+         im=index(string(in+1:length),' ')+in
+c         write(*,*) in,im
+         input_file2=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         input_file3=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file2=string(in+1:im-1)
+         read(string(im+1:length),'(a)') aim
          if (aim == 'finish') then
             Stop '!!!!Exit the source exploring routine!!!!'
          else if (aim == 'sed') then
@@ -121,7 +134,6 @@ c 15 arcsecs
          WRITE (*,'('' Enter query results file '',$)')
          READ (*,'(a)') input_file
       ENDIF
-      output_file='error_map.txt'
       lu_in = 10
       lu_output = 11
       in = index(input_file(1:lenact(input_file)),'.')
@@ -134,8 +146,8 @@ c 15 arcsecs
       ENDIF
 
       open(lu_in,file=input_file,status='old',iostat=ier)
-      open(13,file='find_out_temp.txt',status='old',iostat=ier)
-      open(12,file='Sed_temp.txt',status='old',iostat=ier)
+      open(13,file=input_file2,status='old',iostat=ier)
+      open(12,file=input_file3,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
@@ -1795,7 +1807,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
       write(*,*)"     "
       write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam
       CLOSE (lu_in)
-      open(14,file='Sed.txt',status='unknown',iostat=ier)
+      open(14,file=output_file2,status='unknown',iostat=ier)
       write(*,*)"     "
 
       do i=1,i4p8
