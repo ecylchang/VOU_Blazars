@@ -118,6 +118,7 @@ import glob
 import string
 import json
 import re
+import math
 
 vou_result_run_dirs = glob.glob('[0-9]*')
 
@@ -244,6 +245,32 @@ for vou_dir in vou_result_run_dirs:
         deepsky_source = bool(match_deepsky)
         dct.update({'deepsky_source':deepsky_source})
 
+        # Read which x-ray catalogs are were used:
+        # * select lines where the first column (lambda)
+        #   has values between 16 <= log(freq) <= 18.
+        # * then, read the catalogs from the last column.
+        # * NOTE: discard the first line (header)
+        #
+        sed_rows = [l for l in sed_content.split('\n')]
+        _trash = sed_rows.pop(0)
+        xray_cats = []
+        for row in sed_rows:
+            cols = row.strip().split()
+            if len(cols) == 0:
+                continue
+            try:
+                freq = float(cols[0])
+            except Exception as e:
+                print('{}, in file {} : {}'.format(vou_dir, sed_file, e))
+                continue
+            freq = int(math.log10(freq))
+            if not (16 <= freq <= 18):
+                continue
+            xray_cats.append(cols[-1].strip())
+        xray_cats = list(set(xray_cats))
+        xray_cats.sort()
+        dct.update({'xray_catalogs':xray_cats})
+    
         dct.update({'sed_file':sed_file})
 
     results[run_label] = result_run['sources']
