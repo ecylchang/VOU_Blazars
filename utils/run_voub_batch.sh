@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 #RUNID_RA_DEC_FILE="refs/RADEC_image_centers.txt"
 RUNID_RA_DEC_FILE="$1"
