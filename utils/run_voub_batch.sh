@@ -17,5 +17,6 @@ do
 
     echo "RUNNING FIELD ${FIELDS[0]}" | tee $LOGFILE
     ./bin/vou-blazars ${FIELDS[1]} ${FIELDS[2]} 12  2>&1 | tee -a $LOGFILE
+    mv $LOGFILE Results/$RUN_LABEL/.
 done
 
