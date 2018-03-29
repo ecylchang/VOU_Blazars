@@ -1,35 +1,45 @@
 #!/bin/bash
-declare -i par=$#-1
+declare -i par=$#-2
 echo $par
 if [ $par -eq 2 ]; then
-   pid=$3
+   pathou=$3
+   pid=$4
    set $1 $2 1 s
 elif [ $par -eq 3 ]; then
-   pid=$4
+   pathou=$4
+   pid=$5
    set $1 $2 $3
 elif [ $par -eq 4 ]; then
-   pid=$5
+   pathou=$5
+   pid=$6
    set $1 $2 $3 $4
 elif [ $par -eq 5 ]; then
-   pid=$6
+   pathou=$6
+   pid=$7
    set $1 $2 $3 $4 $5
 elif [ $par -eq 6 ]; then
-   pid=$7
+   pathou=$7
+   pid=$8
    set $1 $2 $3 $4 $5 $6
 elif [ $par -eq 7 ]; then
-   pid=$8
+   pathou=$8
+   pid=$9
    set $1 $2 $3 $4 $5 $6 $7
 elif [ $par -eq 8 ]; then
-   pid=$9
+   pathou=$9
+   pid=${10}
    set $1 $2 $3 $4 $5 $6 $7 $8
 elif [ $par -eq 9 ]; then
-   pid=${10}
+   pathou=${10}
+   pid=${11}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9
 elif [ $par -eq 10 ]; then
-   pid=${11}
+   pathou=${11}
+   pid=${12}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
 elif [ $par -eq 11 ]; then
-   pid=${12}
+   pathou=${12}
+   pid=${13}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
 source ./bin/vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
@@ -40,5 +50,9 @@ rm -f $pid"_"RX*.txt
 rm -f $pid"_"phase*
 rm -f $pid"_"catlist*
 rm -f $pid"_"Intermediate_out.txt
+echo $pid*.*
+echo $pathou
+mv -f ${pid}*.* $pathou
 unset pid
+unset pathou
 
