@@ -49,8 +49,9 @@ c         print *,'string ',string(1:lenact(string))
          IF (string(2:2).NE.'=') THEN 
            READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo 
            flux_err = (err_up-err_lo)/2.
-           IF (flux.NE.0.) THEN 
-             IF (flux_err == 0.) ul='UL'
+           IF (flux.NE.0.) THEN
+             if (flux .lt. 0.) flux = -flux
+             IF ((flux_err == 0.) .and. (err_up .ne. 0.)) ul='UL'
              if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
              write(lu_out,'(f9.5,'' | '',f9.5,'' | '',es10.3,'' | '',es10.3,'' | '',
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')

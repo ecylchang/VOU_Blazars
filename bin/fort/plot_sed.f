@@ -120,7 +120,7 @@ c      IER = PGBEG(0,"/xs",1,1)
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
          else
             if (spectype(j,i) == 'XRTSPEC') then
-               call pgsch(0.4)
+               call pgsch(0.5)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),3)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             else

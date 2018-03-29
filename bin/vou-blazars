@@ -38,7 +38,7 @@ BINF="${HERE}/fort"
 handle_ps () {
     [ `which ps2eps 2> /dev/null` ] || return 0
     FILE_PS=$1
-    if [ $FILE_PS == ${pidnm}sed.ps -a -z $pid ]; then
+    if [ $FILE_PS == sed.ps ]; then
        ps2eps -B -q $FILE_PS -R +
     else
        ps2eps -B -q $FILE_PS
@@ -436,6 +436,7 @@ do
       [ ! -f ${pidnm}find_out_temp.txt ] && echo $1 $2 99 > ${pidnm}find_out_temp.txt
       zoomin=${3}*60
    fi
+
 #check if need to output the SED file or not
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
