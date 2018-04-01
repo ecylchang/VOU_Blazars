@@ -50,8 +50,6 @@ rm -f $pid"_"RX*.txt
 rm -f $pid"_"phase*
 rm -f $pid"_"catlist*
 rm -f $pid"_"Intermediate_out.txt
-echo $pid*.*
-echo $pathou
 mv -f ${pid}*.* $pathou
 unset pid
 unset pathou

@@ -63,14 +63,10 @@ c
       IF ( length.NE.0 ) then
          in = index(stringin(1:length),',')
          filein=stringin(1:in-1)
-         if (filein(1:5) == 'error') then
-            iskip=0
-         else if (filein(1:4) == 'find') then
-            iskip=0
-         else
-            iskip=index(filein(1:len(filein)),'_')
-         endif
-c         write(*,*) iskip
+         iskip=index(filein(1:len(filein)),'_error')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_find_out')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_RX')
+         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
 
@@ -568,7 +564,7 @@ c              cs = max(1.0,cradio*8./99.)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-            if ((filein(iskip+1:iskip+27) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
+            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN

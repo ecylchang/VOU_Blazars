@@ -19,8 +19,8 @@ c this program read the output from vo tool and make a input for find candidates
 
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
-      iskip=index(outputlist(1:len(outputlist)),'_')
-c      write(*,*) iskip
+      iskip=index(outputlist(1:len(outputlist)),'_output')
+      write(*,*) iskip
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
 c      write(*,*) ra_center,dec_center,radius,nh
@@ -34,9 +34,9 @@ c      write(*,*) ra_center,dec_center,radius,nh
       do i=1,2000
          icat=0
          read(11,'(a)',end=100) string
-         is=index(string(1:len(string)),'_')
-         it=index(string(1:len(string)),'.')
-         read(string(is+1:it-1),'(a)') catalog
+c         is=index(string(1:len(string)),'_')
+         it=index(string(iskip+1:len(string)),'.')+iskip
+         read(string(iskip+1:it-1),'(a)') catalog
 c         write(*,*) catalog
          if (inputlist(iskip+1:iskip+12) == "catlist2.txt") then
             is=it
