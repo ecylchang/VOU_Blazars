@@ -66,7 +66,7 @@ c
          iskip=index(filein(1:len(filein)),'_error')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_find_out')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_RX')
-         write(*,*) iskip
+c         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
 

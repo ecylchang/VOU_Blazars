@@ -20,7 +20,7 @@ c this program read the output from vo tool and make a input for find candidates
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
       iskip=index(outputlist(1:len(outputlist)),'_output')
-      write(*,*) iskip
+c      write(*,*) iskip
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
 c      write(*,*) ra_center,dec_center,radius,nh
@@ -244,7 +244,7 @@ c write the data
             endif
          enddo
 200      continue
-         if (inputlist == 'catlist2.txt') then
+         if (inputlist(iskip+1:iskip+12) == 'catlist2.txt') then
             write(*,'("Candidate nr.",i4,",",2x,a,i4,2x,"point(s)")') ns,catalog(1:it-1),icat
          else
             write(*,'(a,i4,2x,"point(s)")') catalog(1:it-1),icat

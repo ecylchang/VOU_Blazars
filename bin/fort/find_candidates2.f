@@ -1958,7 +1958,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
 c         write(*,*) '..................Low frequency Radio....................'
          do i=1,ilowr
             call DIST_SKY(ra_source(j),dec_source(j),ra_lowr(i),dec_lowr(i),dist)
-            IF ( dist*3600. < max(epos(1,j)*1.3,2.)) then
+            min_dist=sqrt(epos(1,j)**2+poserr_lowr(i)**2)
+            IF ( dist*3600. < max(min_dist,2.)) then
                ilowrfound=ilowrfound+1
                flux_lowrcand(ilowrfound)=flux_lowr(i)
                uflux_lowrcand(ilowrfound)=FluxU_lowr(i)
@@ -1980,7 +1981,8 @@ c         write(*,*) '..................Low frequency Radio....................'
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_4p8(i),dec_4p8(i),dist)
             !IF (dist < min_dist_4p8) THEN
             !if (f4p8part(i) .eq. j) then
-            if (dist*3600. .lt. poserr_4p8(i)*1.3) then
+            min_dist=sqrt(poserr_4p8(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                f4p8part(i)=j
                ialphar = ialphar +1
                if ((flag_4p8(i,1) == 'E') .or. (flag_4p8(i,1) == 'e')) write(*,*) "Warning!!!!Radio Extended."
@@ -2014,7 +2016,8 @@ c         write(*,*) '..................Low frequency Radio....................'
             !IF (dist < min_dist_pccs100) THEN
             !if (pccspart(i) .eq. j) then
             !write(*,*) poserr_pccs100(i)*1.3, dist*3600.
-            if (dist*3600. .lt. poserr_pccs100(i)*1.3) then
+            min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                pccspart(i)=j
                ir100found=ir100found+1
                write(*,'(f4.0," GHz flux density",2x,f9.3,",",2x,f7.3," arcmin away")')
@@ -2033,7 +2036,8 @@ c         write(*,*) '..................Low frequency Radio....................'
         CALL DIST_SKY(ra_source(j),dec_source(j),ra_far(i),dec_far(i),dist)
         !IF (dist < min_dist_pccs100) THEN
            !if (farpart(i) .eq. j) then
-           if (dist*3600. .lt. poserr_far(i)*1.3) then
+            min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
+           if (dist*3600. .lt. min_dist) then
               farpart(i)=j
               ifarfound=ifarfound+1
               write(*,'("far IR flux density",2x,f9.3,",",2x,f7.3," arcsec away")')
@@ -2054,9 +2058,9 @@ c         write(*,*) '..................Low frequency Radio....................'
          ii2=0
          do i=1,iir
             call DIST_SKY(ra_source(j),dec_source(j),ra_ir(i),dec_ir(i),dist)
-            matchradius=sqrt(epos(1,j)**2+poserr_ir(i)**2)
+            min_dist=sqrt(epos(1,j)**2+poserr_ir(i)**2)
             !write(*,*) matchradius,epos(1,j),poserr_ir(i),ir_type(i),dist*3600.
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.) )  .and. (ir_type(i) == 'WISE')) THEN
+            IF (( dist*3600. < max(min_dist,2.) )  .and. (ir_type(i) == 'WISE')) THEN
                ii1=ii1+1
                iirfound=iirfound+1
                if (ii1 .eq. 1) then
@@ -2085,7 +2089,7 @@ c         write(*,*) '..................Low frequency Radio....................'
                      ircand_type(iirfound)=ir_type(i)
                   endif
                endif
-            else if (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (ir_type(i) == '2MASS')) THEN
+            else if (( dist*3600. < max(min_dist,2.)  ) .and. (ir_type(i) == '2MASS')) THEN
                iirfound=iirfound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2140,7 +2144,8 @@ c         write(*,*) iirfound,ii1,ii2
          ii5=0
          DO i=1,iusno
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_usno(i),dec_usno(i),dist)
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'USNO'))THEN
+            min_dist=sqrt(poserr_usno(i)**2+epos(1,j)**2)
+            IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'USNO'))THEN
                iofound = iofound+1
                ii1=ii1+1
                if (ii1 .eq. 1) then
@@ -2169,7 +2174,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'SDSS'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'SDSS'))THEN
                iofound = iofound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2198,7 +2203,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'HST'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'HST'))THEN
                iofound = iofound+1
                ii3=ii3+1
                if (ii3 .eq. 1) then
@@ -2227,7 +2232,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'PANSTARRS'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'PANSTARRS'))THEN
                iofound = iofound+1
                ii4=ii4+1
                if (ii4 .eq. 1) then
@@ -2256,7 +2261,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'GAIA'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'GAIA'))THEN
                iofound = iofound+1
                ii5=ii5+1
                if (ii5 .eq. 1) then
@@ -2320,8 +2325,9 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
          Do i=1,iuv
             !write(*,*) ra_source(j),dec_source(j),ra_uv(i),dec_uv(i)
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_uv(i),dec_uv(i),dist)
+            min_dist=sqrt(poserr_uv(i)**2+epos(1,j)**2)
             !write(*,*) dist*3600,uv_type(i),epos(1,j)*1.3
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'GALEX'))THEN
+            IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'GALEX'))THEN
                iuvfound = iuvfound+1
                ii1=ii1+1
                if (ii1 .eq. 1) then
@@ -2350,7 +2356,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
-            ELSE IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'XMMOM'))THEN
+            ELSE IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'XMMOM'))THEN
                iuvfound = iuvfound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2379,7 +2385,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
-            ELSE IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'UVOT'))THEN
+            ELSE IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'UVOT'))THEN
                iuvfound = iuvfound+1
                ii3=ii3+1
                flux_uvcand(iuvfound,1:6)=flux_uv(i,1:6)
@@ -2428,7 +2434,8 @@ c         write(*,*) iuvfound,ii1,ii2,ii3
          do i=1,ixray
             xraypart(i)=0
             call Dist_sky(ra_source(j),dec_source(j),ra_xray(i),dec_xray(i),dist)
-            if (dist*3600. < poserr_xray(i)*1.3 ) then !5 arcsec fixed value
+            min_dist=sqrt(poserr_xray(i)**2+epos(1,j)**2)
+            if (dist*3600. < min_dist ) then !5 arcsec fixed value
                xraypart(i)=j
                ixxfound=ixxfound+1
             endif
@@ -2440,7 +2447,8 @@ c         write(*,*) iuvfound,ii1,ii2,ii3
             call Dist_sky(ra_source(j),dec_source(j),ra_gam(i),dec_gam(i),dist)
             !if (dist < min_dist_gam) then
 !            if (gampart(i) .eq. j) then
-             if (dist*3600. .lt. poserr_gam(i)*1.3) then
+            min_dist=sqrt(poserr_gam(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                gampart(i)=j
                igamfound=igamfound+1
                if (igamfound > 20) stop 'Too many Gamma-ray candidate'
