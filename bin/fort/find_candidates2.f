@@ -108,6 +108,7 @@ c 15 arcsecs
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
          CALL rmvlbk(string)
+c         write(*,*) string,length
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
          im=index(string(in+1:length),' ')+in

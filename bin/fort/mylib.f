@@ -38,7 +38,7 @@
       implicit none 
       INTEGER*4 length,in
       CHARACTER(*) string
-      CHARACTER*200 str2
+      CHARACTER*800 str2
       CALL GET_COMMAND(str2,length)
       in = index(str2,' ')
       length = len_trim(str2)

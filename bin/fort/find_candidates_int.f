@@ -5,15 +5,15 @@
       integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000),xxot_type(10,2000)
       integer nrepxx(2000),backxx(2000,2000),ixxss,ixxrep,trackxx(2000),repnumberxx(2000),posindxx(2000)
       integer nreprr(2000),backrr(2000,2000),irrss,irrrep,trackrr(2000),repnumberrr(2000),posindrr(2000)
-      integer nnuvx,nnruv,nnralpha,xxss_type(2000),rrss_type(2000)
+      integer nnuvx,nnruv,nnralpha,xxss_type(2000),rrss_type(2000),code
       real*8 ra,dec,dist,ra_uv(10000),dec_uv(10000),ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
       real*8 ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000),ra_center,dec_center
       real*8 ra_xxss(2000),dec_xxss(2000),ra_rrss(2000),dec_rrss(200)
-      real*4 nh,flux,uflux,lflux,epos,freq,code,radius,flux2nufnu_4p8,fdens,nudens
+      real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,fdens,nudens
       real*4 frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000)
       real*4 frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000)
       real*4 frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000)
-      real*4 frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500),poserr_xxot(10,2000)
+      real*4 frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500)
       real*4 poserr_4p8(500),Ferr_4p8(500),poserr_uv(10000),poserr_xxss(2000),flux_rrss(2000)
       real*4 frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2)
       real*4 uvmag(10000,2),uvmagerr(10000,2),slope_gam(50),specerr_gam(50)
@@ -538,7 +538,7 @@ c      write(*,*) pass2(1:ipass)
       END
 
       SUBROUTINE fluxtofdens(gamma,bandl,bandu,flux,gev,fdens,nudens)
-      real*4 alpha,bandu,bandl,flux,nudens,fdens,conval,kev,nuu,nul
+      real*4 bandu,bandl,flux,nudens,fdens,conval,gev,gamma
       !write(*,*) alpha,flux,kev,bandu,bandl
       if (gamma .ne. 2. ) then
       conval=(1./(-gamma+1.))*((bandu)**(-gamma+1.)-(bandl)**(-gamma+1.))
@@ -553,11 +553,11 @@ c      write(*,*) pass2(1:ipass)
 
       SUBROUTINE RXgraphic_code(flux,RX,code)
       IMPLICIT none
-      REAL*4 flux,code,rfl_max,rfl_min
+      REAL*4 flux,rfl_max,rfl_min
       REAL*4 xfl_min,xfl_max
-      INTEGER*4 radio_component,x_ray_component,source_type,temp
+      INTEGER*4 radio_component,x_ray_component,code
       CHARACTER*1 RX
-      code = 0.
+      code = 0
       rfl_min=0.8 ! 0.8 mJy
       rfl_max=8000. ! 8 Jy
       xfl_min = 1.e-16 ! 1.e-16 erg/cm2/s, nufnu
@@ -571,7 +571,7 @@ c      write(*,*) pass2(1:ipass)
       ELSE IF (radio_component .LE. 1) THEN
       radio_component = 1
       ENDIF
-      code = -90000.
+      code = -90000
       ELSE IF (RX == 'X') THEN
       IF (flux > xfl_min) THEN
       x_ray_component=int(alog10(flux/xfl_min)/alog10(xfl_max/xfl_min)*99.)
@@ -583,9 +583,9 @@ c      write(*,*) pass2(1:ipass)
       ELSE IF (x_ray_component .Lt. 1) THEN
       x_ray_component = 1
       ENDIF
-      code = -80000.
+      code = -80000
       ENDIF
-      code = code -radio_component-100.*x_ray_component
+      code = code -radio_component-100*x_ray_component
       RETURN
       END
 
@@ -597,7 +597,7 @@ c
       IMPLICIT none
       REAL*4 nh, flux , av , m_band, a_band, Rv
       REAL*4 c, lambda, const, frequency, a
-      REAL*8 x,aa,bb,c1,c2,dx,px,ebv
+      REAL*4 x,aa,bb,c1,c2,dx,px,ebv
       CHARACTER*3 filter
 c        print *,' nh, m_band, filter ', nh, m_band,filter
 c        call upc(filter)

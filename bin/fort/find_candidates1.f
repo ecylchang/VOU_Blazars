@@ -27,7 +27,7 @@ c
       INTEGER*4 radio_type(5000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000)
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
-      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,xpts2,iuvx
+      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(5000),l,filen,ttsource(5000),ihighpeak,track2(100)
       REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center, dec_center,radius,dec_1kev(5000,5000)
       REAL*8 ra_radio(5000),dec_radio(5000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
@@ -102,6 +102,8 @@ c 15 arcsecs
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
          CALL rmvlbk(string)
+c         write(*,*) string
+c         write(*,*) length
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
          im=index(string(in+1:length),' ')+in
@@ -115,6 +117,7 @@ c 15 arcsecs
          in=im
          im=index(string(in+1:length),' ')+in
          output_file4=string(in+1:im-1)
+c         write(*,*) output_file4
          read(string(im+1:length),*) aim
 c         write(*,*) 'the aim',aim
       ENDIF

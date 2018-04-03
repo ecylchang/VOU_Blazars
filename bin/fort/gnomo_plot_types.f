@@ -38,7 +38,7 @@ c
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
       CHARACTER*4 tcol14(200),tcol12(10000)
       CHARACTER*15 newstring
-      CHARACTER*30 device ,strzoom
+      CHARACTER*80 device ,strzoom
       CHARACTER*60 title , filein
       CHARACTER*400 stringin
       CHARACTER*14 xaxis_label,yaxis_label
@@ -60,6 +60,7 @@ c
 c Get input parameters
 c
       CALL rdforn(stringin,length)
+c      write(*,*) stringin,length
       IF ( length.NE.0 ) then
          in = index(stringin(1:length),',')
          filein=stringin(1:in-1)
@@ -69,6 +70,7 @@ c
 c         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
+c         write(*,*) device
 
          ip = index(stringin(im+1:length),',')+im
          strzoom = stringin(im+1:ip-1)
