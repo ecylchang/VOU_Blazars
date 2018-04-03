@@ -189,7 +189,15 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 raxrt=`echo $1 | sed 's/\./_/g'`
 decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
 rrxrt=`echo $3 | sed 's/\./_/g'`
-xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
+
+# If a variable 'RUN_LABEL' is defined in the environment,
+# use it to make the Result/. output directory
+#
+if [ ! -z "$RUN_LABEL" ]; then
+    xrtnm="$RUN_LABEL"
+else
+    xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
+fi
 if [ -z $pid ]; then
    unset pidnm
    test ! -d Results && mkdir Results
