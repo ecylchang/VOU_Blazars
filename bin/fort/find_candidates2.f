@@ -1035,9 +1035,9 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomagerr(iusno,5)
-               CALL  mag2flux (nh,usnomag(iusno,5),'I  ',flux_usno(iusno,5),frequency_usno(iusno,5))
-        CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'I  ',FluxU_usno(iusno,5),frequency_usno(iusno,5))
-        CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'I  ',FluxL_usno(iusno,5),frequency_usno(iusno,5))
+               CALL  mag2flux (nh,usnomag(iusno,5),'psy',flux_usno(iusno,5),frequency_usno(iusno,5))
+        CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'psy',FluxU_usno(iusno,5),frequency_usno(iusno,5))
+        CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'psy',FluxL_usno(iusno,5),frequency_usno(iusno,5))
                opt_type(iusno)='PANSTARRS'
             else if (catalog(1:4) == 'gaia') THEN
                is=ie
@@ -2479,7 +2479,7 @@ cENDDO
             if (frequency(i,j) .lt. 1.E10) then
                call graphic_code(flux(i,j),11,code)
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
-            else if (frequency(i,j) .eq. 2.418E17) then
+            else if ((frequency(i,j) .eq. 2.418E17) .or. ((rrxx_type(i,j) =='XRTDEEP') .and. (frequency(i,j) .eq. 2.418E17*3.)) )then
                call graphic_code(flux(i,j),81,code)
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif

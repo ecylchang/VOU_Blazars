@@ -11,7 +11,8 @@ c
       real*8 rra,rdec
       CHARACTER*2 ul
       character*14 stringin
-      CHARACTER*80 input_file,output_file,string
+      CHARACTER*80 input_file,output_file
+      Character*150 string
       LOGICAL there,ok
       ok = .TRUE. 
       one = 1.0
@@ -25,6 +26,8 @@ c
       in=index(string(1:length),' ')
       input_file=string(1:in-1)
       output_file=string(in+1:length)
+c      write(*,*) input_file
+c      write(*,*) output_file
 
       mjd = 55000
       lu_in = 10
