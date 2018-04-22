@@ -7,7 +7,7 @@ c
       INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(2000)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(2000),s14(200)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
       integer*8 code(10000)
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
@@ -468,6 +468,11 @@ c              cs = max(1.0,cradio*8./99.)
                icol14 = icol14 + 1
                ra_col14(icol14)=ra(j)
                dec_col14(icol14)=dec(j)
+               if (om .ge. -30) then
+                  s14(icol14)=7
+               else
+                  s14(icol14)=-5
+               endif
                !write(*,*) isource
                if (om .eq. -99 ) then
                   write(tcol14(icol14),'(i4)') isource
@@ -621,9 +626,9 @@ C- PG
       if (icol14 .gt. 0) then
          do j=1,icol14
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
-            call pgsch(1.)
+            call pgsch(1.3)
             call pgsci(12)
-            call pgpoint(1,x,y,-5)
+            call pgpoint(1,x,y,s14(j))
             if (tcol14(j) .ne. "    ") then
                call pgsch(1.)
                CALL PGTEXT (X, Y, tcol14(j))

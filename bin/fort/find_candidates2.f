@@ -26,7 +26,7 @@ c
       INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns
       INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000)
       INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000)
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
@@ -88,6 +88,7 @@ c
       iuv=0
       igam=0
       ixray=0
+      ixrtsp=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -1260,6 +1261,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
             name_x(ixray)=catalog
             filen_x(ixray)=filen
             if (catalog(1:7) == 'xrtspec') then
+               ixrtsp=ixrtsp+1
+               xrtspind(ixray)=ixrtsp
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_xray(ixray,1)
@@ -2432,15 +2435,23 @@ c u to w2
 c         write(*,*) iuvfound,ii1,ii2,ii3
 
          ixxfound=0
+         write(*,*) '.......................hard X-ray and XRT spectral data..................'
          do i=1,ixray
             xraypart(i)=0
             call Dist_sky(ra_source(j),dec_source(j),ra_xray(i),dec_xray(i),dist)
+            !write(*,*) poserr_xray(i),epos(1,j)
             min_dist=sqrt(poserr_xray(i)**2+epos(1,j)**2)
+            !write(*,*) min_dist,dist*3600.
             if (dist*3600. < min_dist ) then !5 arcsec fixed value
                xraypart(i)=j
                ixxfound=ixxfound+1
+               if (xray_type(i) == 'BAT100') write(*,'(a,2x,f5.3,2x,"acrmin away")') xray_type(i),dist*60.
+               if ((xray_type(i) == 'XRTSPEC') .and. (xrtspind(i) .eq. 1))
+     &           write(*,'(a,2x,f7.3,2x,"acrsec away")') xray_type(i),dist*3600.
             endif
          enddo
+c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
+         IF (ixxfound == 0) write(*,'('' NO BAT or XRT detection within '',f7.3,'' arcmin'')') min_dist
 
          igamfound=0
          write(*,*) '.......................Gamma-ray..................'
@@ -2478,10 +2489,10 @@ cENDDO
             write(14,'(4(es10.3,2x),a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),rrxx_type(i,j)
             if (frequency(i,j) .lt. 1.E10) then
                call graphic_code(flux(i,j),11,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
-            else if ((frequency(i,j) .eq. 2.418E17) .or. ((rrxx_type(i,j) =='XRTDEEP') .and. (frequency(i,j) .eq. 2.418E17*3.)) )then
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
+            else if ((frequency(i,j) .eq. 2.418E17) .or. ((rrxx_type(i,j) == 'XRTDEEP') .and. (ra_rrxx(i,j) .ne. 0.)) )then
                call graphic_code(flux(i,j),81,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
          enddo
          do i=1,ilowrfound
@@ -2538,7 +2549,7 @@ cENDDO
      &                   uflux_ircand(i,s),lflux_ircand(i,s),ircand_type(i)
                enddo
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
+            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
          enddo
          do i=1,iofound
             if (optcand_type(i) == 'USNO' ) then
@@ -2561,7 +2572,7 @@ cENDDO
             if (optcand_type(i) == 'USNO') call graphic_code(usnomag_cand(i,2),63,code)
             if (optcand_type(i) == 'PANSTARRS') call graphic_code(usnomag_cand(i,3),61,code)
             if (optcand_type(i) == 'GAIA') call graphic_code(usnomag_cand(i,2),63,code)
-        write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_usnocand(i),dec_usnocand(i),int(code),epos_usnocand(i)
+        write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_usnocand(i),dec_usnocand(i),int(code),epos_usnocand(i)
          enddo
          do i=1,iuvfound
             if (uvcand_type(i) == 'GALEX') then
@@ -2577,9 +2588,9 @@ cENDDO
             endif
             intensity=max(uvmag_cand(i,1),uvmag_cand(i,2),uvmag_cand(i,3),uvmag_cand(i,4),uvmag_cand(i,5))
             call graphic_code(intensity,71,code)
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_uvcand(i),dec_uvcand(i),int(code),epos_uvcand(i)
+            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_uvcand(i),dec_uvcand(i),int(code),epos_uvcand(i)
          enddo
-         do i=1,ixxfound
+         do i=1,ixray
             if (xraypart(i) .eq. j) then
                if (xray_type(i) == 'XRTSPEC') then
                   write(14,'(4(es10.3,2x),a)') frequency_xray(i,1),flux_xray(i,1),FluxU_xray(i,1),
@@ -2590,8 +2601,10 @@ cENDDO
                   write(14,'(4(es10.3,2x),a)') frequency_xray(i,2),flux_xray(i,2),FluxU_xray(i,2),
      &             FluxL_xray(i,2),xray_type(i)
                endif
-               call graphic_code(flux_xray(i,1),82,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_xray(i),dec_xray(i),int(code),poserr_xray(i)
+               if ((xrtspind(i) .lt. 2) .or. (xray_type(i) == 'BAT100')) then
+                  call graphic_code(flux_xray(i,1),82,code)
+                  write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_xray(i),dec_xray(i),int(code),poserr_xray(i)
+               endif
             endif
          enddo
          do i=1,igam
@@ -2618,7 +2631,7 @@ cENDDO
                enddo
             endif
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
          enddo
 c         write(*,*) '.......................source type and cataloged..................'
          do i=1,icat

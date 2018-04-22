@@ -57,7 +57,7 @@ handle_ps () {
 
 #source activate eada2
 #check if docker and heasoft are installed
-#dockerthere=`which docker`
+dockerthere=`which docker`
 nhthere=`which nh`
 
 #read the parameters input
@@ -249,6 +249,8 @@ echo conesearch --db ${HERE}/cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius 
 echo conesearch --db ${HERE}/cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}crates.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}pulsar.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog Fermi8YL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
