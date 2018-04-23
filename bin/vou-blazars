@@ -72,6 +72,28 @@ do
    echo $#
 done
 
+#read the XRT Deepsky name and create the file to store the results
+raxrt=`echo $1 | sed 's/\./_/g'`
+decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
+rrxrt=`echo $3 | sed 's/\./_/g'`
+
+# If a variable 'RUN_LABEL' is defined in the environment,
+# use it to make the Result/. output directory
+#
+if [ ! -z "$RUN_LABEL" ]; then
+   xrtnm="$RUN_LABEL"
+else
+   xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
+fi
+if [ -z $pid ]; then
+   unset pidnm
+   test ! -d Results && mkdir Results
+   test ! -d Results/$xrtnm && mkdir Results/$xrtnm
+   test ! -d Results/SEDtool && mkdir Results/SEDtool
+else
+   pidnm=$pid"_"
+fi
+
 #check if the number 4 parameter are nh value or not
 if [ $# -ge 4 ]; then
    ttt=`echo $4 | grep '[eE]'`
@@ -91,9 +113,9 @@ if [ -z $nhthere ]; then
       echo set default nh 5.E20
    fi
 else
-   nh equinox=2000 ra=$1 dec=$2 > nhvalue.txt
-   nhval=`tail -1 nhvalue.txt |  awk '{print $7}'`
-   rm -f nhvalue.txt
+   nh equinox=2000 ra=$1 dec=$2 > ${pidnm}nhvalue.txt
+   nhval=`tail -1 ${pidnm}nhvalue.txt |  awk '{print $7}'`
+   rm -f ${pidnm}nhvalue.txt
 fi
 
 #read the parameters input
@@ -185,28 +207,6 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 #echo finish searching swift deep data
 #fi
 
-#read the XRT Deepsky name and create the file to store the results
-raxrt=`echo $1 | sed 's/\./_/g'`
-decxrt=`echo $2 | sed 's/\./_/g' | sed 's/-/m/g'`
-rrxrt=`echo $3 | sed 's/\./_/g'`
-
-# If a variable 'RUN_LABEL' is defined in the environment,
-# use it to make the Result/. output directory
-#
-if [ ! -z "$RUN_LABEL" ]; then
-    xrtnm="$RUN_LABEL"
-else
-    xrtnm=${raxrt}"_"${decxrt}"_"${rrxrt}
-fi
-if [ -z $pid ]; then
-   unset pidnm
-   test ! -d Results && mkdir Results
-   test ! -d Results/$xrtnm && mkdir Results/$xrtnm
-   test ! -d Results/SEDtool && mkdir Results/SEDtool
-else
-   pidnm=$pid"_"
-fi
-
 #check if the same RA, Dec, radius are ran sucessfully before
 #if [ -s $xrtnm/output1.csv ]; then
 #   skip1=ok
@@ -224,7 +224,7 @@ fi
 ##############################################################
 
 #FIRST phase data retrieving, runing the conesearch 1st phase
-rm -f *.1.csv
+rm -f ${pidnm}*.1.csv
 echo conesearch --db ${HERE}/cats1.ini --catalog NVSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}nvss.1.csv > ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog FIRST --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}first.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sumss.1.csv >> ${pidnm}vosearch.txt
@@ -266,9 +266,9 @@ sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #fi
 
 #read the data
-ls *.1.csv > ${pidnm}catlist1.txt
+ls ${pidnm}*.1.csv > ${pidnm}catlist1.txt
 #copy the XRTDEEP result and add to the catlist1
-rm -f xrtdeep.csv
+rm -f ${pidnm}xrtdeep.csv
 if [ -s work/$xrtnm/table_flux_detections.csv ]; then
    cat work/$xrtnm/table_flux_detections.csv | sed 's/;/,/g' | sed 's/:/ /g' > ${pidnm}xrtdeep.csv
 fi
@@ -282,7 +282,7 @@ fi
 #fi
 
 #running the PHASAE 1
-rm -f *temp.txt
+rm -f ${pidnm}*temp.txt
 if [ ${13} == s ]; then
    ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt 0 > ${pidnm}phase1
    echo
@@ -374,7 +374,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       rm -f ${pidnm}vosearch.txt
 
 #read the Intermediate phase data
-      ls *.i.csv > ${pidnm}catlist_int.txt
+      ls ${pidnm}*.i.csv > ${pidnm}catlist_int.txt
       rm -f ${pidnm}outputint.csv
       echo
       [ -s ${pidnm}catlist_int.txt ] && ${BINF}/readcat ${pidnm}catlist_int.txt ${pidnm}output_int.csv $1 $2 $3 $4 $5 $6 $7 $8
@@ -423,7 +423,7 @@ fi
 
 #begin phase 2 setup
 source=1
-rm -f *.2.csv
+rm -f ${pidnm}*.2.csv
 #read the number interested
 until [ $source == sed -o $source == q ]
 do
@@ -531,7 +531,7 @@ do
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
       ncat2=`cat ${pidnm}vosearch.txt | wc -l`
-      catthere=`ls *.$source.2.csv | wc -l`
+      catthere=`ls ${pidnm}*.$source.2.csv | wc -l`
       if [ $catthere != 0 ]; then
          echo
          echo data already downloaded!
@@ -549,13 +549,13 @@ do
       if [ -z $nhthere ]; then
          nhval=$4
       else
-         nh equinox=2000 ra=$racand dec=$deccand > nhvalue.txt
-         nhval=`tail -1 nhvalue.txt |  awk '{print $7}'`
-         rm -f nhvalue.txt
+         nh equinox=2000 ra=$racand dec=$deccand > ${pidnm}nhvalue.txt
+         nhval=`tail -1 ${pidnm}nhvalue.txt |  awk '{print $7}'`
+         rm -f ${pidnm}nhvalue.txt
       fi
 
 #read the phase 2 data
-      ls *.2.csv > ${pidnm}catlist2.txt
+      ls ${pidnm}*.2.csv > ${pidnm}catlist2.txt
       rm -f ${pidnm}output2.csv
       echo
       [ -s ${pidnm}catlist2.txt ] && ${BINF}/readcat ${pidnm}catlist2.txt ${pidnm}output2.csv $racand $deccand $3 $nhval 0. 0. 0. 0.
@@ -625,7 +625,7 @@ do
 done
 
 #remove the vo files from various catalogs
-rm -f *.1.csv
-rm -f *.i.csv
-rm -f *.2.csv
+rm -f ${pidnm}*.1.csv
+rm -f ${pidnm}*.i.csv
+rm -f ${pidnm}*.2.csv
 rm -f ${pidnm}xrtdeep.csv
