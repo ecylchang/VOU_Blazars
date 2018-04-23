@@ -32,12 +32,12 @@ c
       REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center, dec_center,radius,dec_1kev(5000,5000)
       REAL*8 ra_radio(5000),dec_radio(5000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(5000),dec_swift(5000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
-      REAL*8 ra_chandra(500),dec_chandra(500),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
+      REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
       real*8 ra_cat(100),dec_cat(100),ra_gam(200),dec_gam(200)
-      REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(500,5),radian
+      REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
       REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
       REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000),poserr_rrr(5000)
-      REAL*4 frequency_chandra(500,5),frequency_swift(5000,4),frequency_ipc(200)
+      REAL*4 frequency_chandra(1000,5),frequency_swift(5000,4),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce
@@ -52,7 +52,7 @@ c
       real*4 Ferr_swift(5000,4),FluxU_swift(5000,4),FluxL_swift(5000,4),poserr_swift(5000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500)
-      real*4 Ferr_chandra(500,5),FluxU_chandra(500,5),FluxL_chandra(500,5),poserr_chandra(500)
+      real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000)
@@ -1021,7 +1021,7 @@ c PG
 c end PG
          ELSE IF (catalog(1:7) == 'chandra') THEN
             ichandra=ichandra+1
-            IF (ichandra > 500) Stop 'Too many Chandra points'
+            IF (ichandra > 1000) Stop 'Too many Chandra points'
             ra_chandra(ichandra)=ra
             dec_chandra(ichandra)=dec
             is=ie
