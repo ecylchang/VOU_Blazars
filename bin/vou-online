@@ -1,6 +1,8 @@
 #!/bin/bash
 declare -i par=$#-2
 echo $par
+source activate eada2
+
 if [ $par -eq 2 ]; then
    pathou=$3
    pid=$4
@@ -51,6 +53,15 @@ rm -f $pid"_"phase*
 rm -f $pid"_"catlist*
 rm -f $pid"_"Intermediate_out.txt
 mv -f ${pid}*.* $pathou
+
+#########################################ANTONIO#########################################
+#Converto i file .eps appena prodotti in .png
+find . -name $pid'*.eps' -exec bash -c 'convert {} `basename {} .eps`.png' \;
+#Ruoto di 90° l'immagine della SED
+convert -rotate 90 $pid'_sed_sed.png' $pid'_sed_sed.png'
+#Uscita dall'ambiente eada2
+#########################################ANTONIO#########################################
+source deactivate eada2
 unset pid
 unset pathou
 
