@@ -325,7 +325,7 @@ c                  xrayrepeat(nrep(i),i)=j
                   trackrr(i)=trackrr(j)
                   nreprr(trackrr(i))=nreprr(trackrr(i))+1
                   repnumberrr(i)=nreprr(trackrr(i))
-                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))
+c                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))
                   goto 96
                endif
             enddo
@@ -334,7 +334,7 @@ c                  xrayrepeat(nrep(i),i)=j
          trackrr(i)=irrss
          nreprr(trackrr(i))=1
          repnumberrr(i)=nreprr(trackrr(i))
-         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i)!,back(i,repnumber(i))
+c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i)!,back(i,repnumber(i))
 96    continue
       enddo
       if (irrss+irrrep .ne. irr ) write(*,*) 'Warning! may have the wrong number.'
@@ -387,7 +387,7 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                endif
             endif
          enddo
-         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:nreprr(i))
+c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:nreprr(i))
       enddo
 
       open(12,file=output_file,status='unknown',iostat=ier)

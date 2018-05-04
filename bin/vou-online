@@ -44,15 +44,9 @@ elif [ $par -eq 11 ]; then
    pid=${13}
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
+
+
 source ./bin/vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
-rm -f $pid"_"output*.csv
-rm -f $pid"_"Sed*.txt
-rm -f $pid"_"no_matched_temp.txt
-rm -f $pid"_"RX*.txt
-rm -f $pid"_"phase*
-rm -f $pid"_"catlist*
-rm -f $pid"_"Intermediate_out.txt
-mv -f ${pid}*.* $pathou
 
 #########################################ANTONIO#########################################
 #Converto i file .eps appena prodotti in .png
@@ -61,6 +55,15 @@ find . -name $pid'*.eps' -exec bash -c 'convert {} `basename {} .eps`.png' \;
 convert -rotate 90 $pid'_sed_sed.png' $pid'_sed_sed.png'
 #Uscita dall'ambiente eada2
 #########################################ANTONIO#########################################
+
+rm -f $pid"_"output*.csv
+rm -f $pid"_"Sed*.txt
+rm -f $pid"_"no_matched_temp.txt
+rm -f $pid"_"RX*.txt
+rm -f $pid"_"phase*
+rm -f $pid"_"catlist*
+rm -f $pid"_"Intermediate_out.txt
+mv -f ${pid}*.* $pathou
 source deactivate eada2
 unset pid
 unset pathou

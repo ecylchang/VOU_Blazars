@@ -1282,7 +1282,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                   FluxU_xray(ixray,1)=0.
                   FluxL_xray(ixray,1)=0.
                endif
-               poserr_xray(ixray)=7.
+               poserr_xray(ixray)=5.
                xray_type(ixray)='XRTSPEC'
             else if (catalog(1:6) == 'bat105') then
                is=ie
@@ -2810,7 +2810,7 @@ ccccccccccc check nh=2.29e21*Av
         ebv=av/Rv
         if (av < 0.) av=0.
         if (filter(1:3) == 'U  ') then
-           lambda=3550.
+           lambda=3600.
            const=log10(1810.)-23.
         else if (filter(1:3) == 'B  ') then
            lambda=4400.
@@ -2868,10 +2868,10 @@ ccccccccccc check nh=2.29e21*Av
            lambda=6730. !!!Jordi et al. 2010
            const=log10(2918.)-23. !!!!the zero mag. flux are estimated from Vega flux!!!
         else if (filter(1:3) == 'fuv') then
-           lambda=1528.
+           lambda=1538.6
            const=log10(3631.)-23.
         else if (filter(1:3) == 'nuv') then
-           lambda=2271.
+           lambda=2315.7
            const=log10(3631.)-23.
         else if (filter(1:3) == 'su ') then
            lambda=3501. !from Poole et al. (2008) effective wavelength

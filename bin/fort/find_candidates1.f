@@ -1,4 +1,4 @@
-      PROGRAM find_candidates1
+       PROGRAM find_candidates1
 c
 c This program reads a query results file from the ASDC error circle explorer tool
 c and plots potential blazars of different types based on radio/X-ray ratios 
@@ -942,7 +942,7 @@ c end PG
                   endif
                endif
                frequency_swift(iswift,4)=(1.602E-19)*(4.5e3)/(6.626e-34)
-               poserr_swift(iswift)=7.!!!!!!!!
+               poserr_swift(iswift)=10.!!!!!!!!
             endif
 c PG
             CALL RXgraphic_code(flux_swift(iswift,1),'X',code)
@@ -1358,6 +1358,7 @@ c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for th
 c            ELSE
 c               min_dist = min_dist_swift
 c            ENDIF
+c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
             IF (dist < max(min_dist,2./3600.)) THEN
                IF (xrt_type(i) == 1) THEN
                   xray_type = 5
