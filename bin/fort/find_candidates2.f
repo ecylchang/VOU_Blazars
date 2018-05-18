@@ -23,14 +23,14 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s
-      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound
+      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s,iverit,veritind(100)
+      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound,filen_v(100)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000)
-      INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000)
+      INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
-      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500)
+      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
@@ -38,7 +38,7 @@ c
       REAL*8 ra_pccs100(200),dec_pccs100(200),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
       real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
-      real*8 ra_lowrcand(5),dec_lowrcand(5)
+      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(100),dec_vhe(100)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -64,6 +64,7 @@ c
       real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(1000)
       real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
+      real*4 frequency_vhe(100),flux_vhe(100),FluxU_vhe(100),FluxL_vhe(100),poserr_vhe(100),Ferr_vhe(100)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -72,7 +73,7 @@ c
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100),xray_type(5000)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),lowrcand_type(5)
+      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),lowrcand_type(5),vhe_type(100)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
       ok = .TRUE.
@@ -89,6 +90,10 @@ c
       igam=0
       ixray=0
       ixrtsp=0
+      ibigb=0
+      imagic=0
+      iverit=0
+      ivhe=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -1320,7 +1325,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:8) == 'fermi8yr') .or.
-     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl'))then
+     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')) then
             igam=igam+1
             If (igam > 100) stop 'Too many Gamma-ray points'
             if (igam .ne. 1) THEN
@@ -1803,8 +1808,73 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                call fluxtofdens(slope_gam(igam,1),500.,2000.,FluxL_gam(igam,6),1000.,fdens,nudens)
                FluxL_gam(igam,6)=fdens
                gam_type(igam)='3FHL'
+            ELSE IF (catalog(1:5) =='1bigb') then
+               ibigb=ibigb+1
+               bigbind(igam)=ibigb
+               poserr_gam(igam)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_gam(igam,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1)
+               FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
+               FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
+               slope_gam(igam,1)=1.8 !!!!!!!!!!!change later
+               gam_type(igam)='1BIGB'
             ENDIF
             !write(*,*) catalog,FluxU_gam(igam,4),flux_gam(igam,4),FluxL_gam(igam,4)
+         ELSE IF ((catalog(1:5) == 'magic') .or. (catalog(1:7) == 'veritas')) then
+            ivhe=ivhe+1
+            ra_vhe(ivhe)=ra
+            dec_vhe(ivhe)=dec
+            filen_v(ivhe)=filen
+            If (catalog(1:5) == 'magic') then
+               imagic=imagic+1
+               magicind(ivhe)=imagic
+               poserr_vhe(ivhe)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               if (Ferr_vhe(ivhe) .eq. -999.) Ferr_vhe(ivhe)=0.
+               FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
+               vhe_type(ivhe)='MAGIC'
+            else if (catalog(1:7) == 'veritas') then
+               iverit=iverit+1
+               veritind(ivhe)=iverit
+               poserr_vhe(ivhe)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_vhe(ivhe)
+               flux_vhe(ivhe)=flux_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
+               FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
+               frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
+               vhe_type(ivhe)='VERITAS'
+            endif
          ENDIF
       ENDDO
  99   CONTINUE
@@ -2464,11 +2534,28 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
                gampart(i)=j
                igamfound=igamfound+1
                if (igamfound > 20) stop 'Too many Gamma-ray candidate'
-               write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+               if (gam_type(i) == '1BIGB') then
+                  if (bigbind(i) .eq. 1) then
+                     write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+                  endif
+               else
+                  write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+               endif
             endif
          enddo
          !write(*,*) igamfound
          IF (igamfound == 0) write(*,'('' NO Gamma-ray detection within '',f5.0,'' arcmin'')') min_dist_gam*60.
+
+         write(*,*) '.......................TeV..................'
+         do i=1,ivhe
+            if (filen_v(i) .eq. j) then
+               if (magicind(i) .eq. 1) write(*,*) 'MAGIC source'
+               if (veritind(i) .eq. 1) write(*,*) 'VERITAS source'
+            endif
+         enddo
+         if (ivhe .eq. 0) then
+            write(*,*) 'NO TeV detection within 10 arcmin'
+         endif
 
 c plot the sed, and output the list, decide the source type
 
@@ -2624,6 +2711,9 @@ cENDDO
                do s=1,6
                   write(14,'(4(es10.3,2x),a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),FluxL_gam(i,s),gam_type(i)
                enddo
+            else if (gam_type(i) == '1BIGB') then
+               if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
+               write(14,'(4(es10.3,2x),a)') frequency_gam(i,1),flux_gam(i,1),FluxU_gam(i,1),FluxL_gam(i,1),gam_type(i)
             else
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,2
@@ -2631,9 +2721,18 @@ cENDDO
                enddo
             endif
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            if (gam_type(i) == '1BIGB') then
+               if (bigbind(i) .eq. 1) write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            else
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            endif
          enddo
-c         write(*,*) '.......................source type and cataloged..................'
+         do i=1,ivhe
+            if (filen_v(i) .eq. j) then
+               write(14,'(4(es10.3,2x),a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),FluxL_vhe(i),vhe_type(i)
+            endif
+         enddo
+         write(*,*) '.......................source type and cataloged..................'
          do i=1,icat
             call Dist_sky(ra_source(j),dec_source(j),ra_cat(i),dec_cat(i),dist)
             if (dist < min_dist_other) then

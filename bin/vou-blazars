@@ -268,10 +268,10 @@ sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #read the data
 ls ${pidnm}*.1.csv > ${pidnm}catlist1.txt
 #copy the XRTDEEP result and add to the catlist1
-#rm -f ${pidnm}xrtdeep.csv
-#if [ -s work/$xrtnm/table_flux_detections.csv ]; then
-#   cat work/$xrtnm/table_flux_detections.csv | sed 's/;/,/g' | sed 's/:/ /g' > ${pidnm}xrtdeep.csv
-#fi
+rm -f ${pidnm}xrtdeep.csv
+if [ -s work/$xrtnm/table_flux_detections.csv ]; then
+   cat work/$xrtnm/table_flux_detections.csv | sed 's/;/,/g' | sed 's/:/ /g' > ${pidnm}xrtdeep.csv
+fi
 [ -s ${pidnm}xrtdeep.csv ] && echo ${pidnm}xrtdeep.csv >> ${pidnm}catlist1.txt
 #if [ $skip1 == ok ]; then
 #   cat $xrtnm/output1.csv | sed '2,2c nH= $4   Error circle or elliptical= $5 $6 $7 $8' > output1.csv
@@ -298,8 +298,8 @@ else
    rm -f ${pidnm}RX_map.*ps
    sort -n -k 3 ${pidnm}RX_temp.txt > ${pidnm}RX_sorted.txt
    rm -f ${pidnm}RX_temp.txt
-   ${BINF}/gnomo_plot_types ${pidnm}RX_sorted.txt,${pidnm}RX_map.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
-   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+${BINF}/gnomo_plot_types ${pidnm}RX_sorted.txt,${pidnm}RX_map.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
+   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
    handle_ps ${pidnm}RX_map.ps
    handle_ps ${pidnm}candidates.ps
 #   ps2eps -B -q RX_map.ps
@@ -511,7 +511,9 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}2fhl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YL --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}fermi8yr.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fhl.$nn.2.csv >> ${pidnm}vosearch.txt
-            #echo conesearch --db ${HERE}/cats2.ini --catalog 1bigb --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv
+            echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}magictt.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}veritas.$nn.2.csv >> ${pidnm}vosearch.txt
             echo $rar $decr $typer $nn
             racand=$rar
             deccand=$decr
@@ -555,6 +557,8 @@ do
       fi
 
 #read the phase 2 data
+      cat ${pidnm}magictt.$source.2.csv | grep -v '#' > ${pidnm}magic.$source.2.csv #deal with MAGIC extension
+      rm -f ${pidnm}magictt.$source.2.csv
       ls ${pidnm}*.2.csv > ${pidnm}catlist2.txt
       rm -f ${pidnm}output2.csv
       echo
@@ -628,4 +632,4 @@ done
 rm -f ${pidnm}*.1.csv
 rm -f ${pidnm}*.i.csv
 rm -f ${pidnm}*.2.csv
-#rm -f ${pidnm}xrtdeep.csv
+rm -f ${pidnm}xrtdeep.csv

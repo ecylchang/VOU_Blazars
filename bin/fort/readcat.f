@@ -58,7 +58,8 @@ c the catalog without source name
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
      &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
-     &          .or. (catalog(1:it-1) == 'xrtspec')) then
+     &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
+     &          .or. (catalog(1:it-1) == 'veritas') ) then
                is=0
                ie=index(value(1:len(value)),',')
             endif
@@ -147,6 +148,10 @@ c the catalog without source name
             else
                read(dec(1:ie-1),*) decdeg
             endif
+            if ((catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'magic')) then
+               radeg=ra_center
+               decdeg=dec_center
+            endif
 c read other pos_err
             if ((catalog(1:it-1) == 'nvss') .or.(catalog(1:it-1) == 'hst') .or.
      &            (catalog(1:it-1) == 'wise') .or. (catalog(1:5) == 'spire') .or.
@@ -206,6 +211,9 @@ c read the flux
      &      ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) .or.
      &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr')) then
                ie=index(value(1:len(value)),',')
+               read(value(1:ie-1),'(a)') flux
+            endif
+            if  ((catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'magic')) then
                read(value(1:ie-1),'(a)') flux
             endif
             if ((catalog(1:5) == '2mass') .or. (catalog(1:it-1) == 'gaia')) then

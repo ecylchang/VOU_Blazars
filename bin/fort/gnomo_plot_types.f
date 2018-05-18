@@ -92,6 +92,10 @@ c         write(*,*) device
          STOP
       ENDIF
 
+c      ra_o=ra_o+0.15
+c      dec_o=dec_o+0.1
+c      write(*,*) ra_o,dec_o
+
       i = 0
       radius= radius/60.
       ellipserot=-ellipserot
