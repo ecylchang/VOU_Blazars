@@ -1819,7 +1819,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
                is=ie
-               ie=index(string(is+1:len(string)),',')+is
+               ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1)
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
@@ -1861,17 +1861,17 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_vhe(ivhe)
-               flux_vhe(ivhe)=flux_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
                FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
-               FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
                FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
-               FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)
+               flux_vhe(ivhe)=flux_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
+               FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
+               FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                vhe_type(ivhe)='VERITAS'
             endif

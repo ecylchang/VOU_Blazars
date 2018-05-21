@@ -1217,7 +1217,8 @@ c PG
             CALL RXgraphic_code(flux_chandra(ichandra,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_chandra(ichandra),dec_chandra(ichandra),int(code)
 c end PG
-         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == 'fermi8yr')) then
+         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == 'fermi8yr')
+     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '1bigb')) then
             igam=igam+1
             ra_gam(igam)=ra
             dec_gam(igam)=dec

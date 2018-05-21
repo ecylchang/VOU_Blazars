@@ -249,8 +249,10 @@ echo conesearch --db ${HERE}/cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius 
 echo conesearch --db ${HERE}/cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}crates.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}pulsar.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog Fermi8YL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}1bigb.1.csv >> ${pidnm}vosearch.txt
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
@@ -557,8 +559,10 @@ do
       fi
 
 #read the phase 2 data
-      cat ${pidnm}magictt.$source.2.csv | grep -v '#' > ${pidnm}magic.$source.2.csv #deal with MAGIC extension
-      rm -f ${pidnm}magictt.$source.2.csv
+      if [ -f ${pidnm}magictt.$source.2.csv ]; then
+         cat ${pidnm}magictt.$source.2.csv | grep -v '#' > ${pidnm}magic.$source.2.csv #deal with MAGIC extension
+         rm -f ${pidnm}magictt.$source.2.csv
+      fi
       ls ${pidnm}*.2.csv > ${pidnm}catlist2.txt
       rm -f ${pidnm}output2.csv
       echo
