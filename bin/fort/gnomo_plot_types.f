@@ -7,9 +7,9 @@ c
       INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(2000),s14(200)
-      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
-      integer*8 code(10000)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(10000),s14(200)
+      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
+      integer*8 code(10000),icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
       REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(200)
@@ -488,6 +488,9 @@ c              cs = max(1.0,cradio*8./99.)
          endif
       ENDDO
       !write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13
+
+      !write(*,*) 'CENTER',ra_center,dec_center
+
       IF (icol1.GT.0) THEN 
         DO j = 1,icol1
            CALL gnom_projection(1,ra_center,dec_center,ra_col1(j),dec_col1(j),x,y)
@@ -558,8 +561,10 @@ c              cs = max(1.0,cradio*8./99.)
            CALL PGTEXT (X, Y, tcol5(j))
         ENDDO
       ENDIF
+
       IF (icol12.GT.0) THEN
          DO j = 1,icol12
+            !write(*,*) ra_center,dec_center,abs(ra_col12(j)),dec_col12(j)
             CALL gnom_projection(1,ra_center,dec_center,abs(ra_col12(j)),dec_col12(j),x,y)
             IF (csx12(j) > 0. ) THEN
                CALL pgsch(csx12(j))
