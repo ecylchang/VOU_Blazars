@@ -4,12 +4,12 @@ c
       IMPLICIT NONE
       INTEGER*4  max_sat,max_en
       PARAMETER (max_sat=100,max_en=1e5)
-      INTEGER*4 symbol, i,n,m,in,j
+      INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(2000)
-      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
-      integer*8 code(10000)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(10000),s14(200)
+      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
+      integer*8 code(10000),icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
       REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(200)
@@ -38,7 +38,7 @@ c
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
       CHARACTER*4 tcol14(200),tcol12(10000)
       CHARACTER*15 newstring
-      CHARACTER*30 device ,strzoom
+      CHARACTER*80 device ,strzoom
       CHARACTER*60 title , filein
       CHARACTER*400 stringin
       CHARACTER*14 xaxis_label,yaxis_label
@@ -60,12 +60,17 @@ c
 c Get input parameters
 c
       CALL rdforn(stringin,length)
+c      write(*,*) stringin,length
       IF ( length.NE.0 ) then
          in = index(stringin(1:length),',')
          filein=stringin(1:in-1)
-
+         iskip=index(filein(1:len(filein)),'_error')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_find_out')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_RX')
+c         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
+c         write(*,*) device
 
          ip = index(stringin(im+1:length),',')+im
          strzoom = stringin(im+1:ip-1)
@@ -86,13 +91,19 @@ c
      &             "e.g. gnomo_plot aa.log,test.ps/cps,4.91583,26.04778,40.,60.0")')
          STOP
       ENDIF
+
+c      ra_o=ra_o+0.15
+c      dec_o=dec_o+0.1
+c      write(*,*) ra_o,dec_o
+
       i = 0
       radius= radius/60.
       ellipserot=-ellipserot
       ellipserot_2=-ellipserot_2
       call getlun(lu_infile)
       open(lu_infile,file=filein,status='old')
-      if (filein == 'error_map.txt') then
+
+      if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
       DO WHILE (ok)
          i = i + 1
@@ -461,6 +472,11 @@ c              cs = max(1.0,cradio*8./99.)
                icol14 = icol14 + 1
                ra_col14(icol14)=ra(j)
                dec_col14(icol14)=dec(j)
+               if (om .ge. -30) then
+                  s14(icol14)=7
+               else
+                  s14(icol14)=-5
+               endif
                !write(*,*) isource
                if (om .eq. -99 ) then
                   write(tcol14(icol14),'(i4)') isource
@@ -472,13 +488,16 @@ c              cs = max(1.0,cradio*8./99.)
          endif
       ENDDO
       !write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13
+
+      !write(*,*) 'CENTER',ra_center,dec_center
+
       IF (icol1.GT.0) THEN 
         DO j = 1,icol1
            CALL gnom_projection(1,ra_center,dec_center,ra_col1(j),dec_col1(j),x,y)
            CALL pgsci(8)
            CALL pgsch(csr1(j))
            CALL pgpoint(1,x,y,17)
-           IF (csr1(i).GT.0.8*csx1(j)) CALL pgsci(10)
+           IF (csr1(j).GT.0.8*csx1(j)) CALL pgsci(10)
            CALL pgsch(csx1(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(8)
@@ -542,8 +561,10 @@ c              cs = max(1.0,cradio*8./99.)
            CALL PGTEXT (X, Y, tcol5(j))
         ENDDO
       ENDIF
+
       IF (icol12.GT.0) THEN
          DO j = 1,icol12
+            !write(*,*) ra_center,dec_center,abs(ra_col12(j)),dec_col12(j)
             CALL gnom_projection(1,ra_center,dec_center,abs(ra_col12(j)),dec_col12(j),x,y)
             IF (csx12(j) > 0. ) THEN
                CALL pgsch(csx12(j))
@@ -559,7 +580,7 @@ c              cs = max(1.0,cradio*8./99.)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-            if ((filein == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
+            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN
@@ -614,9 +635,9 @@ C- PG
       if (icol14 .gt. 0) then
          do j=1,icol14
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
-            call pgsch(1.)
+            call pgsch(1.3)
             call pgsci(12)
-            call pgpoint(1,x,y,-5)
+            call pgpoint(1,x,y,s14(j))
             if (tcol14(j) .ne. "    ") then
                call pgsch(1.)
                CALL PGTEXT (X, Y, tcol14(j))

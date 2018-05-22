@@ -1,4 +1,4 @@
-      PROGRAM find_candidates1
+       PROGRAM find_candidates1
 c
 c This program reads a query results file from the ASDC error circle explorer tool
 c and plots potential blazars of different types based on radio/X-ray ratios 
@@ -23,40 +23,40 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000)
+      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000),im
       INTEGER*4 radio_type(5000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000)
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
-      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,xpts2,iuvx
+      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(5000),l,filen,ttsource(5000),ihighpeak,track2(100)
       REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center, dec_center,radius,dec_1kev(5000,5000)
       REAL*8 ra_radio(5000),dec_radio(5000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(5000),dec_swift(5000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
-      REAL*8 ra_chandra(500),dec_chandra(500),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
-      real*8 ra_cat(100),dec_cat(100)
-      REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(500,5),radian
+      REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
+      real*8 ra_cat(100),dec_cat(100),ra_gam(200),dec_gam(200)
+      REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
       REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
-      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000)
-      REAL*4 frequency_chandra(500,5),frequency_swift(5000,4),frequency_ipc(200)
+      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000),poserr_rrr(5000)
+      REAL*4 frequency_chandra(1000,5),frequency_swift(5000,4),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
-      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra
+      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce
       REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(5000),rrconst(5000)
       REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(5000),flux2nufnu_sumss
       REAL*4 flux_1kev(5000,5000),frequency_radio(5000),uflux_1kev(5000,5000),lflux_1kev(5000,5000)
       REAL*4 xflux(5000),rflux(5000),flux_xpts(5000,5000),frequency_xpts(500,5000),poserr_1kev(5000,5000)
       real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(5000,5000),lflux_xpts(5000,5000),distrx(5000,5000)
-      real*4 Ferr_radio(5000),FluxU_radio(5000),FluxL_radio(5000),poserr_radio(5000),distrx2(5000,5000)
+      real*4 Ferr_radio(5000),FluxU_radio(5000),FluxL_radio(5000),poserr_radio(5000)
       real*4 Ferr_xmm(5000,6),FluxU_xmm(5000,6),FluxL_xmm(5000,6),poserr_xmm(5000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(5000,4),FluxU_swift(5000,4),FluxL_swift(5000,4),poserr_swift(5000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500)
-      real*4 Ferr_chandra(500,5),FluxU_chandra(500,5),FluxL_chandra(500,5),poserr_chandra(500)
+      real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000)
-      CHARACTER*80 input_file,output_file,output_file2
+      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
@@ -75,6 +75,7 @@ c
       ibmw = 0
       iother=0
       ichandra=0
+      igam=0
       radian = 45.0/atan(1.0)
       flux2nufnu_nvss=1.4e9*1.e-26
       flux2nufnu_sumss=8.43e8*1.e-26 !assumed radio alpha=0.2 !f_0.8 to f_1.4
@@ -102,16 +103,25 @@ c 15 arcsecs
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
          CALL rmvlbk(string)
+c         write(*,*) string
+c         write(*,*) length
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
-         read(string(in+1:length),*) aim
-         !write(*,*) 'the aim',aim
-      ELSE 
-         WRITE (*,'('' Enter query results file '',$)')
-         READ (*,'(a)') input_file
+         im=index(string(in+1:length),' ')+in
+         output_file=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file2=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file3=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file4=string(in+1:im-1)
+c         write(*,*) output_file4
+         read(string(im+1:length),*) aim
+c         write(*,*) 'the aim',aim
       ENDIF
-      output_file='find_out_temp.txt'
-      output_file2='RX_temp.txt'
       lu_in = 10
       !lu_output=11
       in = index(input_file(1:lenact(input_file)),'.')
@@ -126,9 +136,9 @@ c 15 arcsecs
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
-      open(14,file='no_matched_temp.txt',status='unknown',iostat=ier)
+      open(14,file=output_file4,status='unknown',iostat=ier)
       !write(*,*) ier
-      open(12,file='Sed_temp.txt',status='unknown')
+      open(12,file=output_file3,status='unknown')
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF
@@ -183,8 +193,41 @@ c 15 arcsecs
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_radio(iradio)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_radio(iradio)
+               if (catalog(1:4) == 'nvss') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) major
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) erraxis
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) minor
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if ((is .ne. ie-1) .and. (erraxis .eq. 0.)) read(string(is+1:ie-1),*) erraxis
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
+                  posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
+                  posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
+                  if (erraxis .ne. 0.) poserr_radio(iradio)=max(posxerr,posyerr)
+               else
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) major
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) minor
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
+                  posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
+                  posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
+                  poserr_radio(iradio)=max(posxerr,posyerr)
+               endif
             ELSE
                if (is .ne. ie-1) read(string(is+1:ie-1),*) ppss(iradio)
                is=ie
@@ -205,9 +248,11 @@ c 15 arcsecs
                posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr_radio(iradio)=max(posxerr,posyerr)
-               poserr_radio(iradio)=major*((Ferr_radio(iradio)/(flux_radio(iradio)-0.25))+0.05 )
                if (poserr_radio(iradio) .lt. 0.1 ) poserr_radio(iradio)=0.1
-               !write(*,*) flux_radio(iradio)
+c               write(*,*) 'large',poserr_radio(iradio)
+c               poserr_radio(iradio)=major*((Ferr_radio(iradio)/(flux_radio(iradio)-0.25))+0.05 )
+c               if (poserr_radio(iradio) .lt. 0.1 ) poserr_radio(iradio)=0.1
+c               write(*,*) 'act',poserr_radio(iradio)
             ENDIF
             IF (catalog(1:5) == 'sumss') then
                const(iradio) = flux2nufnu_sumss
@@ -897,7 +942,7 @@ c end PG
                   endif
                endif
                frequency_swift(iswift,4)=(1.602E-19)*(4.5e3)/(6.626e-34)
-               poserr_swift(iswift)=7.!!!!!!!!
+               poserr_swift(iswift)=10.!!!!!!!!
             endif
 c PG
             CALL RXgraphic_code(flux_swift(iswift,1),'X',code)
@@ -976,7 +1021,7 @@ c PG
 c end PG
          ELSE IF (catalog(1:7) == 'chandra') THEN
             ichandra=ichandra+1
-            IF (ichandra > 500) Stop 'Too many Chandra points'
+            IF (ichandra > 1000) Stop 'Too many Chandra points'
             ra_chandra(ichandra)=ra
             dec_chandra(ichandra)=dec
             is=ie
@@ -1172,6 +1217,13 @@ c PG
             CALL RXgraphic_code(flux_chandra(ichandra,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_chandra(ichandra),dec_chandra(ichandra),int(code)
 c end PG
+         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == 'fermi8yr')
+     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '1bigb')) then
+            igam=igam+1
+            ra_gam(igam)=ra
+            dec_gam(igam)=dec
+            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
+            write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
          ELSE
             iother=iother+1
             IF (iother > 10000) Stop 'Too many catalogued sources'
@@ -1215,15 +1267,15 @@ c end PG
          call chra(ra_radio(k),rah,ram,rasec,1)
          call chdec(dec_radio(k),id,dm,decsec,1)
          DO i=1,ixmm
-            if (xmm_type(i) == 2) min_dist_xmm=4./3600.
-            if (xmm_type(i) == 1) min_dist_xmm=15./3600.
+c            if (xmm_type(i) == 2) min_dist_xmm=4./3600.
+c            if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_xmm(i),dec_xmm(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-               min_dist = sqrt(min_dist_xmm**2+(5./3600.)**2)
-            ELSE
-               min_dist = min_dist_xmm
-            ENDIF
-            IF (dist < min_dist) THEN 
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+c               min_dist = sqrt(min_dist_xmm**2+(5./3600.)**2)
+c            ELSE
+            min_dist = sqrt(poserr_xmm(i)**2+poserr_radio(k)**2)/3600.
+c            ENDIF
+            IF (dist < max(min_dist,2./3600.)) THEN
                found = .TRUE.
                IF (xmm_type(i) == 1) THEN 
                  xray_type = 1
@@ -1271,11 +1323,11 @@ c end PG
          ENDDO
          DO i=1,irosat
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_rosat(i),dec_rosat(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-               min_dist = sqrt(min_dist_rosat**2+(5./3600.)**2)
-            ELSE
-               min_dist = min_dist_rosat
-            ENDIF
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+            min_dist = sqrt(poserr_rosat(i)**2+poserr_radio(k)**2)/3600.
+c            ELSE
+c               min_dist = min_dist_rosat
+c            ENDIF
             IF (dist < min_dist) THEN 
                found = .TRUE.
                IF (rosat_type(i) == 1) THEN 
@@ -1302,12 +1354,13 @@ c end PG
          ENDDO
          DO i=1,iswift
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_swift(i),dec_swift(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-               min_dist = sqrt(min_dist_swift**2+(5./3600.)**2)
-            ELSE
-               min_dist = min_dist_swift
-            ENDIF
-            IF (dist < min_dist) THEN
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+            min_dist = sqrt(poserr_swift(i)**2+poserr_radio(k)**2)/3600.
+c            ELSE
+c               min_dist = min_dist_swift
+c            ENDIF
+c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
+            IF (dist < max(min_dist,2./3600.)) THEN
                IF (xrt_type(i) == 1) THEN
                   xray_type = 5
                ELSE IF (xrt_type(i) == 2) THEN
@@ -1341,11 +1394,11 @@ c end PG
          ENDDO
          DO i=1,iipc
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_ipc(i),dec_ipc(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-               min_dist = sqrt(min_dist_ipc**2+(5./3600.)**2)
-            ELSE
-               min_dist = min_dist_ipc
-            ENDIF
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+            min_dist = sqrt(poserr_ipc(i)**2+poserr_radio(k)**2)/3600.
+c            ELSE
+c               min_dist = min_dist_ipc
+c            ENDIF
             IF (dist < min_dist) THEN 
                found = .TRUE.
                xray_type = 6
@@ -1368,12 +1421,12 @@ c end PG
          ENDDO
          DO i=1,ibmw
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_bmw(i),dec_bmw(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-               min_dist = sqrt(min_dist_bmw**2+(5./3600.)**2)
-            ELSE
-               min_dist = min_dist_bmw
-            ENDIF
-            IF (dist < min_dist) THEN
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+            min_dist = sqrt(poserr_bmw(i)**2+poserr_radio(k)**2)/3600.
+c            ELSE
+c               min_dist = min_dist_bmw
+c            ENDIF
+            IF (dist < max(min_dist,2./3600.)) THEN
                found = .TRUE.
                xray_type = 7
                flux_x = flux_x + flux_bmw(i)
@@ -1395,12 +1448,12 @@ c end PG
          ENDDO
          DO i=1,ichandra
             CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_chandra(i),dec_chandra(i),dist)
-            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
-            min_dist = sqrt(min_dist_chandra**2+(5./3600.)**2)
-            ELSE
-            min_dist = min_dist_chandra
-            ENDIF
-            IF (dist < min_dist) THEN
+c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
+            min_dist = sqrt(poserr_chandra(i)**2+poserr_radio(k)**2)/3600.
+c            ELSE
+c            min_dist = min_dist_chandra
+c            ENDIF
+            IF (dist < max(min_dist,2./3600.)) THEN
                found = .TRUE.
                xray_type = 8
                flux_x = flux_x + flux_chandra(i,1)
@@ -1442,7 +1495,7 @@ c end PG
                do i = 1,ifound-1
                   call DIST_SKY(ra_radio(k),dec_radio(k),ra_radio(t(i)),dec_radio(t(i)),dist)
                   !if (dist*60 .lt. 0.8) then
-                  if (dist*3600 .lt. 6.) then
+                  if (dist*3600. .lt. 6.) then
                      rfound=rfound+1
                      IF ( ix.NE.0 ) THEN
                      flux_x = flux_x/float(ix)
@@ -1530,19 +1583,26 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             DO i=1,iother
                CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_other(i),
      &                       dec_other(i),dist)
-               IF (dist < min_dist_other) THEN 
-                  write(*,'(2x,a,1x,a)') name_other(i)
+c               write(*,*) dist*3600.
+               IF (dist*3600. < max(poserr_radio(k),10.)) THEN !!!!!
                   IF (name_other(i)(1:4) == '3HSP') THEN
-                    type_average = -1
+                     type_average = -1
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:3) == '5BZ') THEN
-                    type_average = -2
+                     type_average = -2
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:6) == 'CRATES') THEN
-                    type_average = -3
+                     type_average = -3
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:3) == 'PSR') THEN
-                    type_average = 0
-                    code=-8888
+                     type_average = 0
+                     code=-8888
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ENDIF
-                  ra_other(i) = -ra_other(i)
                ENDIF
                IF (dist < min_dist_cluster) THEN
                   IF ( (name_other(i)(1:5) == 'ABELL') .OR.
@@ -1562,6 +1622,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_radio(k),dec_radio(k),int(code)
                ENDIF
                type_average=0
+               code=0
             ENDDO
             t(ifound)=k !!!recourd the former index
             write(*,*) '        '
@@ -1571,7 +1632,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
      &             (name_other(i)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR')) .AND.
      &                  (ra_other(i) .gt. 0.) ) THEN
                   CALL DIST_SKY(ra_other(i),dec_other(i),ra_radio(k),dec_radio(k),dist)
-                  if (dist .le. min_dist_other ) found=.true.
+                  if (dist*3600. .lt. max(poserr_radio(k),2.) ) found=.true.
                endif
             enddo
             if (.not. found) then
@@ -1594,18 +1655,19 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
 
       Do i=1,ixmm
          found=.false.
-         if (xmm_type(i) == 2) min_dist_xmm=4./3600.
-         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
+c         if (xmm_type(i) == 2) min_dist_xmm=4./3600.
+c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_xmm(i),dec_xmm(i),dist)
-            if (dist .le. min_dist_xmm)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_xmm(i)**2)/3600.
+            if (dist .lt. max(min_dist,2./3600.))  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .OR. (name_other(i)(1:3) == 'PSR'))
      &                  .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_xmm(i),dec_xmm(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_xmm(i),10.)) found=.true.
              endif
          enddo
          if (.not. found) THEN
@@ -1655,14 +1717,15 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          found=.false.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_rosat(i),dec_rosat(i),dist)
-            if (dist .le. min_dist_rosat)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_rosat(i)**2)/3600.
+            if (dist .lt. min_dist)  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR'))
      &               .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_rosat(i),dec_rosat(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_rosat(i),10.)) found=.true.
             endif
          enddo
          if (.not. found) THEN
@@ -1690,14 +1753,15 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          found=.false.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_swift(i),dec_swift(i),dist)
-            if (dist .le. min_dist_swift)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_swift(i)**2)/3600.
+            if (dist .lt. max(min_dist,2./3600.))  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR'))
      &               .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_swift(i),dec_swift(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_swift(i),10.)) found=.true.
             endif
          enddo
          if (.not. found) THEN
@@ -1733,14 +1797,15 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          found=.false.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_ipc(i),dec_ipc(i),dist)
-            if (dist .le. min_dist_ipc)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_ipc(i)**2)/3600.
+            if (dist .lt. min_dist)  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR') )
      &            .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_ipc(i),dec_ipc(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_ipc(i),10.)) found=.true.
             endif
          enddo
          if (.not. found) THEN
@@ -1764,14 +1829,15 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          found=.false.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_bmw(i),dec_bmw(i),dist)
-            if (dist .le. min_dist_bmw)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_bmw(i)**2)/3600.
+            if (dist .lt. max(min_dist,2./3600.))  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR'))
      &           .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_bmw(i),dec_bmw(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_bmw(i),10.)) found=.true.
             endif
          enddo
          if (.not. found) THEN
@@ -1795,14 +1861,15 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
          found=.false.
          do j=1,iradio
             call dist_sky(ra_radio(j),dec_radio(j),ra_chandra(i),dec_chandra(i),dist)
-            if (dist .le. min_dist_chandra)  found=.true.
+            min_dist=sqrt(poserr_radio(j)**2+poserr_chandra(i)**2)/3600.
+            if (dist .lt. max(min_dist,2./3600.))  found=.true.
          enddo
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR') )
      &           .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_chandra(i),dec_chandra(i),dist)
-               if (dist .le. min_dist_other) found=.true.
+               if (dist*3600. .lt. max(poserr_chandra(i),10.)) found=.true.
             endif
          enddo
          if (.not. found) THEN
@@ -1838,7 +1905,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
       enddo
       IF (ifound  ==  0) print *,achar(27),'[31;1m No radio/X-ray matches were found.',achar(27),'[0m'
 
-      savemjy(1:iother)=25.
+      savemjy(1:iother)=0.
       DO l=1,iother
          IF ( ( (name_other(l)(1:3) == '5BZ') .OR. (name_other(l)(1:4) == '3HSP') .or.
      &             (name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:3) == 'PSR'))
@@ -1893,17 +1960,17 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             endif
             do j=1,iradio
                call DIST_SKY(ra_other(l),dec_other(l),ra_radio(j),dec_radio(j),dist)
-               if (dist < min_dist_other) THEN
+               if (dist*3600. < max(poserr_radio(j),10.)) THEN
                   write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_radio(j),flux_radio(j),FluxU_radio(j),
      &          FluxL_radio(j),ra_radio(j),dec_radio(j),poserr_radio(j),radio_type(j)
                 savemjy(l)=flux_radio(j)/const(j)
                endif
             enddo
             do j=1,ixmm
-               if (xmm_type(i) == 1) min_dist_xmm=15./3600.
-               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
+c               if (xmm_type(i) == 1) min_dist_xmm=15./3600.
+c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                call DIST_SKY(ra_other(l),dec_other(l),ra_xmm(j),dec_xmm(j),dist)
-               if (dist < min_dist_xmm) THEN
+               if (dist*3600. < max(poserr_xmm(j),10.)) THEN
                   if (xmm_type(j) == 1) then
                      xray_type=1
                      write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_xmm(j,1),
@@ -1925,7 +1992,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
             do j=1,irosat
                call DIST_SKY(ra_other(l),dec_other(l),ra_rosat(j),dec_rosat(j),dist)
-               if (dist < min_dist_rosat) THEN
+               if (dist*3600. < max(poserr_rosat(j),10.)) THEN
                   if (rosat_type(j) == 1) THEN
                      xray_type=3
                      write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_rosat(j),
@@ -1941,7 +2008,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
             do j=1,iswift
                call DIST_SKY(ra_other(l),dec_other(l),ra_swift(j),dec_swift(j),dist)
-               if (dist < min_dist_swift) THEN
+               if (dist*3600. < max(poserr_swift(j),10.)) THEN
                   if (xrt_type(j) == 1) then
                      xray_type=5
                   else
@@ -1958,7 +2025,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
             do j=1,iipc
                call DIST_SKY(ra_other(l),dec_other(l),ra_ipc(j),dec_ipc(j),dist)
-               if (dist < min_dist_ipc) THEN
+               if (dist*3600. < max(poserr_ipc(j),10.)) THEN
                   xray_type=6
                   write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_ipc(j),flux_ipc(j),
      &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+10
@@ -1966,7 +2033,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
             do j=1,ibmw
                call DIST_SKY(ra_other(l),dec_other(l),ra_bmw(j),dec_bmw(j),dist)
-               if (dist < min_dist_bmw) THEN
+               if (dist*3600. < max(poserr_bmw(j),10.)) THEN
                   xray_type=7
                   write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
      &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
@@ -1974,7 +2041,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
             do j=1,ichandra
                call DIST_SKY(ra_other(l),dec_other(l),ra_chandra(j),dec_chandra(j),dist)
-               if (dist < min_dist_chandra) THEN
+               if (dist*3600. < max(poserr_chandra(j),10.)) THEN
                   xray_type=8
                   write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_chandra(j,1),
      &                 flux_chandra(j,1),FluxU_chandra(j,1),FluxL_chandra(j,1),ra_chandra(j),dec_chandra(j),
@@ -1987,8 +2054,11 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             enddo
 100   continue
             if ((type_average .lt. -3)) then
-                call RXgraphic_code(savemjy(l),'R',code)
-                write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
+                if (savemjy(l) .gt. 0.) then
+                   if (savemjy(l) .lt. 20.) savemjy(l)=20.
+                   call RXgraphic_code(savemjy(l),'R',code)
+                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
+                endif
             endif
             if (type_average .ne. 0) CALL graphic_code (1.,1.,type_average,code)
             !if (type_average .eq. -7) CALL graphic_code (1.,savemjy(l),type_average,code)
@@ -2007,16 +2077,16 @@ cccccc for skip the phase 1
      &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
-         if (dist .lt. 18./3600. ) then !18 arcsec for radio sources
+         if (dist*3600. .lt. max(poserr_radio(j),2.) ) then !18 arcsec for radio sources
             write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_radio(j),flux_radio(j),FluxU_radio(j),
      &          FluxL_radio(j),ra_radio(j),dec_radio(j),poserr_radio(j),radio_type(j)
          endif
       enddo
       do j=1,ixmm
-         if (xmm_type(j) == 1) min_dist_xmm=15./3600.
-         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
+c         if (xmm_type(j) == 1) min_dist_xmm=15./3600.
+c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          call DIST_SKY(ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist)
-         if ( dist .lt. min_dist_xmm ) then
+         if ( dist*3600. .lt. max(poserr_xmm(j),2.) ) then
             if (xmm_type(j) == 1) then
                xray_type=1
                write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_xmm(j,1),
@@ -2038,7 +2108,7 @@ cccccc for skip the phase 1
        enddo
        do j=1,irosat
          call DIST_SKY(ra_center,dec_center,ra_rosat(j),dec_rosat(j),dist)
-         if ( dist .lt. min_dist_rosat ) then
+         if ( dist*3600. .lt. poserr_rosat(j) ) then
             if (rosat_type(j) == 1) THEN
                xray_type=3
                write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_rosat(j),
@@ -2054,7 +2124,7 @@ cccccc for skip the phase 1
       enddo
       do j=1,iswift
          call DIST_SKY(ra_center,dec_center,ra_swift(j),dec_swift(j),dist)
-         if ( dist .lt. min_dist_swift ) then
+         if ( dist*3600. .lt. max(poserr_swift(j),2.)) then
             if (xrt_type(j) == 1) THEN
                xray_type=5
             else
@@ -2071,7 +2141,7 @@ cccccc for skip the phase 1
       enddo
       do j=1,iipc
          call DIST_SKY(ra_center,dec_center,ra_ipc(j),dec_ipc(j),dist)
-         if ( dist .lt. min_dist_ipc ) then
+         if ( dist*3600. .lt. poserr_ipc(j) ) then
             xray_type=6
             write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_ipc(j),flux_ipc(j),
      &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+10
@@ -2079,7 +2149,7 @@ cccccc for skip the phase 1
       enddo
       do j=1,ibmw
          call DIST_SKY(ra_center,dec_center,ra_bmw(j),dec_bmw(j),dist)
-         if ( dist .lt. min_dist_bmw ) then
+         if ( dist*3600. .lt. max(poserr_bmw(j),2.) ) then
             xray_type=7
             write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
      &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
@@ -2087,7 +2157,7 @@ cccccc for skip the phase 1
       enddo
       do j=1,ichandra
          call DIST_SKY(ra_center,dec_center,ra_chandra(j),dec_chandra(j),dist)
-         if ( dist .lt. min_dist_chandra ) then
+         if ( dist*3600. .lt. max(poserr_chandra(j),2.) ) then
             xray_type=8
             write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_chandra(j,1),
      &                 flux_chandra(j,1),FluxU_chandra(j,1),FluxL_chandra(j,1),ra_chandra(j),dec_chandra(j),

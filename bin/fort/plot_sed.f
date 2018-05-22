@@ -3,12 +3,14 @@
 c This program plot the SED for candidate
 
       implicit none
-      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm
+      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
       integer*4 i,sfound,npt(5000),rtype,stype(5000)
       real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000),sedup,sedlow
       real*4 rasec,decsec
       real*8 rra,rdec,ra(1000),dec(1000)
+      character*160 string
       character*100 title
+      character*80 input_file,output_file
       character*14 stringin
       character*10 spectype(5000,1000)
       character*6 number
@@ -16,8 +18,13 @@ c This program plot the SED for candidate
       logical ok,there
       ok = .true.
 
-      call rdforn(number,length)
-      call rmvlbk(number)
+      call rdforn(string,length)
+      call rmvlbk(string)
+      in=index(string(1:length),' ')
+      input_file=string(1:in-1)
+      im=index(string(in+1:length),' ')+in
+      output_file=string(in+1:im-1)
+      number=string(im+1:length)
       !write(*,*) number
       if (number == 'finish') then
          Stop '!!!!Exit the source exploring routine!!!!'
@@ -27,14 +34,15 @@ c This program plot the SED for candidate
          read(number,*) ns
       endif
 
-      INQUIRE (FILE='Sed.txt',EXIST=there)
+c      write(*,*) output_file
+      INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
          write (*,'('' file Sed.txt not found '')')
          STOP
       ENDIF
 
       npt(1:1000)=0
-      open(10,file='Sed.txt',status='old')
+      open(10,file=input_file,status='old')
       !if (ns .ne. 1) .and. read(10,'(a)') stringin
 101   continue
       read(10,'(i4,2x,a,2(2x,f9.5),2x,i2)',end=100,err=100) sfound,stringin,rra,rdec,rtype
@@ -65,7 +73,7 @@ c This program plot the SED for candidate
       !write(*,*) i
 c      IER = PGBEG(0,"/xwindow",1,1)
 c      IER = PGBEG(0,"/xs",1,1)
-      IER = PGBEG(0,"sed.ps/cps",1,1)
+      IER = PGBEG(0,output_file,1,1)
       call pgslw(4)
       if ( ns .eq. 99 ) THEN
          write(title,'(a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')
@@ -112,7 +120,7 @@ c      IER = PGBEG(0,"/xs",1,1)
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
          else
             if (spectype(j,i) == 'XRTSPEC') then
-               call pgsch(0.4)
+               call pgsch(0.5)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),3)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             else

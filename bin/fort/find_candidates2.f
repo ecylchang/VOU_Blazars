@@ -23,21 +23,22 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,rfound,ir100found,s
-      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000)
+      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s,iverit,veritind(100)
+      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound,filen_v(100)
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000)
-      INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000)
+      INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
-      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500)
-      integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000)
+      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500),bigbind(100)
+      integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
       REAL*8 ra_pccs100(200),dec_pccs100(200),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
-      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000)
-      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000)
+      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
+      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
+      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(100),dec_vhe(100)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -55,20 +56,24 @@ c
       real*4 Ferr_pccs100(200),FluxU_pccs100(200),FluxL_pccs100(200),poserr_pccs100(200),Ferr2_pccs100(200)
       real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000)
       real*4 FluxU_ir(1000,4),FluxL_ir(1000,4),poserr_ir(1000),irmagerr(1000,4),intensity
-      real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5)
+      real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,7),FluxL_gam(100,7),poserr_gam(100),Ferr_gam(100,7),Specerr_gam(100,2)
       real*4 uflux_ircand(5,4),lflux_ircand(5,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
       real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(5),epos_usnocand(5),Ferr_xray(5000,2)
-      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2)
+      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(1000)
+      real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
+      real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
+      real*4 frequency_vhe(100),flux_vhe(100),FluxU_vhe(100),FluxL_vhe(100),poserr_vhe(100),Ferr_vhe(100)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),input_file,output_file
+      CHARACTER*30 name_other(10000)
+      character*80 input_file,output_file,input_file2,input_file3,output_file2
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100),xray_type(5000)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000)
+      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),lowrcand_type(5),vhe_type(100)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
       ok = .TRUE.
@@ -76,6 +81,7 @@ c
       nrep(1:5000)=1
       sfound = 0
       iradio=0
+      ilowr=0
       i4p8=0
       iusno=0
       ipccs100=0
@@ -83,6 +89,11 @@ c
       iuv=0
       igam=0
       ixray=0
+      ixrtsp=0
+      ibigb=0
+      imagic=0
+      iverit=0
+      ivhe=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -103,9 +114,22 @@ c 15 arcsecs
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
          CALL rmvlbk(string)
+c         write(*,*) string,length
          in=index(string(1:length),' ')
          input_file=string(1:in-1)
-         read(string(in+1:length),'(a)') aim
+         im=index(string(in+1:length),' ')+in
+c         write(*,*) in,im
+         input_file2=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         input_file3=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file2=string(in+1:im-1)
+         read(string(im+1:length),'(a)') aim
          if (aim == 'finish') then
             Stop '!!!!Exit the source exploring routine!!!!'
          else if (aim == 'sed') then
@@ -117,7 +141,6 @@ c 15 arcsecs
          WRITE (*,'('' Enter query results file '',$)')
          READ (*,'(a)') input_file
       ENDIF
-      output_file='error_map.txt'
       lu_in = 10
       lu_output = 11
       in = index(input_file(1:lenact(input_file)),'.')
@@ -130,8 +153,8 @@ c 15 arcsecs
       ENDIF
 
       open(lu_in,file=input_file,status='old',iostat=ier)
-      open(13,file='find_out_temp.txt',status='old',iostat=ier)
-      open(12,file='Sed_temp.txt',status='old',iostat=ier)
+      open(13,file=input_file2,status='old',iostat=ier)
+      open(12,file=input_file3,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
@@ -272,6 +295,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_4p8(i4p8)
+               poserr_4p8(i4p8)=poserr_4p8(i4p8)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_4p8(i4p8,1)
@@ -333,13 +357,26 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_4p8(i4p8,1)
+               posxerr=(1300./flux_4p8(i4p8,1))**2+(6**2)
+               posyerr=(1100./flux_4p8(i4p8,1))**2+(4**2)
+               if (Ferr_4p8(i4p8,1) .eq. 99.) then
+                  if ((dec_4p8(i4p8) .ge. -87.5) .and. (dec_4p8(i4p8) .lt. -37.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((12.3+0.085*dec_4p8(i4p8))**2+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. 37.) .and. (dec_4p8(i4p8) .lt. -29.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((11.**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. -29.) .and. (dec_4p8(i4p8) .lt. -9.5)) then
+                     Ferr_4p8(i4p8,1)=sqrt((10.5**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  else if ((dec_4p8(i4p8) .ge. -9.5) .and. (dec_4p8(i4p8) .lt. -10.)) then
+                     Ferr_4p8(i4p8,1)=sqrt((9.1**2)+(0.052*flux_4p8(i4p8,1))**2)
+                  endif
+               endif
                FluxU_4p8(i4p8,1)=flux_4p8(i4p8,1)+Ferr_4p8(i4p8,1)
                FluxL_4p8(i4p8,1)=flux_4p8(i4p8,1)-Ferr_4p8(i4p8,1)
                flux_4p8(i4p8,1)=flux_4p8(i4p8,1)*flux2nufnu_4p8
                FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*flux2nufnu_4p8
                FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*flux2nufnu_4p8
                frequency_4p8(i4p8,1)=4.8e9
-               poserr_4p8(i4p8)=sqrt((15.*15.)+100.) !precision 0.1s 1arcsec
+               poserr_4p8(i4p8)=2.*sqrt(posxerr+posyerr)
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_4p8(i4p8,1)
@@ -421,7 +458,7 @@ c read the data file
                FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*flux2nufnu_4p8*(5/4.8)
                FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*flux2nufnu_4p8*(5/4.8)
                frequency_4p8(i4p8,1)=5.e9
-               poserr_4p8(i4p8)=sqrt(1.81)*2.
+               poserr_4p8(i4p8)=sqrt(1.81)*2. !average 0.9 1
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_4p8(i4p8,2)
@@ -465,7 +502,7 @@ c read the data file
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,3)
                flux_4p8(i4p8,3)=flux_4p8(i4p8,3)*flux2nufnu_4p8*(0.365/4.8)
                frequency_4p8(i4p8,3)=3.65E7
-               poserr_4p8(i4p8)=16. !!!!!!!!!!
+               poserr_4p8(i4p8)=160. !90 accuracy
                FluxU_4p8(i4p8,1)=0.
                FluxL_4p8(i4p8,1)=0.
                FluxU_4p8(i4p8,2)=0.
@@ -476,6 +513,46 @@ c read the data file
             endif
                !write(*,*) catalog,FluxU_4p8(i4p8,1),flux_4p8(i4p8,1),FluxL_4p8(i4p8,1)
                !write(*,*) catalog,"Flag: ",flag_4p8(i4p8,1),flag_4p8(i4p8,2),flag_4p8(i4p8,3),flag_4p8(i4p8,4)
+         ELSE IF (catalog(1:7) == 'wish352') then
+            write(*,*) 'test wish'
+            ilowr=ilowr+1
+            ra_lowr(ilowr)=ra
+            dec_lowr(ilowr)=dec
+            name_l(ilowr)=catalog
+            filen_l(ilowr)=filen
+            if (ilowr .ne. 1) THEN
+               do j=1,ilowr-1
+                  if ((ra_lowr(j) .eq. ra) .and. (dec_lowr(j) .eq. dec)) THEN
+                     if ((name_l(j) == catalog ) .and. (filen_l(j) .ne. filen)) then
+                        write(*,'(4x,a,i4,3x,2(f9.5,2x),f9.3)') 'The counterpart',
+     &                  j,ra_lowr(j),dec_lowr(j),flux_lowr(j)/(frequency_lowr(j)*1.E-26)
+                        is=ie
+                        ie=index(string(is+1:len(string)),' ')+is
+                        read(string(is+1:ie-1),'(a)') repflux
+                        write(*,'(a,i4,"_",a,2x,2(f9.5,2x),a)') ' Repeated one:',
+     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
+                        ilowr=ilowr-1
+                        goto 300
+                     endif
+                  endif
+               enddo
+            endif
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+            is=ie
+            ie=index(string(is+1:len(string)),' ')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+            FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+            FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+            frequency_lowr(ilowr)=3.52e8
+            flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+            posxerr=sqrt(1.5**2+0.12**2)
+            posyerr=sqrt(1+0.09**2)
+            poserr_lowr(ilowr)=2*sqrt(posxerr**2+posyerr**2)
+            lowr_type(ilowr)='WISH'
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.
      &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353'))  THEN
@@ -540,7 +617,6 @@ c read the data file
                FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*0.7
                FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*0.7
                frequency_pccs100(ipccs100)=7.e10
-
             ELSE if (catalog(1:7) == 'pccs143') then
                flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*1.43 !100 to 143
                FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*1.43
@@ -647,6 +723,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
+               poserr_ir(iir)=poserr_ir(iir)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,1)
@@ -699,6 +776,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
+               poserr_ir(iir)=poserr_ir(iir)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,4)
@@ -859,6 +937,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=poserr_usno(iusno)*2.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -919,6 +998,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=2.*poserr_usno(iusno)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -961,14 +1041,15 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomagerr(iusno,5)
-               CALL  mag2flux (nh,usnomag(iusno,5),'I  ',flux_usno(iusno,5),frequency_usno(iusno,5))
-        CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'I  ',FluxU_usno(iusno,5),frequency_usno(iusno,5))
-        CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'I  ',FluxL_usno(iusno,5),frequency_usno(iusno,5))
+               CALL  mag2flux (nh,usnomag(iusno,5),'psy',flux_usno(iusno,5),frequency_usno(iusno,5))
+        CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'psy',FluxU_usno(iusno,5),frequency_usno(iusno,5))
+        CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'psy',FluxL_usno(iusno,5),frequency_usno(iusno,5))
                opt_type(iusno)='PANSTARRS'
             else if (catalog(1:4) == 'gaia') THEN
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_usno(iusno)
+               poserr_usno(iusno)=2.*sqrt(poserr_usno(iusno)**2+(0.0003**2))
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
@@ -1038,6 +1119,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_uv(iuv)
+               poserr_uv(iuv)=2*sqrt(poserr_uv(iuv)**2+(0.26**2)) !systematic error 0.26
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) uvmagerr(iuv,3)
@@ -1098,6 +1180,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_uv(iuv)
+               poserr_uv(iuv)=2.*sqrt(poserr_uv(iuv)*poserr_uv(iuv)+(0.7**2))
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) uvmag(iuv,2)
@@ -1183,6 +1266,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
             name_x(ixray)=catalog
             filen_x(ixray)=filen
             if (catalog(1:7) == 'xrtspec') then
+               ixrtsp=ixrtsp+1
+               xrtspind(ixray)=ixrtsp
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_xray(ixray,1)
@@ -1240,7 +1325,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:8) == 'fermi8yr') .or.
-     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl'))then
+     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')) then
             igam=igam+1
             If (igam > 100) stop 'Too many Gamma-ray points'
             if (igam .ne. 1) THEN
@@ -1723,15 +1808,80 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                call fluxtofdens(slope_gam(igam,1),500.,2000.,FluxL_gam(igam,6),1000.,fdens,nudens)
                FluxL_gam(igam,6)=fdens
                gam_type(igam)='3FHL'
+            ELSE IF (catalog(1:5) =='1bigb') then
+               ibigb=ibigb+1
+               bigbind(igam)=ibigb
+               poserr_gam(igam)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_gam(igam,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1)
+               FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
+               FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
+               slope_gam(igam,1)=1.8 !!!!!!!!!!!change later
+               gam_type(igam)='1BIGB'
             ENDIF
             !write(*,*) catalog,FluxU_gam(igam,4),flux_gam(igam,4),FluxL_gam(igam,4)
+         ELSE IF ((catalog(1:5) == 'magic') .or. (catalog(1:7) == 'veritas')) then
+            ivhe=ivhe+1
+            ra_vhe(ivhe)=ra
+            dec_vhe(ivhe)=dec
+            filen_v(ivhe)=filen
+            If (catalog(1:5) == 'magic') then
+               imagic=imagic+1
+               magicind(ivhe)=imagic
+               poserr_vhe(ivhe)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               if (Ferr_vhe(ivhe) .eq. -999.) Ferr_vhe(ivhe)=0.
+               FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
+               vhe_type(ivhe)='MAGIC'
+            else if (catalog(1:7) == 'veritas') then
+               iverit=iverit+1
+               veritind(ivhe)=iverit
+               poserr_vhe(ivhe)=10. !!!set to 10 arcsec
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
+               FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
+               flux_vhe(ivhe)=flux_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
+               FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
+               FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
+               frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
+               vhe_type(ivhe)='VERITAS'
+            endif
          ENDIF
       ENDDO
  99   CONTINUE
       write(*,*)"     "
       write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam
       CLOSE (lu_in)
-      open(14,file='Sed.txt',status='unknown',iostat=ier)
+      open(14,file=output_file2,status='unknown',iostat=ier)
       write(*,*)"     "
 
       do i=1,i4p8
@@ -1877,13 +2027,36 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
          aalphar = 0.
          ir100found=0
          ifarfound=0
+         ilowrfound=0
+
+c         write(*,*) '..................Low frequency Radio....................'
+         do i=1,ilowr
+            call DIST_SKY(ra_source(j),dec_source(j),ra_lowr(i),dec_lowr(i),dist)
+            min_dist=sqrt(epos(1,j)**2+poserr_lowr(i)**2)
+            IF ( dist*3600. < max(min_dist,2.)) then
+               ilowrfound=ilowrfound+1
+               flux_lowrcand(ilowrfound)=flux_lowr(i)
+               uflux_lowrcand(ilowrfound)=FluxU_lowr(i)
+               lflux_lowrcand(ilowrfound)=FluxL_lowr(i)
+               freq_lowrcand(ilowrfound)=frequency_lowr(i)
+               ra_lowrcand(ilowrfound)=ra_lowr(i)
+               dec_lowrcand(ilowrfound)=dec_lowr(i)
+               epos_lowrcand(ilowrfound)=poserr_lowr(i)
+               lowrdist(ilowrfound)=dist
+               lowrcand_type(ilowrfound)=lowr_type(i)
+            endif
+         enddo
+         IF (ilowrfound == 0) then
+            write(*,'('' NO WISH object within '',f5.2,'' arcsec'')') max(epos(1,j)*1.3,2.)
+         endif
 
          write(*,*) '........................5 GHz Radio......................'
          DO i=1,i4p8
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_4p8(i),dec_4p8(i),dist)
             !IF (dist < min_dist_4p8) THEN
             !if (f4p8part(i) .eq. j) then
-            if (dist*3600. .lt. poserr_4p8(i)*1.3) then
+            min_dist=sqrt(poserr_4p8(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                f4p8part(i)=j
                ialphar = ialphar +1
                if ((flag_4p8(i,1) == 'E') .or. (flag_4p8(i,1) == 'e')) write(*,*) "Warning!!!!Radio Extended."
@@ -1917,7 +2090,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
             !IF (dist < min_dist_pccs100) THEN
             !if (pccspart(i) .eq. j) then
             !write(*,*) poserr_pccs100(i)*1.3, dist*3600.
-            if (dist*3600. .lt. poserr_pccs100(i)*1.3) then
+            min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                pccspart(i)=j
                ir100found=ir100found+1
                write(*,'(f4.0," GHz flux density",2x,f9.3,",",2x,f7.3," arcmin away")')
@@ -1936,7 +2110,8 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
         CALL DIST_SKY(ra_source(j),dec_source(j),ra_far(i),dec_far(i),dist)
         !IF (dist < min_dist_pccs100) THEN
            !if (farpart(i) .eq. j) then
-           if (dist*3600. .lt. poserr_far(i)*1.3) then
+            min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
+           if (dist*3600. .lt. min_dist) then
               farpart(i)=j
               ifarfound=ifarfound+1
               write(*,'("far IR flux density",2x,f9.3,",",2x,f7.3," arcsec away")')
@@ -1957,9 +2132,9 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
          ii2=0
          do i=1,iir
             call DIST_SKY(ra_source(j),dec_source(j),ra_ir(i),dec_ir(i),dist)
-            matchradius=sqrt(epos(1,j)**2+poserr_ir(i)**2)
+            min_dist=sqrt(epos(1,j)**2+poserr_ir(i)**2)
             !write(*,*) matchradius,epos(1,j),poserr_ir(i),ir_type(i),dist*3600.
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.) )  .and. (ir_type(i) == 'WISE')) THEN
+            IF (( dist*3600. < max(min_dist,2.) )  .and. (ir_type(i) == 'WISE')) THEN
                ii1=ii1+1
                iirfound=iirfound+1
                if (ii1 .eq. 1) then
@@ -1988,7 +2163,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                      ircand_type(iirfound)=ir_type(i)
                   endif
                endif
-            else if (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (ir_type(i) == '2MASS')) THEN
+            else if (( dist*3600. < max(min_dist,2.)  ) .and. (ir_type(i) == '2MASS')) THEN
                iirfound=iirfound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2043,7 +2218,8 @@ c         write(*,*) iirfound,ii1,ii2
          ii5=0
          DO i=1,iusno
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_usno(i),dec_usno(i),dist)
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'USNO'))THEN
+            min_dist=sqrt(poserr_usno(i)**2+epos(1,j)**2)
+            IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'USNO'))THEN
                iofound = iofound+1
                ii1=ii1+1
                if (ii1 .eq. 1) then
@@ -2072,7 +2248,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'SDSS'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'SDSS'))THEN
                iofound = iofound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2101,7 +2277,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'HST'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'HST'))THEN
                iofound = iofound+1
                ii3=ii3+1
                if (ii3 .eq. 1) then
@@ -2130,7 +2306,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'PANSTARRS'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'PANSTARRS'))THEN
                iofound = iofound+1
                ii4=ii4+1
                if (ii4 .eq. 1) then
@@ -2159,7 +2335,7 @@ c         write(*,*) iirfound,ii1,ii2
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(epos(1,j)*1.3,2.)  ) .and. (opt_type(i) == 'GAIA'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'GAIA'))THEN
                iofound = iofound+1
                ii5=ii5+1
                if (ii5 .eq. 1) then
@@ -2223,8 +2399,9 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
          Do i=1,iuv
             !write(*,*) ra_source(j),dec_source(j),ra_uv(i),dec_uv(i)
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_uv(i),dec_uv(i),dist)
+            min_dist=sqrt(poserr_uv(i)**2+epos(1,j)**2)
             !write(*,*) dist*3600,uv_type(i),epos(1,j)*1.3
-            IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'GALEX'))THEN
+            IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'GALEX'))THEN
                iuvfound = iuvfound+1
                ii1=ii1+1
                if (ii1 .eq. 1) then
@@ -2253,7 +2430,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
-            ELSE IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'XMMOM'))THEN
+            ELSE IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'XMMOM'))THEN
                iuvfound = iuvfound+1
                ii2=ii2+1
                if (ii2 .eq. 1) then
@@ -2282,7 +2459,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
-            ELSE IF (( dist*3600. < max(epos(1,j)*1.3,2.) ) .and. (uv_type(i) == 'UVOT'))THEN
+            ELSE IF (( dist*3600. < max(min_dist,2.) ) .and. (uv_type(i) == 'UVOT'))THEN
                iuvfound = iuvfound+1
                ii3=ii3+1
                flux_uvcand(iuvfound,1:6)=flux_uv(i,1:6)
@@ -2328,14 +2505,23 @@ c u to w2
 c         write(*,*) iuvfound,ii1,ii2,ii3
 
          ixxfound=0
+         write(*,*) '.......................hard X-ray and XRT spectral data..................'
          do i=1,ixray
             xraypart(i)=0
             call Dist_sky(ra_source(j),dec_source(j),ra_xray(i),dec_xray(i),dist)
-            if (dist*3600. < poserr_xray(i)*1.3 ) then !5 arcsec fixed value
+            !write(*,*) poserr_xray(i),epos(1,j)
+            min_dist=sqrt(poserr_xray(i)**2+epos(1,j)**2)
+            !write(*,*) min_dist,dist*3600.
+            if (dist*3600. < min_dist ) then !5 arcsec fixed value
                xraypart(i)=j
                ixxfound=ixxfound+1
+               if (xray_type(i) == 'BAT100') write(*,'(a,2x,f5.3,2x,"acrmin away")') xray_type(i),dist*60.
+               if ((xray_type(i) == 'XRTSPEC') .and. (xrtspind(i) .eq. 1))
+     &           write(*,'(a,2x,f7.3,2x,"acrsec away")') xray_type(i),dist*3600.
             endif
          enddo
+c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
+         IF (ixxfound == 0) write(*,'('' NO BAT or XRT detection within '',f7.3,'' arcmin'')') min_dist
 
          igamfound=0
          write(*,*) '.......................Gamma-ray..................'
@@ -2343,15 +2529,33 @@ c         write(*,*) iuvfound,ii1,ii2,ii3
             call Dist_sky(ra_source(j),dec_source(j),ra_gam(i),dec_gam(i),dist)
             !if (dist < min_dist_gam) then
 !            if (gampart(i) .eq. j) then
-             if (dist*3600. .lt. poserr_gam(i)*1.3) then
+            min_dist=sqrt(poserr_gam(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
                gampart(i)=j
                igamfound=igamfound+1
                if (igamfound > 20) stop 'Too many Gamma-ray candidate'
-               write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+               if (gam_type(i) == '1BIGB') then
+                  if (bigbind(i) .eq. 1) then
+                     write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+                  endif
+               else
+                  write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
+               endif
             endif
          enddo
          !write(*,*) igamfound
          IF (igamfound == 0) write(*,'('' NO Gamma-ray detection within '',f5.0,'' arcmin'')') min_dist_gam*60.
+
+         write(*,*) '.......................TeV..................'
+         do i=1,ivhe
+            if (filen_v(i) .eq. j) then
+               if (magicind(i) .eq. 1) write(*,*) 'MAGIC source'
+               if (veritind(i) .eq. 1) write(*,*) 'VERITAS source'
+            endif
+         enddo
+         if (ivhe .eq. 0) then
+            write(*,*) 'NO TeV detection within 10 arcmin'
+         endif
 
 c plot the sed, and output the list, decide the source type
 
@@ -2372,11 +2576,14 @@ cENDDO
             write(14,'(4(es10.3,2x),a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),rrxx_type(i,j)
             if (frequency(i,j) .lt. 1.E10) then
                call graphic_code(flux(i,j),11,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
-            else if (frequency(i,j) .eq. 2.418E17) then
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
+            else if ((frequency(i,j) .eq. 2.418E17) .or. ((rrxx_type(i,j) == 'XRTDEEP') .and. (ra_rrxx(i,j) .ne. 0.)) )then
                call graphic_code(flux(i,j),81,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
+         enddo
+         do i=1,ilowrfound
+            write(14,'(4(es10.3,2x),a)') freq_lowrcand(i),flux_lowrcand(i),uflux_lowrcand(i),lflux_lowrcand(i),lowrcand_type(i)
          enddo
          do i=1,i4p8
             if (f4p8part(i) .eq. j) then
@@ -2429,7 +2636,7 @@ cENDDO
      &                   uflux_ircand(i,s),lflux_ircand(i,s),ircand_type(i)
                enddo
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
+            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
          enddo
          do i=1,iofound
             if (optcand_type(i) == 'USNO' ) then
@@ -2452,7 +2659,7 @@ cENDDO
             if (optcand_type(i) == 'USNO') call graphic_code(usnomag_cand(i,2),63,code)
             if (optcand_type(i) == 'PANSTARRS') call graphic_code(usnomag_cand(i,3),61,code)
             if (optcand_type(i) == 'GAIA') call graphic_code(usnomag_cand(i,2),63,code)
-        write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_usnocand(i),dec_usnocand(i),int(code),epos_usnocand(i)
+        write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_usnocand(i),dec_usnocand(i),int(code),epos_usnocand(i)
          enddo
          do i=1,iuvfound
             if (uvcand_type(i) == 'GALEX') then
@@ -2468,9 +2675,9 @@ cENDDO
             endif
             intensity=max(uvmag_cand(i,1),uvmag_cand(i,2),uvmag_cand(i,3),uvmag_cand(i,4),uvmag_cand(i,5))
             call graphic_code(intensity,71,code)
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_uvcand(i),dec_uvcand(i),int(code),epos_uvcand(i)
+            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_uvcand(i),dec_uvcand(i),int(code),epos_uvcand(i)
          enddo
-         do i=1,ixxfound
+         do i=1,ixray
             if (xraypart(i) .eq. j) then
                if (xray_type(i) == 'XRTSPEC') then
                   write(14,'(4(es10.3,2x),a)') frequency_xray(i,1),flux_xray(i,1),FluxU_xray(i,1),
@@ -2481,8 +2688,10 @@ cENDDO
                   write(14,'(4(es10.3,2x),a)') frequency_xray(i,2),flux_xray(i,2),FluxU_xray(i,2),
      &             FluxL_xray(i,2),xray_type(i)
                endif
-               call graphic_code(flux_xray(i,1),82,code)
-               write(lu_output,'(f9.5,2x,f9.5,2x,i6,f7.3)') ra_xray(i),dec_xray(i),int(code),poserr_xray(i)
+               if ((xrtspind(i) .lt. 2) .or. (xray_type(i) == 'BAT100')) then
+                  call graphic_code(flux_xray(i,1),82,code)
+                  write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f7.3)') ra_xray(i),dec_xray(i),int(code),poserr_xray(i)
+               endif
             endif
          enddo
          do i=1,igam
@@ -2502,6 +2711,9 @@ cENDDO
                do s=1,6
                   write(14,'(4(es10.3,2x),a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),FluxL_gam(i,s),gam_type(i)
                enddo
+            else if (gam_type(i) == '1BIGB') then
+               if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
+               write(14,'(4(es10.3,2x),a)') frequency_gam(i,1),flux_gam(i,1),FluxU_gam(i,1),FluxL_gam(i,1),gam_type(i)
             else
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,2
@@ -2509,9 +2721,18 @@ cENDDO
                enddo
             endif
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            if (gam_type(i) == '1BIGB') then
+               if (bigbind(i) .eq. 1) write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            else
+               write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
+            endif
          enddo
-c         write(*,*) '.......................source type and cataloged..................'
+         do i=1,ivhe
+            if (filen_v(i) .eq. j) then
+               write(14,'(4(es10.3,2x),a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),FluxL_vhe(i),vhe_type(i)
+            endif
+         enddo
+         write(*,*) '.......................source type and cataloged..................'
          do i=1,icat
             call Dist_sky(ra_source(j),dec_source(j),ra_cat(i),dec_cat(i),dist)
             if (dist < min_dist_other) then
@@ -2688,7 +2909,7 @@ ccccccccccc check nh=2.29e21*Av
         ebv=av/Rv
         if (av < 0.) av=0.
         if (filter(1:3) == 'U  ') then
-           lambda=3550.
+           lambda=3600.
            const=log10(1810.)-23.
         else if (filter(1:3) == 'B  ') then
            lambda=4400.
@@ -2727,29 +2948,29 @@ ccccccccccc check nh=2.29e21*Av
         else if (filter(1:3) == 'z  ') then
            lambda=8863.
            const=log10(3631.)-23.
-        else if (filter(1:3) == 'psg') then
-           lambda=4866.
+        else if (filter(1:3) == 'psg') then !tonry et al. 2012
+           lambda=4810.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psr') then
-           lambda=6215.
+           lambda=6170.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psi') then
-           lambda=7545.
+           lambda=7520.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psz') then
-           lambda=8679.
+           lambda=8660.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'psy') then
-           lambda=9633.
+           lambda=9620.
            const=log10(3631.)-23.
         else if (filter(1:3) == 'bbG') then
            lambda=6730. !!!Jordi et al. 2010
            const=log10(2918.)-23. !!!!the zero mag. flux are estimated from Vega flux!!!
         else if (filter(1:3) == 'fuv') then
-           lambda=1528.
+           lambda=1538.6
            const=log10(3631.)-23.
         else if (filter(1:3) == 'nuv') then
-           lambda=2271.
+           lambda=2315.7
            const=log10(3631.)-23.
         else if (filter(1:3) == 'su ') then
            lambda=3501. !from Poole et al. (2008) effective wavelength

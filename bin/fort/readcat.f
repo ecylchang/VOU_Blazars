@@ -1,13 +1,13 @@
       program readcat
 c this program read the output from vo tool and make a input for find candidates
       implicit none
-      integer*4 icat,i,is,ie,ia,it,in,ip,out
+      integer*4 icat,i,is,ie,ia,it,in,ip,out,iskip
       integer*4 rah,ram,decd,decm,length,ns,lenact
       real*8 radeg,decdeg,ra_center,dec_center,errrad,errmaj,errmin,errang
       real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh,ra1,ra2,dec1,dec2
       character*1 sign
       character*2 cratecheck
-      character*30 catalog,ra,dec,inputlist,test,outputlist
+      character*80 catalog,ra,dec,inputlist,test,outputlist
       character*1000 head,value
       character*800 flux,string
       logical ok,there
@@ -16,8 +16,11 @@ c this program read the output from vo tool and make a input for find candidates
       call rmvlbk(string)
       in=index(string(1:length),' ')
       inputlist=string(1:in-1)
+
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
+      iskip=index(outputlist(1:len(outputlist)),'_output')
+c      write(*,*) iskip
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
 c      write(*,*) ra_center,dec_center,radius,nh
@@ -30,16 +33,20 @@ c      write(*,*) ra_center,dec_center,radius,nh
       ok=.true.
       do i=1,2000
          icat=0
-         read(11,'(a)',end=100) catalog
-         it=index(catalog(1:len(catalog)),'.')
-         if (inputlist(1:12) == "catlist2.txt") then
+         read(11,'(a)',end=100) string
+c         is=index(string(1:len(string)),'_')
+         it=index(string(iskip+1:len(string)),'.')+iskip
+         read(string(iskip+1:it-1),'(a)') catalog
+c         write(*,*) catalog
+         if (inputlist(iskip+1:iskip+12) == "catlist2.txt") then
             is=it
-            ie=index(catalog(is+1:len(catalog)),'.')+is
-            read(catalog(is+1:ie-1),*) ns
+            ie=index(string(is+1:len(string)),'.')+is
+c            write(*,*) is,ie
+            read(string(is+1:ie-1),*) ns
          else
             ns=0
          endif
-         open(12,file=catalog,status='old')
+         open(12,file=string,status='old')
          read(12,'(a)') head
          do while (ok)
 300         continue
@@ -49,8 +56,10 @@ c      write(*,*) ra_center,dec_center,radius,nh
             ie=index(value(is+1:len(value)),',')+is
 c the catalog without source name
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
-     &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtspec')
-     &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')) then
+     &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
+     &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
+     &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
+     &          .or. (catalog(1:it-1) == 'veritas') ) then
                is=0
                ie=index(value(1:len(value)),',')
             endif
@@ -139,6 +148,10 @@ c the catalog without source name
             else
                read(dec(1:ie-1),*) decdeg
             endif
+            if ((catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'magic')) then
+               radeg=ra_center
+               decdeg=dec_center
+            endif
 c read other pos_err
             if ((catalog(1:it-1) == 'nvss') .or.(catalog(1:it-1) == 'hst') .or.
      &            (catalog(1:it-1) == 'wise') .or. (catalog(1:5) == 'spire') .or.
@@ -200,6 +213,9 @@ c read the flux
                ie=index(value(1:len(value)),',')
                read(value(1:ie-1),'(a)') flux
             endif
+            if  ((catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'magic')) then
+               read(value(1:ie-1),'(a)') flux
+            endif
             if ((catalog(1:5) == '2mass') .or. (catalog(1:it-1) == 'gaia')) then
                is=index(value(is+1:len(value)),',')+is
                ie=index(value(is+1:len(value)),' ')+is
@@ -236,7 +252,7 @@ c write the data
             endif
          enddo
 200      continue
-         if (inputlist == 'catlist2.txt') then
+         if (inputlist(iskip+1:iskip+12) == 'catlist2.txt') then
             write(*,'("Candidate nr.",i4,",",2x,a,i4,2x,"point(s)")') ns,catalog(1:it-1),icat
          else
             write(*,'(a,i4,2x,"point(s)")') catalog(1:it-1),icat

@@ -1,6 +1,6 @@
 # VOU_Blazars
 
-VOU-Blazars is an extremely alpha version of blazars search tool.
+VOU-Blazars is an extremely alpha version of blazars search tool. There are still a lot of things to be modified. Such as the SED mode, the counterpart in second phase, the very close radio but not in NVSS psf region, and the cross-matching method need to be updated. Any comments and suggestions are welcomed. 
 
 ## Install
 
@@ -13,6 +13,9 @@ See below for dependencies setup.
 * Python 2.7
 * [EADA and conesearch pipline](https://github.com/chbrandt/eada)
 
+
+### Compiling Fortran programs
+
 **Once** the dependencies have been satisfied, go inside `VOU_Blazars/bin/fort` and run the `compile.sh` script:
 
 ```bash
@@ -22,6 +25,18 @@ $ cd bin/fort
 $ ./compile.sh
 $ cd ../..
 ```
+**Note that if the compile.sh script doesn't work, maybe there is some problem with the path of the PGPLOT library.** You could compile the mylib.f first with command
+```bash
+$ gfortran -c mylib.f -ffixed-line-length-132
+```
+and then all the other programs (with .f file name) with command
+```bash
+$ gfortran -o $XXX $XXX.f -ffixed-line-length-132 mylib.o -L${HOME}/pgplot -lpgplot
+```
+**Change the PGPLOT path to where you put the PGPLOT library.**
+
+**Always compile all the Fortran routines/subroutines inside the folder "fort"**
+
 
 ### Setup EADA/Conesearch pipeline
 
@@ -54,8 +69,12 @@ $ brew install pgplot
 
 To run the tool, `RA`, `DEC`, `SEARCH_RADIUS` are mandatory to input., and the other parameters, nH and error regions are optionals. The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
 
+**Before running the tool, make sure that you are under the main folder where the VOU-Blazars are installed and have activated the eada environment** Bin folder should inside the VOU_Blazars folder.
+
+
 ```
 $ cd VOU_Blazars
+$ source activate eada
 $ ./bin/vou-blazars RA DEC SEARCH_RADIUS
 ```
 
