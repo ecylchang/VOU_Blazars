@@ -1321,7 +1321,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                FluxU_xray(ixray,1)=fdens
                call fluxtofdens2(slope_xray(ixray),14.,195.,FluxL_xray(ixray,1)*1.e-12,50.,fdens,nudens)
                FluxL_xray(ixray,1)=fdens
-               xray_type(ixray)='BAT100'
+               xray_type(ixray)='BAT105m'
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:8) == 'fermi8yr') .or.
