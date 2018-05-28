@@ -196,6 +196,7 @@ c         write(*,*) 'the aim',aim
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_radio(iradio)
                if (catalog(1:4) == 'nvss') then
+                  erraxis=0.
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) major

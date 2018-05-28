@@ -60,6 +60,8 @@ c      write(*,*) output_file
       goto 101
 100   continue
 
+      if (npt(sfound) .eq. 0) STOP 'No data for SED'
+
       if (ns .eq. 99) then
          i=1
       else

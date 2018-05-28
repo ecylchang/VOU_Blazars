@@ -128,7 +128,7 @@ do
          echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m "
       else
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOUCES FOUND "
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]
