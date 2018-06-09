@@ -1368,6 +1368,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
                if (slope_gam(igam,1) .eq. 0.) slope_gam(igam,1)=slope_gam(igam,2)
                if (specerr_gam(igam,1) .eq. 0.) specerr_gam(igam,1)=specerr_gam(igam,2)
+               if (slope_gam(igam,2) .gt. 5.) slope_gam(igam,2)=2.
                !write(*,*) 'Gamma slope',slope_gam(igam,1),slope_gam(igam,2)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1469,6 +1470,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
+               if (slope_gam(igam,1) .gt. 5.) slope_gam(igam,1)=2.
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                if (Ferr_gam(igam,1) .gt. flux_gam(igam,1)) then
@@ -1645,6 +1647,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
+               if (slope_gam(igam,1) .gt. 5.) slope_gam(igam,1)=2.
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
                flux_gam(igam,2)=flux_gam(igam,1)
@@ -1684,6 +1687,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
+               if (slope_gam(igam,1) .gt. 5.) slope_gam(igam,1)=2.
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
                if ((FluxL_gam(igam,1) .lt. 0.) .or. (FluxL_gam(igam,1) .eq. flux_gam(igam,1))) then

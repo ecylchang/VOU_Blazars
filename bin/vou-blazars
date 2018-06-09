@@ -32,7 +32,7 @@
 
 # Directory where the fortran binaries are:
 #
-HERE=$(cd `dirname $BASH_SOURCE`; pwd)
+HERE=$(cd `dirname $BASH_SOURCE`; pwd) ##point to bin file and fortran file
 BINF="${HERE}/fort"
 
 handle_ps () {
@@ -207,13 +207,6 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 #echo finish searching swift deep data
 #fi
 
-#check if the same RA, Dec, radius are ran sucessfully before
-#if [ -s $xrtnm/output1.csv ]; then
-#   skip1=ok
-#else
-#   skip1=nono
-#fi
-
 
 
 
@@ -256,16 +249,11 @@ echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radiu
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
-#if [ $skip1 == ok ]; then
-#   echo phase 1 data ran before with same ra, dec, and radius!
-#   rm -f vosearch.txt
-#else
 sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
    echo
    echo finish conesearch phase 1
    rm -f ${pidnm}vosearch.txt
-#fi
 
 #read the data
 ls ${pidnm}*.1.csv > ${pidnm}catlist1.txt
@@ -275,22 +263,18 @@ if [ -s work/$xrtnm/table_flux_detections.csv ]; then
    cat work/$xrtnm/table_flux_detections.csv | sed 's/;/,/g' | sed 's/:/ /g' > ${pidnm}xrtdeep.csv
 fi
 [ -s ${pidnm}xrtdeep.csv ] && echo ${pidnm}xrtdeep.csv >> ${pidnm}catlist1.txt
-#if [ $skip1 == ok ]; then
-#   cat $xrtnm/output1.csv | sed '2,2c nH= $4   Error circle or elliptical= $5 $6 $7 $8' > output1.csv
-#else
-   rm -f ${pidnm}output1.csv
-   echo
-   [ -s ${pidnm}catlist1.txt ] && ${BINF}/readcat ${pidnm}catlist1.txt ${pidnm}output1.csv $1 $2 $3 $4 $5 $6 $7 $8
-#fi
+rm -f ${pidnm}output1.csv
+echo
+[ -s ${pidnm}catlist1.txt ] && ${BINF}/readcat ${pidnm}catlist1.txt ${pidnm}output1.csv $1 $2 $3 $4 $5 $6 $7 $8
 
 #running the PHASAE 1
 rm -f ${pidnm}*temp.txt
 if [ ${13} == s ]; then
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt 0 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 0 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 else
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt 1 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 1 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 
@@ -633,6 +617,7 @@ do
 done
 
 #remove the vo files from various catalogs
+rm -rf eada_files
 rm -f ${pidnm}*.1.csv
 rm -f ${pidnm}*.i.csv
 rm -f ${pidnm}*.2.csv

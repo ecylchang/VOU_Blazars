@@ -494,6 +494,10 @@ c              cs = max(1.0,cradio*8./99.)
       IF (icol1.GT.0) THEN 
         DO j = 1,icol1
            CALL gnom_projection(1,ra_center,dec_center,ra_col1(j),dec_col1(j),x,y)
+           R=110./255.
+           G=87./255.
+           B=36./255.
+           CALL PGSCR(8,R,G,B)
            CALL pgsci(8)
            CALL pgsch(csr1(j))
            CALL pgpoint(1,x,y,17)
@@ -536,6 +540,10 @@ c              cs = max(1.0,cradio*8./99.)
       IF (icol4.GT.0) THEN 
         DO j = 1,icol4
            CALL gnom_projection(1,ra_center,dec_center,ra_col4(j),dec_col4(j),x,y)
+           R=45./255.
+           G=73./255.
+           B=62./255.
+           call pgscr(3,R,G,B)
            CALL pgsci(3)
            CALL pgsch(csr4(j))
            CALL pgpoint(1,x,y,17)
@@ -550,13 +558,17 @@ c              cs = max(1.0,cradio*8./99.)
       IF (icol5.GT.0) THEN 
         DO j = 1,icol5
            CALL gnom_projection(1,ra_center,dec_center,ra_col5(j),dec_col5(j),x,y)
-           CALL pgsci(1)
+           R=43./255.
+           G=32./255.
+           B=34./255.
+           call pgscr(17,R,G,B)
+           CALL pgsci(17)
            CALL pgsch(csr5(j))
            CALL pgpoint(1,x,y,17)
            IF (csr5(j).GT.1.2*csx5(j)) CALL pgsci(10)
            CALL pgsch(csx5(j))
            CALL pgpoint(1,x,y,21)
-           CALL pgsci(1)
+           CALL pgsci(17)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol5(j))
         ENDDO

@@ -632,8 +632,8 @@ c
       IMPLICIT none
       INTEGER*4  max_sat , length
       PARAMETER (max_sat=200)
-      CHARACTER*80 file_eff_area , string
-      CHARACTER*80 f_eff_area(max_sat)
+      CHARACTER*800 file_eff_area , string
+      CHARACTER*800 f_eff_area(max_sat)
       CHARACTER*40 satellite(max_sat), instrument(max_sat)
       CHARACTER*1 yesno
       INTEGER*4 lu_input , model , ifear , ifl , itype
@@ -654,10 +654,11 @@ c
       REAL*4 eemin_aream(max_sat), eemax_aream(max_sat)
       REAL*4 eemin_areah(max_sat), eemax_areah(max_sat)
       CHARACTER*80 webprograms
-      CHARACTER*80 filename, stringin
+      CHARACTER*800 filename, stringin
       LOGICAL ok
       EXTERNAL espec
       EXTERNAL eacma
+      COMMON webprograms
       COMMON /filt  / energy(5000) , eff_area(5000)
       COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 ,
      &                gamma2 , break_energy
@@ -678,7 +679,7 @@ c         IF (string.NE.' ') read (string(1:lenact(string)),*) flag_nh
 c      ENDIF
 c Open configuration file
 c      lu_pf = 15
-      webprograms='./bin/fort'
+c      webprograms='./bin/fort'
       filename = webprograms(1:lenact(webprograms)) //
      &'/count_rate/countrates2.cf'
       OPEN (15,FILE=filename,STATUS='old')
