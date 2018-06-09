@@ -56,10 +56,11 @@ c
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000)
-      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4
+      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
-      LOGICAL there,ok,found 
+      LOGICAL there,ok,found
+      common webprograms
       ok = .TRUE. 
       found = .FALSE.
       nrep(1:500)=1
@@ -118,7 +119,10 @@ c         write(*,*) length
          in=im
          im=index(string(in+1:length),' ')+in
          output_file4=string(in+1:im-1)
-c         write(*,*) output_file4
+         in=im
+         im=index(string(in+1:length),' ')+in
+         webprograms=string(in+1:im-1)
+         write(*,*) webprograms
          read(string(im+1:length),*) aim
 c         write(*,*) 'the aim',aim
       ENDIF
@@ -196,6 +200,7 @@ c         write(*,*) 'the aim',aim
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_radio(iradio)
                if (catalog(1:4) == 'nvss') then
+                  erraxis=0.
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) major
