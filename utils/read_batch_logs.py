@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This script parse the logfile from VOU-Blazars 
+# This script parse the logfile from VOU-Blazars
 # and output the parsed fields to a JSON file.
 #
 # The "logfile" is simply the screen output to a file:
@@ -12,11 +12,11 @@
 # it is expected to find the so called logfile:
 #
 # logfile :: "RUN*.log"
-# 
+#
 # To exemplify the expected structure and output
-# by this script, consider the following example 
+# by this script, consider the following example
 # depicting two runs:
-# 
+#
 # Results/
 # |-- 17_15_m0_47_12/
 # |   |-- 1_error_map.eps
@@ -81,8 +81,8 @@
 #         }
 #     }
 # }
-# 
-# 
+#
+#
 # Reading output from 17_15_m0_47_12
 # {
 #     "run_label": "17_15_m0_47_12",
@@ -98,8 +98,8 @@
 #         }
 #     }
 # }
-# 
-# 
+#
+#
 # Known blazars:  2
 # NEW Blazars:  2
 #
@@ -142,7 +142,7 @@ for vou_dir in vou_result_run_dirs:
     logfile = glob.glob(os.path.join(vou_dir, LOGFILE_GLOB))
     assert len(logfile) == 1
     logfile = logfile[0]
-    
+
     with open(logfile, 'r') as fp:
 
         sources = {}
@@ -167,7 +167,7 @@ for vou_dir in vou_result_run_dirs:
                     ll = ll.split()
                     sources[int(ll[0])] = {} #list(map(float, ll[-2:]))
                     continue
-    
+
                 match_candidate = re.match('.*Candidate nr.(.*)', line)
                 if match_candidate:
                     ll = match_candidate.group(1).replace(',', '')
@@ -177,7 +177,7 @@ for vou_dir in vou_result_run_dirs:
 
             # Each source's block begins with '=====...',
             # when the first or a new block begins we
-            # have to flush any information from the last
+            # have to FLUSH any information from the last
             # source and increment the source-id
             #
             if re.match('.*=================.*', line):
@@ -193,8 +193,25 @@ for vou_dir in vou_result_run_dirs:
             if src == 0 or src not in sources:
                 continue
 
-            # At the beginning of each source's block, get the
-            # respective RA and Dec 
+            assert src > 0, "Source internal ID should be non-zero.."
+
+            # At the beginning of each source's block, get..
+            #
+            match_position = re.match('(\d*)\s*candidate with average.*', line)
+            if match_position:
+                assert int(match_position.group(1))==src
+                # ..average Radio/X-ray flux ratio:
+                line_list = [s.strip() for s in line.split()]
+                assert len(line_list)==17
+                radio_flux_density = float(line_list[9])
+                xray_flux = float(line_list[16])
+
+                next_line = fp.readline()
+                next_line = next_line.strip()
+                next_line_list = next_line.strip()
+                xray_radio_slope = float(next_line[4])
+
+            # respective RA and Dec
             #
             if src > 0:
                 match_position = re.match('.*R\.A.*Dec.*=(.*)', line)
@@ -270,7 +287,7 @@ for vou_dir in vou_result_run_dirs:
         xray_cats = list(set(xray_cats))
         xray_cats.sort()
         dct.update({'xray_catalogs':xray_cats})
-    
+
         dct.update({'sed_file':sed_file})
 
     results[run_label] = result_run['sources']
@@ -282,4 +299,3 @@ with open(OUTPUT_JSON,'w') as fp:
 
 print('Known blazars: ', cnt_known_blazars)
 print('NEW Blazars: ', cnt_new_blazars)
-
