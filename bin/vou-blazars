@@ -43,8 +43,12 @@ handle_ps () {
     else
        ps2eps -B -q $FILE_PS
     fi
-    [ `which open 2> /dev/null` ] || return 0
-    open ${FILE_PS%.ps}.eps && rm -f $FILE_PS
+    if [ `which open 2> /dev/null` ]; then
+      open ${FILE_PS%.ps}.eps
+    else
+      gv ${FILE_PS%.ps}.eps &
+    fi
+    rm -f $FILE_PS
 }
 
 
