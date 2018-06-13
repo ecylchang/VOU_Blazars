@@ -98,6 +98,30 @@ else
    pidnm=$pid"_"
 fi
 
+#adjust the input ra dec from user
+nht1=`echo $1 | grep '\.'`
+if [ -z $nht1 ]; then
+   ranh=$1".0"
+else
+   nht1=`echo $1 | cut -d'.' -f2`
+   if [ -z $nht1 ]; then
+      ranh=$1"0"
+   else
+      ranh=$1
+   fi
+fi
+nht2=`echo $2 | grep '\.'`
+if [ -z $nht2 ]; then
+   decnh=$2".0"
+else
+   nht2=`echo $2 | cut -d'.' -f2`
+   if [ -z $nht2 ]; then
+      decnh=$2"0"
+   else
+      decnh=$2
+   fi
+fi
+
 #check if the number 4 parameter are nh value or not
 if [ $# -ge 4 ]; then
    ttt=`echo $4 | grep '[eE]'`
@@ -117,74 +141,77 @@ if [ -z $nhthere ]; then
       echo set default nh 5.E20
    fi
 else
-   nh equinox=2000 ra=$1 dec=$2 > ${pidnm}nhvalue.txt
+#   echo $ranh $decnh
+   nh equinox=2000 ra=$ranh dec=$decnh > ${pidnm}nhvalue.txt
    nhval=`tail -1 ${pidnm}nhvalue.txt |  awk '{print $7}'`
    rm -f ${pidnm}nhvalue.txt
 fi
 
+echo $ranh $decnh
+
 #read the parameters input
 if [ $# -eq 3 ]; then
-   set $1 $2 $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. f
+   set $ranh $decnh $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. f
    echo set default error elliptical axes and angle: 0. 0. 0.
 elif [ $# -eq 4 -a $ttnh == wnh ]; then
-   set $1 $2 $3 $4 0. 0. 0. 0. 0. 0. 0. 0. f
+   set $ranh $decnh $3 $4 0. 0. 0. 0. 0. 0. 0. 0. f
    echo set default error elliptical axes and angle: 0. 0. 0.
 elif [ $# -eq 4 -a $ttnh != wnh -a $4 != s ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. f
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. f
 elif [ $# -eq 4 -a $ttnh != wnh -a $4 == s ]; then
-   set $1 $2 $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. $4
+   set $ranh $decnh $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. $4
    echo set default error elliptical axes and angle: 0. 0. 0.
    echo SED plotting mode
 elif [ $# -eq 5 -a $ttnh == wnh -a $5 != s ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. 0. 0. 0. 0. f
+   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. 0. 0. 0. f
 elif [ $# -eq 5 -a $ttnh == wnh -a $5 == s ]; then
-   set $1 $2 $3 $4 0. 0. 0. 0. 0. 0. 0. 0. $5
+   set $ranh $decnh $3 $4 0. 0. 0. 0. 0. 0. 0. 0. $5
    echo SED plotting mode
 elif [ $# -eq 5 -a $ttnh != wnh -a $5 != s ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. $5 0. 0. 0. f
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. $5 0. 0. 0. f
 elif [ $# -eq 5 -a $ttnh != wnh -a $5 == s ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. $5
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. $5
    echo SED plotting mode
 elif [ $# -eq 6 -a $ttnh != wnh -a $6 != s ]; then
-   set $1 $2 $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. f
+   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. f
 elif [ $# -eq 6 -a -a $ttnn != wnh -a $6 == s ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. $5 0. 0. 0. $6
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. $5 0. 0. 0. $6
    echo SED plotting mode
 elif [ $# -eq 6 -a $ttnh == wnh -a $6 != s ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. $6 0. 0. 0. f
+   set $ranh $decnh $3 $4 $5 0. 0. 0. $6 0. 0. 0. f
 elif [ $# -eq 6 -a $ttnh == wnh -a $6 == s ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. 0. 0. 0. 0. $6
+   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. 0. 0. 0. $6
    echo SED plotting mode
 elif [ $# -eq 7 -a $ttnh != wnh -a $7 == s ]; then
-   set $1 $2 $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. $7
+   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. $7
    echo SED plotting mode
 elif [ $# -eq 7 -a $ttnh != wnh -a $7 != s ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 f
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 f
 elif [ $# -eq 7 -a $ttnh == wnh -a $7 != s ]; then
-   set $1 $2 $3 $4 0. $5 $6 $7 0. 0. 0. 0. f
+   set $ranh $decnh $3 $4 0. $5 $6 $7 0. 0. 0. 0. f
 elif [ $# -eq 7 -a $ttnh == wnh -a $7 == s ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. $6 0. 0. 0. $7
+   set $ranh $decnh $3 $4 $5 0. 0. 0. $6 0. 0. 0. $7
    echo SED plotting mode
 elif [ $# -eq 8 -a $ttnh == wnh -a $8 != s ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. 0. $6 $7 $8 f
+   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. $6 $7 $8 f
 elif [ $# -eq 8 -a $ttnh != wnh ]; then
-   set $1 $2 $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 $8
+   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 $8
    echo SED plotting mode
 elif [ $# -eq 8 -a $ttnh == wnh -a $8 == s ]; then
-   set $1 $2 $3 $4 0. $5 $6 $7 0. 0. 0. 0. $8
+   set $ranh $decnh $3 $4 0. $5 $6 $7 0. 0. 0. 0. $8
    echo SED plotting mode
 elif [ $# -eq 9 -a $ttnh == wnh ]; then
-   set $1 $2 $3 $4 $5 0. 0. 0. 0. $6 $7 $8 $9
+   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. $6 $7 $8 $9
    echo SED plotting mode
 elif [ $# -eq 9 -a $ttnh != wnh ]; then
-   set $1 $2 $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 f
+   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 f
 elif [ $# -eq 10 -a $ttnh == wnh ]; then
-   set $1 $2 $3 $4 0. $5 $6 $7 0. $8 $9 ${10} f
+   set $ranh $decnh $3 $4 0. $5 $6 $7 0. $8 $9 ${10} f
 elif [ $# -eq 10 -a $ttnh != wnh ]; then
-   set $1 $2 $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 ${10}
+   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 ${10}
    echo SED plotting mode
 elif [ $# -eq 11 ]; then
-   set $1 $2 $3 $4 0. $5 $6 $7 0. $8 $9 ${10} ${11}
+   set $ranh $decnh $3 $4 0. $5 $6 $7 0. $8 $9 ${10} ${11}
    echo SED plotting mode
 fi
 
