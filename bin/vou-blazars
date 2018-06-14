@@ -61,7 +61,7 @@ handle_ps () {
 
 #source activate eada2
 #check if docker and heasoft are installed
-dockerthere=`which docker`
+# dockerthere=$(which docker 2> /dev/null)
 nhthere=`which nh`
 
 #read the parameters input
