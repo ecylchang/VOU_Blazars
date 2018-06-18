@@ -43,8 +43,12 @@ handle_ps () {
     else
        ps2eps -B -q $FILE_PS
     fi
-    [ `which open 2> /dev/null` ] || return 0
-    open ${FILE_PS%.ps}.eps && rm -f $FILE_PS
+    if [ `which open 2> /dev/null` ]; then
+      open ${FILE_PS%.ps}.eps
+    else
+      gv ${FILE_PS%.ps}.eps &
+    fi
+    rm -f $FILE_PS
 }
 
 
@@ -57,7 +61,7 @@ handle_ps () {
 
 #source activate eada2
 #check if docker and heasoft are installed
-dockerthere=`which docker`
+# dockerthere=$(which docker 2> /dev/null)
 nhthere=`which nh`
 
 #read the parameters input
