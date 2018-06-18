@@ -143,8 +143,6 @@ else
    rm -f ${pidnm}nhvalue.txt
 fi
 
-echo $ranh $decnh
-
 #read the parameters input
 if [ $# -eq 3 ]; then
    set $ranh $decnh $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. f
