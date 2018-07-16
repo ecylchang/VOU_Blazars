@@ -1382,6 +1382,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                   FluxU_gam(igam,1)=Ferr_gam(igam,1)*3.
                   FluxL_gam(igam,1)=0.
                endif
+c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),slope_gam(igam,2)
                call fluxtofdens(slope_gam(igam,2),50.,2000.,flux_gam(igam,1),50.,fdens,nudens)
                flux_gam(igam,1)=fdens
                frequency_gam(igam,1)=nudens
@@ -1389,6 +1390,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                FluxU_gam(igam,1)=fdens
                call fluxtofdens(slope_gam(igam,2),50.,2000.,FluxL_gam(igam,1),50.,fdens,nudens)
                FluxL_gam(igam,1)=fdens
+c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),slope_gam(igam,2)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,2)
@@ -2542,6 +2544,8 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
                   if (bigbind(i) .eq. 1) then
                      write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
                   endif
+               else if (gam_type(i) == '2FHL') then
+                  write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,2),dist*60
                else
                   write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
                endif
@@ -2845,12 +2849,13 @@ cccc
 c
       SUBROUTINE fluxtofdens(gamma,bandl,bandu,flux,gev,fdens,nudens)
       real*4 alpha,bandu,bandl,flux,nudens,fdens,conval,kev,nuu,nul
-      !write(*,*) alpha,flux,kev,bandu,bandl
-      if (gamma .ne. 2. ) then
+c      write(*,*) gamma,flux,gev,bandu,bandl
+c      if (gamma .ne. 2.d0 ) then
       conval=(1./(-gamma+1.))*((bandu)**(-gamma+1.)-(bandl)**(-gamma+1.))
-      else
-      conval=log(bandu/bandl)
-      endif
+c      else
+c      write(*,*) '2FHL'
+c      conval=log10(bandu/bandl)
+c      endif
       fdens=gev*(flux/conval)*((gev)**(-gamma))!!!!To photon flux at gev
       fdens=fdens*1.602E-19*1.E7*(gev*1.E9)
       nudens=(1.602E-19)*(gev*1.E9)/(6.626e-34)
@@ -2863,7 +2868,7 @@ c
       if (alpha .ne. 1. ) then
       conval=(1./(-alpha+1.))*((bandu)**(-alpha+1.)-(bandl)**(-alpha+1.))
       else
-      conval=log(bandu/bandl)
+      conval=log10(bandu/bandl)
       endif
       !write(*,*) kev,(1./conval)*kev*kev**(-alpha)!/(kev*2.418E-12)
       fdens=kev*(flux/conval)*((kev)**(-alpha))!!!!

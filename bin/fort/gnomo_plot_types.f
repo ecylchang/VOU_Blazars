@@ -497,7 +497,7 @@ c              cs = max(1.0,cradio*8./99.)
            R=110./255.
            G=87./255.
            B=36./255.
-           CALL PGSCR(8,R,G,B)
+c           CALL PGSCR(8,R,G,B)
            CALL pgsci(8)
            CALL pgsch(csr1(j))
            CALL pgpoint(1,x,y,17)
