@@ -233,7 +233,7 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 #if [ -n $dockerthere ]; then
 #alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
 #swift_deepsky --ra $1 --dec $2 --radius $3
-#echo finish searching swift deep data
+#xecho finish searching swift deep data
 #fi
 
 
@@ -271,10 +271,11 @@ echo conesearch --db ${HERE}/cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius 
 echo conesearch --db ${HERE}/cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}crates.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}pulsar.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}1bigb.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog MST9Y --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mst9y.1.csv >> ${pidnm}vosearch.txt
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
@@ -436,17 +437,19 @@ fi
 # aim: Plot the SED and error circle map for a specified source
 #######################################################
 
-#begin phase 2 setup
+#begin phase 2 setup, leave the tool when no candidates
 source=1
 rm -f ${pidnm}*.2.csv
+[ ! -s ${pidnm}find_out_temp.txt ] && source=nocand
+
 #read the number interested
 until [ $source == sed -o $source == q ]
 do
-   if [ ${13} != s ]; then
+   if [ ${13} != s -a $source != nocand ]; then
       echo
       if [ -z "$VOUB_AUTOSED" ]; then
-        cat ${pidnm}phase1
-        read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) " source zoomin showsed
+#        cat ${pidnm}phase1
+        read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zoomin showsed
       else
         [ -f ${pidnm}Sed_temp.txt ] && `grep "matched source" ${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > ${pidnm}sources.list`
         [ `wc -l ${pidnm}sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
@@ -455,10 +458,10 @@ do
         mv ${pidnm}sources.tmp ${pidnm}sources.list
       fi
       ln=`cat ${pidnm}find_out_temp.txt | wc -l`
-   else
+   elif [ ${13} == s ]; then
       ln=1
       source=sed
-      [ ! -f ${pidnm}find_out_temp.txt ] && echo $1 $2 99 > ${pidnm}find_out_temp.txt
+#      [ ! -f ${pidnm}find_out_temp.txt ] && echo $1 $2 99 > ${pidnm}find_out_temp.txt
       zoomin=${3}*60
    fi
 
@@ -524,7 +527,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}bat105.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fgl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}2fhl.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YL --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}fermi8yr.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YR --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}fermi8yr.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fhl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}magictt.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -537,18 +540,25 @@ do
    done
 
 #check if the number input are not valid, or the user want to quit
-   if [ ! -f ${pidnm}vosearch.txt -a $source != q ]; then
+   if [ ! -f ${pidnm}vosearch.txt -a $source != q -a $source != candlist -a $source != nocand ]; then
       source=nosource
    fi
    if [ $source == nosource ]; then
       echo NO SOURCE NUMBER FIND!
+   elif [ $source == candlist ]; then
+      echo
+      cat phase1
+   elif [ $nn -eq 0 ]; then
+      echo TRY OTHER COORDINATE!!!
+      echo Exit the source exploring routine.
+      source=q
    elif [ $source == q ]; then
       echo STOP !!!!Exit the source exploring routine!!!!
 
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
       ncat2=`cat ${pidnm}vosearch.txt | wc -l`
-      catthere=`ls ${pidnm}*.$source.2.csv | wc -l`
+      catthere=`ls ${pidnm}*.$source.2.csv 2>/dev/null | wc -l`
       if [ $catthere != 0 ]; then
          echo
          echo data already downloaded!

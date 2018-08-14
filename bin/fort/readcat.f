@@ -7,7 +7,7 @@ c this program read the output from vo tool and make a input for find candidates
       real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh,ra1,ra2,dec1,dec2
       character*1 sign
       character*2 cratecheck
-      character*80 catalog,ra,dec,inputlist,test,outputlist
+      character*80 catalog,ra,dec,inputlist,test,outputlist,catname
       character*1000 head,value
       character*800 flux,string
       logical ok,there
@@ -54,6 +54,11 @@ c            write(*,*) is,ie
             icat=icat+1
             is=index(value(1:len(value)),',')
             ie=index(value(is+1:len(value)),',')+is
+c gamma-ray catalog print name
+            if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')
+     &          .or. (catalog(1:it-1) == 'fermi8yr') .or. (catalog(1:it-1) == 'mst9y')) then
+               read(value(1:is-1),'(a)') catname
+            endif
 c the catalog without source name
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
      &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
@@ -113,6 +118,7 @@ c the catalog without source name
             if (catalog(1:it-1) == 'f2psr') ie=is+30
             if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             if (catalog(1:it-1) == 'north20') ie=is+30
+            if (catalog(1:it-1) == 'mst9y') ie=is+30
 !the source pos error in front of dec
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
      &           (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
@@ -209,7 +215,8 @@ c read the flux
      &           (catalog(1:it-1) == 'abell') .or. (catalog(1:it-1) == 'mcxc') .or.
      &           (catalog(1:it-1) == 'whl') .or. (catalog(1:it-1) == 'swxcs') .or.
      &      ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) .or.
-     &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr')) then
+     &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr') .or.
+     &       (catalog(1:it-1) == 'mst9y')) then
                ie=index(value(1:len(value)),',')
                read(value(1:ie-1),'(a)') flux
             endif
@@ -243,10 +250,15 @@ c write the data
      &               (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'hst') .or.
      &               (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'wise') .or.
      &               (catalog(1:5) == 'spire') .or. (catalog(1:it-1) == 'cma') .or.
-     &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'fermi8yr') .or.
-     &               (catalog(1:it-1) == 'gaia') ) then
+     &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') ) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
+            else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')) then
+               write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
+     &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
+            else if (catalog(1:it-1) == 'fermi8yr') then
+               write(13,'(i4,",",a,",",2(f9.5,","),a,",",f7.3,",",a)')
+     &             ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),poserr,flux(1:ie-1)
             else
                write(13,'(i4,",",a,",",2(f9.5,","),a)') ns,catalog(1:it-1),radeg,decdeg,flux(1:ie-1)
             endif

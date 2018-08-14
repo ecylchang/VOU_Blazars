@@ -489,7 +489,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
          stop
       endif
       if (ipass+isource .eq. 0) then
-         print *,achar(27),'[31;1m Unfortunatelly, no any candidates were found',achar(27),'[0m'
+         print *,achar(27),'[31;1m Unfortunately, no any candidates were found',achar(27),'[0m'
          stop
       endif
 c      write(*,*) pass2(1:ipass)

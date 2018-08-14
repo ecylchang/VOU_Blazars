@@ -25,7 +25,7 @@ c
       IMPLICIT none
       INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000),im
       INTEGER*4 radio_type(5000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
-      INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000)
+      INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000),ibigb,bigbind(100)
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(5000),l,filen,ttsource(5000),ihighpeak,track2(100)
@@ -55,7 +55,7 @@ c
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(10000),name_cat(10000)
+      CHARACTER*30 name_other(10000),name_cat(10000),namegam(200)
       CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
@@ -77,6 +77,7 @@ c
       iother=0
       ichandra=0
       igam=0
+      ibigb=0
       radian = 45.0/atan(1.0)
       flux2nufnu_nvss=1.4e9*1.e-26
       flux2nufnu_sumss=8.43e8*1.e-26 !assumed radio alpha=0.2 !f_0.8 to f_1.4
@@ -122,7 +123,7 @@ c         write(*,*) length
          in=im
          im=index(string(in+1:length),' ')+in
          webprograms=string(in+1:im-1)
-         write(*,*) webprograms
+c         write(*,*) webprograms
          read(string(im+1:length),*) aim
 c         write(*,*) 'the aim',aim
       ENDIF
@@ -1223,12 +1224,28 @@ c PG
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_chandra(ichandra),dec_chandra(ichandra),int(code)
 c end PG
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == 'fermi8yr')
-     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '1bigb')) then
+     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
+     &           .or.  (catalog(1:5) == 'mst9y')) then
             igam=igam+1
             ra_gam(igam)=ra
             dec_gam(igam)=dec
-            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
-            write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
+            is=ie
+            if (catalog(1:5) == 'mst9y') then
+               ie=index(string(is+10:len(string)),' ')+is+9
+            else
+               ie=index(string(is+1:len(string)),',')+is
+            endif
+            if (catalog(1:5) == '1bigb') then
+               ibigb=ibigb+1
+               bigbind(igam)=MOD(ibigb,9)
+               namegam(igam)(1:9)='1BIGB SED'
+            else
+               if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
+            endif
+            if ((bigbind(igam) .eq. 1) .or. (namegam(igam)(1:9) /= '1BIGB SED')) then
+               write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
+               write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
+            endif
          ELSE
             iother=iother+1
             IF (iother > 10000) Stop 'Too many catalogued sources'
@@ -2070,6 +2087,13 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
             write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code)
          ENDIF
       ENDDO
+      WRITE (*,*) '      '
+
+      if (igam .gt. 0) write(*,*) 'Gamma-ray Counterparts'
+      do i=1,igam
+         if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:9) /= '1BIGB SED'))
+     &      write(*,*) namegam(i),ra_gam(i),dec_gam(i)
+      enddo
       WRITE (*,*) '      '
       goto 502
 

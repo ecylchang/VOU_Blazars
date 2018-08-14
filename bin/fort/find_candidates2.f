@@ -170,7 +170,7 @@ c read the find_out.txt first
             dec_source(isource)=dec
             typer(isource)=int(code/10000.)
             if (code .eq. 99) typer(isource)=99
-         else if (code .ge. -40000.) then
+         else if ((code .ge. -40000.) .and. (code .lt. -2222.)) then
             icat=icat+1
             ra_cat(icat)=ra
             dec_cat(icat)=dec
@@ -178,7 +178,7 @@ c read the find_out.txt first
          ENDIF
       enddo
 100   continue
-c      write(*,*) icat,isource  !!!!!!the number of source
+      write(*,*) icat,isource  !!!!!!the number of source
       close(13)
 c      do i=1,icat
 c         write(lu_output,*) ra_cat(i),dec_cat(i),type_cat(i)*10000.
@@ -1462,6 +1462,8 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
             ELSE IF (catalog(1:4) == '3fgl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1635,6 +1637,8 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
             ELSE IF (catalog(1:8) == 'fermi8yr') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_gam(igam)
                poserr_gam(igam)=poserr_gam(igam)*60.
                is=ie
@@ -1671,8 +1675,10 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                FluxL_gam(igam,2)=fdens
                !write(*,*) 'Fermi',poserr_gam(igam),FluxU_gam(igam,1),flux_gam(igam,1),FluxL_gam(igam,1)
                !write(*,*) 'Fermi',poserr_gam(igam),FluxU_gam(igam,2),flux_gam(igam,2),FluxL_gam(igam,2)
-               gam_type(igam)='Fermi8YL'
+               gam_type(igam)='Fermi8YR'
             ELSE IF (catalog(1:4) == '3fhl') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_gam(igam)
@@ -1816,7 +1822,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                gam_type(igam)='3FHL'
             ELSE IF (catalog(1:5) =='1bigb') then
                ibigb=ibigb+1
-               bigbind(igam)=ibigb
+               bigbind(igam)=MOD(ibigb,9)
                poserr_gam(igam)=10. !!!set to 10 arcsec
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -2061,6 +2067,7 @@ c         write(*,*) '..................Low frequency Radio....................'
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_4p8(i),dec_4p8(i),dist)
             !IF (dist < min_dist_4p8) THEN
             !if (f4p8part(i) .eq. j) then
+            f4p8part(i)=0
             min_dist=sqrt(poserr_4p8(i)**2+epos(1,j)**2)
             if (dist*3600. .lt. min_dist) then
                f4p8part(i)=j
@@ -2096,6 +2103,7 @@ c         write(*,*) '..................Low frequency Radio....................'
             !IF (dist < min_dist_pccs100) THEN
             !if (pccspart(i) .eq. j) then
             !write(*,*) poserr_pccs100(i)*1.3, dist*3600.
+            pccspart(i)=0
             min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
             if (dist*3600. .lt. min_dist) then
                pccspart(i)=j
@@ -2116,6 +2124,7 @@ c         write(*,*) '..................Low frequency Radio....................'
         CALL DIST_SKY(ra_source(j),dec_source(j),ra_far(i),dec_far(i),dist)
         !IF (dist < min_dist_pccs100) THEN
            !if (farpart(i) .eq. j) then
+            farpart(i)=0
             min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
            if (dist*3600. .lt. min_dist) then
               farpart(i)=j
@@ -2535,6 +2544,7 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
             call Dist_sky(ra_source(j),dec_source(j),ra_gam(i),dec_gam(i),dist)
             !if (dist < min_dist_gam) then
 !            if (gampart(i) .eq. j) then
+            gampart(i)=0
             min_dist=sqrt(poserr_gam(i)**2+epos(1,j)**2)
             if (dist*3600. .lt. min_dist) then
                gampart(i)=j
@@ -2884,7 +2894,7 @@ c
         IMPLICIT none
         REAL*4 nh, flux , av , m_band, a_band, Rv 
         REAL*4 c, lambda, const, frequency, a
-        REAL*8 x,aa,bb,c1,c2,dx,px,ebv
+        REAL*8 x,aa,bb,c1,c2,dx,px,ebv,y
         CHARACTER*3 filter
 c        print *,' nh, m_band, filter ', nh, m_band,filter
 c        call upc(filter)
@@ -2918,137 +2928,137 @@ ccccccccccc check nh=2.29e21*Av
         ebv=av/Rv
         if (av < 0.) av=0.
         if (filter(1:3) == 'U  ') then
-           lambda=3600.
-           const=log10(1810.)-23.
+           lambda=3600.d0
+           const=log10(1810.d0)-23.d0
         else if (filter(1:3) == 'B  ') then
-           lambda=4400.
-           const=log10(4260.)-23.
+           lambda=4400.d0
+           const=log10(4260.d0)-23.d0
         else if (filter(1:3) == 'V  ') then
-           lambda=5500.
-           const=log10(3640.)-23.
+           lambda=5500.d0
+           const=log10(3640.d0)-23.d0
         else if (filter(1:3) == 'R  ') then
-           lambda=6400.
-           const=log10(3080.)-23.
+           lambda=6400.d0
+           const=log10(3080.d0)-23.d0
         else if (filter(1:3) == 'I  ') then
-           lambda=7900.
-           const=log10(2550.)-23.
+           lambda=7900.d0
+           const=log10(2550.d0)-23.d0
         else if (filter(1:3) == 'J  ') then !2MASS
-           lambda=12350.
-           const=log10(1594.)-23.
+           lambda=12350.d0
+           const=log10(1594.d0)-23.d0
         else if (filter(1:3) == 'H  ') then
-           lambda=16620.
-           const=log10(1024.)-23.
+           lambda=16620.d0
+           const=log10(1024.d0)-23.d0
         else if (filter(1:3) == 'K  ') then
-           lambda=21590.
-           const=log10(666.7)-23.
+           lambda=21590.d0
+           const=log10(666.7d0)-23.d0
         else if (filter(1:3) == 'u  ') then !effective wavelength from SDSS, Doi et al. 2010 ApJ 139, 1628
            !m_band=m_band-0.04 !calibrate of the SDSS u band to AB mag
-           lambda=3568.
-           const=log10(3631.)-23. !3631 is the 0 mag flux of AB mag system
+           lambda=3568.d0
+           const=log10(3631.d0)-23.d0 !3631 is the 0 mag flux of AB mag system
         else if (filter(1:3) == 'g  ') then
-           lambda=4653.
-           const=log10(3631.)-23.
+           lambda=4653.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'r  ') then !effective wavelength from SDSS, Doi et al. 2010 ApJ 139, 1628
-           lambda=6148.
-           const=log10(3631.)-23. !3631 is the 0 mag flux of AB mag system
+           lambda=6148.d0
+           const=log10(3631.d0)-23.d0 !3631 is the 0 mag flux of AB mag system
         else if (filter(1:3) == 'i  ') then
-           lambda=7468.
-           const=log10(3631.)-23.
+           lambda=7468.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'z  ') then
-           lambda=8863.
-           const=log10(3631.)-23.
+           lambda=8863.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'psg') then !tonry et al. 2012
-           lambda=4810.
-           const=log10(3631.)-23.
+           lambda=4810.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'psr') then
-           lambda=6170.
-           const=log10(3631.)-23.
+           lambda=6170.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'psi') then
-           lambda=7520.
-           const=log10(3631.)-23.
+           lambda=7520.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'psz') then
-           lambda=8660.
-           const=log10(3631.)-23.
+           lambda=8660.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'psy') then
-           lambda=9620.
-           const=log10(3631.)-23.
+           lambda=9620.d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'bbG') then
-           lambda=6730. !!!Jordi et al. 2010
-           const=log10(2918.)-23. !!!!the zero mag. flux are estimated from Vega flux!!!
+           lambda=6730.d0 !!!Jordi et al. 2010
+           const=log10(2918.d0)-23.d0 !!!!the zero mag. flux are estimated from Vega flux!!!
         else if (filter(1:3) == 'fuv') then
-           lambda=1538.6
-           const=log10(3631.)-23.
+           lambda=1538.6d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'nuv') then
-           lambda=2315.7
-           const=log10(3631.)-23.
+           lambda=2315.7d0
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'su ') then
-           lambda=3501. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           lambda=3501.d0 !from Poole et al. (2008) effective wavelength
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'sb ') then
-           lambda=4329. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           lambda=4329.d0 !from Poole et al. (2008) effective wavelength
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'sv ') then
-           lambda=5402. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           lambda=5402.d0 !from Poole et al. (2008) effective wavelength
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'sw1') then
-           lambda=2634. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           lambda=2634.d0 !from Poole et al. (2008) effective wavelength
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'sm2') then
-           lambda=2231. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           lambda=2231.d0 !from Poole et al. (2008) effective wavelength
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'sw2') then
            lambda=2030. !from Poole et al. (2008) effective wavelength
-           const=log10(3631.)-23.
+           const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xu ') then
         lambda=3440. !from Page et al. (2008) effective wavelength
-        const=log10(3631.)-23.
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xb ') then
-        lambda=4500. !from Page et al. (2011) effective wavelength
-        const=log10(3631.)-23.
+        lambda=4500.d0 !from Page et al. (2011) effective wavelength
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xv ') then
-        lambda=5430. !from Page et al. (2011) effective wavelength
-        const=log10(3631.)-23.
+        lambda=5430.d0 !from Page et al. (2011) effective wavelength
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xw1') then
         lambda=2910. !from Page et al. (2011) effective wavelength
-        const=log10(3631.)-23.
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xm2') then
-        lambda=2310. !from Page et al. (2011) effective wavelength
-        const=log10(3631.)-23.
+        lambda=2310.d0 !from Page et al. (2011) effective wavelength
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'xw2') then
         lambda=2120. !from Page et al. (2011) effective wavelength
-        const=log10(3631.)-23.
+        const=log10(3631.d0)-23.d0
         else if (filter(1:3) == 'ww1') then
-           lambda=34000.
-           const=log10(309.540)-23.
+           lambda=34000.d0
+           const=log10(309.540d0)-23.d0
         else if (filter(1:3) == 'ww2') then
-           lambda=46000.
-           const=log10(171.787)-23.
+           lambda=46000.d0
+           const=log10(171.787d0)-23.d0
         else if (filter(1:3) == 'ww3') then
-           lambda=120000.
-           const=log10(31.674)-23.
+           lambda=120000.d0
+           const=log10(31.674d0)-23.d0
         else if (filter(1:3) == 'ww4') then
-           lambda=220000.
-           const=log10(8.363)-23.
+           lambda=220000.d0
+           const=log10(8.363d0)-23.d0
         endif
 c lambda from Amstrongs to microns
         !write(*,*) filter(1:3),m_band,a_band,const
-        x=10000./lambda
-        !write(*,*) filter(1:3),lambda,x
-        if ((x .le. 1.1) .and. (x .ge. 0.3)) then
+        x=(10000.d0/lambda)
+        if ((x .lt. 1.1d0) .and. (x .ge. 0.3d0)) then
         a_band=(0.574*(x**1.61)-0.527*(x**1.61)/Rv)*av ! the a_lambda
-        else if ((x .le. 3.3) .and. (x .ge. 1.1)) then
-        x=x-1.82
-        aa=1+(0.17699*x)-(0.50447*x**2)-(0.02427*x**3)+(0.72085*x**4)
-     &  +(0.01979*x**5)-(0.77530*x**6)+(0.32999*x**7)
-        bb=1.41338*x+(2.28305*x**2)+(1.07233*x**3)-(5.38434*x**4)
-     &  -(0.62251*x**5)+(5.30260*x**6)-(2.09002*x**7)
+        else if ((x .lt. 3.3d0) .and. (x .ge. 1.1d0)) then
+        y=x-1.82d0
+        aa=1+(0.17699d0*y)-(0.50447d0*y**2d0)-(0.02427d0*y**3d0)+(0.72085d0*y**4d0)
+     &  +(0.01979d0*y**5d0)-(0.77530d0*y**6d0)+(0.32999d0*y**7d0)
+        bb=1.41338d0*y+(2.28305d0*y**2d0)+(1.07233d0*y**3d0)-(5.38434d0*y**4d0)
+     &  -(0.62251d0*y**5d0)+(5.30260d0*y**6d0)-(2.09002d0*y**7d0)
+c        write(*,*) aa,bb,av,Rv
         a_band=(aa+(bb/Rv))*av
-        else if ((x .le. 10.) .and. (x .ge. 3.3)) then
+        else if ((x .le. 10.d0) .and. (x .ge. 3.3d0)) then
         c2=-0.824+(4.717/Rv)
         c1=2.03-(3.007*c2)
         dx=(x*x)/((((x**2)-(4.596**2))**2)+((x*0.99)**2))
         px=(0.5392*((x-5.9)**2))+(0.05644*((x-5.9)**3))
-        if (x .le. 5.9) px=0.
+        if (x .le. 5.9d0) px=0.
         !write(*,*) (c1+c2*x+3.23*dx+0.41*px),c1,c2,dx,px
         a_band=(c1+c2*x+3.23*dx+0.41*px)*ebv+av
         else
