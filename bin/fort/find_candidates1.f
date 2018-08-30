@@ -232,7 +232,7 @@ c         write(*,*) 'the aim',aim
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
                   posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                   posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
-                  poserr_radio(iradio)=max(posxerr,posyerr)
+c                  poserr_radio(iradio)=max(posxerr,posyerr)
                endif
             ELSE
                if (is .ne. ie-1) read(string(is+1:ie-1),*) ppss(iradio)

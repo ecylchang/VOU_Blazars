@@ -233,7 +233,7 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 #if [ -n $dockerthere ]; then
 #alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
 #swift_deepsky --ra $1 --dec $2 --radius $3
-#xecho finish searching swift deep data
+#echo finish searching swift deep data
 #fi
 
 
@@ -540,7 +540,7 @@ do
    done
 
 #check if the number input are not valid, or the user want to quit
-   if [ ! -f ${pidnm}vosearch.txt -a $source != q -a $source != candlist -a $source != nocand ]; then
+   if [ ! -f ${pidnm}vosearch.txt -a ${source} != q -a ${source} != candlist -a ${source} != nocand ]; then
       source=nosource
    fi
    if [ $source == nosource ]; then
@@ -548,7 +548,7 @@ do
    elif [ $source == candlist ]; then
       echo
       cat phase1
-   elif [ $nn -eq 0 ]; then
+   elif [ $source == nocand ]; then
       echo TRY OTHER COORDINATE!!!
       echo Exit the source exploring routine.
       source=q
