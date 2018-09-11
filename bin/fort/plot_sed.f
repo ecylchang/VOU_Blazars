@@ -89,12 +89,13 @@ c      IER = PGBEG(0,"/xs",1,1)
       call pgsch(1.3)
       sedup=uflux(1,i)
       sedlow=5.e-16
+      write(*,*) sedlow
       do j=1,npt(i)
-         if ((frequency(j,i) .lt. 1.e13) .and. (uflux(j,i) .gt. 0.)) sedlow=uflux(1,i)
+         if ((frequency(j,i) .lt. 1.e10) .and. (uflux(j,i) .gt. 0.d0)) sedlow=uflux(j,i)
       enddo
       do j=1,npt(i)
-         if ((uflux(j,i) .gt. sedup) .and. (uflux(j,i) .gt. 0.)) sedup=uflux(j,i)
-         if ((uflux(j,i) .lt. sedlow) .and. (uflux(j,i) .gt. 0.)) sedlow=uflux(j,i)
+         if ((uflux(j,i) .gt. sedup) .and. (uflux(j,i) .gt. 0.d0)) sedup=uflux(j,i)
+         if ((uflux(j,i) .lt. sedlow) .and. (uflux(j,i) .gt. 0.d0)) sedlow=uflux(j,i)
       enddo
       write(*,*) 'SED range upper limit',sedup,'SED range lower limit',sedlow
          sedup=alog10(sedup)+0.5
