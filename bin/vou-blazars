@@ -314,8 +314,8 @@ else
    rm -f ${pidnm}RX_map.*ps
    sort -n -k 3 ${pidnm}RX_temp.txt > ${pidnm}RX_sorted.txt
    rm -f ${pidnm}RX_temp.txt
-   ${BINF}/gnomo_plot_types ${pidnm}RX_sorted.txt,${pidnm}RX_map.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
-   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
+   ${BINF}/gnomo_plot_types ${pidnm}RX_sorted.txt,${pidnm}candidates_image_position.txt,${pidnm}RX_map.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
+   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates_image_position.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 ${1} ${2} $6 $7 $8 $9 ${10} ${11} ${12} ${1} ${2}
    handle_ps ${pidnm}RX_map.ps
    handle_ps ${pidnm}candidates.ps
 #   ps2eps -B -q RX_map.ps
@@ -414,7 +414,7 @@ if [ -s ${pidnm}Intermediate_out.txt ]; then
 ###############################PLOTTING###############################
 #plot the candidates again with Intermediate phase finish ???
    rm -f ${pidnm}candidates.*ps
-   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
+   ${BINF}/gnomo_plot_types ${pidnm}find_out_temp.txt,${pidnm}candidates_image_position.txt,${pidnm}candidates.ps/vcps, $1 $2 $5 $3 $1 $2 $6 $7 $8 $9 ${10} ${11} ${12} $1 $2
    handle_ps ${pidnm}candidates.ps
 #    ps2eps -B -q candidates.ps
 #    open candidates.eps
@@ -607,7 +607,7 @@ do
       fi
       rm -f ${pidnm}error_map.*ps
       rm -f ${pidnm}sed.*ps
-      ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+      ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_image_position.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
       handle_ps ${pidnm}error_map.ps
       # ps2eps -B -q error_map.ps
       # open error_map.eps

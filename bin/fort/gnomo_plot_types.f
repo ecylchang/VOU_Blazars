@@ -7,6 +7,7 @@ c
       INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
+      INTEGER*4 lu_out
       INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(10000),s14(200)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
       integer*8 code(10000),icol12,icol13
@@ -39,7 +40,7 @@ c
       CHARACTER*4 tcol14(200),tcol12(10000)
       CHARACTER*15 newstring
       CHARACTER*80 device ,strzoom
-      CHARACTER*60 title , filein
+      CHARACTER*60 title , filein,fileout
       CHARACTER*400 stringin
       CHARACTER*14 xaxis_label,yaxis_label
       REAL*4 radius_scale
@@ -68,6 +69,9 @@ c      write(*,*) stringin,length
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_find_out')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_RX')
 c         write(*,*) iskip
+         im=index(stringin(in+1:length),',')+in
+         fileout=stringin(in+1:im-1)
+         in=im
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
 c         write(*,*) device
@@ -100,8 +104,12 @@ c      write(*,*) ra_o,dec_o
       radius= radius/60.
       ellipserot=-ellipserot
       ellipserot_2=-ellipserot_2
-      call getlun(lu_infile)
+      lu_out = 11
+      lu_infile = 12
+c      call getlun(lu_infile)
+c      fileout='candidates_image_position.txt'
       open(lu_infile,file=filein,status='old')
+      open(lu_out,file=fileout,status='unknown')
 
       if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
@@ -507,6 +515,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsci(8)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol1(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col1(j),dec_col1(j),x(1),y(1),tcol1(j)
         ENDDO
       ENDIF
       IF (icol2.GT.0) THEN 
@@ -521,6 +530,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsci(5)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol2(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col2(j),dec_col2(j),x(1),y(1),tcol2(j)
         ENDDO
       ENDIF
       IF (icol3.GT.0) THEN 
@@ -535,6 +545,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsci(4)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol3(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col3(j),dec_col3(j),x(1),y(1),tcol3(j)
         ENDDO
       ENDIF
       IF (icol4.GT.0) THEN 
@@ -553,6 +564,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsci(3)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol4(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col4(j),dec_col4(j),x(1),y(1),tcol4(j)
         ENDDO
       ENDIF
       IF (icol5.GT.0) THEN 
@@ -571,6 +583,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsci(17)
            call pgsch(1.)
            CALL PGTEXT (X, Y, tcol5(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col5(j),dec_col5(j),x(1),y(1),tcol5(j)
         ENDDO
       ENDIF
 
@@ -592,7 +605,10 @@ c           CALL PGSCR(8,R,G,B)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) call pgtext(x,y,tcol12(j))
+            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
+               call pgtext(x,y,tcol12(j))
+               write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
+            endif
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN
@@ -612,6 +628,7 @@ c           CALL PGSCR(8,R,G,B)
            if (tcol11(j) .ne. "    ") then
               call pgsch(1.)
               CALL PGTEXT (X, Y, tcol11(j))
+           write (lu_out,'(4(1x,f10.4),a)') ra_col11(j),dec_col11(j),x(1),y(1),tcol11(j)
            endif
         ENDDO
       ENDIF
@@ -653,6 +670,7 @@ C- PG
             if (tcol14(j) .ne. "    ") then
                call pgsch(1.)
                CALL PGTEXT (X, Y, tcol14(j))
+               write (lu_out,'(4(1x,f10.4),a)') ra_col14(j),dec_col14(j),x(1),y(1),tcol14(j)
             endif
          enddo
       endif
