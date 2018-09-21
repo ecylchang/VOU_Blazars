@@ -402,7 +402,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
             do j=1,iuv
                call DIST_SKY(ra_rr(k),dec_rr(k),ra_uv(j),dec_uv(j),dist)
                min_dist=sqrt(poserr_uv(j)**2+poserr_rr(k)**2)
-               if ( dist*3600. .lt. max(min_dist,2.)) then
+               if ((dist*3600. .lt. max(min_dist,2.)) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
                   if (flux_uv(j,1) .ne. 0.) then
                      aruv = 1.-log10(flux_rr(k)/flux_uv(j,1))/log10(frequency_rr(k)/frequency_uv(j,1))
                   else
@@ -423,7 +423,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
             do j=1,i4p8
                call DIST_SKY(ra_rr(k),dec_rr(k),ra_4p8(j),dec_4p8(j),dist)
                min_dist=sqrt(poserr_4p8(j)**2+poserr_rr(k)**2)
-               if (dist*3600. .lt. min_dist ) then
+               if ((dist*3600. .lt. min_dist ) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
                   alphar = 1.-log10(flux_rr(k)/flux_4p8(j))/log10(frequency_rr(k)/frequency_4p8(j))
                   if (alphar .le. 0.7 ) then
                      ii2=ii2+1 !!!remove radio extended sources

@@ -348,21 +348,20 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       echo
       echo set default error circle area to 1 arcmin in Intermediate phase
    fi
-#   echo $radint
    radcrit=`echo $radint | cut -d'.' -f 1`
-#   echo $radcrit
-   process=y
+   process=n
+#   rcut=0
 #   declare -i radint
    if [ $radcrit -ge 20 ]; then
       echo
       echo Warning! Large searching radius in Intermediate phase for conesearch.
-      read -p "Press ENTER key to continue! To stop processing Intermediate phase, type n " process
-      [ -z $process ] && process=y
-      [ $process == n ] && echo Not searching sources in Intermediate phase.
+      read -p "Type 'y' to continue! Otherwise, stop processing Intermediate phase." process #rcut
+      [ -z $process ] && process=n
+      [ $process != y -a $process != Y ] && echo Not searching sources in Intermediate phase.
    fi
 
 #running conesearch for Intermediate phase
-   if [ $process != n ]; then
+   if [ $process == y -o $process == Y ]; then
       rm -f *.i.csv
       ln=`cat ${pidnm}no_matched_temp.txt | wc -l`
       declare -i cc
@@ -438,9 +437,12 @@ fi
 #######################################################
 
 #begin phase 2 setup, leave the tool when no candidates
-source=1
 rm -f ${pidnm}*.2.csv
-[ ! -s ${pidnm}find_out_temp.txt ] && source=nocand
+source=1
+if [ ! -s ${pidnm}find_out_temp.txt ]; then
+   source=nocand
+   ln=0
+fi
 
 #read the number interested
 until [ $source == sed -o $source == q ]
@@ -465,7 +467,8 @@ do
       zoomin=${3}*60
    fi
 
-#check if need to output the SED file or not
+#check if need to output the SED file or not and deal with no input
+   [ -z $source ] && source=0
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
       if [ $zoomin == osed ]; then
@@ -477,6 +480,7 @@ do
 #read the find_out list and the second phase ra dec
    declare -i nn
    nn=0
+   [ -z $ln ] && ln=0
    for (( ii=1; ii<=$ln; ii=ii+1 ))
    do
       if [ ${13} != s ]; then
@@ -487,7 +491,7 @@ do
          rar=$1
          decr=$2
          typer=99
-         echo the mode $source
+#         echo the mode $source
       fi
 
 #check if the source is BZ/WHSP already has matched, and echo the conessearch
@@ -540,7 +544,7 @@ do
    done
 
 #check if the number input are not valid, or the user want to quit
-   if [ ! -f ${pidnm}vosearch.txt -a ${source} != q -a ${source} != candlist -a ${source} != nocand ]; then
+   if [ ! -f ${pidnm}vosearch.txt -a ${source} != q -a ${source} != candlist -a ${source} != nocand  -a ${source} != sed ]; then
       source=nosource
    fi
    if [ $source == nosource ]; then
