@@ -6,7 +6,9 @@ VOU-Blazars is an extremely alpha version of blazars search tool. There are stil
 
 Go to the folder where you download the VOU-Blazars
 
+```bash
 $ git pull
+```
 
 to update the VOU-Blazars for latest version.
 
