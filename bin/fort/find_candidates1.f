@@ -24,29 +24,29 @@ c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
       INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000),im
-      INTEGER*4 radio_type(5000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
+      INTEGER*4 radio_type(10000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000),ibigb,bigbind(100)
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(5000),l,filen,ttsource(5000),ihighpeak,track2(100)
       REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center, dec_center,radius,dec_1kev(5000,5000)
-      REAL*8 ra_radio(5000),dec_radio(5000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
+      REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(5000),dec_swift(5000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
       real*8 ra_cat(100),dec_cat(100),ra_gam(200),dec_gam(200)
-      REAL*4 flux_radio(5000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
+      REAL*4 flux_radio(10000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
       REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
-      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000),poserr_rrr(5000)
+      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000)
       REAL*4 frequency_chandra(1000,5),frequency_swift(5000,4),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce
       REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(5000),rrconst(5000)
       REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(5000),flux2nufnu_sumss
-      REAL*4 flux_1kev(5000,5000),frequency_radio(5000),uflux_1kev(5000,5000),lflux_1kev(5000,5000)
+      REAL*4 flux_1kev(5000,5000),frequency_radio(10000),uflux_1kev(5000,5000),lflux_1kev(5000,5000)
       REAL*4 xflux(5000),rflux(5000),flux_xpts(5000,5000),frequency_xpts(500,5000),poserr_1kev(5000,5000)
       real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(5000,5000),lflux_xpts(5000,5000),distrx(5000,5000)
-      real*4 Ferr_radio(5000),FluxU_radio(5000),FluxL_radio(5000),poserr_radio(5000)
+      real*4 Ferr_radio(10000),FluxU_radio(10000),FluxL_radio(10000),poserr_radio(10000)
       real*4 Ferr_xmm(5000,6),FluxU_xmm(5000,6),FluxL_xmm(5000,6),poserr_xmm(5000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(5000,4),FluxU_swift(5000,4),FluxL_swift(5000,4),poserr_swift(5000)
@@ -183,7 +183,7 @@ c         write(*,*) 'the aim',aim
      &        (catalog(1:5) == 'first') .OR.
      &        (catalog(1:5) == 'sumss') ) THEN
             iradio=iradio+1
-            IF (iradio > 5000) Stop 'Too many NVSS/SUMSS points'
+            IF (iradio > 10000) Stop 'Too many NVSS/SUMSS points'
             ra_radio(iradio)=ra
             dec_radio(iradio)=dec
             is=ie
