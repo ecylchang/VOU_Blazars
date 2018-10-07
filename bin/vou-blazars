@@ -464,11 +464,29 @@ do
       ln=1
       source=sed
 #      [ ! -f ${pidnm}find_out_temp.txt ] && echo $1 $2 99 > ${pidnm}find_out_temp.txt
-      zoomin=${3}*60
+      declare -i zoomintt #deal with non interger input
+      declare -i zoomin
+      nht3=`echo $3 | grep '\.'`
+      if [ $nht3 ]; then
+         nht31=`echo $3 | cut -d'.' -f1`
+         nht32=`echo $3 | cut -d'.' -f2`
+         if [ -z $nht32 ]; then
+            zoomintt=$nht31
+         else
+            if [ ${nht32:0:1} -gt 4 ]; then
+               zoomintt=${nht31}+1
+            else
+               zoomintt=$nht31
+            fi
+         fi
+      else
+         zoomintt=$3
+      fi
+      zoomin=${zoomintt}*60
    fi
 
 #check if need to output the SED file or not and deal with no input
-   [ -z $source ] && source=0
+   [ -z $source ] && source=0 #no input
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
       if [ $zoomin == osed ]; then
@@ -670,3 +688,4 @@ rm -f ${pidnm}*.1.csv
 rm -f ${pidnm}*.i.csv
 rm -f ${pidnm}*.2.csv
 rm -f ${pidnm}xrtdeep.csv
+[ $source == sed ] && unset zoomin

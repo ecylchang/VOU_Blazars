@@ -178,7 +178,7 @@ c read the find_out.txt first
          ENDIF
       enddo
 100   continue
-      write(*,*) icat,isource  !!!!!!the number of source
+c      write(*,*) icat,isource  !!!!!!the number of source
       close(13)
 c      do i=1,icat
 c         write(lu_output,*) ra_cat(i),dec_cat(i),type_cat(i)*10000.
