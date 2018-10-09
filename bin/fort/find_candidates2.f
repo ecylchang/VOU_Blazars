@@ -1844,7 +1844,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
             ra_vhe(ivhe)=ra
             dec_vhe(ivhe)=dec
             filen_v(ivhe)=filen
-            If (catalog(1:5) == 'magic') then
+            If (catalog(1:5) == 'veritas') then
                imagic=imagic+1
                magicind(ivhe)=imagic
                poserr_vhe(ivhe)=10. !!!set to 10 arcsec
@@ -1862,8 +1862,8 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                if (Ferr_vhe(ivhe) .eq. -999.) Ferr_vhe(ivhe)=0.
                FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
                FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
-               vhe_type(ivhe)='MAGIC'
-            else if (catalog(1:7) == 'veritas') then
+               vhe_type(ivhe)='VERITAS'
+            else if (catalog(1:7) == 'magic') then
                iverit=iverit+1
                veritind(ivhe)=iverit
                poserr_vhe(ivhe)=10. !!!set to 10 arcsec
@@ -1885,7 +1885,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
-               vhe_type(ivhe)='VERITAS'
+               vhe_type(ivhe)='MAGIC'
             endif
          ENDIF
       ENDDO
