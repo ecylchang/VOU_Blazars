@@ -349,7 +349,12 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       echo set default error circle area to 1 arcmin in Intermediate phase
    fi
    radcrit=`echo $radint | cut -d'.' -f 1`
-   process=n
+   if [ -z $pid ];
+      process=y
+   else
+      process=n
+   fi
+
 #   rcut=0
 #   declare -i radint
    if [ $radcrit -ge 20 ]; then
@@ -438,11 +443,7 @@ fi
 
 #begin phase 2 setup, leave the tool when no candidates
 rm -f ${pidnm}*.2.csv
-if [ $pid ]; then
-   source=q
-else
-   source=1
-fi
+source=1
 
 if [ ! -s ${pidnm}find_out_temp.txt ]; then
    source=nocand
@@ -456,7 +457,11 @@ do
       echo
       if [ -z "$VOUB_AUTOSED" ]; then
 #        cat ${pidnm}phase1
-        read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zoomin showsed
+        if [ -z $pid ]; then
+           read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zoomin showsed
+        else
+           source=q
+        fi
       else
         [ -f ${pidnm}Sed_temp.txt ] && `grep "matched source" ${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > ${pidnm}sources.list`
         [ `wc -l ${pidnm}sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
