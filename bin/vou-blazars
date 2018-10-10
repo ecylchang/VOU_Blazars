@@ -355,7 +355,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
    if [ $radcrit -ge 20 ]; then
       echo
       echo Warning! Large searching radius in Intermediate phase for conesearch.
-      read -p "Type 'y' to continue! Otherwise, stop processing Intermediate phase." process #rcut
+      [ -z $pid ] && read -p "Type 'y' to continue! Otherwise, stop processing Intermediate phase." process #rcut
       [ -z $process ] && process=n
       [ $process != y -a $process != Y ] && echo Not searching sources in Intermediate phase.
    fi
@@ -438,7 +438,12 @@ fi
 
 #begin phase 2 setup, leave the tool when no candidates
 rm -f ${pidnm}*.2.csv
-source=1
+if [ $pid ]; then
+   source=q
+else
+   source=1
+fi
+
 if [ ! -s ${pidnm}find_out_temp.txt ]; then
    source=nocand
    ln=0

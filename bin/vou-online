@@ -45,15 +45,17 @@ elif [ $par -eq 11 ]; then
    set $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 fi
 
-
 source ./bin/vou-blazars $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11}
 
 #########################################ANTONIO#########################################
 #Converto i file .eps appena prodotti in .png
 find . -name $pid'*.eps' -exec bash -c 'convert {} `basename {} .eps`.png' \;
 #Ruoto di 90° l'immagine della SED
-convert -rotate 90 $pid'_sed_sed.png' $pid'_sed_sed.png'
+if [ -e $pid'_sed_sed.png' ]; then
+   convert -rotate 90 $pid'_sed_sed.png' $pid'_sed_sed.png'
+fi
 #Uscita dall'ambiente eada2
+
 #########################################ANTONIO#########################################
 
 rm -f $pid"_"output*.csv
