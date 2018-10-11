@@ -349,7 +349,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       echo set default error circle area to 1 arcmin in Intermediate phase
    fi
    radcrit=`echo $radint | cut -d'.' -f 1`
-   if [ -z $pid ];
+   if [ -z $pid ]; then
       process=y
    else
       process=n
