@@ -231,9 +231,9 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 
 #analyzing the XRT Deepsky data
 #if [ -n $dockerthere ]; then
-#alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
-#swift_deepsky --ra $1 --dec $2 --radius $3
-#echo finish searching swift deep data
+alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
+swift_deepsky --ra $1 --dec $2 --radius $3
+echo finish searching swift deep data
 #fi
 
 
