@@ -231,9 +231,9 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 
 #analyzing the XRT Deepsky data
 #if [ -n $dockerthere ]; then
-alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
-swift_deepsky --ra $1 --dec $2 --radius $3
-echo finish searching swift deep data
+#alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
+#swift_deepsky --ra $1 --dec $2 --radius $3
+#echo finish searching swift deep data
 #fi
 
 
@@ -260,6 +260,8 @@ echo conesearch --db ${HERE}/cats1.ini --catalog WGACAT --ra $1 --dec $2 --radiu
 echo conesearch --db ${HERE}/cats1.ini --catalog IPC2E --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ipc.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPCSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ipcsl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog CHANDRA --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}chandra.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog MAXISSC --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}maxissc.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog MAXIGSC --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}maxigsc.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog ZWCLUSTERS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}zw.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog PSZ2 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}psz2.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog ABELL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}abell.1.csv >> ${pidnm}vosearch.txt
@@ -276,6 +278,8 @@ echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $1  --dec $2 --radius
 echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}1bigb.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog MST9Y --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mst9y.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fmev.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}agile.1.csv >> ${pidnm}vosearch.txt
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
@@ -562,6 +566,8 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YR --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}fermi8yr.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fhl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o ${pidnm}agile.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}fmev.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}magictt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}veritas.$nn.2.csv >> ${pidnm}vosearch.txt
             echo $rar $decr $typer $nn

@@ -56,7 +56,8 @@ c            write(*,*) is,ie
             ie=index(value(is+1:len(value)),',')+is
 c gamma-ray catalog print name
             if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')
-     &          .or. (catalog(1:it-1) == 'fermi8yr') .or. (catalog(1:it-1) == 'mst9y')) then
+     &          .or. (catalog(1:it-1) == 'fermi8yr') .or. (catalog(1:it-1) == 'mst9y')
+     &          .or. (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')) then
                read(value(1:is-1),'(a)') catname
             endif
 c the catalog without source name
@@ -253,7 +254,8 @@ c write the data
      &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') ) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
-            else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')) then
+            else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
+     &               (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
             else if (catalog(1:it-1) == 'fermi8yr') then

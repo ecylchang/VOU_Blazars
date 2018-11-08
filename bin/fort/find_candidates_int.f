@@ -73,7 +73,7 @@ c      min_dist_4p8=30./3600.
             FluxU_rr(irr)=uflux
             FluxL_rr(irr)=lflux
             rr_type(irr)=code
-         else if (code .lt. 20) THEN
+         else if (code .le. 20) THEN
             icand=icand+1
             ixx=ixx+1
             xpts(ixx)=0
@@ -230,7 +230,7 @@ c      write(*,*) i4p8,iuv,igam
       do i=1,ixx
          if (i .ne. 1) then
             do j=1,i-1
-               call DIST_SKY(ra_xx(i),dec_xx(i),ra_xx(j),dec_xx(j),dist)
+               call DIST_SKY(abs(ra_xx(i)),dec_xx(i),abs(ra_xx(j)),dec_xx(j),dist)
                if (dist*3600. .lt. 18.) then
                   !write(*,*) 'nearby X-ray',ra_xx(i),dec_xx(i),xx_type(ixx)
                   ixxrep=ixxrep+1
@@ -283,7 +283,7 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                      endif
                   else if ((xx_type(j) .eq. 11) .or. (xx_type(j) .eq. 12) .or. (xx_type(j) .eq. 17)) then
                      if ((xxss_type(trackxx(j)) .eq. 13) .or. (xxss_type(trackxx(j)) .eq. 14)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 16)) then
+     &                 .or. (xxss_type(trackxx(j)) .eq. 16) .or. (xxss_type(trackxx(j)) .eq. 20)) then
                         ra_xxss(trackxx(j))=ra_xx(j)
                         dec_xxss(trackxx(j))=dec_xx(j)
                         posindxx(trackxx(j))=j
@@ -295,9 +295,10 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                            posindxx(trackxx(j))=j
                         endif
                      endif
-                  else if ((xx_type(j) .eq. 13) .or. (xx_type(j) .eq. 14) .or. (xx_type(j) .eq. 16)) then
+                  else if ((xx_type(j) .eq. 13) .or. (xx_type(j) .eq. 14) .or.
+     &                   (xx_type(j) .eq. 16) .or. (xx_type(j) .eq. 20)) then
                      if ((xxss_type(trackxx(j)) .eq. 13) .or. (xxss_type(trackxx(j)) .eq. 14)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 16)) then
+     &                 .or. (xxss_type(trackxx(j)) .eq. 16) .or. (xxss_type(trackxx(j)) .eq. 20)) then
                         if (poserr_xx(j) .lt. poserr_xxss(trackxx(j)) ) then
                            ra_xxss(trackxx(j))=ra_xx(j)
                            dec_xxss(trackxx(j))=dec_xx(j)
@@ -454,7 +455,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
             k=backxx(i,m)
             nnuvx=0
             do j=1,iuv
-               call DIST_SKY(ra_xx(k),dec_xx(k),ra_uv(j),dec_uv(j),dist)
+               call DIST_SKY(abs(ra_xx(k)),dec_xx(k),ra_uv(j),dec_uv(j),dist)
                min_dist=sqrt(poserr_uv(j)**2+poserr_xx(k)**2)
                if ((dist*3600. .le. max(min_dist,2.) ) .and. (poserr_xx(k) .le. 20.)
      &              .and. (flux_xx(k) .ne. 0. ) ) then
@@ -468,7 +469,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
                      nnuvx=nnuvx+1
                      if (ii1 .eq. 1) write(*,'(a,i4,a)') "----------------------------------------"
                      if ((ii1 .eq. 1) .or. ((m .ne. 1) .and. (nnuvx .eq. 1)))
-     $                  write(*,'(f9.5,2x,f9.5,a,es10.3)')  ra_xx(k),
+     $                  write(*,'(f9.5,2x,f9.5,a,es10.3)')  abs(ra_xx(k)),
      $                  dec_xx(k)," X-ray source with 1 keV flux ",flux_xx(k)
                      write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
                      write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
@@ -479,7 +480,7 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
          if (ii1 .gt. 0.) then
              ipass=ipass+1
              CALL RXgraphic_code(flux_xx(posindxx(i)),'X',code)
-             write (12,'(f9.5,2x,f9.5,2x,i6)') ra_xx(posindxx(i)),dec_xx(posindxx(i)),int(code)
+             write (12,'(f9.5,2x,f9.5,2x,i6)') abs(ra_xx(posindxx(i))),dec_xx(posindxx(i)),int(code)
              pass2(ipass)=i+irr
          endif
       enddo
@@ -509,9 +510,9 @@ c      write(*,*) pass2(1:ipass)
             do s=1,nrepxx(k-irr)
                m=backxx(k-irr,s)
                if (i+isource .ne. 1) write(12,*) "===================="
-               write(12,'(i4,2x,a,2(2x,f9.5),2x,a,2x,i2)') i+isource,"matched source",
-     &           ra_xx(m),dec_xx(m),'source type',int(code/10000)
-               write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_xx(m),flux_xx(m),
+               write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') i+isource,"matched source",
+     &           abs(ra_xx(m)),dec_xx(m),'source type',int(code/10000)
+               write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,i2)') frequency_xx(m),flux_xx(m),
      &           FluxU_xx(m),FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),xx_type(m)
                do j=1,xpts(m)
                   write(12,'(4(es10.3,2x),i2)') frequency_xxot(j,m),flux_xxot(j,m),

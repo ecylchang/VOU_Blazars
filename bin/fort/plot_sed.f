@@ -6,7 +6,7 @@ c This program plot the SED for candidate
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
       integer*4 i,sfound,npt(5000),rtype,stype(5000)
       real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000),sedup,sedlow
-      real*4 rasec,decsec
+      real*4 rasec,decsec,testflux
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
@@ -87,15 +87,17 @@ c      IER = PGBEG(0,"/xs",1,1)
       CALL PGSCRN(0, 'White', IER)
       CALL PGSCRN(1, 'Black', IER)
       call pgsch(1.3)
-      sedup=uflux(1,i)
+      sedup=max(uflux(1,i),abs(flux(1,i)))
       sedlow=5.e-16
-      write(*,*) sedlow
+
       do j=1,npt(i)
-         if ((frequency(j,i) .lt. 1.e10) .and. (uflux(j,i) .gt. 0.d0)) sedlow=uflux(j,i)
+         testflux=max(uflux(j,i),abs(flux(j,i)))
+         if ((frequency(j,i) .lt. 1.e10) .and. (testflux .gt. 0.d0)) sedlow=testflux
       enddo
       do j=1,npt(i)
-         if ((uflux(j,i) .gt. sedup) .and. (uflux(j,i) .gt. 0.d0)) sedup=uflux(j,i)
-         if ((uflux(j,i) .lt. sedlow) .and. (uflux(j,i) .gt. 0.d0)) sedlow=uflux(j,i)
+         testflux=max(uflux(j,i),abs(flux(j,i)))
+         if ((testflux .gt. sedup) .and. (testflux .gt. 0.d0)) sedup=testflux
+         if ((testflux .lt. sedlow) .and. (testflux .gt. 0.d0)) sedlow=testflux
       enddo
       write(*,*) 'SED range upper limit',sedup,'SED range lower limit',sedlow
          sedup=alog10(sedup)+0.5
