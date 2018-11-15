@@ -1935,6 +1935,11 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                if (Ferr_vhe(ivhe) .eq. -999.) Ferr_vhe(ivhe)=0.
                FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
                FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
+               if (Ferr_vhe(ivhe) .gt. flux_vhe(ivhe)) then
+                  flux_vhe(ivhe)=0.
+                  FluxU_vhe(ivhe)=0.
+                  FluxL_vhe(ivhe)=0.
+               endif
                vhe_type(ivhe)='MAGIC'
             else if (catalog(1:7) == 'veritas') then
                iverit=iverit+1
