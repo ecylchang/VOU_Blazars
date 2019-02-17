@@ -168,12 +168,14 @@ c read other pos_err
                if ((catalog(1:it-1) == 'panstarrs')) then
                   is=index(value(is+1:len(value)),',')+is
                   ie=index(value(is+1:len(value)),',')+is
+                  posxerr=0.
+                  posyerr=0.
                endif
-               read(value(is+1:ie-1),*) posxerr
+               if (is .ne. ie-1) read(value(is+1:ie-1),*) posxerr
                if (catalog(1:it-1) == 'nvss') posxerr=posxerr*15.
                is=ie
                ie=index(value(is+1:len(value)),',')+is
-               read(value(is+1:ie-1),*) posyerr
+               if (is .ne. ie-1) read(value(is+1:ie-1),*) posyerr
                poserr=sqrt((posxerr*posxerr)+(posyerr*posyerr))
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif

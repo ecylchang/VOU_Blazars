@@ -25,35 +25,35 @@ c
       IMPLICIT none
       INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s,iverit,veritind(100)
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,pccs100_type(200),drop,ixxfound,ilowrfound,filen_v(100)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(100),almaind(500)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000)
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000),ialma
       INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
-      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(200),f4p8part(1000),ifar,farpart(500),bigbind(100)
+      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
-      REAL*8 ra_pccs100(200),dec_pccs100(200),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
+      REAL*8 ra_pccs100(500),dec_pccs100(500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
       real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
-      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(100),dec_vhe(100)
+      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(100),dec_vhe(100),ra_alma,dec_alma
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
-      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(200),min_dist_cluster,min_dist_far
+      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(500,9),min_dist_cluster,min_dist_far
       REAL*4 usnomag(1000,5),flux_ir(1000,4),irmag(1000,4),frequency_ir(1000,4),uvmag(1000,6),flux_uv(1000,6)
-      REAL*4 flux_gam(100,7),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(200)
+      REAL*4 flux_gam(100,7),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(500,9)
       real*4 flux_far(500),frequency_far(500),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,7)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
       real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(5,4),irmag_cand(5,4),irdist(5),freq_ircand(5,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
-      real*4 gamlike(100),pccslike(200),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
-      real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(200)
-      real*4 Ferr_pccs100(200),FluxU_pccs100(200),FluxL_pccs100(200),poserr_pccs100(200),Ferr2_pccs100(200)
+      real*4 gamlike(100),pccslike(500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
+      real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(500,9)
+      real*4 Ferr_pccs100(500,9),FluxU_pccs100(500,9),FluxL_pccs100(500,9),poserr_pccs100(500),Ferr2_pccs100(500,9)
       real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000)
       real*4 FluxU_ir(1000,4),FluxL_ir(1000,4),poserr_ir(1000),irmagerr(1000,4),intensity
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
@@ -70,10 +70,11 @@ c
       character*6 aim
       CHARACTER*30 name_other(10000)
       character*80 input_file,output_file,input_file2,input_file3,output_file2
-      CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100),xray_type(5000)
+      CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),lowrcand_type(5),vhe_type(100)
+      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000)
+      CHARACTER*10 lowrcand_type(5),vhe_type(100),pccs100_type(500),xray_type(5000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
       ok = .TRUE.
@@ -94,6 +95,7 @@ c
       imagic=0
       iverit=0
       ivhe=0
+      ialma=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -561,9 +563,10 @@ c read the data file
             lowr_type(ilowr)='WISH'
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.
-     &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353'))  THEN
+     &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353') .or.
+     &             (catalog(1:4) == 'pcnt') .or. (catalog(1:4) == 'alma'))  THEN
             ipccs100=ipccs100+1
-            IF (ipccs100 > 200) Stop 'Too many PCCS points'
+            IF (ipccs100 > 500) Stop 'Too many PCCS points'
             ra_pccs100(ipccs100)=ra
             dec_pccs100(ipccs100)=dec
             name_p(ipccs100)=catalog
@@ -573,7 +576,7 @@ c read the data file
                   if ((ra_pccs100(j) .eq. ra) .and. (dec_pccs100(j) .eq. dec)) THEN
                      if ((name_p(j) == catalog ) .and. (filen_p(j) .ne. filen)) then
                      write(*,'(4x,a,i4,3x,2(f9.5,2x),f9.3)') 'The counterpart',
-     &                  j,ra_pccs100(j),dec_pccs100(j),flux_pccs100(j)/(frequency_pccs100(j)*1.E-26)
+     &                  j,ra_pccs100(j),dec_pccs100(j),flux_pccs100(j,1)/(frequency_pccs100(j,1)*1.E-26)
                      is=ie
                      ie=index(string(is+1:len(string)),' ')+is
                      read(string(is+1:ie-1),'(a)') repflux
@@ -585,78 +588,261 @@ c read the data file
                   endif
                enddo
             endif
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100)
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100)
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux2_pccs100(ipccs100)
-            is=ie
-            ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr2_pccs100(ipccs100)
-            if (Ferr2_pccs100(ipccs100) .lt. Ferr_pccs100(ipccs100)) then
-               flux_pccs100(ipccs100)=flux2_pccs100(ipccs100)
-               Ferr_pccs100(ipccs100)=Ferr2_pccs100(ipccs100)
-            endif
-            FluxU_pccs100(ipccs100)=flux_pccs100(ipccs100)+Ferr_pccs100(ipccs100)
-            FluxL_pccs100(ipccs100)=flux_pccs100(ipccs100)-Ferr_pccs100(ipccs100)
-            flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*flux2nufnu_pccs100
-            FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*flux2nufnu_pccs100
-            FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*flux2nufnu_pccs100
-            if (FluxL_pccs100(ipccs100) .le. 0) then
-               FluxU_pccs100(ipccs100)=0.
-               FluxL_pccs100(ipccs100)=0.
-               flux_pccs100(ipccs100)=0.
-            endif
-            If (catalog(1:7) == 'pccs100') then
-               frequency_pccs100(ipccs100)=1.0e11
-            ELSE if (catalog(1:7) == 'pccs44') then
-               flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*0.44 !100 to 143
-               FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*0.44
-               FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*0.44
-               frequency_pccs100(ipccs100)=4.4e10
-            ELSE if (catalog(1:7) == 'pccs70') then
-               flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*0.7 !100 to 143
-               FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*0.7
-               FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*0.7
-               frequency_pccs100(ipccs100)=7.e10
-            ELSE if (catalog(1:7) == 'pccs143') then
-               flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*1.43 !100 to 143
-               FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*1.43
-               FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*1.43
-               frequency_pccs100(ipccs100)=1.43e11
-            ELSE if (catalog(1:7) == 'pccs217') then
-               flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*2.17 !100 to 143
-               FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*2.17
-               FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*2.17
-               frequency_pccs100(ipccs100)=2.17e11
-
-            ELSE if (catalog(1:7) == 'pccs353') then
-               flux_pccs100(ipccs100)=flux_pccs100(ipccs100)*3.53 !100 to 143
-               FluxU_pccs100(ipccs100)=FluxU_pccs100(ipccs100)*3.53
-               FluxL_pccs100(ipccs100)=FluxL_pccs100(ipccs100)*3.53
-               frequency_pccs100(ipccs100)=3.53e11
-            ENDIF
-            if ((flux_pccs100(ipccs100) .ne. 0 ) .and.
-     &             (flux_pccs100(ipccs100)/Ferr_pccs100(ipccs100) .gt. 20.)) then
-               if (frequency_pccs100(ipccs100) .eq. 4.4E10) poserr_pccs100(ipccs100)=44.35*2.
-               if (frequency_pccs100(ipccs100) .eq. 7.E10) poserr_pccs100(ipccs100)=39.69*2.
-               if (frequency_pccs100(ipccs100) .eq. 1.E11) poserr_pccs100(ipccs100)=45.8*2.
-               if (frequency_pccs100(ipccs100) .eq. 1.43E11) poserr_pccs100(ipccs100)=39.53*2.
-               if (frequency_pccs100(ipccs100) .eq. 2.17E11) poserr_pccs100(ipccs100)=38.33*2.
-               if (frequency_pccs100(ipccs100) .eq. 3.53E11) poserr_pccs100(ipccs100)=38.57*2.
-            ELSE
-               if (frequency_pccs100(ipccs100) .eq. 4.4E10) poserr_pccs100(ipccs100)=59.57*2.
-               if (frequency_pccs100(ipccs100) .eq. 7.E10) poserr_pccs100(ipccs100)=44.07*2.
-               if (frequency_pccs100(ipccs100) .eq. 1.E11) poserr_pccs100(ipccs100)=51.96*2.
-               if (frequency_pccs100(ipccs100) .eq. 1.43E11) poserr_pccs100(ipccs100)=43.68*2.
-               if (frequency_pccs100(ipccs100) .eq. 2.17E11) poserr_pccs100(ipccs100)=39.94*2.
-               if (frequency_pccs100(ipccs100) .eq. 3.53E11) poserr_pccs100(ipccs100)=39.59*2.
-            endif
+            if ((catalog(1:4) == 'pcnt')) then
+               frequency_pccs100(ipccs100,1)=3.e10
+               frequency_pccs100(ipccs100,2)=4.4e10
+               frequency_pccs100(ipccs100,3)=7.e10
+               frequency_pccs100(ipccs100,4)=1.e11
+               frequency_pccs100(ipccs100,5)=1.43e11
+               frequency_pccs100(ipccs100,6)=2.17e11
+               frequency_pccs100(ipccs100,7)=3.53e11
+               frequency_pccs100(ipccs100,8)=5.45e11
+               frequency_pccs100(ipccs100,9)=8.57e11
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,1)
+               FluxU_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)+Ferr_pccs100(ipccs100,1)
+               FluxL_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)-Ferr_pccs100(ipccs100,1)
+               if (Ferr_pccs100(ipccs100,1) .gt. flux_pccs100(ipccs100,1)) then
+                  FluxU_pccs100(ipccs100,1)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,1)=0.
+                  flux_pccs100(ipccs100,1)=0.
+               endif
+               flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3
+               FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3
+               FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,2)
+               FluxU_pccs100(ipccs100,2)=flux_pccs100(ipccs100,2)+Ferr_pccs100(ipccs100,2)
+               FluxL_pccs100(ipccs100,2)=flux_pccs100(ipccs100,2)-Ferr_pccs100(ipccs100,2)
+               if (Ferr_pccs100(ipccs100,2) .gt. flux_pccs100(ipccs100,2)) then
+                  FluxU_pccs100(ipccs100,2)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,2)=0.
+                  flux_pccs100(ipccs100,2)=0.
+               endif
+               flux_pccs100(ipccs100,2)=flux_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44
+               FluxU_pccs100(ipccs100,2)=FluxU_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44
+               FluxL_pccs100(ipccs100,2)=FluxL_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,3)
+               FluxU_pccs100(ipccs100,3)=flux_pccs100(ipccs100,3)+Ferr_pccs100(ipccs100,3)
+               FluxL_pccs100(ipccs100,3)=flux_pccs100(ipccs100,3)-Ferr_pccs100(ipccs100,3)
+               if (Ferr_pccs100(ipccs100,3) .gt. flux_pccs100(ipccs100,3)) then
+                  FluxU_pccs100(ipccs100,3)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,3)=0.
+                  flux_pccs100(ipccs100,3)=0.
+               endif
+               flux_pccs100(ipccs100,3)=flux_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7
+               FluxU_pccs100(ipccs100,3)=FluxU_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7
+               FluxL_pccs100(ipccs100,3)=FluxL_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,4)
+               FluxU_pccs100(ipccs100,4)=flux_pccs100(ipccs100,4)+Ferr_pccs100(ipccs100,4)
+               FluxL_pccs100(ipccs100,4)=flux_pccs100(ipccs100,4)-Ferr_pccs100(ipccs100,4)
+               if (Ferr_pccs100(ipccs100,4) .gt. flux_pccs100(ipccs100,4)) then
+                  FluxU_pccs100(ipccs100,4)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,4)=0.
+                  flux_pccs100(ipccs100,4)=0.
+               endif
+               flux_pccs100(ipccs100,4)=flux_pccs100(ipccs100,4)*flux2nufnu_pccs100
+               FluxU_pccs100(ipccs100,4)=FluxU_pccs100(ipccs100,4)*flux2nufnu_pccs100
+               FluxL_pccs100(ipccs100,4)=FluxL_pccs100(ipccs100,4)*flux2nufnu_pccs100
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,5)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,5)
+               FluxU_pccs100(ipccs100,5)=flux_pccs100(ipccs100,5)+Ferr_pccs100(ipccs100,5)
+               FluxL_pccs100(ipccs100,5)=flux_pccs100(ipccs100,5)-Ferr_pccs100(ipccs100,5)
+               if (Ferr_pccs100(ipccs100,5) .gt. flux_pccs100(ipccs100,5)) then
+                  FluxU_pccs100(ipccs100,5)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,5)=0.
+                  flux_pccs100(ipccs100,5)=0.
+               endif
+               flux_pccs100(ipccs100,5)=flux_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43
+               FluxU_pccs100(ipccs100,5)=FluxU_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43
+               FluxL_pccs100(ipccs100,5)=FluxL_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,6)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,6)
+               FluxU_pccs100(ipccs100,6)=flux_pccs100(ipccs100,6)+Ferr_pccs100(ipccs100,6)
+               FluxL_pccs100(ipccs100,6)=flux_pccs100(ipccs100,6)-Ferr_pccs100(ipccs100,6)
+               if (Ferr_pccs100(ipccs100,6) .gt. flux_pccs100(ipccs100,6)) then
+                  FluxU_pccs100(ipccs100,6)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,6)=0.
+                  flux_pccs100(ipccs100,6)=0.
+               endif
+               flux_pccs100(ipccs100,6)=flux_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17
+               FluxU_pccs100(ipccs100,6)=FluxU_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17
+               FluxL_pccs100(ipccs100,6)=FluxL_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,7)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,7)
+               FluxU_pccs100(ipccs100,7)=flux_pccs100(ipccs100,7)+Ferr_pccs100(ipccs100,7)
+               FluxL_pccs100(ipccs100,7)=flux_pccs100(ipccs100,7)-Ferr_pccs100(ipccs100,7)
+               if (Ferr_pccs100(ipccs100,7) .gt. flux_pccs100(ipccs100,7)) then
+                  FluxU_pccs100(ipccs100,7)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,7)=0.
+                  flux_pccs100(ipccs100,7)=0.
+               endif
+               flux_pccs100(ipccs100,7)=flux_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53
+               FluxU_pccs100(ipccs100,7)=FluxU_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53
+               FluxL_pccs100(ipccs100,7)=FluxL_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,8)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,8)
+               FluxU_pccs100(ipccs100,8)=flux_pccs100(ipccs100,8)+Ferr_pccs100(ipccs100,8)
+               FluxL_pccs100(ipccs100,8)=flux_pccs100(ipccs100,8)-Ferr_pccs100(ipccs100,8)
+               if (Ferr_pccs100(ipccs100,8) .gt. flux_pccs100(ipccs100,8)) then
+                  FluxU_pccs100(ipccs100,8)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,8)=0.
+                  flux_pccs100(ipccs100,8)=0.
+               endif
+               flux_pccs100(ipccs100,8)=flux_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45
+               FluxU_pccs100(ipccs100,8)=FluxU_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45
+               FluxL_pccs100(ipccs100,8)=FluxL_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,9)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,9)
+               FluxU_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)+Ferr_pccs100(ipccs100,9)
+               FluxL_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)-Ferr_pccs100(ipccs100,9)
+               if (Ferr_pccs100(ipccs100,9) .gt. flux_pccs100(ipccs100,9)) then
+                  FluxU_pccs100(ipccs100,9)=0.!Ferr_xmm(ixmm,3)*3.
+                  FluxL_pccs100(ipccs100,9)=0.
+                 flux_pccs100(ipccs100,9)=0.
+               endif
+               flux_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
+               FluxU_pccs100(ipccs100,9)=FluxU_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
+               FluxL_pccs100(ipccs100,9)=FluxL_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
+               poserr_pccs100(ipccs100)=50.
+               pccs100_type(ipccs100)='PCNT'
+            else if (catalog(1:4) == 'alma') then
+               ialma=ialma+1
+               almaind(ipccs100)=ialma
+c               if ((ra_pccs100(ipccs100) .eq. ra_alma ) .and. (dec_pccs100(ipccs100) .eq. dec_alma)) then
+c                  almaind(ipccs100)=0
+c               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)frequency_pccs100(ipccs100,1)
+               FluxU_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)+Ferr_pccs100(ipccs100,1)
+               FluxL_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)-Ferr_pccs100(ipccs100,1)
+               frequency_pccs100(ipccs100,1)=frequency_pccs100(ipccs100,1)*1.e9
+               flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*frequency_pccs100(ipccs100,1)*1.e-23
+               FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*frequency_pccs100(ipccs100,1)*1.e-23
+               FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*frequency_pccs100(ipccs100,1)*1.e-23
+               poserr_pccs100(ipccs100)=10.
+               pccs100_type(ipccs100)='ALMA'
+c               ra_alma=ra_pccs100(ipccs100)
+c               dec_alma=dec_pccs100(ipccs100)
+            else
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux2_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr2_pccs100(ipccs100,1)
+               if (Ferr2_pccs100(ipccs100,1) .lt. Ferr_pccs100(ipccs100,1)) then
+                  flux_pccs100(ipccs100,1)=flux2_pccs100(ipccs100,1)
+                  Ferr_pccs100(ipccs100,1)=Ferr2_pccs100(ipccs100,1)
+               endif
+               FluxU_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)+Ferr_pccs100(ipccs100,1)
+               FluxL_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)-Ferr_pccs100(ipccs100,1)
+               flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*flux2nufnu_pccs100
+               FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*flux2nufnu_pccs100
+               FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*flux2nufnu_pccs100
+               if (FluxL_pccs100(ipccs100,1) .le. 0) then
+                  FluxU_pccs100(ipccs100,1)=0.
+                  FluxL_pccs100(ipccs100,1)=0.
+                  flux_pccs100(ipccs100,1)=0.
+               endif
+               If (catalog(1:7) == 'pccs100') then
+                  frequency_pccs100(ipccs100,1)=1.0e11
+               ELSE if (catalog(1:7) == 'pccs44') then
+                  flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*0.44 !100 to 143
+                  FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*0.44
+                  FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*0.44
+                  frequency_pccs100(ipccs100,1)=4.4e10
+               ELSE if (catalog(1:7) == 'pccs70') then
+                  flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*0.7 !100 to 143
+                  FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*0.7
+                  FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*0.7
+                  frequency_pccs100(ipccs100,1)=7.e10
+               ELSE if (catalog(1:7) == 'pccs143') then
+                  flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*1.43 !100 to 143
+                  FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*1.43
+                  FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*1.43
+                  frequency_pccs100(ipccs100,1)=1.43e11
+               ELSE if (catalog(1:7) == 'pccs217') then
+                  flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*2.17 !100 to 143
+                  FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*2.17
+                  FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*2.17
+                  frequency_pccs100(ipccs100,1)=2.17e11
+               ELSE if (catalog(1:7) == 'pccs353') then
+                  flux_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)*3.53 !100 to 143
+                  FluxU_pccs100(ipccs100,1)=FluxU_pccs100(ipccs100,1)*3.53
+                  FluxL_pccs100(ipccs100,1)=FluxL_pccs100(ipccs100,1)*3.53
+                  frequency_pccs100(ipccs100,1)=3.53e11
+               ENDIF
+               if ((flux_pccs100(ipccs100,1) .ne. 0 ) .and.
+     &             (flux_pccs100(ipccs100,1)/Ferr_pccs100(ipccs100,1) .gt. 20.)) then
+                  if (frequency_pccs100(ipccs100,1) .eq. 4.4E10) poserr_pccs100(ipccs100)=44.35*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 7.E10) poserr_pccs100(ipccs100)=39.69*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 1.E11) poserr_pccs100(ipccs100)=45.8*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 1.43E11) poserr_pccs100(ipccs100)=39.53*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 2.17E11) poserr_pccs100(ipccs100)=38.33*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 3.53E11) poserr_pccs100(ipccs100)=38.57*2.
+               ELSE
+                  if (frequency_pccs100(ipccs100,1) .eq. 4.4E10) poserr_pccs100(ipccs100)=59.57*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 7.E10) poserr_pccs100(ipccs100)=44.07*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 1.E11) poserr_pccs100(ipccs100)=51.96*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 1.43E11) poserr_pccs100(ipccs100)=43.68*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 2.17E11) poserr_pccs100(ipccs100)=39.94*2.
+                  if (frequency_pccs100(ipccs100,1) .eq. 3.53E11) poserr_pccs100(ipccs100)=39.59*2.
+               endif
+               pccs100_type(ipccs100)='PCCS2'
             !write(*,*) catalog,poserr_pccs100(ipccs100)
+            endif
          ELSE IF (catalog(1:5) == 'spire') THEN
             ifar=ifar+1
             IF (ifar > 500) Stop 'Too many Hershel SPIRE points'
@@ -2017,10 +2203,10 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
          enddo
          if (pccspart(i) .eq. 0) write(*,*) "Warning!!!Check 100 GHz counterpart."
       enddo
-      if (ipccs100 .ne. 0) then
-         write(*,*) "100 GHz",pccslike(1:ipccs100)
-         write(*,*) "100 GHz",pccspart(1:ipccs100)
-      endif
+c      if (ipccs100 .ne. 0) then
+c         write(*,*) "100 GHz",pccslike(1:ipccs100)
+c         write(*,*) "100 GHz",pccspart(1:ipccs100)
+c      endif
 
       do i=1,ifar
          farpart(i)=0
@@ -2186,15 +2372,23 @@ c         write(*,*) '..................Low frequency Radio....................'
             if (dist*3600. .lt. min_dist) then
                pccspart(i)=j
                ir100found=ir100found+1
-               write(*,'(f4.0," GHz flux density",2x,f9.3,",",2x,f7.3," arcmin away")')
-     &               frequency_pccs100(i)/1.E9,flux_pccs100(i)/(frequency_pccs100(i)*1.E-26),dist*60.
-               if (frequency_pccs100(ipccs100) .gt. 1.E11) pccconv=(100./143.)**(-0.3+1)
-               if ((flux_x .ne. 0.) .and. (flux_pccs100(i) .ne. 0.))
-     &             a100x = 1.-log10(flux_pccs100(i)*pccconv/flux_x)/log10(1.e11/2.418e17)
-               write(*,'(6x,''100 GHz - X-ray slope: '',f6.3)') a100x
+               if (pccs100_type(i) == 'PCCS2') then
+                  write(*,'(f4.0," GHz flux density",2x,f9.3,",",2x,f7.3," arcmin away")')
+     &               frequency_pccs100(i,1)/1.E9,flux_pccs100(i,1)/(frequency_pccs100(i,1)*1.E-26),dist*60.
+                  if (frequency_pccs100(ipccs100,1) .gt. 1.E11) pccconv=(100./143.)**(-0.3+1)
+                  if ((flux_x .ne. 0.) .and. (flux_pccs100(i,1) .ne. 0.))
+     &             a100x = 1.-log10(flux_pccs100(i,1)*pccconv/flux_x)/log10(1.e11/2.418e17)
+                  write(*,'(6x,''100 GHz - X-ray slope: '',f6.3)') a100x
+               else if (pccs100_type(i) == 'ALMA') then
+                  if (almaind(i) .eq. 1) then
+                     write(*,'("ALMA",f7.3," arcmin away")') dist*60.
+                  endif
+               else
+                  write(*,'("Planck PCNT",f7.3," arcmin away")')dist*60.
+               endif
             ENDIF
         ENDDO
-        write(*,*) ir100found
+c        write(*,*) ir100found
         if (ir100found .eq. 0) write(*,'(" No 100 GHz detection within",f5.0,2x,"arcmin")') min_dist_pccs100*60.
 
         write(*,*) '.................Far Infrared........................'
@@ -2708,8 +2902,18 @@ cENDDO
          enddo
          do i=1,ipccs100
             if (pccspart(i) .eq. j) then
-            write(14,'(4(es10.3,2x),a,i3,a)') frequency_pccs100(i),flux_pccs100(i),
-     &              FluxU_pccs100(i),FluxL_pccs100(i),'PCCS2',int(frequency_pccs100(i)/1.e9),' GHz'
+               if (pccs100_type(i) == 'PCCS2') then
+                  write(14,'(4(es10.3,2x),a,i3,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
+     &              FluxU_pccs100(i,1),FluxL_pccs100(i,1),'PCCS2',int(frequency_pccs100(i,1)/1.e9),' GHz'
+               else if (pccs100_type(i) == 'ALMA') then
+                  write(14,'(4(es10.3,2x),a)') frequency_pccs100(i,1),flux_pccs100(i,1),
+     &                 FluxU_pccs100(i,1),FluxL_pccs100(i,1),pccs100_type(i)
+               else
+                  do s=1,9
+                     write(14,'(4(es10.3,2x),a)') frequency_pccs100(i,s),flux_pccs100(i,s),
+     &                 FluxU_pccs100(i,s),FluxL_pccs100(i,s),pccs100_type(i)
+                  enddo
+               endif
             endif
          enddo
          do i=1,ifar
