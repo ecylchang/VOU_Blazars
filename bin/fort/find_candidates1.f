@@ -35,9 +35,9 @@ c
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
       real*8 ra_cat(100),dec_cat(100),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200)
       REAL*4 flux_radio(10000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
-      REAL*4 flux_swift(5000,4),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
+      REAL*4 flux_swift(5000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
       REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000)
-      REAL*4 frequency_chandra(1000,5),frequency_swift(5000,4),frequency_ipc(200)
+      REAL*4 frequency_chandra(1000,5),frequency_swift(5000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce
@@ -49,7 +49,7 @@ c
       real*4 Ferr_radio(10000),FluxU_radio(10000),FluxL_radio(10000),poserr_radio(10000)
       real*4 Ferr_xmm(5000,6),FluxU_xmm(5000,6),FluxL_xmm(5000,6),poserr_xmm(5000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
-      real*4 Ferr_swift(5000,4),FluxU_swift(5000,4),FluxL_swift(5000,4),poserr_swift(5000)
+      real*4 Ferr_swift(5000,5),FluxU_swift(5000,5),FluxL_swift(5000,5),poserr_swift(5000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,2)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
@@ -673,11 +673,12 @@ c PG
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_rosat(irosat),dec_rosat(irosat),int(code)
 c end PG
          ELSE IF ((catalog(1:4) == 'sxps') .or. (catalog(1:7) == 'xrtdeep')
-     &             .or. (catalog(1:5) == 'sds82'))THEN
+     &             .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb'))THEN
             iswift=iswift+1
             IF (iswift > 5000) Stop 'Too many swift points'
             ra_swift(iswift)=ra
             dec_swift(iswift)=dec
+            frequency_swift(iswift,5)=999
             if (catalog(1:4) == 'sxps') then
                xrt_type(iswift)=1
                is=ie
@@ -866,95 +867,215 @@ c end PG
                if ((FluxU_swift(iswift,4) .ne. 0.) .and. (flux_swift(iswift,4) .eq. 0.)) then
                   FluxU_swift(iswift,4)=FluxU_swift(iswift,4)*3.
                endif
-            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')) then
+            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')
+     &                 .or.  (catalog(1:5) == 'ousxb') ) then
                xrt_type(iswift)=2
-               if (catalog(1:7) == 'xrtdeep') then
+               if (catalog(1:5) == 'ousxb') then
                   is=ie
-                  ie=index(string(is+1:len(string)),',')+is !nh
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,2)
                   is=ie
-                  ie=index(string(is+1:len(string)),',')+is !slope
-                  is=ie
-                  ie=index(string(is+1:len(string)),',')+is !slope err
-                  is=ie
-                  ie=index(string(is+1:len(string)),',')+is !exp
-               endif
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !3kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,1)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,1)
-               FluxU_swift(iswift,1)=flux_swift(iswift,1)+Ferr_swift(iswift,1)
-               FluxL_swift(iswift,1)=flux_swift(iswift,1)-Ferr_swift(iswift,1)
-               frequency_swift(iswift,1)=(1.602E-19)*(1.e3)/(6.626e-34)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !0.5kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,2)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,2)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               FluxU_swift(iswift,2)=flux_swift(iswift,2)+Ferr_swift(iswift,2)
-               FluxL_swift(iswift,2)=flux_swift(iswift,2)-Ferr_swift(iswift,2)
-               if ((Ferr_swift(iswift,2) .lt. 0) .or. (FluxL_swift(iswift,2) .lt. 0)) then
-                  if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,2)
-                  if (FluxU_swift(iswift,2) .gt. 0.) then
-                     FluxL_swift(iswift,2)=0.
-                  else
-                     FluxL_swift(iswift,2)=0.
-                     FluxU_swift(iswift,2)=0.!3.*Ferr_swift(iswift,2)
-                     flux_swift(iswift,2)=0.
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,2)
+                  FluxU_swift(iswift,2)=flux_swift(iswift,2)+Ferr_swift(iswift,2)
+                  FluxL_swift(iswift,2)=flux_swift(iswift,2)-Ferr_swift(iswift,2)
+                  frequency_swift(iswift,2)=(1.602E-19)*(5.e2)/(6.626e-34)
+                  if ((Ferr_swift(iswift,2) .lt. 0) .or. (FluxL_swift(iswift,2) .lt. 0)) then
+                     if (flux_swift(iswift,2) .gt. 0.) then
+                        FluxU_swift(iswift,2)=flux_swift(iswift,2)
+                        flux_swift(iswift,2)=0.
+                        FluxL_swift(iswift,2)=0.
+                     else
+                        FluxL_swift(iswift,2)=0.
+                        FluxU_swift(iswift,2)=0.
+                        flux_swift(iswift,2)=0.
+                     endif
                   endif
-               endif
-               frequency_swift(iswift,2)=(1.602E-19)*(5.e2)/(6.626e-34)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !1.5kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,3)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !1.5kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,3)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               FluxU_swift(iswift,3)=flux_swift(iswift,3)+Ferr_swift(iswift,3)
-               FluxL_swift(iswift,3)=flux_swift(iswift,3)-Ferr_swift(iswift,3)
-               if ((Ferr_swift(iswift,3) .lt. 0) .or. (FluxL_swift(iswift,3) .lt. 0)) then
-                  if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,3)
-                  if (FluxU_swift(iswift,3) .gt. 0.) then
-                     FluxL_swift(iswift,3)=0.
-                  else
-                     FluxL_swift(iswift,3)=0.
-                     FluxU_swift(iswift,3)=0.!3.*Ferr_swift(iswift,3)
-                     flux_swift(iswift,3)=0.
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,1)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,1)
+                  FluxU_swift(iswift,1)=flux_swift(iswift,1)+Ferr_swift(iswift,1)
+                  FluxL_swift(iswift,1)=flux_swift(iswift,1)-Ferr_swift(iswift,1)
+                  frequency_swift(iswift,1)=(1.602E-19)*(1.e3)/(6.626e-34)
+                  if ((Ferr_swift(iswift,1) .lt. 0) .or. (FluxL_swift(iswift,1) .lt. 0)) then
+                     if (flux_swift(iswift,1) .gt. 0.) then
+                        FluxU_swift(iswift,1)=flux_swift(iswift,1)
+                        flux_swift(iswift,1)=0.
+                        FluxL_swift(iswift,1)=0.
+                     else
+                        FluxL_swift(iswift,1)=0.
+                        FluxU_swift(iswift,1)=0.
+                        flux_swift(iswift,1)=0.
+                     endif
                   endif
-               endif
-               frequency_swift(iswift,3)=(1.602E-19)*(1.5E3)/(6.626e-34)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !4.5kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,4)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is !4.5kev
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,4)
-               is=ie
-               ie=index(string(is+1:len(string)),' ')+is
-               FluxU_swift(iswift,4)=flux_swift(iswift,4)+Ferr_swift(iswift,4)
-               FluxL_swift(iswift,4)=flux_swift(iswift,4)-Ferr_swift(iswift,4)
-               if ((Ferr_swift(iswift,4) .lt. 0) .or. (FluxL_swift(iswift,4) .lt. 0)) then
-                  if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,4)
-                  if (FluxU_swift(iswift,4) .gt. 0.) then
-                     FluxL_swift(iswift,4)=0.
-                  else
-                     FluxL_swift(iswift,4)=0.
-                     FluxU_swift(iswift,4)=0.!3.*Ferr_swift(iswift,4)
-                     flux_swift(iswift,4)=0.
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,3)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,3)
+                  FluxU_swift(iswift,3)=flux_swift(iswift,3)+Ferr_swift(iswift,3)
+                  FluxL_swift(iswift,3)=flux_swift(iswift,3)-Ferr_swift(iswift,3)
+                  frequency_swift(iswift,3)=(1.602E-19)*(1.5e3)/(6.626e-34)
+                  if ((Ferr_swift(iswift,3) .lt. 0) .or. (FluxL_swift(iswift,3) .lt. 0)) then
+                     if (flux_swift(iswift,3) .gt. 0.) then
+                        FluxU_swift(iswift,3)=flux_swift(iswift,3)
+                        flux_swift(iswift,3)=0.
+                        FluxL_swift(iswift,3)=0.
+                     else
+                        FluxL_swift(iswift,3)=0.
+                        FluxU_swift(iswift,3)=0.
+                        flux_swift(iswift,3)=0.
+                     endif
                   endif
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,4)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,4)
+                  FluxU_swift(iswift,4)=flux_swift(iswift,4)+Ferr_swift(iswift,4)
+                  FluxL_swift(iswift,4)=flux_swift(iswift,4)-Ferr_swift(iswift,4)
+                  frequency_swift(iswift,4)=(1.602E-19)*(3.e3)/(6.626e-34)
+                  if ((Ferr_swift(iswift,4) .lt. 0) .or. (FluxL_swift(iswift,4) .lt. 0)) then
+                     if (flux_swift(iswift,4) .gt. 0.) then
+                        FluxU_swift(iswift,4)=flux_swift(iswift,4)
+                        flux_swift(iswift,4)=0.
+                        FluxL_swift(iswift,4)=0.
+                     else
+                        FluxL_swift(iswift,4)=0.
+                        FluxU_swift(iswift,4)=0.
+                        flux_swift(iswift,4)=0.
+                     endif
+                  endif
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,5)
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,5)
+                  FluxU_swift(iswift,5)=flux_swift(iswift,1)+Ferr_swift(iswift,5)
+                  FluxL_swift(iswift,5)=flux_swift(iswift,1)-Ferr_swift(iswift,5)
+                  frequency_swift(iswift,5)=(1.602E-19)*(4.5e3)/(6.626e-34)
+                  if ((Ferr_swift(iswift,5) .lt. 0) .or. (FluxL_swift(iswift,5) .lt. 0)) then
+                     if (flux_swift(iswift,5) .gt. 0.) then
+                        FluxU_swift(iswift,5)=flux_swift(iswift,5)
+                        flux_swift(iswift,5)=0.
+                        FluxL_swift(iswift,5)=0.
+                     else
+                        FluxL_swift(iswift,5)=0.
+                        FluxU_swift(iswift,5)=0.
+                        flux_swift(iswift,5)=0.
+                     endif
+                  endif
+                  if (flux_swift(iswift,1) .eq. 0.) then
+                     if (flux_swift(iswift,3) .ne. 0.) then
+                        flux_swift(iswift,1)=(flux_swift(iswift,3)/frequency_swift(iswift,3))*(1./1.5)**(-0.9)
+                        FluxU_swift(iswift,1)=(FluxU_swift(iswift,3)/frequency_swift(iswift,3))*(1./1.5)**(-0.9)
+                        FluxL_swift(iswift,1)=(FluxL_swift(iswift,3)/frequency_swift(iswift,3))*(1./1.5)**(-0.9)
+                     else
+                        flux_swift(iswift,1)=(flux_swift(iswift,4)/frequency_swift(iswift,4))*(1./3.)**(-0.9)
+                        FluxU_swift(iswift,1)=(FluxU_swift(iswift,4)/frequency_swift(iswift,4))*(1./3.)**(-0.9)
+                        FluxL_swift(iswift,1)=(FluxL_swift(iswift,4)/frequency_swift(iswift,4))*(1./3.)**(-0.9)
+                     endif
+                     flux_swift(iswift,1)=flux_swift(iswift,1)*frequency_swift(iswift,1)
+                     FluxU_swift(iswift,1)=FluxU_swift(iswift,1)*frequency_swift(iswift,1)
+                     FluxL_swift(iswift,1)=FluxL_swift(iswift,1)*frequency_swift(iswift,1)
+                  endif
+               else
+                  if (catalog(1:7) == 'xrtdeep') then
+                     is=ie
+                     ie=index(string(is+1:len(string)),',')+is !nh
+                     is=ie
+                     ie=index(string(is+1:len(string)),',')+is !slope
+                     is=ie
+                     ie=index(string(is+1:len(string)),',')+is !slope err
+                     is=ie
+                     ie=index(string(is+1:len(string)),',')+is !exp
+                  endif
+                  ra_swift(iswift)=-ra_swift(iswift)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !3kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,1)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,1)
+                  FluxU_swift(iswift,1)=flux_swift(iswift,1)+Ferr_swift(iswift,1)
+                  FluxL_swift(iswift,1)=flux_swift(iswift,1)-Ferr_swift(iswift,1)
+                  frequency_swift(iswift,1)=(1.602E-19)*(1.e3)/(6.626e-34)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !0.5kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,2)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,2)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  FluxU_swift(iswift,2)=flux_swift(iswift,2)+Ferr_swift(iswift,2)
+                  FluxL_swift(iswift,2)=flux_swift(iswift,2)-Ferr_swift(iswift,2)
+                  if ((Ferr_swift(iswift,2) .lt. 0) .or. (FluxL_swift(iswift,2) .lt. 0)) then
+                     if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,2)
+                     if (FluxU_swift(iswift,2) .gt. 0.) then
+                        FluxL_swift(iswift,2)=0.
+                     else
+                        FluxL_swift(iswift,2)=0.
+                        FluxU_swift(iswift,2)=0.!3.*Ferr_swift(iswift,2)
+                        flux_swift(iswift,2)=0.
+                     endif
+                  endif
+                  frequency_swift(iswift,2)=(1.602E-19)*(5.e2)/(6.626e-34)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !1.5kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,3)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !1.5kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,3)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  FluxU_swift(iswift,3)=flux_swift(iswift,3)+Ferr_swift(iswift,3)
+                  FluxL_swift(iswift,3)=flux_swift(iswift,3)-Ferr_swift(iswift,3)
+                  if ((Ferr_swift(iswift,3) .lt. 0) .or. (FluxL_swift(iswift,3) .lt. 0)) then
+                     if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,3)
+                     if (FluxU_swift(iswift,3) .gt. 0.) then
+                        FluxL_swift(iswift,3)=0.
+                     else
+                        FluxL_swift(iswift,3)=0.
+                        FluxU_swift(iswift,3)=0.!3.*Ferr_swift(iswift,3)
+                        flux_swift(iswift,3)=0.
+                     endif
+                  endif
+                  frequency_swift(iswift,3)=(1.602E-19)*(1.5E3)/(6.626e-34)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !4.5kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,4)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is !4.5kev
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,4)
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  FluxU_swift(iswift,4)=flux_swift(iswift,4)+Ferr_swift(iswift,4)
+                  FluxL_swift(iswift,4)=flux_swift(iswift,4)-Ferr_swift(iswift,4)
+                  if ((Ferr_swift(iswift,4) .lt. 0) .or. (FluxL_swift(iswift,4) .lt. 0)) then
+                     if (is .ne. ie-1) read(string(is+1:ie-1),*) FluxU_swift(iswift,4)
+                     if (FluxU_swift(iswift,4) .gt. 0.) then
+                        FluxL_swift(iswift,4)=0.
+                     else
+                        FluxL_swift(iswift,4)=0.
+                        FluxU_swift(iswift,4)=0.!3.*Ferr_swift(iswift,4)
+                        flux_swift(iswift,4)=0.
+                     endif
+                  endif
+                  frequency_swift(iswift,4)=(1.602E-19)*(4.5e3)/(6.626e-34)
                endif
-               frequency_swift(iswift,4)=(1.602E-19)*(4.5e3)/(6.626e-34)
                poserr_swift(iswift)=10.!!!!!!!!
             endif
 c PG
-            CALL RXgraphic_code(flux_swift(iswift,1),'X',code)
-            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_swift(iswift),dec_swift(iswift),int(code)
+               CALL RXgraphic_code(flux_swift(iswift,1),'X',code)
+               write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_swift(iswift)),dec_swift(iswift),int(code)
+c            write(*,*) frequency_swift(iswift,5)
 c end PG
          ELSE IF (catalog(1:3) == 'ipc') THEN
             iipc=iipc+1
@@ -1450,7 +1571,7 @@ c            ENDIF
             ENDIF
          ENDDO
          DO i=1,iswift
-            CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_swift(i),dec_swift(i),dist)
+            CALL DIST_SKY(ra_radio(k),dec_radio(k),abs(ra_swift(i)),dec_swift(i),dist)
 c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
             min_dist = sqrt(poserr_swift(i)**2+poserr_radio(k)**2)/3600.
 c            ELSE
@@ -1482,6 +1603,14 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   frequency_xpts(xpts,k)=frequency_swift(i,l)
                   spec_xpts(xpts,k)=xray_type
                enddo
+               if (frequency_swift(i,5) .ne. 999.) THEN
+                  xpts=xpts+1
+                  flux_xpts(xpts,k)=flux_swift(i,5)
+                  uflux_xpts(xpts,k)=FluxU_swift(i,5)
+                  lflux_xpts(xpts,k)=FluxL_swift(i,5)
+                  frequency_xpts(xpts,k)=frequency_swift(i,5)
+                  spec_xpts(xpts,k)=xray_type
+               endif
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_swift(i,1),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN
@@ -1881,7 +2010,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
       Do i=1,iswift
          found=.false.
          do j=1,iradio
-            call dist_sky(ra_radio(j),dec_radio(j),ra_swift(i),dec_swift(i),dist)
+            call dist_sky(ra_radio(j),dec_radio(j),abs(ra_swift(i)),dec_swift(i),dist)
             min_dist=sqrt(poserr_radio(j)**2+poserr_swift(i)**2)/3600.
             if (dist .lt. max(min_dist,2./3600.))  found=.true.
          enddo
@@ -1889,7 +2018,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR'))
      &               .AND. (ra_other(j) .gt. 0.) ) THEN
-               CALL DIST_SKY(ra_other(j),dec_other(j),ra_swift(i),dec_swift(i),dist)
+               CALL DIST_SKY(ra_other(j),dec_other(j),abs(ra_swift(i)),dec_swift(i),dist)
                if (dist*3600. .lt. max(poserr_swift(i),10.)) found=.true.
             endif
          enddo
@@ -1899,15 +2028,19 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             else
                xray_type=9
             endif
-            CALL DIST_SKY(ra_center,dec_center,ra_swift(i),dec_swift(i),dist)
+            CALL DIST_SKY(ra_center,dec_center,abs(ra_swift(i)),dec_swift(i),dist)
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,1),flux_swift(i,1),
      &             FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+10
                   do s=2,4
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,s),flux_swift(i,s),
-     &              FluxU_swift(i,s),FluxL_swift(i,s),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+50
+     &              FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
                   enddo
+                  if (frequency_swift(i,5) .ne. 999.) then
+                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,5),flux_swift(i,5),
+     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+                  endif
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
@@ -1915,8 +2048,12 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
      &              FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+10
                   do s=2,4
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,s),flux_swift(i,s),
-     &               FluxU_swift(i,s),FluxL_swift(i,s),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+50
+     &               FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
                   enddo
+                  if (frequency_swift(i,5) .ne. 999.) then
+                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,5),flux_swift(i,5),
+     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+                  endif
                endif
             endif
          endif
@@ -2176,7 +2313,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                endif
             enddo
             do j=1,iswift
-               call DIST_SKY(ra_other(l),dec_other(l),ra_swift(j),dec_swift(j),dist)
+               call DIST_SKY(ra_other(l),dec_other(l),abs(ra_swift(j)),dec_swift(j),dist)
                if (dist*3600. < max(poserr_swift(j),10.)) THEN
                   if (xrt_type(j) == 1) then
                      xray_type=5
@@ -2190,6 +2327,10 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                      write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
                   enddo
+                  if (frequency_swift(j,5) .ne. 999.) then
+                     write(12,'(4(es10.3,2x),i2)') frequency_swift(j,5),flux_swift(j,5),
+     &              FluxU_swift(j,5),FluxL_swift(j,5),xray_type
+                  endif
                endif
             enddo
             do j=1,iipc
@@ -2312,7 +2453,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          endif
       enddo
       do j=1,iswift
-         call DIST_SKY(ra_center,dec_center,ra_swift(j),dec_swift(j),dist)
+         call DIST_SKY(ra_center,dec_center,abs(ra_swift(j)),dec_swift(j),dist)
          if ( dist*3600. .lt. max(poserr_swift(j),2.)) then
             if (xrt_type(j) == 1) THEN
                xray_type=5
@@ -2326,6 +2467,10 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
                write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
             enddo
+            if (frequency_swift(j,5) .ne. 999.) then
+               write(12,'(4(es10.3,2x),i2)') frequency_swift(j,5),flux_swift(j,5),
+     &              FluxU_swift(j,5),FluxL_swift(j,5),xray_type
+            endif
          endif
       enddo
       do j=1,iipc

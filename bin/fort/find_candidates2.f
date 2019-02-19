@@ -202,7 +202,10 @@ c read the sed.txt first
          read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
      &       lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
       endif
-      if (spec_type(npt(sfound),sfound) .eq. 19) frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
+      if ((spec_type(npt(sfound),sfound) .eq. 19) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
+         frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
+         ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
+      endif
       !write(*,*) sfound,frequency(npt(sfound),sfound),spec_type(npt(sfound),sfound),epos(npt(sfound),sfound)
       if ((spec_type(npt(sfound),sfound) .eq. 20) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
          frequency(npt(sfound),sfound)=(1.602E-19)*(3.5e3)/(6.626e-34)
