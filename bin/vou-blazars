@@ -480,6 +480,7 @@ do
       source=sed
 #      [ ! -f ${pidnm}find_out_temp.txt ] && echo $1 $2 99 > ${pidnm}find_out_temp.txt
       declare -i zoomintt #deal with non interger input
+      declare -i zoomindd
       declare -i zoomin
       nht3=`echo $3 | grep '\.'`
       if [ $nht3 ]; then

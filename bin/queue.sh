@@ -123,12 +123,19 @@ do
       wait $PID
       PSTS=$?
       cats=`echo $_file | awk '{print $5}'`
+#      echo $cats $PSTS
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
          echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m "
-      else
+      elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
          1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
+      elif [ $cats == MAGIC -o $cats == VERITAS ]; then
+         nncc=$nncc+1
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
+      else
+         nncc=$nncc+1
+         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAIL\033[0m "
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]

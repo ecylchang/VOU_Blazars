@@ -54,7 +54,7 @@ c
       real*4 gamlike(100),pccslike(500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(500,9)
       real*4 Ferr_pccs100(500,9),FluxU_pccs100(500,9),FluxL_pccs100(500,9),poserr_pccs100(500),Ferr2_pccs100(500,9)
-      real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000)
+      real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000),snr_pccs100(500,9)
       real*4 FluxU_ir(1000,4),FluxL_ir(1000,4),poserr_ir(1000),irmagerr(1000,4),intensity
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
@@ -733,7 +733,7 @@ c read the data file
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_pccs100(ipccs100,9)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,9)
                FluxU_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)+Ferr_pccs100(ipccs100,9)
                FluxL_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)-Ferr_pccs100(ipccs100,9)
@@ -745,6 +745,78 @@ c read the data file
                flux_pccs100(ipccs100,9)=flux_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
                FluxU_pccs100(ipccs100,9)=FluxU_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
                FluxL_pccs100(ipccs100,9)=FluxL_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,1)
+               if ((snr_pccs100(ipccs100,1) .lt. 3.) .and. (flux_pccs100(ipccs100,1) .ne. 0.)) then
+                  flux_pccs100(ipccs100,1)=0.
+                  FluxU_pccs100(ipccs100,1)=Ferr_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3*3.
+                  FluxL_pccs100(ipccs100,1)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,2)
+               if ((snr_pccs100(ipccs100,2) .lt. 3.) .and. (flux_pccs100(ipccs100,2) .ne. 0.)) then
+                  flux_pccs100(ipccs100,2)=0.
+                  FluxU_pccs100(ipccs100,2)=Ferr_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44*3.
+                  FluxL_pccs100(ipccs100,2)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,3)
+               if ((snr_pccs100(ipccs100,3) .lt. 3.) .and. (flux_pccs100(ipccs100,3) .ne. 0.)) then
+                  flux_pccs100(ipccs100,3)=0.
+                  FluxU_pccs100(ipccs100,3)=Ferr_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7*3.
+                  FluxL_pccs100(ipccs100,3)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,4)
+               if ((snr_pccs100(ipccs100,4) .lt. 3.) .and. (flux_pccs100(ipccs100,4) .ne. 0.)) then
+                  flux_pccs100(ipccs100,4)=0.
+                  FluxU_pccs100(ipccs100,4)=Ferr_pccs100(ipccs100,4)*flux2nufnu_pccs100*3.
+                  FluxL_pccs100(ipccs100,4)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,5)
+               if ((snr_pccs100(ipccs100,5) .lt. 3.) .and. (flux_pccs100(ipccs100,5) .ne. 0.)) then
+                  flux_pccs100(ipccs100,5)=0.
+                  FluxU_pccs100(ipccs100,5)=Ferr_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43*3.
+                  FluxL_pccs100(ipccs100,5)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,6)
+               if ((snr_pccs100(ipccs100,6) .lt. 3.) .and. (flux_pccs100(ipccs100,6) .ne. 0.)) then
+                  flux_pccs100(ipccs100,6)=0.
+                  FluxU_pccs100(ipccs100,6)=Ferr_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17*3.
+                  FluxL_pccs100(ipccs100,6)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,7)
+               if ((snr_pccs100(ipccs100,7) .lt. 3.) .and. (flux_pccs100(ipccs100,7) .ne. 0.)) then
+                  flux_pccs100(ipccs100,7)=0.
+                  FluxU_pccs100(ipccs100,7)=Ferr_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53*3.
+                  FluxL_pccs100(ipccs100,7)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,8)
+               if ((snr_pccs100(ipccs100,8) .lt. 3.) .and. (flux_pccs100(ipccs100,8) .ne. 0.)) then
+                  flux_pccs100(ipccs100,8)=0.
+                  FluxU_pccs100(ipccs100,8)=Ferr_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45*3.
+                  FluxL_pccs100(ipccs100,8)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,9)
+               if ((snr_pccs100(ipccs100,9) .lt. 3.) .and. (flux_pccs100(ipccs100,9) .ne. 0.)) then
+                  flux_pccs100(ipccs100,9)=0.
+                  FluxU_pccs100(ipccs100,9)=Ferr_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57*3.
+                  FluxL_pccs100(ipccs100,9)=0.
+               endif
                poserr_pccs100(ipccs100)=50.
                pccs100_type(ipccs100)='PCNT'
             else if (catalog(1:4) == 'alma') then
