@@ -748,7 +748,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,1)
-               if ((snr_pccs100(ipccs100,1) .lt. 3.) .and. (flux_pccs100(ipccs100,1) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,1) .lt. 3.5) .and. (flux_pccs100(ipccs100,1) .ne. 0.)) then
                   flux_pccs100(ipccs100,1)=0.
                   FluxU_pccs100(ipccs100,1)=Ferr_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3*3.
                   FluxL_pccs100(ipccs100,1)=0.
@@ -756,7 +756,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,2)
-               if ((snr_pccs100(ipccs100,2) .lt. 3.) .and. (flux_pccs100(ipccs100,2) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,2) .lt. 3.5) .and. (flux_pccs100(ipccs100,2) .ne. 0.)) then
                   flux_pccs100(ipccs100,2)=0.
                   FluxU_pccs100(ipccs100,2)=Ferr_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44*3.
                   FluxL_pccs100(ipccs100,2)=0.
@@ -764,7 +764,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,3)
-               if ((snr_pccs100(ipccs100,3) .lt. 3.) .and. (flux_pccs100(ipccs100,3) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,3) .lt. 3.5) .and. (flux_pccs100(ipccs100,3) .ne. 0.)) then
                   flux_pccs100(ipccs100,3)=0.
                   FluxU_pccs100(ipccs100,3)=Ferr_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7*3.
                   FluxL_pccs100(ipccs100,3)=0.
@@ -772,7 +772,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,4)
-               if ((snr_pccs100(ipccs100,4) .lt. 3.) .and. (flux_pccs100(ipccs100,4) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,4) .lt. 3.5) .and. (flux_pccs100(ipccs100,4) .ne. 0.)) then
                   flux_pccs100(ipccs100,4)=0.
                   FluxU_pccs100(ipccs100,4)=Ferr_pccs100(ipccs100,4)*flux2nufnu_pccs100*3.
                   FluxL_pccs100(ipccs100,4)=0.
@@ -780,7 +780,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,5)
-               if ((snr_pccs100(ipccs100,5) .lt. 3.) .and. (flux_pccs100(ipccs100,5) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,5) .lt. 3.5) .and. (flux_pccs100(ipccs100,5) .ne. 0.)) then
                   flux_pccs100(ipccs100,5)=0.
                   FluxU_pccs100(ipccs100,5)=Ferr_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43*3.
                   FluxL_pccs100(ipccs100,5)=0.
@@ -788,7 +788,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,6)
-               if ((snr_pccs100(ipccs100,6) .lt. 3.) .and. (flux_pccs100(ipccs100,6) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,6) .lt. 3.5) .and. (flux_pccs100(ipccs100,6) .ne. 0.)) then
                   flux_pccs100(ipccs100,6)=0.
                   FluxU_pccs100(ipccs100,6)=Ferr_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17*3.
                   FluxL_pccs100(ipccs100,6)=0.
@@ -796,7 +796,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,7)
-               if ((snr_pccs100(ipccs100,7) .lt. 3.) .and. (flux_pccs100(ipccs100,7) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,7) .lt. 3.5) .and. (flux_pccs100(ipccs100,7) .ne. 0.)) then
                   flux_pccs100(ipccs100,7)=0.
                   FluxU_pccs100(ipccs100,7)=Ferr_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53*3.
                   FluxL_pccs100(ipccs100,7)=0.
@@ -804,7 +804,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,8)
-               if ((snr_pccs100(ipccs100,8) .lt. 3.) .and. (flux_pccs100(ipccs100,8) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,8) .lt. 3.5) .and. (flux_pccs100(ipccs100,8) .ne. 0.)) then
                   flux_pccs100(ipccs100,8)=0.
                   FluxU_pccs100(ipccs100,8)=Ferr_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45*3.
                   FluxL_pccs100(ipccs100,8)=0.
@@ -812,7 +812,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,9)
-               if ((snr_pccs100(ipccs100,9) .lt. 3.) .and. (flux_pccs100(ipccs100,9) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,9) .lt. 3.5) .and. (flux_pccs100(ipccs100,9) .ne. 0.)) then
                   flux_pccs100(ipccs100,9)=0.
                   FluxU_pccs100(ipccs100,9)=Ferr_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57*3.
                   FluxL_pccs100(ipccs100,9)=0.
@@ -2234,6 +2234,14 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
       CLOSE (lu_in)
       open(14,file=output_file2,status='unknown',iostat=ier)
       write(*,*)"     "
+
+
+      if (aim == 'sed') then
+         isource=1
+         ra_source(1)=ra_center
+         dec_source(1)=dec_center
+         epos(1,1)=0.
+      endif
 
       do i=1,i4p8
          f4p8part(i)=0
