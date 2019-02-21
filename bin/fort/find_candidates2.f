@@ -202,40 +202,44 @@ c read the sed.txt first
          read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
      &       lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
       endif
-      if ((spec_type(npt(sfound),sfound) .eq. 19) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
+      if ((spec_type(npt(sfound),sfound) .eq. 59) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
          frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
          ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
       endif
       !write(*,*) sfound,frequency(npt(sfound),sfound),spec_type(npt(sfound),sfound),epos(npt(sfound),sfound)
-      if ((spec_type(npt(sfound),sfound) .eq. 20) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
+      if ((spec_type(npt(sfound),sfound) .eq. 60) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
          frequency(npt(sfound),sfound)=(1.602E-19)*(3.5e3)/(6.626e-34)
          ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
       endif
       if (frequency(npt(sfound),sfound) .gt. 1.E11 ) then
-      if ((spec_type(npt(sfound),sfound) .eq. 11) .or. (spec_type(npt(sfound),sfound) .eq. 1))
+      if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
      &      rrxx_type(npt(sfound),sfound)='XMMSL'
-      if ((spec_type(npt(sfound),sfound) .eq. 12) .or. (spec_type(npt(sfound),sfound) .eq. 2))
+      if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
      &      rrxx_type(npt(sfound),sfound)='3XMM'
-      if ((spec_type(npt(sfound),sfound) .eq. 13) .or. (spec_type(npt(sfound),sfound) .eq. 3))
+      if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
-      if ((spec_type(npt(sfound),sfound) .eq. 14) .or. (spec_type(npt(sfound),sfound) .eq. 4))
+      if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
      &      rrxx_type(npt(sfound),sfound)='WGA'
-      if ((spec_type(npt(sfound),sfound) .eq. 15) .or. (spec_type(npt(sfound),sfound) .eq. 5))
+      if ((spec_type(npt(sfound),sfound) .eq. 55) .or. (spec_type(npt(sfound),sfound) .eq. 5))
      &      rrxx_type(npt(sfound),sfound)='SXPS'
-      if ((spec_type(npt(sfound),sfound) .eq. 16) .or. (spec_type(npt(sfound),sfound) .eq. 6))
+      if ((spec_type(npt(sfound),sfound) .eq. 56) .or. (spec_type(npt(sfound),sfound) .eq. 6))
      &      rrxx_type(npt(sfound),sfound)='IPC'
-      if ((spec_type(npt(sfound),sfound) .eq. 17) .or. (spec_type(npt(sfound),sfound) .eq. 7))
+      if ((spec_type(npt(sfound),sfound) .eq. 57) .or. (spec_type(npt(sfound),sfound) .eq. 7))
      &      rrxx_type(npt(sfound),sfound)='BMW'
-      if ((spec_type(npt(sfound),sfound) .eq. 18) .or. (spec_type(npt(sfound),sfound) .eq. 8))
+      if ((spec_type(npt(sfound),sfound) .eq. 58) .or. (spec_type(npt(sfound),sfound) .eq. 8))
      &      rrxx_type(npt(sfound),sfound)='CHANDRA'
-      if ((spec_type(npt(sfound),sfound) .eq. 19) .or. (spec_type(npt(sfound),sfound) .eq. 9))
+      if ((spec_type(npt(sfound),sfound) .eq. 59) .or. (spec_type(npt(sfound),sfound) .eq. 9))
      &      rrxx_type(npt(sfound),sfound)='XRTDEEP'
-      if ((spec_type(npt(sfound),sfound) .eq. 20) .or. (spec_type(npt(sfound),sfound) .eq. 10))
+      if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
      &      rrxx_type(npt(sfound),sfound)='MAXI'
+      if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 11))
+     &      rrxx_type(npt(sfound),sfound)='OUSXB'
+      if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 12))
+     &      rrxx_type(npt(sfound),sfound)='IPCSL'
       else
-      if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
-      if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
-      if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
+         if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
+         if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
+         if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
       endif
       enddo
 201   continue
@@ -748,7 +752,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,1)
-               if ((snr_pccs100(ipccs100,1) .lt. 3.5) .and. (flux_pccs100(ipccs100,1) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,1) .lt. 3.) .and. (flux_pccs100(ipccs100,1) .ne. 0.)) then
                   flux_pccs100(ipccs100,1)=0.
                   FluxU_pccs100(ipccs100,1)=Ferr_pccs100(ipccs100,1)*flux2nufnu_pccs100*0.3*3.
                   FluxL_pccs100(ipccs100,1)=0.
@@ -756,7 +760,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,2)
-               if ((snr_pccs100(ipccs100,2) .lt. 3.5) .and. (flux_pccs100(ipccs100,2) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,2) .lt. 3.) .and. (flux_pccs100(ipccs100,2) .ne. 0.)) then
                   flux_pccs100(ipccs100,2)=0.
                   FluxU_pccs100(ipccs100,2)=Ferr_pccs100(ipccs100,2)*flux2nufnu_pccs100*0.44*3.
                   FluxL_pccs100(ipccs100,2)=0.
@@ -764,7 +768,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,3)
-               if ((snr_pccs100(ipccs100,3) .lt. 3.5) .and. (flux_pccs100(ipccs100,3) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,3) .lt. 3.) .and. (flux_pccs100(ipccs100,3) .ne. 0.)) then
                   flux_pccs100(ipccs100,3)=0.
                   FluxU_pccs100(ipccs100,3)=Ferr_pccs100(ipccs100,3)*flux2nufnu_pccs100*0.7*3.
                   FluxL_pccs100(ipccs100,3)=0.
@@ -772,7 +776,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,4)
-               if ((snr_pccs100(ipccs100,4) .lt. 3.5) .and. (flux_pccs100(ipccs100,4) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,4) .lt. 3.) .and. (flux_pccs100(ipccs100,4) .ne. 0.)) then
                   flux_pccs100(ipccs100,4)=0.
                   FluxU_pccs100(ipccs100,4)=Ferr_pccs100(ipccs100,4)*flux2nufnu_pccs100*3.
                   FluxL_pccs100(ipccs100,4)=0.
@@ -780,7 +784,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,5)
-               if ((snr_pccs100(ipccs100,5) .lt. 3.5) .and. (flux_pccs100(ipccs100,5) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,5) .lt. 3.) .and. (flux_pccs100(ipccs100,5) .ne. 0.)) then
                   flux_pccs100(ipccs100,5)=0.
                   FluxU_pccs100(ipccs100,5)=Ferr_pccs100(ipccs100,5)*flux2nufnu_pccs100*1.43*3.
                   FluxL_pccs100(ipccs100,5)=0.
@@ -788,7 +792,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,6)
-               if ((snr_pccs100(ipccs100,6) .lt. 3.5) .and. (flux_pccs100(ipccs100,6) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,6) .lt. 3.) .and. (flux_pccs100(ipccs100,6) .ne. 0.)) then
                   flux_pccs100(ipccs100,6)=0.
                   FluxU_pccs100(ipccs100,6)=Ferr_pccs100(ipccs100,6)*flux2nufnu_pccs100*2.17*3.
                   FluxL_pccs100(ipccs100,6)=0.
@@ -796,7 +800,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,7)
-               if ((snr_pccs100(ipccs100,7) .lt. 3.5) .and. (flux_pccs100(ipccs100,7) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,7) .lt. 3.) .and. (flux_pccs100(ipccs100,7) .ne. 0.)) then
                   flux_pccs100(ipccs100,7)=0.
                   FluxU_pccs100(ipccs100,7)=Ferr_pccs100(ipccs100,7)*flux2nufnu_pccs100*3.53*3.
                   FluxL_pccs100(ipccs100,7)=0.
@@ -804,7 +808,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,8)
-               if ((snr_pccs100(ipccs100,8) .lt. 3.5) .and. (flux_pccs100(ipccs100,8) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,8) .lt. 3.) .and. (flux_pccs100(ipccs100,8) .ne. 0.)) then
                   flux_pccs100(ipccs100,8)=0.
                   FluxU_pccs100(ipccs100,8)=Ferr_pccs100(ipccs100,8)*flux2nufnu_pccs100*5.45*3.
                   FluxL_pccs100(ipccs100,8)=0.
@@ -812,7 +816,7 @@ c read the data file
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)snr_pccs100(ipccs100,9)
-               if ((snr_pccs100(ipccs100,9) .lt. 3.5) .and. (flux_pccs100(ipccs100,9) .ne. 0.)) then
+               if ((snr_pccs100(ipccs100,9) .lt. 3.) .and. (flux_pccs100(ipccs100,9) .ne. 0.)) then
                   flux_pccs100(ipccs100,9)=0.
                   FluxU_pccs100(ipccs100,9)=Ferr_pccs100(ipccs100,9)*flux2nufnu_pccs100*8.57*3.
                   FluxL_pccs100(ipccs100,9)=0.
@@ -2240,7 +2244,6 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
          isource=1
          ra_source(1)=ra_center
          dec_source(1)=dec_center
-         epos(1,1)=0.
       endif
 
       do i=1,i4p8
@@ -2272,6 +2275,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
          pccslike(i)=-100.
          do j=1,isource
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist)
+            write(*,*) ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist
             if (dist .le. min_dist_pccs100) then
             drop=2
             sigma=sqrt(epos(1,j)**2+poserr_pccs100(i)**2)
@@ -2356,7 +2360,7 @@ c      endif
          ir = 0
          flux_r = 0.
          do i=1,npt(j)
-            if ((spec_type(i,j) .gt. 10.) .and. (flux(i,j) .ne. 0.)) then
+            if ((spec_type(i,j) .gt. 50.) .and. (flux(i,j) .ne. 0.)) then
                flux_x=flux_x+flux(i,j)
                ix=ix+1
             endif
@@ -2446,6 +2450,7 @@ c         write(*,*) '..................Low frequency Radio....................'
          write(*,*) '.................100 GHz Radio........................'
          DO i=1,ipccs100
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist)
+            write(*,*) ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist*3600.
             pccconv=1.
             !IF (dist < min_dist_pccs100) THEN
             !if (pccspart(i) .eq. j) then
@@ -3153,7 +3158,9 @@ ccccccccc
       costheta=sin(delta1/radian)*sin(delta2/radian)+
      &         cos(delta1/radian)*cos(delta2/radian)*
      &         cos((alpha1-alpha2)/radian)
+      if (costheta .gt. 1.) costheta=1.
       dist=acos(costheta)*radian
+c      write(*,*) costheta,dist*3600.
       RETURN
       END
 c
@@ -3446,7 +3453,7 @@ c        write(*,*) aa,bb,av,Rv
         frequency=c/(lambda*1.e-8)
         flux = 10.**(-0.4*(m_band -a_band)+const)*frequency
         !if (filter(1:3)=='xw1') write(*,*) 'W1',m_band,a_band,flux
-        if (m_band .le. 0.) flux=0.
+        if (m_band .eq. 0.) flux=0.
         !m_band=0.
         !lambda=0.
         RETURN 

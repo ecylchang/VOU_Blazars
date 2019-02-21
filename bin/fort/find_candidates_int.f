@@ -62,7 +62,7 @@ c      min_dist_4p8=30./3600.
       irr=0
       Do WHILE(ok)
          read(11,*,end=100) freq,flux,uflux,lflux,ra,dec,epos,code
-         if (code .lt. 10) THEN
+         if (code .lt. 0) THEN
             icand=icand+1
             irr=irr+1
             ra_rr(irr)=ra
@@ -72,8 +72,8 @@ c      min_dist_4p8=30./3600.
             flux_rr(irr)=flux
             FluxU_rr(irr)=uflux
             FluxL_rr(irr)=lflux
-            rr_type(irr)=code
-         else if (code .le. 20) THEN
+            rr_type(irr)=abs(code)
+         else if (code .gt. 50) THEN
             icand=icand+1
             ixx=ixx+1
             xpts(ixx)=0
@@ -84,14 +84,14 @@ c      min_dist_4p8=30./3600.
             flux_xx(ixx)=flux
             FluxU_xx(ixx)=uflux
             FluxL_xx(ixx)=lflux
-            xx_type(ixx)=code
+            xx_type(ixx)=code-50
          else
             xpts(ixx)=xpts(ixx)+1
             frequency_xxot(xpts(ixx),ixx)=freq
             flux_xxot(xpts(ixx),ixx)=flux
             FluxU_xxot(xpts(ixx),ixx)=uflux
             FluxL_xxot(xpts(ixx),ixx)=lflux
-            xxot_type(xpts(ixx),ixx)=code-50
+            xxot_type(xpts(ixx),ixx)=code
          endif
       ENDDO
 100   continue
@@ -268,9 +268,9 @@ c      write(*,*) '========================'
                   xxss_type(trackxx(j))=xx_type(j)
                else
 c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
-                  if ((xx_type(j) .eq. 15) .or. (xx_type(j) .eq. 19) .or. (xx_type(j) .eq. 18)) then
-                     if ((xxss_type(trackxx(j)) .ne. 15) .or. (xxss_type(trackxx(j)) .ne. 19)
-     &                 .or. (xxss_type(trackxx(j)) .ne. 18)) then
+                  if ((xx_type(j) .eq. 55) .or. (xx_type(j) .eq. 59) .or. (xx_type(j) .eq. 58)) then
+                     if ((xxss_type(trackxx(j)) .ne. 55) .or. (xxss_type(trackxx(j)) .ne. 59)
+     &                 .or. (xxss_type(trackxx(j)) .ne. 58)) then
                         ra_xxss(trackxx(j))=ra_xx(j)
                         dec_xxss(trackxx(j))=dec_xx(j)
                         posindxx(trackxx(j))=j
@@ -281,24 +281,24 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                            posindxx(trackxx(j))=j
                         endif
                      endif
-                  else if ((xx_type(j) .eq. 11) .or. (xx_type(j) .eq. 12) .or. (xx_type(j) .eq. 17)) then
-                     if ((xxss_type(trackxx(j)) .eq. 13) .or. (xxss_type(trackxx(j)) .eq. 14)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 16) .or. (xxss_type(trackxx(j)) .eq. 20)) then
+                  else if ((xx_type(j) .eq. 51) .or. (xx_type(j) .eq. 52) .or. (xx_type(j) .eq. 57)) then
+                     if ((xxss_type(trackxx(j)) .eq. 53) .or. (xxss_type(trackxx(j)) .eq. 54)
+     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)) then
                         ra_xxss(trackxx(j))=ra_xx(j)
                         dec_xxss(trackxx(j))=dec_xx(j)
                         posindxx(trackxx(j))=j
-                     else if ((xxss_type(trackxx(j)) .eq. 11) .or. (xxss_type(trackxx(j)) .eq. 12)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 17)) then
+                     else if ((xxss_type(trackxx(j)) .eq. 51) .or. (xxss_type(trackxx(j)) .eq. 52)
+     &                 .or. (xxss_type(trackxx(j)) .eq. 57)) then
                         if (poserr_xx(j) .lt. poserr_xxss(trackxx(j)) ) then
                            ra_xxss(trackxx(j))=ra_xx(j)
                            dec_xxss(trackxx(j))=dec_xx(j)
                            posindxx(trackxx(j))=j
                         endif
                      endif
-                  else if ((xx_type(j) .eq. 13) .or. (xx_type(j) .eq. 14) .or.
-     &                   (xx_type(j) .eq. 16) .or. (xx_type(j) .eq. 20)) then
-                     if ((xxss_type(trackxx(j)) .eq. 13) .or. (xxss_type(trackxx(j)) .eq. 14)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 16) .or. (xxss_type(trackxx(j)) .eq. 20)) then
+                  else if ((xx_type(j) .eq. 53) .or. (xx_type(j) .eq. 54) .or.
+     &                   (xx_type(j) .eq. 56) .or. (xx_type(j) .eq. 60)) then
+                     if ((xxss_type(trackxx(j)) .eq. 53) .or. (xxss_type(trackxx(j)) .eq. 54)
+     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)) then
                         if (poserr_xx(j) .lt. poserr_xxss(trackxx(j)) ) then
                            ra_xxss(trackxx(j))=ra_xx(j)
                            dec_xxss(trackxx(j))=dec_xx(j)

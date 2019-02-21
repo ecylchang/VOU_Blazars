@@ -29,6 +29,7 @@ c
       INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(100)
+      INTEGER*4 ipc_type(200),maxi_type(200)
       REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(5000,5000)
       REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(5000),dec_swift(5000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
@@ -869,8 +870,8 @@ c end PG
                endif
             else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')
      &                 .or.  (catalog(1:5) == 'ousxb') ) then
-               xrt_type(iswift)=2
                if (catalog(1:5) == 'ousxb') then
+                  xrt_type(iswift)=3
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,2)
@@ -986,6 +987,7 @@ c end PG
                      FluxL_swift(iswift,1)=FluxL_swift(iswift,1)*frequency_swift(iswift,1)
                   endif
                else
+                  xrt_type(iswift)=2
                   if (catalog(1:7) == 'xrtdeep') then
                      is=ie
                      ie=index(string(is+1:len(string)),',')+is !nh
@@ -1090,6 +1092,7 @@ c end PG
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_ipc(iipc)
                poserr_ipc(iipc)=72. !!!!90% error
+               ipc_type(iipc)=1
             else
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1097,6 +1100,7 @@ c end PG
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ipc(iipc)
+               ipc_type(iipc)=2
             endif
             FluxU_ipc(iipc)=flux_ipc(iipc)+Ferr_ipc(iipc)
             FluxL_ipc(iipc)=flux_ipc(iipc)-Ferr_ipc(iipc)
@@ -1241,7 +1245,7 @@ c end PG
                   FluxU_chandra(ichandra,1)=fdens
                   call fluxtofdens(0.9,0.5,1.2,fluxL_chandra(ichandra,1),1.,fdens,nudens)
                   FluxL_chandra(ichandra,1)=fdens
-               ELSE if (flux_xmm(ixmm,3) .ne. 0) then
+               ELSE if (flux_chandra(ichandra,3) .ne. 0) then
                   flux_chandra(ichandra,1)=flux_chandra(ichandra,3)
                   FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,3)
                   FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,3)
@@ -1256,7 +1260,7 @@ c end PG
                   FluxU_chandra(ichandra,1)=fdens
                   call fluxtofdens(0.9,1.2,2.,fluxL_chandra(ichandra,1),1.,fdens,nudens)
                   FluxL_chandra(ichandra,1)=fdens
-               ELSE if (flux_xmm(ixmm,5) .ne. 0) then
+               ELSE if (flux_chandra(ichandra,5) .ne. 0) then
                   flux_chandra(ichandra,1)=flux_chandra(ichandra,5)
                   FluxU_chandra(ichandra,1)=FluxU_chandra(ichandra,5)
                   FluxL_chandra(ichandra,1)=FluxL_chandra(ichandra,5)
@@ -1510,7 +1514,7 @@ c            ENDIF
                   dec_1kev(ix,k)=dec_xmm(i)
                   poserr_1kev(ix,k)=poserr_xmm(i)
                   distrx(ix,k)=dist*3600.
-                  spec_type(ix,k)=xray_type+10
+                  spec_type(ix,k)=xray_type+50
                !ENDIF
                if (xray_type == 2) then
                   Do l=2,6
@@ -1562,7 +1566,7 @@ c            ENDIF
                dec_1kev(ix,k)=dec_rosat(i)
                poserr_1kev(ix,k)=poserr_rosat(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_rosat(i),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN 
@@ -1583,6 +1587,8 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   xray_type = 5
                ELSE IF (xrt_type(i) == 2) THEN
                   xray_type = 9
+               ELSE If (xrt_type(i) == 3) THEN
+                  xray_type = 11
                ENDIF
                found = .TRUE.
                flux_x = flux_x + flux_swift(i,1)
@@ -1594,7 +1600,7 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                dec_1kev(ix,k)=dec_swift(i)
                poserr_1kev(ix,k)=poserr_swift(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                do l=2,4
                   xpts=xpts+1
                   flux_xpts(xpts,k)=flux_swift(i,l)
@@ -1627,7 +1633,11 @@ c               min_dist = min_dist_ipc
 c            ENDIF
             IF (dist < min_dist) THEN 
                found = .TRUE.
-               xray_type = 6
+               if (ipc_type(i) == 1) then
+                 xray_type = 12
+               else
+                 xray_type = 6
+               endif
                flux_x = flux_x + flux_ipc(i) 
                ix = ix +1
                flux_1kev(ix,k)=flux_ipc(i)
@@ -1637,7 +1647,7 @@ c            ENDIF
                dec_1kev(ix,k)=dec_ipc(i)
                poserr_1kev(ix,k)=poserr_ipc(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_ipc(i),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN 
@@ -1664,7 +1674,7 @@ c            ENDIF
                dec_1kev(ix,k)=dec_bmw(i)
                poserr_1kev(ix,k)=poserr_bmw(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_bmw(i),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN 
@@ -1691,7 +1701,7 @@ c            ENDIF
                dec_1kev(ix,k)=dec_chandra(i)
                poserr_1kev(ix,k)=poserr_chandra(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                xray_type,flux_chandra(i,1),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN
@@ -1722,7 +1732,7 @@ c            ENDIF
                dec_1kev(ix,k)=dec_maxi(i)
                poserr_1kev(ix,k)=poserr_maxi(i)
                distrx(ix,k)=dist*3600.
-               spec_type(ix,k)=xray_type+10
+               spec_type(ix,k)=xray_type+50
                CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                xray_type,flux_maxi(i,1),const(k),ra_center,dec_center,source_type)
                IF (source_type .GE. 0) THEN
@@ -1898,12 +1908,12 @@ c               write(*,*) dist*3600.
                if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                   if (dist .le. errrad/60.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_radio(k),flux_radio(k),
-     &               FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),radio_type(k)
+     &               FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),-radio_type(k)
                   endif
                else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                   if (dist .le. errmaj/60.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_radio(k),flux_radio(k),
-     &               FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),radio_type(k)
+     &               FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),-radio_type(k)
                   endif
                endif
             endif
@@ -1938,32 +1948,32 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,1),flux_xmm(i,1),
-     &            FluxU_xmm(i,1),FluxL_xmm(i,1),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+10
+     &            FluxU_xmm(i,1),FluxL_xmm(i,1),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
                   if (xray_type .eq. 1) then
                      do s=2,3
                         write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,s),flux_xmm(i,s),
-     $                   FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
+     $                   FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type
                      enddo
                   else
                      do s=2,6
                         write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,s),flux_xmm(i,s),
-     $                   FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
+     $                   FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type
                      enddo
                   endif
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,1),flux_xmm(i,1),
-     &            FluxU_xmm(i,1),FluxL_xmm(i,1),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+10
+     &            FluxU_xmm(i,1),FluxL_xmm(i,1),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
                   if (xray_type .eq. 1) then
                      do s=2,3
                         write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,s),flux_xmm(i,s),
-     &                  FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
+     &                  FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type
                      enddo
                   else
                      do s=2,6
                         write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(i,s),flux_xmm(i,s),
-     &                     FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type+50
+     &                     FluxU_xmm(i,s),FluxL_xmm(i,s),ra_xmm(i),dec_xmm(i),poserr_xmm(i),xray_type
                      enddo
                   endif
                endif
@@ -1996,12 +2006,12 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(i),flux_rosat(i),
-     &             FluxU_rosat(i),FluxL_rosat(i),ra_rosat(i),dec_rosat(i),poserr_rosat(i),xray_type+10
+     &             FluxU_rosat(i),FluxL_rosat(i),ra_rosat(i),dec_rosat(i),poserr_rosat(i),xray_type+50
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(i),flux_rosat(i),
-     &             FluxU_rosat(i),FluxL_rosat(i),ra_rosat(i),dec_rosat(i),poserr_rosat(i),xray_type+10
+     &             FluxU_rosat(i),FluxL_rosat(i),ra_rosat(i),dec_rosat(i),poserr_rosat(i),xray_type+50
                endif
             endif
          endif
@@ -2025,6 +2035,8 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          if (.not. found) THEN
             if (xrt_type(i) == 1 ) then
                xray_type=5
+            else if (xrt_type(i) == 3 ) then
+               xray_type=11
             else
                xray_type=9
             endif
@@ -2032,27 +2044,27 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,1),flux_swift(i,1),
-     &             FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+10
+     &             FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+50
                   do s=2,4
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,s),flux_swift(i,s),
-     &              FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+     &              FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type
                   enddo
                   if (frequency_swift(i,5) .ne. 999.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,5),flux_swift(i,5),
-     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type
                   endif
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,1),flux_swift(i,1),
-     &              FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+10
+     &              FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),poserr_swift(i),xray_type+50
                   do s=2,4
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,s),flux_swift(i,s),
-     &               FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+     &               FluxU_swift(i,s),FluxL_swift(i,s),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type
                   enddo
                   if (frequency_swift(i,5) .ne. 999.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(i,5),flux_swift(i,5),
-     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type+50
+     &              FluxU_swift(i,5),FluxL_swift(i,5),abs(ra_swift(i)),dec_swift(i),poserr_swift(i),xray_type
                   endif
                endif
             endif
@@ -2075,17 +2087,21 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             endif
          enddo
          if (.not. found) THEN
-            xray_type=6
+            if (ipc_type(i) == 1) THEN
+               xray_type=12
+            else
+               xray_type=6
+            endif
             CALL DIST_SKY(ra_center,dec_center,ra_ipc(i),dec_ipc(i),dist)
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_ipc(i),flux_ipc(i),
-     &              FluxU_ipc(i),FluxL_ipc(i),ra_ipc(i),dec_ipc(i),poserr_ipc(i),xray_type+10
+     &              FluxU_ipc(i),FluxL_ipc(i),ra_ipc(i),dec_ipc(i),poserr_ipc(i),xray_type+50
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_ipc(i),flux_ipc(i),
-     &              FluxU_ipc(i),FluxL_ipc(i),ra_ipc(i),dec_ipc(i),poserr_ipc(i),xray_type+10
+     &              FluxU_ipc(i),FluxL_ipc(i),ra_ipc(i),dec_ipc(i),poserr_ipc(i),xray_type+50
                endif
             endif
          endif
@@ -2112,12 +2128,12 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_bmw(i),flux_bmw(i),
-     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
+     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+50
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_bmw(i),flux_bmw(i),
-     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+10
+     &              FluxU_bmw(i),FluxL_bmw(i),ra_bmw(i),dec_bmw(i),poserr_bmw(i),xray_type+50
                endif
             endif
          endif
@@ -2144,19 +2160,19 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(i,1),flux_chandra(i,1),
-     &     FluxU_chandra(i,1),FluxL_chandra(i,1),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+10
+     &     FluxU_chandra(i,1),FluxL_chandra(i,1),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+50
                   do s=2,5
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(i,s),flux_chandra(i,s),
-     &     FluxU_chandra(i,s),FluxL_chandra(i,s),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+50
+     &     FluxU_chandra(i,s),FluxL_chandra(i,s),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type
                   enddo
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(i,1),flux_chandra(i,1),
-     &     FluxU_chandra(i,1),FluxL_chandra(i,1),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+10
+     &     FluxU_chandra(i,1),FluxL_chandra(i,1),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+50
                   do s=2,5
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(i,s),flux_chandra(i,s),
-     &     FluxU_chandra(i,s),FluxL_chandra(i,s),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type+50
+     &     FluxU_chandra(i,s),FluxL_chandra(i,s),ra_chandra(i),dec_chandra(i),poserr_chandra(i),xray_type
                   enddo
                endif
             endif
@@ -2184,19 +2200,19 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,1),flux_maxi(i,1),
-     &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+10
+     &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+50
                   do s=2,2
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
-     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type+50
+     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
                   enddo
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,1),flux_maxi(i,1),
-     &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+10
+     &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+50
                   do s=2,2
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
-     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type+50
+     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
                   enddo
                endif
             endif
@@ -2280,7 +2296,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   if (xmm_type(j) == 1) then
                      xray_type=1
                      write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(j,1),
-     &                flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+10
+     &                flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+50
                      do s=2,3
                         write(12,'(4(es10.3,2x),i2)') frequency_xmm(j,s),flux_xmm(j,s),FluxU_xmm(j,s),
      &                     FluxL_xmm(j,s),xray_type
@@ -2288,7 +2304,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   else
                      xray_type=2
                      write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(j,1),
-     &               flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+10
+     &               flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+50
                      do s=2,6
                         write(12,'(4(es10.3,2x),i2)') frequency_xmm(j,s),flux_xmm(j,s),FluxU_xmm(j,s),
      &                     FluxL_xmm(j,s),xray_type
@@ -2303,12 +2319,12 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                      xray_type=3
                      write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(j),
      &                    flux_rosat(j),FluxU_rosat(j),FluxL_rosat(j),ra_rosat(j),dec_rosat(j),
-     &                   poserr_rosat(j),xray_type+10
+     &                   poserr_rosat(j),xray_type+50
                   else
                      xray_type=4
                      write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(j),
      &                  flux_rosat(j),FluxU_rosat(j),FluxL_rosat(j),ra_rosat(j),dec_rosat(j),
-     &                   poserr_rosat(j),xray_type+10
+     &                   poserr_rosat(j),xray_type+50
                   endif
                endif
             enddo
@@ -2317,12 +2333,14 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                if (dist*3600. < max(poserr_swift(j),10.)) THEN
                   if (xrt_type(j) == 1) then
                      xray_type=5
+                  else if (xrt_type(j) == 3) then
+                     xrt_type=11
                   else
                      xray_type=9
                   endif
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
-     &                     poserr_swift(j),xray_type+10
+     &                     poserr_swift(j),xray_type+50
                   do s=2,4
                      write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
@@ -2336,9 +2354,13 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
             do j=1,iipc
                call DIST_SKY(ra_other(l),dec_other(l),ra_ipc(j),dec_ipc(j),dist)
                if (dist*3600. < max(poserr_ipc(j),10.)) THEN
-                  xray_type=6
+                  if (ipc_type(j) == 1) then
+                     xray_type=12
+                  else
+                     xray_type=6
+                  endif
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_ipc(j),flux_ipc(j),
-     &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+10
+     &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+50
                endif
             enddo
             do j=1,ibmw
@@ -2346,7 +2368,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                if (dist*3600. < max(poserr_bmw(j),10.)) THEN
                   xray_type=7
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
-     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
+     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+50
                endif
             enddo
             do j=1,ichandra
@@ -2355,7 +2377,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   xray_type=8
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(j,1),
      &                 flux_chandra(j,1),FluxU_chandra(j,1),FluxL_chandra(j,1),ra_chandra(j),dec_chandra(j),
-     &                   poserr_chandra(j),xray_type+10
+     &                   poserr_chandra(j),xray_type+50
                   do s=2,5
                      write(12,'(4(es10.3,2x),i2)') frequency_chandra(j,s),flux_chandra(j,s),FluxU_chandra(j,s),
      &                     FluxL_chandra(j,s),xray_type
@@ -2368,7 +2390,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   xray_type=10
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(j,1),
      &                 flux_maxi(j,1),FluxU_maxi(j,1),FluxL_maxi(j,1),ra_maxi(j),dec_maxi(j),
-     &                   poserr_maxi(j),xray_type+10
+     &                   poserr_maxi(j),xray_type+50
                   do s=2,2
                      write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
      &                     FluxL_maxi(j,s),xray_type
@@ -2420,7 +2442,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
             if (xmm_type(j) == 1) then
                xray_type=1
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(j,1),
-     &                flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+10
+     &                flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+50
                do s=2,3
                   write(12,'(4(es10.3,2x),i2)') frequency_xmm(j,s),flux_xmm(j,s),FluxU_xmm(j,s),
      &                     FluxL_xmm(j,s),xray_type
@@ -2428,7 +2450,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
             else
                xray_type=2
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_xmm(j,1),
-     &               flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+10
+     &               flux_xmm(j,1),FluxU_xmm(j,1),FluxL_xmm(j,1),ra_xmm(j),dec_xmm(j),poserr_xmm(j),xray_type+50
                do s=2,6
                   write(12,'(4(es10.3,2x),i2)') frequency_xmm(j,s),flux_xmm(j,s),FluxU_xmm(j,s),
      &                     FluxL_xmm(j,s),xray_type
@@ -2443,12 +2465,12 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
                xray_type=3
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(j),
      &                    flux_rosat(j),FluxU_rosat(j),FluxL_rosat(j),ra_rosat(j),dec_rosat(j),
-     &                   poserr_rosat(j),xray_type+10
+     &                   poserr_rosat(j),xray_type+50
             else
                xray_type=4
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_rosat(j),
      &                  flux_rosat(j),FluxU_rosat(j),FluxL_rosat(j),ra_rosat(j),dec_rosat(j),
-     &                   poserr_rosat(j),xray_type+10
+     &                   poserr_rosat(j),xray_type+50
             endif
          endif
       enddo
@@ -2457,12 +2479,14 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          if ( dist*3600. .lt. max(poserr_swift(j),2.)) then
             if (xrt_type(j) == 1) THEN
                xray_type=5
+            else if (xrt_type(j) == 3) THEN
+               xray_type=11
             else
                xray_type=9
             endif
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
-     &                     poserr_swift(j),xray_type+10
+     &                     poserr_swift(j),xray_type+50
             do s=2,4
                write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
@@ -2476,9 +2500,13 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
       do j=1,iipc
          call DIST_SKY(ra_center,dec_center,ra_ipc(j),dec_ipc(j),dist)
          if ( dist*3600. .lt. poserr_ipc(j) ) then
-            xray_type=6
+            if (ipc_type(j) == 1) then
+               xray_type=12
+            else
+               xray_type=6
+            endif
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_ipc(j),flux_ipc(j),
-     &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+10
+     &               FluxU_ipc(j),FluxL_ipc(j),ra_ipc(j),dec_ipc(j),poserr_ipc(j),xray_type+50
          endif
       enddo
       do j=1,ibmw
@@ -2486,7 +2514,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          if ( dist*3600. .lt. max(poserr_bmw(j),2.) ) then
             xray_type=7
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_bmw(j),flux_bmw(j),
-     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+10
+     &                 FluxU_bmw(j),FluxL_bmw(j),ra_bmw(j),dec_bmw(j),poserr_bmw(j),xray_type+50
          endif
       enddo
       do j=1,ichandra
@@ -2495,7 +2523,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
             xray_type=8
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_chandra(j,1),
      &                 flux_chandra(j,1),FluxU_chandra(j,1),FluxL_chandra(j,1),ra_chandra(j),dec_chandra(j),
-     &                   poserr_chandra(j),xray_type+10
+     &                   poserr_chandra(j),xray_type+50
             do s=2,5
                write(12,'(4(es10.3,2x),i2)') frequency_chandra(j,s),flux_chandra(j,s),FluxU_chandra(j,s),
      &                     FluxL_chandra(j,s),xray_type
@@ -2508,7 +2536,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
             xray_type=10
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(j,1),
      &                 flux_maxi(j,1),FluxU_maxi(j,1),FluxL_maxi(j,1),ra_maxi(j),dec_maxi(j),
-     &                   poserr_maxi(j),xray_type+10
+     &                   poserr_maxi(j),xray_type+50
             do s=2,2
                write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
      &                     FluxL_maxi(j,s),xray_type
@@ -2556,7 +2584,7 @@ c      IF (ratio < 0.) RETURN
       ELSE IF (xray_type == 4) THEN
          xmission='WGA'
       ELSE IF (xray_type == 5) THEN
-         xmission='XRT'
+         xmission='SXPS'
       ELSE IF (xray_type == 6) THEN
          xmission='IPC'
       ELSE IF (xray_type == 7) THEN
@@ -2567,6 +2595,10 @@ c      IF (ratio < 0.) RETURN
          xmission='XRTDEEP'
       ELSE IF (xray_type == 10) THEN
          xmission='MAXI'
+      ELSE IF (xray_type == 11) THEN
+         xmission='OUSXB'
+      ELSE IF (xray_type == 12) THEN
+          xmission='IPCSLEW'
       ELSE
          xmission='UNKNOWN'
       ENDIF
