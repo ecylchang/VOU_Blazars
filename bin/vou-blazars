@@ -256,7 +256,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius
 echo conesearch --db ${HERE}/cats1.ini --catalog RASS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}rass.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog XMMSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}xmmsl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog 3XMM --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3xmm.1.csv >> ${pidnm}vosearch.txt
-#echo conesearch --db ${HERE}/cats1.ini --catalog BMW --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}bmw.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog BMW --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}bmw.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog WGACAT --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}wgacat.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPC2E --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ipc.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPCSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ipcsl.1.csv >> ${pidnm}vosearch.txt
@@ -641,7 +641,7 @@ do
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
-      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt $source > ${pidnm}phase2
+      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
       echo
       cat ${pidnm}phase2
       #open sed.txt
