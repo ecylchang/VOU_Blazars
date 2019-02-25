@@ -1,0 +1,9 @@
+NVSS Condon et al. 1998, AJ, 115, 1693!
+RASS Boller et al. 2016, A&A, 103, 1!
+NORTH20 White and Becker, 1992, ApJS, 79, 331!
+PCNT Planck Collaboration, 2018, A&A 619, A94!
+SPIRE Schulz et al. 2017, arXiv:1706.00448!
+WISE Cutri et al. 2013, AllWISE Data Release Products!
+PANSTARRS Chambers et al. 2016 arXiv:1612.05560!
+UVOT Page et al. 2014, Proceedings of Swift!
+3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!

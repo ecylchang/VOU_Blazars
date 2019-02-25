@@ -958,8 +958,8 @@ c end PG
                   is=ie
                   ie=index(string(is+1:len(string)),' ')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_swift(iswift,5)
-                  FluxU_swift(iswift,5)=flux_swift(iswift,1)+Ferr_swift(iswift,5)
-                  FluxL_swift(iswift,5)=flux_swift(iswift,1)-Ferr_swift(iswift,5)
+                  FluxU_swift(iswift,5)=flux_swift(iswift,5)+Ferr_swift(iswift,5)
+                  FluxL_swift(iswift,5)=flux_swift(iswift,5)-Ferr_swift(iswift,5)
                   frequency_swift(iswift,5)=(1.602E-19)*(4.5e3)/(6.626e-34)
                   if ((Ferr_swift(iswift,5) .lt. 0) .or. (FluxL_swift(iswift,5) .lt. 0)) then
                      if (flux_swift(iswift,5) .gt. 0.) then

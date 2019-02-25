@@ -2472,7 +2472,6 @@ c         write(*,*) '..................Low frequency Radio....................'
          write(*,*) '.................100 GHz Radio........................'
          DO i=1,ipccs100
             CALL DIST_SKY(ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist)
-            write(*,*) ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),dist*3600.
             pccconv=1.
             !IF (dist < min_dist_pccs100) THEN
             !if (pccspart(i) .eq. j) then

@@ -146,6 +146,13 @@ else
    nhval=`tail -1 ${pidnm}nhvalue.txt |  awk '{print $7}'`
    rm -f ${pidnm}nhvalue.txt
 fi
+#check if the SED mode need plotting or not
+if [ ${@: -1} == -s ]; then #last parameter
+   set ${@: 1 : $#-1} s
+   plotsed=N
+else
+   plotsed=Y
+fi
 
 #read the parameters input
 if [ $# -eq 3 ]; then
@@ -488,17 +495,30 @@ do
          nht32=`echo $3 | cut -d'.' -f2`
          if [ -z $nht32 ]; then
             zoomintt=$nht31
+            zoomindd=0
          else
-            if [ ${nht32:0:1} -gt 4 ]; then
-               zoomintt=${nht31}+1
-            else
-               zoomintt=$nht31
+            zoomintt=${nht31}
+            zoomindd=${nht32:0:1}
+            zoomindd=${zoomindd}*6
+            if [ ${nht32:1:2} ]; then
+               if [ ${nht32:1:2} -lt 3 ]; then
+                  zoomindd=${zoomindd}+1
+               elif [ ${nht32:1:2} -lt 5 ]; then
+                  zoomindd=${zoomindd}+2
+               elif [ ${nht32:1:2} -eq 5 ]; then
+                  zoomindd=${zoomindd}+3
+               elif [ ${nht32:1:2} -lt 8 ]; then
+                  zoomindd=${zoomindd}+4
+               else
+                  zoomindd=${zoomindd}+5
+               fi
             fi
          fi
       else
          zoomintt=$3
+         zoomindd=0
       fi
-      zoomin=${zoomintt}*60
+      zoomin=${zoomintt}*60+${zoomindd}
    fi
 
 #check if need to output the SED file or not and deal with no input
@@ -661,8 +681,11 @@ do
 
 #plot the SED
       echo
-      ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
-      handle_ps ${pidnm}sed.ps
+      echo $plotsed
+      if [ $plotsed != N ]; then
+         ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
+         handle_ps ${pidnm}sed.ps
+      fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps
       # rm -f sed.ps
