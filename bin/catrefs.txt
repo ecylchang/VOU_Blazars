@@ -1,5 +1,18 @@
 NVSS Condon et al. 1998, AJ, 115, 1693!
+FIRST White et al. 1997, ApJ, 475 479!
+SUMSS Manch et al. 2003, MNRAS, 342, 1117!
 RASS Boller et al. 2016, A&A, 103, 1!
+3XMM Watson et al. 2009, A&A, 493, 339!
+XMMSL Saxton et al. 2008, A&A, 480, 611!
+WGA White et al. 2000, VizieR, IX/31/wgacat!
+SXPS Evans et al. 2014, ApJS, 210, 8!
+XRTDEEP Brandt et al. in preparation!
+IPC Harris et al. 1990, VizieR, IX/13/2e!
+IPCSL Munz et al. 1992, ApJS, 80, 257!
+BMW Panzera et al. 2003, A&A, 399, 351!
+Chandra Evans et al. 2010, ApJS, 189, 37!
+OUSXB Giommi et al. in preparation!
+MAXI TBD! 
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 PCNT Planck Collaboration, 2018, A&A 619, A94!
 SPIRE Schulz et al. 2017, arXiv:1706.00448!
