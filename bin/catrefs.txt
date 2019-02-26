@@ -14,7 +14,7 @@ Chandra Evans et al. 2010, ApJS, 189, 37!
 OUSXB Giommi et al. in preparation!
 MAXI TBD!
 WISH De Bruce et al. 2002, A&A, 394, 59!
-PMN TBD!
+PMN Griffith et al. 1993-1996, VizieR, VIII/38!
 GB6 Gregory et al. 1996, ApJS, 103, 427!
 GB87 Gregory et al. 1992, VizieR, VIII/14/j2000!
 ATPMN McConnell et al. 2012, MNRAS, 422, 1527!
@@ -39,3 +39,11 @@ CMA TBD!
 XRTSPEC TBD!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!
+2FHL Ackermann et al. 2016, ApJS, 222, 1!
+3FGL Acero et al. 2015, ApJS, 218, 23!
+1BIGB Arcioni et al. 2018, MNRAS, 480, 2165!
+Fermi8YR https://fermi.gsfc.nasa.gov/ssc/data/access/lat/fl8y/!
+AGILE Pitori et al. 2009, A&A, 506, 1563!
+FermiMeV Principe et al. 2018, A&A, 618, A22! 
+VERITAS TBD!
+MAGIC TBD!
