@@ -56,7 +56,7 @@ c            write(*,*) is,ie
             ie=index(value(is+1:len(value)),',')+is
 c gamma-ray catalog print name
             if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')
-     &          .or. (catalog(1:it-1) == 'fermi8yr') .or. (catalog(1:it-1) == 'mst9y')
+     &          .or. (catalog(1:it-1) == '4fgl') .or. (catalog(1:it-1) == 'mst9y')
      &          .or. (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')) then
                read(value(1:is-1),'(a)') catname
             endif
@@ -188,7 +188,7 @@ c read other pos_err
                poserr=sqrt((posxerr*posxerr)+(posyerr*posyerr))
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
-            if ((catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'fermi8yr'))  then
+            if (catalog(1:it-1) == '2mass')  then
                is=ie
                ie=index(value(is+1:len(value)),',')+is
                if (is .ne. ie-1) read(value(is+1:ie-1),*) major
@@ -201,7 +201,7 @@ c read other pos_err
                posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr=max(posxerr,posyerr)
-               if (catalog(1:it-1) == 'fermi8yr') poserr=poserr*60.
+c               if (catalog(1:it-1) == 'fermi8yr') poserr=poserr*60.
             endif
             if (catalog(1:it-1) == 'cma') then
                is=ie
@@ -257,12 +257,10 @@ c write the data
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
-     &               (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')) then
+     &               (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')
+     &               .or. (catalog(1:it-1) == '4fgl')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
-            else if (catalog(1:it-1) == 'fermi8yr') then
-               write(13,'(i4,",",a,",",2(f9.5,","),a,",",f7.3,",",a)')
-     &             ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),poserr,flux(1:ie-1)
             else
                write(13,'(i4,",",a,",",2(f9.5,","),a)') ns,catalog(1:it-1),radeg,decdeg,flux(1:ie-1)
             endif

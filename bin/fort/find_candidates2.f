@@ -237,11 +237,13 @@ c read the sed.txt first
       if ((spec_type(npt(sfound),sfound) .eq. 59) .or. (spec_type(npt(sfound),sfound) .eq. 9))
      &      rrxx_type(npt(sfound),sfound)='XRTDEEP'
       if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
-     &      rrxx_type(npt(sfound),sfound)='MAXI'
+     &      rrxx_type(npt(sfound),sfound)='MAXIGSC'
       if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 11))
      &      rrxx_type(npt(sfound),sfound)='OUSXB'
       if ((spec_type(npt(sfound),sfound) .eq. 62) .or. (spec_type(npt(sfound),sfound) .eq. 12))
      &      rrxx_type(npt(sfound),sfound)='IPCSL'
+      if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
+     &      rrxx_type(npt(sfound),sfound)='MAXISSC'
       else
          if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
          if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
@@ -264,7 +266,7 @@ c read the reference file
          is = ie
          ie = index(string(1:len(string)),'!')
          read(string(is+1:ie-1),'(a)') refs(iref)
-         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
+c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
       enddo
 400   continue
       close(15)
@@ -1617,7 +1619,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                xray_type(ixray)='BAT105m'
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
-         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:8) == 'fermi8yr') .or.
+         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:8) == '4fgl') .or.
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == 'agile')) then
             igam=igam+1
@@ -1928,13 +1930,9 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr_gam(igam)=max(posxerr,posyerr)*3600.
                gam_type(igam)='3FGL'
-            ELSE IF (catalog(1:8) == 'fermi8yr') then
+            ELSE IF (catalog(1:8) == '4fgl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_gam(igam)
-               poserr_gam(igam)=poserr_gam(igam)*60.
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
@@ -1945,7 +1943,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) slope_gam(igam,1)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
                if (slope_gam(igam,1) .gt. 5.) slope_gam(igam,1)=2.
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
@@ -1967,9 +1965,21 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                FluxU_gam(igam,2)=fdens
                call fluxtofdens(slope_gam(igam,1),1.,100.,FluxL_gam(igam,2),50.,fdens,nudens)
                FluxL_gam(igam,2)=fdens
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) major
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) minor
+               posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
+               posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
+               poserr_gam(igam)=max(posxerr,posyerr)*3600.
                !write(*,*) 'Fermi',poserr_gam(igam),FluxU_gam(igam,1),flux_gam(igam,1),FluxL_gam(igam,1)
                !write(*,*) 'Fermi',poserr_gam(igam),FluxU_gam(igam,2),flux_gam(igam,2),FluxL_gam(igam,2)
-               gam_type(igam)='Fermi8YR'
+               gam_type(igam)='4FGL'
             ELSE IF (catalog(1:4) == '3fhl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3194,7 +3204,7 @@ c the refs file
                if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
                write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),FluxU_gam(i,1),
      &           FluxL_gam(i,1),gam_type(i),refs(gam_ref(i))
-            else if (gam_type(i) == 'Fermi8YR') then
+            else if (gam_type(i) == '4FGL') then
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,2
                   write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),

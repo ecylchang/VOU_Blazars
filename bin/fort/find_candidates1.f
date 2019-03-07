@@ -52,9 +52,9 @@ c
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(5000,5),FluxU_swift(5000,5),FluxL_swift(5000,5),poserr_swift(5000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
-      real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,2)
+      real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
-      real*4 Ferr_maxi(200,2),FluxU_maxi(200,2),FluxL_maxi(200,2),poserr_maxi(200),flux_maxi(200,2)
+      real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
       real*4 errrad,errmaj,errmin,errang,savemjy(10000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000),namegam(200)
@@ -1352,7 +1352,6 @@ c PG
 c end PG
          ELSE IF ((catalog(1:7) == 'maxissc') .or. (catalog(1:7) == 'maxigsc')) THEN
             imaxi=imaxi+1
-            write(*,*) imaxi
             ra_maxi(imaxi)=ra
             dec_maxi(imaxi)=dec
             is=ie
@@ -1360,7 +1359,26 @@ c end PG
             if (catalog(1:7) == 'maxigsc') then
                ra_maxi(imaxi)=-ra_maxi(imaxi)
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_maxi(imaxi)
-               poserr_maxi(imaxi)=sqrt(((2*poserr_maxi(imaxi))**2)+(324.**2))
+               poserr_maxi(imaxi)=2.*poserr_maxi(imaxi)*3600.
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_maxi(imaxi,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_maxi(imaxi,3)
+               FluxU_maxi(imaxi,3)=flux_maxi(imaxi,3)+Ferr_maxi(imaxi,3)
+               FluxL_maxi(imaxi,3)=flux_maxi(imaxi,3)-Ferr_maxi(imaxi,3)
+               call nhdeabsorb2 (1,4.,10.,0.9,nh,reduce,100)
+               flux_maxi(imaxi,3)=flux_maxi(imaxi,3)*reduce*1.e-12
+               FluxU_maxi(imaxi,3)=FluxU_maxi(imaxi,3)*reduce*1.e-12
+               FluxL_maxi(imaxi,3)=FluxL_maxi(imaxi,3)*reduce*1.e-12
+               call fluxtofdens(0.9,4.,10.,flux_maxi(imaxi,3),7.,fdens,nudens)
+               flux_maxi(imaxi,3)=fdens
+               frequency_maxi(imaxi,3)=nudens
+               call fluxtofdens(0.9,4.,10.,FluxU_maxi(imaxi,3),7.,fdens,nudens)
+               FluxU_maxi(imaxi,3)=fdens
+               call fluxtofdens(0.9,4.,10.,FluxL_maxi(imaxi,3),7.,fdens,nudens)
+               FluxL_maxi(imaxi,3)=fdens
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_maxi(imaxi,2)
@@ -1369,17 +1387,44 @@ c end PG
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_maxi(imaxi,2)
                FluxU_maxi(imaxi,2)=flux_maxi(imaxi,2)+Ferr_maxi(imaxi,2)
                FluxL_maxi(imaxi,2)=flux_maxi(imaxi,2)-Ferr_maxi(imaxi,2)
-               call nhdeabsorb2 (1,4.,10.,0.9,nh,reduce,100)
-               flux_maxi(imaxi,2)=flux_maxi(imaxi,2)*reduce
-               FluxU_maxi(imaxi,2)=FluxU_maxi(imaxi,2)*reduce
-               FluxL_maxi(imaxi,2)=FluxL_maxi(imaxi,2)*reduce
-               call fluxtofdens(0.9,4.,10.,flux_maxi(imaxi,2),7.,fdens,nudens)
+               if (FluxL_maxi(imaxi,2) .lt. 0.) then
+                  FluxU_maxi(imaxi,2)=Ferr_maxi(imaxi,2)*3.
+                  FluxL_maxi(imaxi,2)=0.
+               endif
+               call nhdeabsorb2 (1,3.,4.,0.9,nh,reduce,100)
+               flux_maxi(imaxi,2)=flux_maxi(imaxi,2)*reduce*1.e-12
+               FluxU_maxi(imaxi,2)=FluxU_maxi(imaxi,2)*reduce*1.e-12
+               FluxL_maxi(imaxi,2)=FluxL_maxi(imaxi,2)*reduce*1.e-12
+               call fluxtofdens(0.9,3.,4.,flux_maxi(imaxi,2),3.5,fdens,nudens)
                flux_maxi(imaxi,2)=fdens
                frequency_maxi(imaxi,2)=nudens
-               call fluxtofdens(0.9,4.,10.,FluxU_maxi(imaxi,2),7.,fdens,nudens)
+               call fluxtofdens(0.9,3.,4.,FluxU_maxi(imaxi,2),3.5,fdens,nudens)
                FluxU_maxi(imaxi,2)=fdens
-               call fluxtofdens(0.9,4.,10.,FluxL_maxi(imaxi,2),7.,fdens,nudens)
+               call fluxtofdens(0.9,3.,4.,FluxL_maxi(imaxi,2),3.5,fdens,nudens)
                FluxL_maxi(imaxi,2)=fdens
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_maxi(imaxi,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_maxi(imaxi,4)
+               FluxU_maxi(imaxi,4)=flux_maxi(imaxi,4)+Ferr_maxi(imaxi,4)
+               FluxL_maxi(imaxi,4)=flux_maxi(imaxi,4)-Ferr_maxi(imaxi,4)
+               if (FluxL_maxi(imaxi,4) .lt. 0.) then
+                  FluxU_maxi(imaxi,4)=Ferr_maxi(imaxi,4)*3.
+                  FluxL_maxi(imaxi,4)=0.
+               endif
+               call nhdeabsorb2 (1,10.,20.,0.9,nh,reduce,100)
+               flux_maxi(imaxi,4)=flux_maxi(imaxi,4)*reduce*1.e-12
+               FluxU_maxi(imaxi,4)=FluxU_maxi(imaxi,4)*reduce*1.e-12
+               FluxL_maxi(imaxi,4)=FluxL_maxi(imaxi,4)*reduce*1.e-12
+               call fluxtofdens(0.9,10.,20.,flux_maxi(imaxi,4),15.,fdens,nudens)
+               flux_maxi(imaxi,4)=fdens
+               frequency_maxi(imaxi,4)=nudens
+               call fluxtofdens(0.9,10.,20.,FluxU_maxi(imaxi,4),15.,fdens,nudens)
+               FluxU_maxi(imaxi,4)=fdens
+               call fluxtofdens(0.9,10.,20.,FluxL_maxi(imaxi,4),15.,fdens,nudens)
+               FluxL_maxi(imaxi,4)=fdens
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_maxi(imaxi,1)
@@ -1388,17 +1433,18 @@ c end PG
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_maxi(imaxi,1)
                FluxU_maxi(imaxi,1)=flux_maxi(imaxi,1)+Ferr_maxi(imaxi,1)
                FluxL_maxi(imaxi,1)=flux_maxi(imaxi,1)-Ferr_maxi(imaxi,1)
-               call nhdeabsorb2 (1,3.,4.,0.9,nh,reduce,100)
-               flux_maxi(imaxi,1)=flux_maxi(imaxi,1)*reduce
-               FluxU_maxi(imaxi,1)=FluxU_maxi(imaxi,1)*reduce
-               FluxL_maxi(imaxi,1)=FluxL_maxi(imaxi,1)*reduce
-               call fluxtofdens(0.9,3.,4.,flux_maxi(imaxi,1),3.5,fdens,nudens)
+               call nhdeabsorb2 (1,3.,10.,0.9,nh,reduce,100)
+               flux_maxi(imaxi,1)=flux_maxi(imaxi,1)*reduce*1.e-12
+               FluxU_maxi(imaxi,1)=FluxU_maxi(imaxi,1)*reduce*1.e-12
+               FluxL_maxi(imaxi,1)=FluxL_maxi(imaxi,1)*reduce*1.e-12
+               call fluxtofdens(0.9,3.,10.,flux_maxi(imaxi,1),5.,fdens,nudens)
                flux_maxi(imaxi,1)=fdens
-               frequency_maxi(imaxi,1)=2.418E17!nudens
-               call fluxtofdens(0.9,3.,4.,FluxU_maxi(imaxi,1),3.5,fdens,nudens)
+               frequency_maxi(imaxi,1)=2.418E17!nudens check the flux value later
+               call fluxtofdens(0.9,3.,10.,FluxU_maxi(imaxi,1),5.,fdens,nudens)
                FluxU_maxi(imaxi,1)=fdens
-               call fluxtofdens(0.9,3.,4.,FluxL_maxi(imaxi,1),3.5,fdens,nudens)
+               call fluxtofdens(0.9,3.,10.,FluxL_maxi(imaxi,1),5.,fdens,nudens)
                FluxL_maxi(imaxi,1)=fdens
+               maxi_type(imaxi)=1
             else
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_maxi(imaxi,1) !s
                call nhdeabsorb2 (1,0.7,1.85,0.9,nh,reduce,100)
@@ -1419,10 +1465,11 @@ c end PG
                FluxU_maxi(imaxi,2)=0.
                FluxL_maxi(imaxi,2)=0.
                poserr_maxi(imaxi)=sqrt(0.2**2+0.2**2)*3600.
+               maxi_type(imaxi)=2
             endif
             CALL RXgraphic_code(flux_maxi(imaxi,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
-         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == 'fermi8yr')
+         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgl')
      &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == 'agile')
      &           .or.  (catalog(1:5) == 'fmev')) then
@@ -1722,7 +1769,11 @@ c            ENDIF
             min_dist = sqrt(poserr_maxi(i)**2+poserr_radio(k)**2)/3600.
             IF (dist < min_dist) THEN
                found = .TRUE.
-               xray_type = 10
+               IF (maxi_type(i) == 1) THEN
+                  xray_type = 10
+               ELSE IF (maxi_type(i) == 2) THEN
+                  xray_type = 13
+               ENDIF
                flux_x = flux_x + flux_maxi(i,1)
                ix = ix +1
                flux_1kev(ix,k)=flux_maxi(i,1)
@@ -1738,14 +1789,25 @@ c            ENDIF
                IF (source_type .GE. 0) THEN
                   types(source_type) = types(source_type) + 1
                ENDIF
-               do l=2,2
-                  xpts=xpts+1
-                  flux_xpts(xpts,k)=flux_maxi(i,l)
-                  frequency_xpts(xpts,k)=frequency_maxi(i,l)
-                  uflux_xpts(xpts,k)=FluxU_maxi(i,l)
-                  lflux_xpts(xpts,k)=FluxL_maxi(i,l)
-                  spec_xpts(xpts,k)=xray_type
-               enddo
+               if ( xray_type == 13 ) then
+                  do l=2,2
+                     xpts=xpts+1
+                     flux_xpts(xpts,k)=flux_maxi(i,l)
+                     frequency_xpts(xpts,k)=frequency_maxi(i,l)
+                     uflux_xpts(xpts,k)=FluxU_maxi(i,l)
+                     lflux_xpts(xpts,k)=FluxL_maxi(i,l)
+                     spec_xpts(xpts,k)=xray_type
+                  enddo
+               ELSE
+                  do l=2,4
+                     xpts=xpts+1
+                     flux_xpts(xpts,k)=flux_maxi(i,l)
+                     frequency_xpts(xpts,k)=frequency_maxi(i,l)
+                     uflux_xpts(xpts,k)=FluxU_maxi(i,l)
+                     lflux_xpts(xpts,k)=FluxL_maxi(i,l)
+                     spec_xpts(xpts,k)=xray_type
+                  enddo
+               endif
             ENDIF
          ENDDO
          !write(*,*) const
@@ -2195,25 +2257,43 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             endif
          enddo
          if (.not. found) THEN
-            xray_type=10
+            IF (maxi_type(i) == 1) THEN
+               xray_type = 10
+            ELSE IF (maxi_type(i) == 2) THEN
+               xray_type = 13
+            ENDIF
             CALL DIST_SKY(ra_center,dec_center,abs(ra_maxi(i)),dec_maxi(i),dist)
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,1),flux_maxi(i,1),
      &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+50
-                  do s=2,2
-                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
-     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
-                  enddo
+                  if (xray_type .eq. 13) then
+                     do s=2,2
+                        write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
+     &                  FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
+                     enddo
+                  else
+                     do s=2,4
+                        write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
+     &                  FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
+                     enddo
+                  endif
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,1),flux_maxi(i,1),
      &     FluxU_maxi(i,1),FluxL_maxi(i,1),ra_maxi(i),dec_maxi(i),poserr_maxi(i),xray_type+50
-                  do s=2,2
-                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
-     &     FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
-                  enddo
+                  if (xray_type .eq. 13) then
+                     do s=2,2
+                        write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
+     &                   FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
+                     enddo
+                  else
+                     do s=2,4
+                        write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(i,s),flux_maxi(i,s),
+     &                   FluxU_maxi(i,s),FluxL_maxi(i,s),abs(ra_maxi(i)),dec_maxi(i),poserr_maxi(i),xray_type
+                     enddo
+                  endif
                endif
             endif
          endif
@@ -2387,14 +2467,25 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
             do j=1,imaxi
                call DIST_SKY(ra_other(l),dec_other(l),abs(ra_maxi(j)),dec_maxi(j),dist)
                if (dist*3600. < max(poserr_maxi(j),10.)) THEN
-                  xray_type=10
+                  IF (maxi_type(i) == 1) THEN
+                     xray_type = 10
+                  ELSE IF (maxi_type(i) == 2) THEN
+                     xray_type = 13
+                  ENDIF
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(j,1),
      &                 flux_maxi(j,1),FluxU_maxi(j,1),FluxL_maxi(j,1),ra_maxi(j),dec_maxi(j),
      &                   poserr_maxi(j),xray_type+50
-                  do s=2,2
-                     write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
+                  if (xray_type .eq. 13) then
+                     do s=2,2
+                        write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
      &                     FluxL_maxi(j,s),xray_type
-                  enddo
+                     enddo
+                  ELSE
+                     do s=2,4
+                        write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
+     &                     FluxL_maxi(j,s),xray_type
+                     enddo
+                  endif
                endif
             enddo
 100   continue
@@ -2533,14 +2624,25 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
       do j=1,imaxi
          call DIST_SKY(ra_center,dec_center,abs(ra_maxi(j)),dec_maxi(j),dist)
          if ( dist*3600. .lt. poserr_maxi(j) ) then
-            xray_type=10
+            IF (maxi_type(i) == 1) THEN
+               xray_type = 10
+            ELSE IF (maxi_type(i) == 2) THEN
+               xray_type = 13
+            ENDIF
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_maxi(j,1),
      &                 flux_maxi(j,1),FluxU_maxi(j,1),FluxL_maxi(j,1),ra_maxi(j),dec_maxi(j),
      &                   poserr_maxi(j),xray_type+50
-            do s=2,2
-               write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
+            if (xray_type .eq. 13) then
+               do s=2,2
+                  write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
      &                     FluxL_maxi(j,s),xray_type
-            enddo
+               enddo
+            ELSE
+               do s=2,4
+                  write(12,'(4(es10.3,2x),i2)') frequency_maxi(j,s),flux_maxi(j,s),FluxU_maxi(j,s),
+     &                     FluxL_maxi(j,s),xray_type
+               enddo
+            endif
          endif
       enddo
 502   close(11)
@@ -2594,11 +2696,13 @@ c      IF (ratio < 0.) RETURN
       ELSE IF (xray_type == 9) THEN
          xmission='XRTDEEP'
       ELSE IF (xray_type == 10) THEN
-         xmission='MAXI'
+         xmission='MAXIGSC'
       ELSE IF (xray_type == 11) THEN
          xmission='OUSXB'
       ELSE IF (xray_type == 12) THEN
-          xmission='IPCSLEW'
+         xmission='IPCSLEW'
+      ELSE IF (xray_type == 13) THEN
+         xmission='MAXISSC'
       ELSE
          xmission='UNKNOWN'
       ENDIF

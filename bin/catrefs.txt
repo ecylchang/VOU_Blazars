@@ -11,7 +11,7 @@ IPC Harris et al. 1990, VizieR, IX/13/2e!
 IPCSL Munz et al. 1992, ApJS, 80, 257!
 BMW Panzera et al. 2003, A&A, 399, 351!
 Chandra Evans et al. 2010, ApJS, 189, 37!
-OUSXB Giommi et al. in preparation!
+OUSXB Giommi et al. 2019, submitted to A&A!
 MAXI TBD!
 WISH De Bruce et al. 2002, A&A, 394, 59!
 PMN Griffith et al. 1993-1996, VizieR, VIII/38!
@@ -36,13 +36,13 @@ UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
-XRTSPEC TBD!
+XRTSPEC Giommi et al. 2019, in preparation!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!
 1BIGB Arcioni et al. 2018, MNRAS, 480, 2165!
-Fermi8YR https://fermi.gsfc.nasa.gov/ssc/data/access/lat/fl8y/!
+4FGL The Fermi-LAT Collaboration, 2019, arXiv:1902.10045!
 AGILE Pitori et al. 2009, A&A, 506, 1563!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
 VERITAS TBD!

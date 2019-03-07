@@ -281,9 +281,9 @@ echo conesearch --db ${HERE}/cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius 
 echo conesearch --db ${HERE}/cats1.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}crates.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}pulsar.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fermi8yr.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
+#echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}1bigb.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog MST9Y --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mst9y.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fmev.1.csv >> ${pidnm}vosearch.txt
@@ -585,9 +585,9 @@ do
 #            echo conesearch --db ${HERE}/cats2.ini --catalog CMA --ra $rar  --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}cma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog XRTSPEC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}xrtspec.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}bat105.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fgl.$nn.2.csv >> ${pidnm}vosearch.txt
+#            echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fgl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}2fhl.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog Fermi8YR --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}fermi8yr.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}4fgl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fhl.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o ${pidnm}agile.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -674,15 +674,14 @@ do
       fi
       rm -f ${pidnm}error_map.*ps
       rm -f ${pidnm}sed.*ps
-      ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_image_position.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
-      handle_ps ${pidnm}error_map.ps
+      if [ $plotsed != N ]; then
+         ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_image_position.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+         handle_ps ${pidnm}error_map.ps
       # ps2eps -B -q error_map.ps
       # open error_map.eps
 
 #plot the SED
-      echo
-      echo $plotsed
-      if [ $plotsed != N ]; then
+         echo
          ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
          handle_ps ${pidnm}sed.ps
       fi
