@@ -9,8 +9,12 @@ comp_libs () {
 
 comp_bins () {
     echo "-> Compiling '$1'.."
-    gfortran -o ${1} ${1}.f -ffixed-line-length-132 mylib.o -L${PGPLOT_DIR} -lpgplot \
+
+#   gfortran -o ${1} ${1}.f -ffixed-line-length-132 mylib.o -L${HOME}/pgplot -lpgplot \
+
+    gfortran -o ${1} ${1}.f -ffixed-line-length-132 mylib.o -L/home/openuniverse/pgplotbin -lpgplot \
       || { echo "Error: apparently '$1' was not compiled properly. Exiting."; return 1; }
+#**************************ANTONIO*********************************************************************
     echo "..done."
 }
 

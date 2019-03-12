@@ -41,9 +41,9 @@ BAT105m Oh et al. 2018, ApJS, 235, 4!
 3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!
-1BIGB Arcioni et al. 2018, MNRAS, 480, 2165!
+1BIGB Arsioli et al. 2018, MNRAS, 480, 2165!
 4FGL The Fermi-LAT Collaboration, 2019, arXiv:1902.10045!
-AGILE Pitori et al. 2009, A&A, 506, 1563!
+AGILE Pittori et al. 2009, A&A, 506, 1563!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
 VERITAS TBD!
 MAGIC TBD!

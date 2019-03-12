@@ -75,7 +75,6 @@ c         write(*,*) iskip
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
 c         write(*,*) device
-
          ip = index(stringin(im+1:length),',')+im
          strzoom = stringin(im+1:ip-1)
 
