@@ -2,8 +2,10 @@
 ############
 #requirement: python, anaconda
 #clone everthing from: https://github.com/chbrandt/eada
+git clone https://github.com/chbrandt/eada
 
 #to update : pip install -U https://github.com/chbrandt/eada/archive/0.9.7.1.zip
+
 
 ############PGPlot
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -20,3 +22,4 @@ pip install astropy
 pip install pyvo
 pip install pyyaml
 python setup.py develop
+#pip install .

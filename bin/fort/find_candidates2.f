@@ -2139,6 +2139,11 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1)
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
+               if (FluxL_gam(igam,1) .lt. 0.) then
+                  flux_gam(igam,1)=0.
+                  FluxU_gam(igam,1)=0.
+                  FluxL_gam(igam,1)=0.
+               endif
                slope_gam(igam,1)=1.8 !!!!!!!!!!!change later
                gam_type(igam)='1BIGB'
             ELSE IF (catalog(1:5) =='agile') then

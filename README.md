@@ -61,7 +61,7 @@ $ pip install pyyaml
 $
 $ git clone https://github.com/chbrandt/eada
 $ cd eada
-$ pip install .
+$ python setup.py develop
 ```
 
 ### Setup PGPlot - MACOS
