@@ -283,7 +283,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radiu
 echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fhl.1.csv >> ${pidnm}vosearch.txt
-#echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3fgl.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}1bigb.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog MST9Y --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mst9y.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fmev.1.csv >> ${pidnm}vosearch.txt
@@ -312,11 +312,11 @@ echo
 #running the PHASAE 1
 rm -f ${pidnm}*temp.txt
 if [ ${13} == s ]; then
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 0 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${pidnm}LC_temp.txt ${BINF} 0 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 else
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 1 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${pidnm}LC_temp.txt ${BINF} 1 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 
@@ -661,7 +661,7 @@ do
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
-      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
+      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}LC_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${pidnm}LC.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
       echo
       cat ${pidnm}phase2
       #open sed.txt

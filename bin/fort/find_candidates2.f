@@ -33,7 +33,7 @@ c
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(500),far_ref(500),ir_ref(2),opt_ref(5)
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200)
+      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
@@ -67,11 +67,14 @@ c
       real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(200),flux_vhe(200),FluxU_vhe(200),FluxL_vhe(200),poserr_vhe(200),Ferr_vhe(200)
+      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
+      real*4 mjdst_lc(2000,1000),mjden_lc(2000,1000),lcurve_type(2000,1000)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
       CHARACTER*30 name_other(10000)
       character*80 input_file,output_file,input_file2,input_file3,output_file2,refsfile,refs(100)
+      character*80 input_file4,output_file3
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
@@ -129,10 +132,16 @@ c         write(*,*) in,im
          input_file3=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
+         input_file4=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
          output_file=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          output_file2=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
+         output_file3=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          refsfile=string(in+1:im-1)
@@ -163,6 +172,7 @@ c         write(*,*) in,im
       open(13,file=input_file2,status='old',iostat=ier)
       open(12,file=input_file3,status='old',iostat=ier)
       open(15,file=refsfile,status='old',iostat=ier)
+      open(16,file=input_file4,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
@@ -271,6 +281,20 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
 400   continue
       close(15)
 
+      nptlc(1:1000)=0
+502   continue
+      read(16,'(i4,a)',end=500,err=500) lcfound,string
+      do while(ok)
+         nptlc(lcfound)=nptlc(lcfound)+1
+         read(16,*,end=501,err=501) frequency_lc(nptlc(lcfound),lcfound),flux_lc(nptlc(lcfound),lcfound),
+     *   uflux_lc(nptlc(lcfound),lcfound),lflux_lc(nptlc(lcfound),lcfound),mjdst_lc(nptlc(lcfound),lcfound),
+     *   mjden_lc(nptlc(lcfound),lcfound),lcurve_type(nptlc(lcfound),lcfound)
+      enddo
+501   continue
+      nptlc(lcfound)=nptlc(lcfound)-1
+      goto 502
+500   continue
+      close(16)
 
 c read the data file
       READ(lu_in,'(a)') string

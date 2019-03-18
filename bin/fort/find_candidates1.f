@@ -51,14 +51,14 @@ c
       real*4 Ferr_xmm(5000,6),FluxU_xmm(5000,6),FluxL_xmm(5000,6),poserr_xmm(5000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(5000,5),FluxU_swift(5000,5),FluxL_swift(5000,5),poserr_swift(5000)
-      real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200)
+      real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200),mjdst_swift(5000),mjded_swift(5000)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
-      real*4 errrad,errmaj,errmin,errang,savemjy(10000)
+      real*4 errrad,errmaj,errmin,errang,savemjy(10000),mjdstart(5000,5000),mjdend(5000,5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000),namegam(200)
-      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms
+      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms,output_file5
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found
@@ -125,6 +125,9 @@ c         write(*,*) length
          output_file4=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
+         output_file5=string(in+1:im-1)
+         in=im
+         im=index(string(in+1:length),' ')+in
          webprograms=string(in+1:im-1)
 c         write(*,*) webprograms
          read(string(im+1:length),*) aim
@@ -145,6 +148,7 @@ c         write(*,*) 'the aim',aim
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
       open(14,file=output_file4,status='unknown',iostat=ier)
+      open(15,file=output_file5,status='unknown',iostat=ier)
       !write(*,*) ier
       open(12,file=output_file3,status='unknown')
       IF (ier.NE.0) THEN
@@ -872,6 +876,12 @@ c end PG
      &                 .or.  (catalog(1:5) == 'ousxb') ) then
                if (catalog(1:5) == 'ousxb') then
                   xrt_type(iswift)=3
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_swift(iswift)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_swift(iswift)
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_swift(iswift,2)
@@ -1648,6 +1658,10 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                poserr_1kev(ix,k)=poserr_swift(i)
                distrx(ix,k)=dist*3600.
                spec_type(ix,k)=xray_type+50
+               if (spec_type(ix,k) .eq. 61) then
+                  mjdstart(ix,k)=mjdst_swift(i)
+                  mjdend(ix,k)=mjded_swift(i)
+               endif
                do l=2,4
                   xpts=xpts+1
                   flux_xpts(xpts,k)=flux_swift(i,l)
@@ -1866,13 +1880,20 @@ c            ENDIF
             ENDIF
             xflux(sfound)=flux_x
             if (sfound .ne. 1 ) write(12,*) "===================="
+            if (sfound .ne. 1 ) write(15,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+     &         ra_radio(k),dec_radio(k),'source type',type_average
+            write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_radio(k),dec_radio(k),'source type',type_average
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_radio(k),flux_radio(k),FluxU_radio(k),
      &          FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),radio_type(k)
             do i=1,ix
                write(12,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.5),2x,f8.3,2x,i2)') flux_1kev(i,k),uflux_1kev(i,k),
      &             lflux_1kev(i,k),ra_1kev(i,k),dec_1kev(i,k),poserr_1kev(i,k),spec_type(i,k)
+               if (spec_type(i,k) .eq. 61) THEN
+                  write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+     &            flux_1kev(i,k),uflux_1kev(i,k),lflux_1kev(i,k),mjdstart(i,k),mjdend(i,k),spec_type(i,k)-50
+               endif
             enddo
             !write(*,*) 'how many other x-ray pts',xpts
             do i=1,xpts
@@ -2343,6 +2364,8 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if (sfound .ne. 1 ) write(12,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_other(l),dec_other(l),'source type',type_average
+            write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+     &         ra_other(l),dec_other(l),'source type',type_average
             CALL DIST_SKY(ra_other(l),dec_other(l),ra_center,dec_center,dist)
             dist = dist*60
             if (type_average .eq. -7) then
@@ -2421,6 +2444,10 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),xray_type+50
+                  if (xray_type .eq. 11) then
+                     write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
+                  endif
                   do s=2,4
                      write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
@@ -2518,8 +2545,11 @@ cccccc for skip the phase 1
       write(11,'(f9.5,2x,f9.5,2x,a)') ra_center,dec_center,"99"
       write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_center,dec_center,'source type',type_average
+      write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+     &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
+         write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.
          if (dist*3600. .lt. max(poserr_radio(j),2.) ) then !18 arcsec for radio sources
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_radio(j),flux_radio(j),FluxU_radio(j),
      &          FluxL_radio(j),ra_radio(j),dec_radio(j),poserr_radio(j),radio_type(j)
@@ -2529,6 +2559,7 @@ cccccc for skip the phase 1
 c         if (xmm_type(j) == 1) min_dist_xmm=15./3600.
 c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          call DIST_SKY(ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist)
+         write(*,*) 'XMM',ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist*3600.,poserr_xmm(j)
          if ( dist*3600. .lt. max(poserr_xmm(j),2.) ) then
             if (xmm_type(j) == 1) then
                xray_type=1
@@ -2567,6 +2598,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
       enddo
       do j=1,iswift
          call DIST_SKY(ra_center,dec_center,abs(ra_swift(j)),dec_swift(j),dist)
+         write(*,*) 'SXPS',ra_center,dec_center,ra_swift(j),dec_swift(j),dist*3600.,poserr_swift(j)
          if ( dist*3600. .lt. max(poserr_swift(j),2.)) then
             if (xrt_type(j) == 1) THEN
                xray_type=5
@@ -2578,6 +2610,10 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),xray_type+50
+            if (xray_type .eq. 11) then
+               write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
+            endif
             do s=2,4
                write(12,'(4(es10.3,2x),i2)') frequency_swift(j,s),flux_swift(j,s),FluxU_swift(j,s),
      &                     FluxL_swift(j,s),xray_type
