@@ -33,7 +33,7 @@ c
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(500),far_ref(500),ir_ref(2),opt_ref(5)
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound
+      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
@@ -68,7 +68,8 @@ c
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(200),flux_vhe(200),FluxU_vhe(200),FluxL_vhe(200),poserr_vhe(200),Ferr_vhe(200)
       real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 mjdst_lc(2000,1000),mjden_lc(2000,1000),lcurve_type(2000,1000)
+      real*4 mjdst_lc(2000,1000),mjden_lc(2000,1000),lcurve_type(2000,1000),mjdstart(200),mjdend(200)
+      real*4 mjdst_tev(200),mjded_tev(200),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -101,6 +102,7 @@ c
       iverit=0
       ivhe=0
       ialma=0
+      itevlc=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -284,11 +286,12 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
       nptlc(1:1000)=0
 502   continue
       read(16,'(i4,a)',end=500,err=500) lcfound,string
+      write(*,*) lcfound,'TEST LC'
       do while(ok)
          nptlc(lcfound)=nptlc(lcfound)+1
-         read(16,*,end=501,err=501) frequency_lc(nptlc(lcfound),lcfound),flux_lc(nptlc(lcfound),lcfound),
-     *   uflux_lc(nptlc(lcfound),lcfound),lflux_lc(nptlc(lcfound),lcfound),mjdst_lc(nptlc(lcfound),lcfound),
-     *   mjden_lc(nptlc(lcfound),lcfound),lcurve_type(nptlc(lcfound),lcfound)
+         read(16,*,end=501,err=501) frequency_lc(nptlc(lcfound),lcfound),
+     *   flux_lc(nptlc(lcfound),lcfound),uflux_lc(nptlc(lcfound),lcfound),lflux_lc(nptlc(lcfound),lcfound),
+     *   mjdst_lc(nptlc(lcfound),lcfound),mjden_lc(nptlc(lcfound),lcfound),lcurve_type(nptlc(lcfound),lcfound)
       enddo
 501   continue
       nptlc(lcfound)=nptlc(lcfound)-1
@@ -1536,7 +1539,6 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) uvmagerr(iuv,3)
-               !write(*,*) uvmag(iuv,1),uvmag(iuv,1)-uvmagerr(iuv,1)
                CALL  mag2flux (nh,uvmag(iuv,1),'xu ',flux_uv(iuv,1),frequency_uv(iuv,1))
                CALL  mag2flux (nh,uvmag(iuv,2),'xb ',flux_uv(iuv,2),frequency_uv(iuv,2))
                CALL  mag2flux (nh,uvmag(iuv,3),'xv ',flux_uv(iuv,3),frequency_uv(iuv,3))
@@ -2282,9 +2284,23 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
                FluxL_vhe(ivhe)=flux_vhe(ivhe)-Ferr_vhe(ivhe)
                FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_vhe(ivhe)
-               if (Ferr_vhe(ivhe) .lt. 10000.) FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+               if (Ferr_vhe(ivhe) .lt. 10000.) then
+                  FluxU_vhe(ivhe)=flux_vhe(ivhe)+Ferr_vhe(ivhe)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdstart(ivhe)
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdend(ivhe)
+               else
+                  mjdstart(ivhe)=Ferr_vhe(ivhe)
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdend(ivhe)
+               endif
                flux_vhe(ivhe)=flux_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
@@ -2298,6 +2314,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
       write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam,ivhe
       CLOSE (lu_in)
       open(14,file=output_file2,status='unknown',iostat=ier)
+      open(17,file=output_file3,status='unknown',iostat=ier)
       write(*,*)"     "
 
 
@@ -3029,6 +3046,11 @@ c the refs file
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
          enddo
+         write(17,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
+         do i=1,nptlc(j)
+            write(17,'(4(es10.3,2x),2(f10.4,2x),i2)') frequency_lc(i,j),flux_lc(i,j),
+     *        uflux_lc(i,j),lflux_lc(i,j),mjdst_lc(i,j),mjden_lc(i,j),int(lcurve_type(i,j))
+         enddo
          do i=1,ilowrfound
             write(14,'(4(es10.3,2x),a)') freq_lowrcand(i),flux_lowrcand(i),uflux_lowrcand(i),lflux_lowrcand(i),lowrcand_type(i)
          enddo
@@ -3268,6 +3290,65 @@ c the refs file
             if (filen_v(i) .eq. j) then
                write(14,'(4(es10.3,2x),a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
      &             FluxL_vhe(i),vhe_type(i),refs(vhe_ref(i))
+               if (vhe_type(i) == 'VERITAS') then
+c begin to find 1TeV point for every era
+c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
+                  fq1tev=(1.602E-19)*(1.e12)/(6.626e-34)
+                  if (frequency_vhe(i) .gt. fq1tev) then
+                     if (i-imagic .eq. 1) then
+                        itevlc=itevlc+1
+                        sloperat=((flux_vhe(i+1)/frequency_vhe(i+1))-(flux_vhe(i)/frequency_vhe(i)))/
+     &                       (frequency_vhe(i+1)/frequency_vhe(i))
+                        ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                        ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
+                        uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                        uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
+                        lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                        lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
+                        mjdst_tev(itevlc)=mjdstart(i)
+                        mjded_tev(itevlc)=mjdend(i)
+                     else
+                        if (mjdstart(i) .ne. mjdstart(i-1)) then
+                           if (itevlc .ne. 0) then
+                              if (mjdstart(i) .eq. mjdst_tev(itevlc)) then
+                                 goto 600
+                              endif
+                           endif
+                           itevlc=itevlc+1
+                           sloperat=((flux_vhe(i+1)/frequency_vhe(i+1))-(flux_vhe(i)/frequency_vhe(i)))/
+     &                       (frequency_vhe(i+1)/frequency_vhe(i))
+                           ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
+                          uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
+                           lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
+                           mjdst_tev(itevlc)=mjdstart(i)
+                           mjded_tev(itevlc)=mjdend(i)
+                        else
+                           if (itevlc .ne. 0) then
+                              if (mjdstart(i) .eq. mjdst_tev(itevlc)) then
+                                 goto 600
+                              endif
+                           endif
+                           itevlc=itevlc+1
+                           sloperat=((flux_vhe(i)/frequency_vhe(i))-(flux_vhe(i-1)/frequency_vhe(i-1)))
+     &                              /(frequency_vhe(i)/frequency_vhe(i-1))
+                           ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
+                          uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
+                          lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
+                           lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
+                           mjdst_tev(itevlc)=mjdstart(i)
+                           mjded_tev(itevlc)=mjdend(i)
+                        endif
+                     endif
+                     write(17,'(4(es10.3,2x),2(f10.4,2x),"00")') fq1tev,ftev_lc(itevlc),uftev_lc(itevlc),
+     &                    lftev_lc(itevlc),mjdst_tev(itevlc),mjded_tev(itevlc)
+                  endif
+600               continue
+               endif
             endif
          enddo
          write(*,*) '.......................source type and cataloged..................'

@@ -38,7 +38,7 @@ BINF="${HERE}/fort"
 handle_ps () {
     [ `which ps2eps 2> /dev/null` ] || return 0
     FILE_PS=$1
-    if [ $FILE_PS == sed.ps ]; then
+    if [ $FILE_PS == sed.ps -o $FILE_PS == LC.ps ]; then
        ps2eps -B -q $FILE_PS -R +
     else
        ps2eps -B -q $FILE_PS
@@ -674,6 +674,7 @@ do
       fi
       rm -f ${pidnm}error_map.*ps
       rm -f ${pidnm}sed.*ps
+      rm -f ${pidnm}LC.*ps
       if [ $plotsed != N ]; then
          ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_posix.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
          handle_ps ${pidnm}error_map.ps
@@ -684,6 +685,8 @@ do
          echo
          ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
          handle_ps ${pidnm}sed.ps
+         ${BINF}/plot_lc ${pidnm}LC.txt ${pidnm}lc.ps/cps $source
+         handle_ps ${pidnm}LC.ps
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps

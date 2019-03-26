@@ -148,7 +148,7 @@ c         write(*,*) 'the aim',aim
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
       open(14,file=output_file4,status='unknown',iostat=ier)
-      open(15,file=output_file5,status='unknown',iostat=ier)
+      open(17,file=output_file5,status='unknown',iostat=ier)
       !write(*,*) ier
       open(12,file=output_file3,status='unknown')
       IF (ier.NE.0) THEN
@@ -1880,10 +1880,10 @@ c            ENDIF
             ENDIF
             xflux(sfound)=flux_x
             if (sfound .ne. 1 ) write(12,*) "===================="
-            if (sfound .ne. 1 ) write(15,*) "===================="
+            if (sfound .ne. 1 ) write(17,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_radio(k),dec_radio(k),'source type',type_average
-            write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_radio(k),dec_radio(k),'source type',type_average
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_radio(k),flux_radio(k),FluxU_radio(k),
      &          FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),radio_type(k)
@@ -1891,7 +1891,7 @@ c            ENDIF
                write(12,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.5),2x,f8.3,2x,i2)') flux_1kev(i,k),uflux_1kev(i,k),
      &             lflux_1kev(i,k),ra_1kev(i,k),dec_1kev(i,k),poserr_1kev(i,k),spec_type(i,k)
                if (spec_type(i,k) .eq. 61) THEN
-                  write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+                  write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
      &            flux_1kev(i,k),uflux_1kev(i,k),lflux_1kev(i,k),mjdstart(i,k),mjdend(i,k),spec_type(i,k)-50
                endif
             enddo
@@ -2364,7 +2364,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if (sfound .ne. 1 ) write(12,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_other(l),dec_other(l),'source type',type_average
-            write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_other(l),dec_other(l),'source type',type_average
             CALL DIST_SKY(ra_other(l),dec_other(l),ra_center,dec_center,dist)
             dist = dist*60
@@ -2445,7 +2445,7 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),xray_type+50
                   if (xray_type .eq. 11) then
-                     write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+                     write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
      &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
                   endif
                   do s=2,4
@@ -2545,7 +2545,7 @@ cccccc for skip the phase 1
       write(11,'(f9.5,2x,f9.5,2x,a)') ra_center,dec_center,"99"
       write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_center,dec_center,'source type',type_average
-      write(15,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+      write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
@@ -2611,7 +2611,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),xray_type+50
             if (xray_type .eq. 11) then
-               write(15,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+               write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
      &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
             endif
             do s=2,4
