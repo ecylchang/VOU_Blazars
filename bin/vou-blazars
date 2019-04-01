@@ -387,9 +387,9 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       do
          raint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $5}'`
          decint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $6}'`
-         typeint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $8}'`
+         typeint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $10}'`
          #declare -i typeint
-         if [ $typeint -lt 20 ]; then
+         if [ $typeint -gt 50 ]; then
             cc=$cc+1
          fi
       done

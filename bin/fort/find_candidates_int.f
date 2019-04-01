@@ -13,12 +13,13 @@
       real*4 frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000)
       real*4 frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000)
       real*4 frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000)
+      real*4 mjdst_rr(2000),mjded_rr(2000),mjdst_xx(2000),mjded_xx(2000)
       real*4 frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500)
       real*4 poserr_4p8(500),Ferr_4p8(500),poserr_uv(10000),poserr_xxss(2000),flux_rrss(2000)
       real*4 frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2)
       real*4 uvmag(10000,2),uvmagerr(10000,2),slope_gam(50),specerr_gam(50)
       real*4 frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),poserr_gam(50),Ferr_gam(50)
-      real*4 aruv,auvx,min_dist,alphar
+      real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
       character*80 input_file,input_file2,input_file3,output_file
       character*10 catalog,type_4p8(500)
       character*800 string
@@ -61,7 +62,7 @@ c      min_dist_4p8=30./3600.
       ixx=0
       irr=0
       Do WHILE(ok)
-         read(11,*,end=100) freq,flux,uflux,lflux,ra,dec,epos,code
+         read(11,*,end=100) freq,flux,uflux,lflux,ra,dec,epos,mjdstart,mjdend,code
          if (code .lt. 0) THEN
             icand=icand+1
             irr=irr+1
@@ -72,6 +73,8 @@ c      min_dist_4p8=30./3600.
             flux_rr(irr)=flux
             FluxU_rr(irr)=uflux
             FluxL_rr(irr)=lflux
+            mjdst_rr(irr)=mjdstart
+            mjded_rr(irr)=mjdend
             rr_type(irr)=abs(code)
          else if (code .gt. 50) THEN
             icand=icand+1
@@ -84,6 +87,8 @@ c      min_dist_4p8=30./3600.
             flux_xx(ixx)=flux
             FluxU_xx(ixx)=uflux
             FluxL_xx(ixx)=lflux
+            mjdst_xx(ixx)=mjdstart
+            mjded_xx(ixx)=mjdend
             xx_type(ixx)=code-50
          else
             xpts(ixx)=xpts(ixx)+1
@@ -504,7 +509,7 @@ c      write(*,*) pass2(1:ipass)
                write(12,'(i4,2x,a,2(2x,f9.5),2x,a,2x,i2)') i+isource,"matched source",
      &            ra_rr(m),dec_rr(m),'source type',int(code/10000)
                write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_rr(m),flux_rr(m),FluxU_rr(m),
-     &          FluxL_rr(m),ra_rr(m),dec_rr(m),poserr_rr(m),rr_type(m)
+     &          FluxL_rr(m),ra_rr(m),dec_rr(m),poserr_rr(m),mjdst_rr(m),mjded_rr(m),rr_type(m)
             enddo
          else
             do s=1,nrepxx(k-irr)
@@ -512,8 +517,8 @@ c      write(*,*) pass2(1:ipass)
                if (i+isource .ne. 1) write(12,*) "===================="
                write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') i+isource,"matched source",
      &           abs(ra_xx(m)),dec_xx(m),'source type',int(code/10000)
-               write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,i2)') frequency_xx(m),flux_xx(m),
-     &           FluxU_xx(m),FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),xx_type(m)
+               write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,i2)') frequency_xx(m),flux_xx(m),FluxU_xx(m),
+     &          FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),mjdst_xx(m),mjded_xx(m),xx_type(m)
                do j=1,xpts(m)
                   write(12,'(4(es10.3,2x),i2)') frequency_xxot(j,m),flux_xxot(j,m),
      &             FluxU_xxot(j,m),FluxL_xxot(j,m),xxot_type(j,m)

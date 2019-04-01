@@ -33,7 +33,8 @@ c
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(500),far_ref(500),ir_ref(2),opt_ref(5)
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc
+      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc,lowr_ref(1000)
+      integer*4 iousxb,iswort,iiswort,recordmjd(3,2000)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
@@ -70,6 +71,7 @@ c
       real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
       real*4 mjdst_lc(2000,1000),mjden_lc(2000,1000),lcurve_type(2000,1000),mjdstart(200),mjdend(200)
       real*4 mjdst_tev(200),mjded_tev(200),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
+      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -119,6 +121,7 @@ c 15 arcsecs
       min_dist_uv=8./3600.
       min_dist_ir=8./3600.
       min_dist_gam=20./60. !10 arcmin
+      mjdavg=55000.
 
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
@@ -182,6 +185,8 @@ c         write(*,*) in,im
 c read the find_out.txt first
       isource=0
       icat=0
+      iswort=0
+      iousxb=0
       Do WHILE(ok)
          read(13,*,end=100) ra,dec,code
          if ((code .ge. 0.) .or. (code .lt. -40000.) .or. (code .eq. -9999)) then
@@ -213,12 +218,26 @@ c read the sed.txt first
       read(12,'(es10.3,a)',end=201,err=201) frequency(npt(sfound),sfound),string
       !write(*,*) frequency(npt(sfound),sfound)
       if ((frequency(npt(sfound),sfound) .lt. 1.e10) .or. (frequency(npt(sfound),sfound) .eq. 2.418e17)) then
-         read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
-     &       lflux(npt(sfound),sfound),ra_rrxx(npt(sfound),sfound),dec_rrxx(npt(sfound),sfound),
-     &       epos(npt(sfound),sfound),spec_type(npt(sfound),sfound)
+         read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),lflux(npt(
+     &   sfound),sfound),ra_rrxx(npt(sfound),sfound),dec_rrxx(npt(sfound),sfound),epos(npt(sfound),sfound),
+     &   mjdst_rrxx(npt(sfound),sfound),mjded_rrxx(npt(sfound),sfound),spec_type(npt(sfound),sfound)
+         if (spec_type(npt(sfound),sfound) .eq. 61) then
+            iousxb=iousxb+1
+            recordmjd(1:3,iousxb)=[iousxb,npt(sfound),sfound]
+         endif
       else
          read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
      &       lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
+         if (spec_type(npt(sfound),sfound) .eq. 11) then
+            iswort=iswort+1
+            iiswort=iswort/4
+            if (MOD(iswort,4) .ne. 0) iiswort=iiswort+1
+            mjdst_rrxx(npt(sfound),sfound)=mjdst_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
+            mjded_rrxx(npt(sfound),sfound)=mjded_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
+         else
+            mjdst_rrxx(npt(sfound),sfound)=55000.
+            mjded_rrxx(npt(sfound),sfound)=55000.
+         endif
       endif
       if ((spec_type(npt(sfound),sfound) .eq. 59) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
          frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
@@ -286,7 +305,6 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
       nptlc(1:1000)=0
 502   continue
       read(16,'(i4,a)',end=500,err=500) lcfound,string
-      write(*,*) lcfound,'TEST LC'
       do while(ok)
          nptlc(lcfound)=nptlc(lcfound)+1
          read(16,*,end=501,err=501) frequency_lc(nptlc(lcfound),lcfound),
@@ -2268,6 +2286,8 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                   FluxU_vhe(ivhe)=0.
                   FluxL_vhe(ivhe)=0.
                endif
+               mjdstart(ivhe)=mjdavg
+               mjdend(ivhe)=mjdavg
                vhe_type(ivhe)='MAGIC'
             else if (catalog(1:7) == 'veritas') then
                iverit=iverit+1
@@ -3036,7 +3056,8 @@ c the refs file
                   rrxx_ref(i,j)=r
                endif
             enddo
-            write(14,'(4(es10.3,2x),a,2x,a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),rrxx_type(i,j),refs(rrxx_ref(i,j))
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),
+     &       mjdst_rrxx(i,j),mjded_rrxx(i,j),rrxx_type(i,j),refs(rrxx_ref(i,j))
             if (frequency(i,j) .lt. 1.E10) then
                call graphic_code(flux(i,j),11,code)
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
@@ -3052,7 +3073,15 @@ c the refs file
      *        uflux_lc(i,j),lflux_lc(i,j),mjdst_lc(i,j),mjden_lc(i,j),int(lcurve_type(i,j))
          enddo
          do i=1,ilowrfound
-            write(14,'(4(es10.3,2x),a)') freq_lowrcand(i),flux_lowrcand(i),uflux_lowrcand(i),lflux_lowrcand(i),lowrcand_type(i)
+            lowr_ref(i)=iref+1
+            refs(iref+1)='TBD'
+            do r=1,iref
+               if (lowrcand_type(i) == name_cat(r)) THEN
+                  lowr_ref(i)=r
+               endif
+            enddo
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_lowrcand(i),flux_lowrcand(i),
+     *       uflux_lowrcand(i),lflux_lowrcand(i),mjdavg,mjdavg,lowrcand_type(i),refs(lowr_ref(i))
          enddo
          do i=1,i4p8
             f4p8_ref(i)=iref+1
@@ -3064,25 +3093,25 @@ c the refs file
             enddo
             if (f4p8part(i) .eq. j) then
             if ((f4p8_type(i) == 'PMN') .or. (f4p8_type(i) == 'GB87') .or. (f4p8_type(i) == 'GB6')) THEN
-               write(14,'(4(es10.3,2x),a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
-     &             FluxL_4p8(i,1),f4p8_type(i),refs(f4p8_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
+     &             FluxL_4p8(i,1),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
             else if (f4p8_type(i) == 'CRATES') then
-               write(14,'(4(es10.3,2x),a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
-     &            FluxL_4p8(i,1),f4p8_type(i),refs(f4p8_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
+     &            FluxL_4p8(i,1),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
             else if (f4p8_type(i) == 'ATPMN') then
                do s=1,2
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &                     FluxU_4p8(i,s),FluxL_4p8(i,s),f4p8_type(i),refs(f4p8_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
+     &               FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
                enddo
             else if (f4p8_type(i) == 'AT20G') then
                do s=1,3
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &                    FluxU_4p8(i,s),FluxL_4p8(i,s),f4p8_type(i),refs(f4p8_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
+     &               FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
                enddo
             else if (f4p8_type(i) == 'NORTH20') then
               do s=1,3
-                 write(14,'(4(es10.3,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &                    FluxU_4p8(i,s),FluxL_4p8(i,s),f4p8_type(i),refs(f4p8_ref(i))
+                 write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
+     &              FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
               enddo
             endif
             endif
@@ -3097,16 +3126,16 @@ c the refs file
             enddo
             if (pccspart(i) .eq. j) then
                if (pccs100_type(i) == 'PCCS2') then
-                  write(14,'(4(es10.3,2x),a,i3,a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
-     &              FluxU_pccs100(i,1),FluxL_pccs100(i,1),'PCCS2',int(frequency_pccs100(i,1)/1.e9),
-     &               ' GHz',refs(pccs100_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,i3,a,2x,a)') frequency_pccs100(i,1),
+     &              flux_pccs100(i,1),FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdavg,mjdavg,
+     &              'PCCS2',int(frequency_pccs100(i,1)/1.e9),' GHz',refs(pccs100_ref(i))
                else if (pccs100_type(i) == 'ALMA') then
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
-     &                 FluxU_pccs100(i,1),FluxL_pccs100(i,1),pccs100_type(i),refs(pccs100_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
+     &             FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdavg,mjdavg,pccs100_type(i),refs(pccs100_ref(i))
                else
                   do s=1,9
-                     write(14,'(4(es10.3,2x),a,2x,a)') frequency_pccs100(i,s),flux_pccs100(i,s),
-     &                 FluxU_pccs100(i,s),FluxL_pccs100(i,s),pccs100_type(i),refs(pccs100_ref(i))
+                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,s),flux_pccs100(i,s),
+     &               FluxU_pccs100(i,s),FluxL_pccs100(i,s),mjdavg,mjdavg,pccs100_type(i),refs(pccs100_ref(i))
                   enddo
                endif
             endif
@@ -3120,8 +3149,8 @@ c the refs file
                endif
             enddo
             if (farpart(i) .eq. j) then
-            write(14,'(4(es10.3,2x),a,i3,4x,a)') frequency_far(i),flux_far(i),
-     &              FluxU_far(i),FluxL_far(i),'SPIRE',int(3.E14/frequency_far(i)),refs(far_ref(i))
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,i3,4x,a)') frequency_far(i),flux_far(i),FluxU_far(i),
+     &          FluxL_far(i),mjdavg,mjdavg,'SPIRE',int(3.E14/frequency_far(i)),refs(far_ref(i))
             endif
          enddo
          do i=1,iirfound
@@ -3135,14 +3164,14 @@ c the refs file
             if (ircand_type(i) == 'WISE') then
                call graphic_code(irmag_cand(i,2),51,code)
                do s=1,4
-                  write(14,'(4(es10.3,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
-     &                   uflux_ircand(i,s),lflux_ircand(i,s),ircand_type(i),refs(ir_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
+     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
                enddo
             else
                call graphic_code(irmag_cand(i,2),52,code)
                do s=2,4
-                  write(14,'(4(es10.3,2x),a,2x,a)') freq_ircand(1,s),flux_ircand(1,s),
-     &                   uflux_ircand(i,s),lflux_ircand(i,s),ircand_type(i),refs(ir_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(1,s),flux_ircand(1,s),
+     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
                enddo
             endif
             write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
@@ -3156,17 +3185,17 @@ c the refs file
                endif
             enddo
             if (optcand_type(i) == 'USNO' ) then
-               write(14,'(4(es10.3,2x),a,2x,a)') freq_usnocand(i,2),flux_usnocand(i,2),
-     &                 uflux_usnocand(i,2),lflux_usnocand(i,2),optcand_type(i),refs(opt_ref(i))
-               write(14,'(4(es10.3,2x),a,2x,a)') freq_usnocand(i,4),flux_usnocand(i,4),
-     &                 uflux_usnocand(i,4),lflux_usnocand(i,4),optcand_type(i),refs(opt_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,2),flux_usnocand(i,2),
+     &         uflux_usnocand(i,2),lflux_usnocand(i,2),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,4),flux_usnocand(i,4),
+     &          uflux_usnocand(i,4),lflux_usnocand(i,4),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
             ELSE if (optcand_type(i) == 'GAIA' ) then
-                write(14,'(4(es10.3,2x),a,2x,a)') freq_usnocand(i,1),flux_usnocand(i,1),
-     &                 uflux_usnocand(i,1),lflux_usnocand(i,1),optcand_type(i),refs(opt_ref(i))
+                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,1),flux_usnocand(i,1),
+     &           uflux_usnocand(i,1),lflux_usnocand(i,1),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
             ELSE
                do s=1,5
-                  write(14,'(4(es10.3,2x),a,2x,a)') freq_usnocand(i,s),flux_usnocand(i,s),
-     &                  uflux_usnocand(i,s),lflux_usnocand(i,s),optcand_type(i),refs(opt_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,s),flux_usnocand(i,s),
+     &            uflux_usnocand(i,s),lflux_usnocand(i,s),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
                enddo
             endif
             intensity=max(usnomag_cand(i,1),usnomag_cand(i,2),usnomag_cand(i,3),usnomag_cand(i,4),usnomag_cand(i,5))
@@ -3187,13 +3216,13 @@ c the refs file
             enddo
             if (uvcand_type(i) == 'GALEX') then
                do s=3,4
-                  write(14,'(4(es10.3,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
-     &              uflux_uvcand(i,s),lflux_uvcand(i,s),uvcand_type(i),refs(uv_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
+     &            uflux_uvcand(i,s),lflux_uvcand(i,s),mjdavg,mjdavg,uvcand_type(i),refs(uv_ref(i))
                enddo
             else
                do s=1,6
-                  write(14,'(4(es10.3,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
-     &                 uflux_uvcand(i,s),lflux_uvcand(i,s),uvcand_type(i),refs(uv_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
+     &            uflux_uvcand(i,s),lflux_uvcand(i,s),mjdavg,mjdavg,uvcand_type(i),refs(uv_ref(i))
                enddo
             endif
             intensity=max(uvmag_cand(i,1),uvmag_cand(i,2),uvmag_cand(i,3),uvmag_cand(i,4),uvmag_cand(i,5))
@@ -3210,13 +3239,13 @@ c the refs file
             enddo
             if (xraypart(i) .eq. j) then
                if (xray_type(i) == 'XRTSPEC') then
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),FluxU_xray(i,1),
-     &             FluxL_xray(i,1),xray_type(i),refs(xray_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),
+     &            FluxU_xray(i,1),FluxL_xray(i,1),mjdavg,mjdavg,xray_type(i),refs(xray_ref(i))
                else if (xray_type(i) == 'BAT105m') then
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),FluxU_xray(i,1),
-     &             FluxL_xray(i,1),xray_type(i),refs(xray_ref(i))
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_xray(i,2),flux_xray(i,2),FluxU_xray(i,2),
-     &             FluxL_xray(i,2),xray_type(i),refs(xray_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),
+     &             FluxU_xray(i,1),FluxL_xray(i,1),mjdavg,mjdavg,xray_type(i),refs(xray_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,2),flux_xray(i,2),
+     &             FluxU_xray(i,2),FluxL_xray(i,2),mjdavg,mjdavg,xray_type(i),refs(xray_ref(i))
                endif
                if (((xrtspind(i) .lt. 2).and. (xray_type(i) == 'XRTSPEC') ).or. (xray_type(i) == 'BAT105m')) then
                   call graphic_code(flux_xray(i,1),82,code)
@@ -3236,40 +3265,40 @@ c the refs file
             if (gam_type(i) == '2FHL' ) then
                call graphic_code(flux_gam(i,1),92,code)
                do s=1,4
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
-     &               FluxL_gam(i,s),gam_type(i),refs(gam_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '3FGL') then
                call graphic_code(flux_gam(i,1),91,code)
                do s=1,7
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
-     &                 FluxL_gam(i,s),gam_type(i),refs(gam_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '3FHL') then
                call graphic_code(flux_gam(i,1),92,code)
                do s=1,6
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
-     &               FluxL_gam(i,s),gam_type(i),refs(gam_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '1BIGB') then
                if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
-               write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),FluxU_gam(i,1),
-     &           FluxL_gam(i,1),gam_type(i),refs(gam_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
+     &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
             else if (gam_type(i) == '4FGL') then
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,2
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
-     &                FluxL_gam(i,s),gam_type(i),refs(gam_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == 'AGILE') then
                call graphic_code(flux_gam(i,1),94,code)
-               write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),FluxU_gam(i,1),
-     &            FluxL_gam(i,1),gam_type(i),refs(gam_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
+     &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
             else if (gam_type(i) == 'FermiMeV') then
                call graphic_code(flux_gam(i,1),94,code)
                do s=1,2
-                  write(14,'(4(es10.3,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
-     &               FluxL_gam(i,s),gam_type(i),refs(gam_ref(i))
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &              FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
                enddo
             endif
             if (gam_type(i) == '1BIGB') then
@@ -3288,8 +3317,8 @@ c the refs file
                endif
             enddo
             if (filen_v(i) .eq. j) then
-               write(14,'(4(es10.3,2x),a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
-     &             FluxL_vhe(i),vhe_type(i),refs(vhe_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
+     &             FluxL_vhe(i),mjdstart(i),mjdend(i),vhe_type(i),refs(vhe_ref(i))
                if (vhe_type(i) == 'VERITAS') then
 c begin to find 1TeV point for every era
 c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)

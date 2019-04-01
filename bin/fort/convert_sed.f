@@ -6,7 +6,7 @@ c
 c
       IMPLICIT none
       INTEGER*4 ier, lu_in, lu_out, lenact,sfound,rtype,im,in,length
-      REAL*4 mjd, freq, one, err_up,err_lo
+      REAL*4 mjdstart,mjdend, freq, one, err_up,err_lo
       REAL*4 flux,flux_err
       real*8 rra,rdec
       CHARACTER*2 ul
@@ -29,7 +29,6 @@ c
 c      write(*,*) input_file
 c      write(*,*) output_file
 
-      mjd = 55000
       lu_in = 10
       lu_out = 11
       INQUIRE (FILE=input_file,EXIST=there)
@@ -50,7 +49,7 @@ c      write(*,*) rra,rdec
          READ(lu_in,'(a)',end=99) string 
 c         print *,'string ',string(1:lenact(string))
          IF (string(2:2).NE.'=') THEN 
-           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo 
+           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend
            flux_err = (err_up-err_lo)/2.
            IF ((flux .NE. 0.) .or. (err_up .ne. 0.)) THEN
              if (flux .lt. 0.) flux = -flux
@@ -62,7 +61,7 @@ c         print *,'string ',string(1:lenact(string))
              endif
              write(lu_out,'(f9.5,'' | '',f9.5,'' | '',es10.3,'' | '',es10.3,'' | '',
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')
-     &                      rra,rdec,freq,one,flux,flux_err,mjd,mjd,ul
+     &                      rra,rdec,freq,one,flux,flux_err,mjdstart,mjdend,ul
            ENDIF
          ENDIF
       ENDDO 

@@ -35,7 +35,7 @@ $ cd bin/fort
 $ ./compile.sh
 $ cd ../..
 ```
-**Note that if the compile.sh script doesn't work, maybe there is some problem with the path of the PGPLOT library.** You could compile the mylib.f first with command
+**Note that if the compile.sh script doesn't work, maybe you need to change the path of the PGPLOT library when compiling Fortran program.** You could compile the mylib.f first with command
 ```bash
 $ gfortran -c mylib.f -ffixed-line-length-132
 ```
@@ -53,8 +53,8 @@ $ gfortran -o $XXX $XXX.f -ffixed-line-length-132 mylib.o -L${HOME}/pgplot -lpgp
 If you use [Anaconda Python Distribution](https://www.anaconda.com/download/), you can install EADA in its own (virtual) environment:
 
 ```bash
-$ conda create -n eada2 python=2 pip
-$ source activate eada2
+$ conda create -n eada python=2 pip
+$ source activate eada
 $ pip install astropy
 $ pip install pyvo
 $ pip install pyyaml
