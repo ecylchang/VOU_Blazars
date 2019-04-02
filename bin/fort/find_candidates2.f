@@ -77,7 +77,7 @@ c
       character*6 aim
       CHARACTER*30 name_other(10000)
       character*80 input_file,output_file,input_file2,input_file3,output_file2,refsfile,refs(100)
-      character*80 input_file4,output_file3
+c      character*80 input_file4,output_file3
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
@@ -135,18 +135,18 @@ c         write(*,*) in,im
          in=im
          im=index(string(in+1:length),' ')+in
          input_file3=string(in+1:im-1)
-         in=im
-         im=index(string(in+1:length),' ')+in
-         input_file4=string(in+1:im-1)
+c         in=im
+c         im=index(string(in+1:length),' ')+in
+c         input_file4=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          output_file=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          output_file2=string(in+1:im-1)
-         in=im
-         im=index(string(in+1:length),' ')+in
-         output_file3=string(in+1:im-1)
+c         in=im
+c         im=index(string(in+1:length),' ')+in
+c         output_file3=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          refsfile=string(in+1:im-1)
@@ -177,7 +177,7 @@ c         write(*,*) in,im
       open(13,file=input_file2,status='old',iostat=ier)
       open(12,file=input_file3,status='old',iostat=ier)
       open(15,file=refsfile,status='old',iostat=ier)
-      open(16,file=input_file4,status='old',iostat=ier)
+c      open(16,file=input_file4,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
@@ -301,21 +301,6 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
       enddo
 400   continue
       close(15)
-
-      nptlc(1:1000)=0
-502   continue
-      read(16,'(i4,a)',end=500,err=500) lcfound,string
-      do while(ok)
-         nptlc(lcfound)=nptlc(lcfound)+1
-         read(16,*,end=501,err=501) frequency_lc(nptlc(lcfound),lcfound),
-     *   flux_lc(nptlc(lcfound),lcfound),uflux_lc(nptlc(lcfound),lcfound),lflux_lc(nptlc(lcfound),lcfound),
-     *   mjdst_lc(nptlc(lcfound),lcfound),mjden_lc(nptlc(lcfound),lcfound),lcurve_type(nptlc(lcfound),lcfound)
-      enddo
-501   continue
-      nptlc(lcfound)=nptlc(lcfound)-1
-      goto 502
-500   continue
-      close(16)
 
 c read the data file
       READ(lu_in,'(a)') string
@@ -2334,7 +2319,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
       write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam,ivhe
       CLOSE (lu_in)
       open(14,file=output_file2,status='unknown',iostat=ier)
-      open(17,file=output_file3,status='unknown',iostat=ier)
+c      open(17,file=output_file3,status='unknown',iostat=ier)
       write(*,*)"     "
 
 
@@ -3067,11 +3052,11 @@ c the refs file
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
          enddo
-         write(17,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
-         do i=1,nptlc(j)
-            write(17,'(4(es10.3,2x),2(f10.4,2x),i2)') frequency_lc(i,j),flux_lc(i,j),
-     *        uflux_lc(i,j),lflux_lc(i,j),mjdst_lc(i,j),mjden_lc(i,j),int(lcurve_type(i,j))
-         enddo
+c         write(17,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
+c         do i=1,nptlc(j)
+c            write(17,'(4(es10.3,2x),2(f10.4,2x),i2)') frequency_lc(i,j),flux_lc(i,j),
+c     *        uflux_lc(i,j),lflux_lc(i,j),mjdst_lc(i,j),mjden_lc(i,j),int(lcurve_type(i,j))
+c         enddo
          do i=1,ilowrfound
             lowr_ref(i)=iref+1
             refs(iref+1)='TBD'
@@ -3319,65 +3304,6 @@ c the refs file
             if (filen_v(i) .eq. j) then
                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
      &             FluxL_vhe(i),mjdstart(i),mjdend(i),vhe_type(i),refs(vhe_ref(i))
-               if (vhe_type(i) == 'VERITAS') then
-c begin to find 1TeV point for every era
-c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
-                  fq1tev=(1.602E-19)*(1.e12)/(6.626e-34)
-                  if (frequency_vhe(i) .gt. fq1tev) then
-                     if (i-imagic .eq. 1) then
-                        itevlc=itevlc+1
-                        sloperat=((flux_vhe(i+1)/frequency_vhe(i+1))-(flux_vhe(i)/frequency_vhe(i)))/
-     &                       (frequency_vhe(i+1)/frequency_vhe(i))
-                        ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                        ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
-                        uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                        uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
-                        lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                        lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
-                        mjdst_tev(itevlc)=mjdstart(i)
-                        mjded_tev(itevlc)=mjdend(i)
-                     else
-                        if (mjdstart(i) .ne. mjdstart(i-1)) then
-                           if (itevlc .ne. 0) then
-                              if (mjdstart(i) .eq. mjdst_tev(itevlc)) then
-                                 goto 600
-                              endif
-                           endif
-                           itevlc=itevlc+1
-                           sloperat=((flux_vhe(i+1)/frequency_vhe(i+1))-(flux_vhe(i)/frequency_vhe(i)))/
-     &                       (frequency_vhe(i+1)/frequency_vhe(i))
-                           ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
-                          uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
-                           lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
-                           mjdst_tev(itevlc)=mjdstart(i)
-                           mjded_tev(itevlc)=mjdend(i)
-                        else
-                           if (itevlc .ne. 0) then
-                              if (mjdstart(i) .eq. mjdst_tev(itevlc)) then
-                                 goto 600
-                              endif
-                           endif
-                           itevlc=itevlc+1
-                           sloperat=((flux_vhe(i)/frequency_vhe(i))-(flux_vhe(i-1)/frequency_vhe(i-1)))
-     &                              /(frequency_vhe(i)/frequency_vhe(i-1))
-                           ftev_lc(itevlc)=(flux_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           ftev_lc(itevlc)=ftev_lc(itevlc)*fq1tev
-                          uftev_lc(itevlc)=(FluxU_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           uftev_lc(itevlc)=uftev_lc(itevlc)*fq1tev
-                          lftev_lc(itevlc)=(FluxL_vhe(i)/frequency_vhe(i))*(fq1tev/frequency_vhe(i))**sloperat
-                           lftev_lc(itevlc)=lftev_lc(itevlc)*fq1tev
-                           mjdst_tev(itevlc)=mjdstart(i)
-                           mjded_tev(itevlc)=mjdend(i)
-                        endif
-                     endif
-                     write(17,'(4(es10.3,2x),2(f10.4,2x),"00")') fq1tev,ftev_lc(itevlc),uftev_lc(itevlc),
-     &                    lftev_lc(itevlc),mjdst_tev(itevlc),mjded_tev(itevlc)
-                  endif
-600               continue
-               endif
             endif
          enddo
          write(*,*) '.......................source type and cataloged..................'

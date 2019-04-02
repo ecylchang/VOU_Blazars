@@ -59,7 +59,7 @@ c
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(10000),name_cat(10000),namegam(200)
-      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms,output_file5
+      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
       CHARACTER*8 catalog,uv_type(20000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found
@@ -125,9 +125,9 @@ c         write(*,*) length
          in=im
          im=index(string(in+1:length),' ')+in
          output_file4=string(in+1:im-1)
-         in=im
-         im=index(string(in+1:length),' ')+in
-         output_file5=string(in+1:im-1)
+c         in=im
+c         im=index(string(in+1:length),' ')+in
+c         output_file5=string(in+1:im-1)
          in=im
          im=index(string(in+1:length),' ')+in
          webprograms=string(in+1:im-1)
@@ -150,7 +150,7 @@ c         write(*,*) 'the aim',aim
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
       open(14,file=output_file4,status='unknown',iostat=ier)
-      open(17,file=output_file5,status='unknown',iostat=ier)
+c      open(17,file=output_file5,status='unknown',iostat=ier)
       !write(*,*) ier
       open(12,file=output_file3,status='unknown')
       IF (ier.NE.0) THEN
@@ -1600,11 +1600,9 @@ c            ENDIF
                if (ix .eq. 1) then
                   CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),xray_type,
      &                             flux_xmm(i,1),const(k),ra_center,dec_center,source_type)
-               else
-                  if ((i .eq. 1) .or. (spec_xpts(xpts,k) .ne. spec_xpts(xpts-1,k))) then
-                     CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),xray_type,
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),xray_type,
      &                             flux_xmm(i,1),const(k),ra_center,dec_center,source_type)
-                  endif
                endif
                IF (source_type .GE. 0) THEN 
                   types(source_type) = types(source_type) + 1
@@ -1637,8 +1635,13 @@ c            ENDIF
                spec_type(ix,k)=xray_type+50
                mjdend(ix,k)=55000.
                mjdstart(ix,k)=55000.
-               CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_rosat(i),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                             xray_type,flux_rosat(i),const(k),ra_center,dec_center,source_type)
+               endif
                IF (source_type .GE. 0) THEN 
                   types(source_type) = types(source_type) + 1
                ENDIF
@@ -1694,8 +1697,13 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   frequency_xpts(xpts,k)=frequency_swift(i,5)
                   spec_xpts(xpts,k)=xray_type
                endif
-               CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_swift(i,1),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                             xray_type,flux_swift(i,1),const(k),ra_center,dec_center,source_type)
+               endif
                IF (source_type .GE. 0) THEN
                   types(source_type) = types(source_type) + 1
                ENDIF
@@ -1727,8 +1735,13 @@ c            ENDIF
                spec_type(ix,k)=xray_type+50
                mjdend(ix,k)=55000.
                mjdstart(ix,k)=55000.
-               CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_ipc(i),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                             xray_type,flux_ipc(i),const(k),ra_center,dec_center,source_type)
+               endif
                IF (source_type .GE. 0) THEN 
                   types(source_type) = types(source_type) + 1
                ENDIF
@@ -1756,8 +1769,13 @@ c            ENDIF
                spec_type(ix,k)=xray_type+50
                mjdend(ix,k)=55000.
                mjdstart(ix,k)=55000.
-               CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                             xray_type,flux_bmw(i),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                             xray_type,flux_bmw(i),const(k),ra_center,dec_center,source_type)
+               endif
                IF (source_type .GE. 0) THEN 
                   types(source_type) = types(source_type) + 1
                ENDIF
@@ -1788,11 +1806,9 @@ c            ENDIF
                if (ix .eq. 1) then
                   CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                xray_type,flux_chandra(i,1),const(k),ra_center,dec_center,source_type)
-               else
-                  if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
-                     CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                xray_type,flux_chandra(i,1),const(k),ra_center,dec_center,source_type)
-                  endif
                endif
                IF (source_type .GE. 0) THEN
                   types(source_type) = types(source_type) + 1
@@ -1829,8 +1845,13 @@ c            ENDIF
                spec_type(ix,k)=xray_type+50
                mjdend(ix,k)=55000.
                mjdstart(ix,k)=55000.
-               CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
      &                xray_type,flux_maxi(i,1),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                xray_type,flux_maxi(i,1),const(k),ra_center,dec_center,source_type)
+               endif
                IF (source_type .GE. 0) THEN
                   types(source_type) = types(source_type) + 1
                ENDIF
@@ -1912,21 +1933,21 @@ c            ENDIF
             ENDIF
             xflux(sfound)=flux_x
             if (sfound .ne. 1 ) write(12,*) "===================="
-            if (sfound .ne. 1 ) write(17,*) "===================="
+c            if (sfound .ne. 1 ) write(17,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_radio(k),dec_radio(k),'source type',type_average
-            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
-     &         ra_radio(k),dec_radio(k),'source type',type_average
+c            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+c     &         ra_radio(k),dec_radio(k),'source type',type_average
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(k),flux_radio(k),
      &      FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),poserr_radio(k),mjdavg,mjdavg,radio_type(k)
             do i=1,ix
                write(12,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.5),2x,f8.3,2(2x,f10.4),2x,i2)')
      &            flux_1kev(i,k),uflux_1kev(i,k),lflux_1kev(i,k),ra_1kev(i,k),dec_1kev(i,k),
      &            poserr_1kev(i,k),mjdstart(i,k),mjdstart(i,k),spec_type(i,k)
-               if (spec_type(i,k) .eq. 61) THEN
-                  write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
-     &            flux_1kev(i,k),uflux_1kev(i,k),lflux_1kev(i,k),mjdstart(i,k),mjdend(i,k),spec_type(i,k)-50
-               endif
+c               if (spec_type(i,k) .eq. 61) THEN
+c                  write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+c     &            flux_1kev(i,k),uflux_1kev(i,k),lflux_1kev(i,k),mjdstart(i,k),mjdend(i,k),spec_type(i,k)-50
+c               endif
             enddo
             !write(*,*) 'how many other x-ray pts',xpts
             do i=1,xpts
@@ -2025,13 +2046,13 @@ c               write(*,*) dist*3600.
                   if (dist .le. errrad/60.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(k),
      &                flux_radio(k),FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),
-     &                mjdavg,mjdavg,poserr_radio(k),-radio_type(k)
+     &                poserr_radio(k),mjdavg,mjdavg,-radio_type(k)
                   endif
                else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                   if (dist .le. errmaj/60.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(k),
      &               flux_radio(k),FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),
-     &               mjdavg,mjdavg,poserr_radio(k),-radio_type(k)
+     &               poserr_radio(k),-radio_type(k)
                   endif
                endif
             endif
@@ -2067,7 +2088,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
                if (dist .le. errrad/60.) then
                   write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_xmm(i,1),
      &            flux_xmm(i,1),FluxU_xmm(i,1),FluxL_xmm(i,1),ra_xmm(i),dec_xmm(i),
-     &            mjdavg,mjdavg,poserr_xmm(i),xray_type+50
+     &            poserr_xmm(i),mjdavg,mjdavg,xray_type+50
                   if (xray_type .eq. 1) then
                      do s=2,3
                         write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_xmm(i,s),
@@ -2439,8 +2460,8 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             if (sfound .ne. 1 ) write(12,*) "===================="
             write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_other(l),dec_other(l),'source type',type_average
-            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
-     &         ra_other(l),dec_other(l),'source type',type_average
+c            write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+c     &         ra_other(l),dec_other(l),'source type',type_average
             CALL DIST_SKY(ra_other(l),dec_other(l),ra_center,dec_center,dist)
             dist = dist*60
             if (type_average .eq. -7) then
@@ -2520,8 +2541,8 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                      xray_type=9
                   endif
                   if (xray_type .eq. 11) then
-                     write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
-     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
+c                     write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
                      write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),mjdst_swift(j),mjded_swift(j),xray_type+50
@@ -2627,8 +2648,8 @@ cccccc for skip the phase 1
       write(11,'(f9.5,2x,f9.5,2x,a)') ra_center,dec_center,"99"
       write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
      &         ra_center,dec_center,'source type',type_average
-      write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
-     &         ra_center,dec_center,'source type',type_average
+c      write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
+c     &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
          write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.
@@ -2693,8 +2714,8 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),mjdst_swift(j),mjded_swift(j),xray_type+50
-               write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
-     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
+c               write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
+c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
             else
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),

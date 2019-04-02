@@ -312,11 +312,11 @@ echo
 #running the PHASAE 1
 rm -f ${pidnm}*temp.txt
 if [ ${13} == s ]; then
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${pidnm}LC_temp.txt ${BINF} 0 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 0 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 else
-   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${pidnm}LC_temp.txt ${BINF} 1 > ${pidnm}phase1
+   ${BINF}/find_candidates1 ${pidnm}output1 ${pidnm}find_out_temp.txt ${pidnm}RX_temp.txt ${pidnm}Sed_temp.txt ${pidnm}no_matched_temp.txt ${BINF} 1 > ${pidnm}phase1
    echo
    cat ${pidnm}phase1
 
@@ -661,7 +661,7 @@ do
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
-      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}LC_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${pidnm}LC.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
+      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
       echo
       cat ${pidnm}phase2
       #open sed.txt
@@ -685,7 +685,7 @@ do
          echo
          ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
          handle_ps ${pidnm}sed.ps
-         ${BINF}/plot_lc ${pidnm}LC.txt ${pidnm}lc.ps/cps $source
+         ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}lc.ps/cps $source
          handle_ps ${pidnm}LC.ps
       fi
       # ps2eps -B -q sed.ps -R +
@@ -712,6 +712,7 @@ do
 #save the phase 2 results in the folder
       [ -d Results/$xrtnm -a -f sed.*ps ] && cp sed.*ps Results/$xrtnm/$source"_"sed.eps
       [ -d Results/$xrtnm -a -f error_map.*ps ] && cp error_map.*ps Results/$xrtnm/$source"_"error_map.eps
+      [ -d Results/$xrtnm -a -f LC.*ps ] && cp LC.*ps Results/$xrtnm/$source"_"LC.eps
       [ -d Results/$xrtnm -a -f Sed.txt ] && cp Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm -a -f output2.csv ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
 
@@ -720,6 +721,7 @@ do
          echo PID number = $pid
          [ -f ${pidnm}sed.eps ] && mv ${pidnm}sed.eps $pid"_"$source"_"sed.eps
          [ -f ${pidnm}error_map.eps ] && mv ${pidnm}error_map.eps $pid"_"$source"_"error_map.eps
+         [ -f ${pidnm}LC.eps ] && mv ${pidnm}LC.eps $pid"_"$source"_"LC.eps
          [ -f ${pidnm}error_map.txt ] && mv ${pidnm}error_map.txt $pid"_"$source"_"error_map.txt
          [ -f ${pidnm}Sed.txt ] && mv ${pidnm}Sed.txt $pid"_"$source"_"sed.txt
          [ -f ${pidnm}Out4SedTool.txt ] && mv ${pidnm}Out4SedTool.txt $pid"_"$source"_"Out4SedTool.txt

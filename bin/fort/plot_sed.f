@@ -6,7 +6,7 @@ c This program plot the SED for candidate
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
       integer*4 i,sfound,npt(5000),rtype,stype(5000)
       real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000),sedup,sedlow
-      real*4 rasec,decsec,testflux
+      real*4 rasec,decsec,testflux,mjdstart(5000,1000),mjdend(5000,1000)
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
@@ -52,7 +52,8 @@ c      write(*,*) output_file
       do while (ok)
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),
-     &      uflux(npt(sfound),sfound),lflux(npt(sfound),sfound),spectype(npt(sfound),sfound)!,
+     &     uflux(npt(sfound),sfound),lflux(npt(sfound),sfound),mjdstart(npt(sfound),sfound),
+     &     mjdend(npt(sfound),sfound),spectype(npt(sfound),sfound)!,
 c     &      refs(npt(sfound),sfound)
       enddo
 99    continue
