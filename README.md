@@ -35,7 +35,8 @@ $ cd bin/fort
 $ ./compile.sh
 $ cd ../..
 ```
-**Note that if the compile.sh script doesn't work, maybe you need to change the path of the PGPLOT library when compiling Fortran program.** You could compile the mylib.f first with command
+**Note that if the compile.sh script doesn't work, maybe you need to change the path of the PGPLOT library in compile.sh; Otherwise, you could compile all Fortran programs by**
+First compile mylib.f with command.
 ```bash
 $ gfortran -c mylib.f -ffixed-line-length-132
 ```
