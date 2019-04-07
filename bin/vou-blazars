@@ -685,8 +685,9 @@ do
          echo
          ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
          handle_ps ${pidnm}sed.ps
+         echo
          ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}lc.ps/cps $source
-         handle_ps ${pidnm}LC.ps
+         [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps

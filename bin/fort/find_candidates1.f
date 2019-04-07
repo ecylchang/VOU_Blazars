@@ -2052,7 +2052,7 @@ c               write(*,*) dist*3600.
                   if (dist .le. errmaj/60.) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(k),
      &               flux_radio(k),FluxU_radio(k),FluxL_radio(k),ra_radio(k),dec_radio(k),
-     &               poserr_radio(k),-radio_type(k)
+     &               poserr_radio(k),mjdavg,mjdavg,-radio_type(k)
                   endif
                endif
             endif

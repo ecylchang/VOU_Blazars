@@ -60,7 +60,6 @@ c     &      refs(npt(sfound),sfound)
       enddo
 99    continue
       npt(sfound)=npt(sfound)-1
-      write(*,*) 'number of pts read for light curve:',npt(sfound)!,spectype(npt(sfound),sfound)
       goto 101
 100   continue
 
@@ -75,23 +74,6 @@ c     &      refs(npt(sfound),sfound)
       call chdec(abs(dec(i)),id,dm,decsec,1)
       sign(1:1) =' '
       if (dec(i) < 0.0) sign(1:1)='-'
-
-      !write(*,*) i
-c      IER = PGBEG(0,"/xwindow",1,1)
-c      IER = PGBEG(0,"/xs",1,1)
-      IER = PGBEG(0,output_file,1,2)
-      call pgslw(4)
-c      if ( ns .eq. 99 ) THEN
-c         write(title,'(a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')
-c     &     'Source position:  ',rah,ram,rasec,' , ',sign,id,dm,decsec
-c      else
-c         write(title,'(a,i2,a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')
-c     &     'Source',i,' position:  ',rah,ram,rasec,' , ',sign,id,dm,decsec
-c      endif
-      CALL PGSCRN(0, 'White', IER)
-      CALL PGSCRN(1, 'Black', IER)
-      call pgsch(1.3)
-c      write(*,*) mjdavg(1:8,1)
 
 c define the upper limit and lower limit for LC
 c need to define the range first then plot...
@@ -192,6 +174,12 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
   600       continue
          endif
       enddo
+
+      if (iilc .eq. 0) then
+         write(*,*) 'NO Light Curve Plot'
+         stop
+      endif
+      write(*,*) 'number of pts read for light curve:',iilc!,spectype(npt(sfound),sfound)
       if (ixray .eq. 0) then
          mjdlow(1)=0
          mjdup(1)=0
@@ -211,6 +199,22 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
       mjdavg=(mjdst_lc+mjded_lc)/2.
 c      write(*,*) mjdlow(1),mjdup(1),mjdlow(2),mjdup(2)
 
+!write(*,*) i
+c      IER = PGBEG(0,"/xwindow",1,1)
+c      IER = PGBEG(0,"/xs",1,1)
+      IER = PGBEG(0,output_file,1,2)
+      call pgslw(4)
+c      if ( ns .eq. 99 ) THEN
+c         write(title,'(a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')
+c     &     'Source position:  ',rah,ram,rasec,' , ',sign,id,dm,decsec
+c      else
+c         write(title,'(a,i2,a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')
+c     &     'Source',i,' position:  ',rah,ram,rasec,' , ',sign,id,dm,decsec
+c      endif
+      CALL PGSCRN(0, 'White', IER)
+      CALL PGSCRN(1, 'Black', IER)
+      call pgsch(1.3)
+c      write(*,*) mjdavg(1:8,1)
       if (ixray .ne. 0) then
       CALL PGENV(mjdlow(1),mjdup(1),lclow(1),lcup(1),0,1)
       if (iilc-ixray .eq. 0) then

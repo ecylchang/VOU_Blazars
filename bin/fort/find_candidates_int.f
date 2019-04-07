@@ -508,8 +508,8 @@ c      write(*,*) pass2(1:ipass)
                if (i+isource .ne. 1) write(12,*) "===================="
                write(12,'(i4,2x,a,2(2x,f9.5),2x,a,2x,i2)') i+isource,"matched source",
      &            ra_rr(m),dec_rr(m),'source type',int(code/10000)
-               write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,i2)') frequency_rr(m),flux_rr(m),FluxU_rr(m),
-     &          FluxL_rr(m),ra_rr(m),dec_rr(m),poserr_rr(m),mjdst_rr(m),mjded_rr(m),rr_type(m)
+               write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,2(f10.4,2x),i2)') frequency_rr(m),flux_rr(m),
+     &         FluxU_rr(m),FluxL_rr(m),ra_rr(m),dec_rr(m),poserr_rr(m),mjdst_rr(m),mjded_rr(m),rr_type(m)
             enddo
          else
             do s=1,nrepxx(k-irr)
@@ -517,8 +517,8 @@ c      write(*,*) pass2(1:ipass)
                if (i+isource .ne. 1) write(12,*) "===================="
                write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') i+isource,"matched source",
      &           abs(ra_xx(m)),dec_xx(m),'source type',int(code/10000)
-               write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,i2)') frequency_xx(m),flux_xx(m),FluxU_xx(m),
-     &          FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),mjdst_xx(m),mjded_xx(m),xx_type(m)
+               write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,2(f10.4,2x),i2)') frequency_xx(m),flux_xx(m),
+     &         FluxU_xx(m),FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),mjdst_xx(m),mjded_xx(m),xx_type(m)
                do j=1,xpts(m)
                   write(12,'(4(es10.3,2x),i2)') frequency_xxot(j,m),flux_xxot(j,m),
      &             FluxU_xxot(j,m),FluxL_xxot(j,m),xxot_type(j,m)
