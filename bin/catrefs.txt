@@ -36,7 +36,7 @@ UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
-XRTSPEC Giommi et al. 2019, in preparation!
+XRTSPEC Giommi, P. 2015, JHEAp, 7, 173!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!

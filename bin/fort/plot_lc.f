@@ -4,10 +4,10 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,pttest
-      integer*4 i,sfound,npt(5000),rtype,stype(5000),ivhe,ixray,iilc
+      integer*4 i,sfound,npt(5000),rtype,stype(5000),ivhe,ixray,iilc,ialma
       real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000)
       real*4 rasec,decsec,testflux,mjdstart(5000,1000),mjdend(5000,1000),mjdavg(5000)
-      real*4 mjdlow(2),mjdup(2),lcup(2),lclow(2),flux_lc(5000),uflux_lc(5000),lflux_lc(5000)
+      real*4 mjdlow(3),mjdup(3),lcup(3),lclow(3),flux_lc(5000),uflux_lc(5000),lflux_lc(5000)
       real*4 mjdst_lc(5000),mjded_lc(5000),freq_lc(5000),fq1tev,sloperat
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
@@ -102,6 +102,27 @@ c need to define the range first then plot...
             uflux_lc(iilc)=uflux(j,i)
             mjdst_lc(iilc)=mjdstart(j,i)
             mjded_lc(iilc)=mjdend(j,i)
+         else if (spectype(j,i) == 'ALMA') then
+            ialma=ialma+1
+            if (ialma .eq. 1) then
+               lcup(3)=max(uflux(j,i),abs(flux(j,i)))
+               lclow(3)=min(lflux(j,i),abs(flux(j,i)))
+               mjdlow(3)=mjdstart(j,i)
+               mjdup(3)=mjdend(j,i)
+            endif
+            iilc=iilc+1
+            testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
+            if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(1)=testflux
+            testflux=min(lflux(j,i),abs(flux(j,i)))
+            if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(1)=testflux
+            if (mjdstart(j,i) .lt. mjdlow(3)) mjdlow(3)=mjdstart(j,i)
+            if (mjdend(j,i) .gt. mjdup(3)) mjdup(3)=mjdend(j,i)
+            freq_lc(iilc)=frequency(j,i)
+            flux_lc(iilc)=flux(j,i)
+            lflux_lc(iilc)=lflux(j,i)
+            uflux_lc(iilc)=uflux(j,i)
+            mjdst_lc(iilc)=mjdstart(j,i)
+            mjded_lc(iilc)=mjdend(j,i)
          else if (spectype(j,i) == 'VERITAS') then
 c begin to find 1TeV point for every era
 c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
@@ -186,7 +207,13 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
          lcup(1)=0
          lclow(1)=0
       endif
-      if (iilc-ixray .eq. 0) then
+      if (ialma .eq. 0) then
+         mjdlow(3)=0
+         mjdup(3)=0
+         lcup(3)=0
+         lclow(3)=0
+      endif
+      if (iilc-ixray-ialma .eq. 0) then
          mjdlow(2)=0
          mjdup(2)=0
          lcup(2)=0
@@ -215,9 +242,49 @@ c      endif
       CALL PGSCRN(1, 'Black', IER)
       call pgsch(1.3)
 c      write(*,*) mjdavg(1:8,1)
+
+      if (ialma .ne.0) then
+      CALL PGENV(mjdlow(3),mjdup(3),lclow(3),lcup(3),0,1)
+      if ((iilc-ixray-ialma .eq. 0) .and. (ixray .eq. 0)) then
+         xtitle='MJD'
+      else
+         xtitle=''
+      endif
+      CALL PGLAB(xtitle, 'Log \gnf\d\gn\u (erg/s/cm\u2\d)','100 GHz')
+      call pgsci(3)
+      do j=1,iilc
+         if ((j .le. ialma+ixray) .and. (j .gt. ixray)) then
+            if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
+               call pgsch(1.5)
+               CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
+               call PGPT(1,mjdavg(j),log10(uflux_lc(j))-0.07,31)
+               CALL PGERRX(1,mjdst_lc(j),mjded_lc(j),log10(uflux_lc(j)),1.0)
+            else if ((lflux_lc(j) .eq. 0.) .and. (uflux_lc(j) .ne. 0.) ) then
+               call pgsch(1.5)
+               CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
+               call PGPT(1,mjdavg(j),log10(uflux_lc(j))-0.07,31)
+               CALL PGERRX(1,mjdst_lc(j),mjded_lc(j),log10(uflux_lc(j)),1.0)
+            else if (flux_lc(j) .lt. 0.) then
+               call pgsch(1.2)
+               CALL PGPT(1,mjdavg(j),log10(-flux_lc(j)),13)
+               CALL PGERRY(1,mjdavg(j),log10(uflux_lc(j)),log10(lflux_lc(j)),1.0)
+               CALL PGERRX(1,mjdst_lc(j),mjded_lc(j),log10(-flux_lc(j)),1.0)
+            else
+               call pgsch(1.2)
+               CALL PGPT(1,mjdavg(j),log10(flux_lc(j)),-17)
+               CALL PGERRY(1,mjdavg(j),log10(uflux_lc(j)),log10(lflux_lc(j)),1.0)
+               CALL PGERRX(1,mjdst_lc(j),mjded_lc(j),log10(flux_lc(j)),1.0)
+            endif
+         endif
+      enddo
+      endif
+
+c panel for X-ray
+      call pgsci(1)
+      call pgsch(1.3)
       if (ixray .ne. 0) then
       CALL PGENV(mjdlow(1),mjdup(1),lclow(1),lcup(1),0,1)
-      if (iilc-ixray .eq. 0) then
+      if (iilc-ixray-ialma .eq. 0) then
          xtitle='MJD'
       else
          xtitle=''
@@ -254,12 +321,12 @@ c      write(*,*) mjdavg(1:8,1)
 c second panel for LC
       call pgsci(1)
       call pgsch(1.3)
-      if (iilc-ixray .ne. 0) then
+      if (ivhe .ne. 0) then
       CALL PGENV(mjdlow(2),mjdup(2),lclow(2),lcup(2),0,1)
       CALL PGLAB('MJD', 'Log \gnf\d\gn\u (erg/s/cm\u2\d)','1 TeV')
       call pgsci(8)
       do j=1,iilc
-         if (j .gt. ixray) then
+         if (j .gt. ixray+ialma) then
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
                CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)

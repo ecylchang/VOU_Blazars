@@ -69,9 +69,9 @@ c
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(200),flux_vhe(200),FluxU_vhe(200),FluxL_vhe(200),poserr_vhe(200),Ferr_vhe(200)
       real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 mjdst_lc(2000,1000),mjden_lc(2000,1000),lcurve_type(2000,1000),mjdstart(200),mjdend(200)
+      real*4 lcurve_type(2000,1000),mjdstart(200),mjdend(200),mjdst_alma(500),mjded_alma(500)
       real*4 mjdst_tev(200),mjded_tev(200),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
-      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg
+      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,date_alma(500)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -890,8 +890,16 @@ c               endif
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_pccs100(ipccs100,1)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)frequency_pccs100(ipccs100,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)date_alma(ipccs100)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)mjdst_alma(ipccs100)
+               mjdst_alma(ipccs100)=mjdst_alma(ipccs100)-2400000.5
+               mjded_alma(ipccs100)=mjdst_alma(ipccs100)
                FluxU_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)+Ferr_pccs100(ipccs100,1)
                FluxL_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)-Ferr_pccs100(ipccs100,1)
                frequency_pccs100(ipccs100,1)=frequency_pccs100(ipccs100,1)*1.e9
@@ -3116,7 +3124,8 @@ c         enddo
      &              'PCCS2',int(frequency_pccs100(i,1)/1.e9),' GHz',refs(pccs100_ref(i))
                else if (pccs100_type(i) == 'ALMA') then
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
-     &             FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdavg,mjdavg,pccs100_type(i),refs(pccs100_ref(i))
+     &             FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdst_alma(i),
+     &             mjded_alma(i),pccs100_type(i),refs(pccs100_ref(i))
                else
                   do s=1,9
                      write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,s),flux_pccs100(i,s),
