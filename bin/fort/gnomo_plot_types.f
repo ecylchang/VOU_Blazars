@@ -366,7 +366,7 @@ c     colore
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
 c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -60000)
-         IF ( code(j) .EQ. -9999) isource=isource+1
+         IF (code(j) .EQ. -9999) isource=isource+1
          if ((code(j) .GT. 10000) .or. (code(j) .LE. -10000)) then
             om = int(code(j)/10000.)
             code(j) = abs(code(j))
@@ -404,7 +404,7 @@ c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -6
                   write(tcol4(icol4),'(i4)') isource
             ELSE IF (om.LT.0) THEN        ! case of catalogued sources
 c PG 
-               IF (om > -8) THEN
+               IF (om > -8) THEN !catalog blazars/AGN
                   icol11 = icol11 +1
                   ra_col11(icol11)=ra(j)
                   dec_col11(icol11)=dec(j)
@@ -430,6 +430,7 @@ c PG
                      csx11(icol11)= 1.2
                      csr11(icol11)= cs
                      if (cradio .gt. 0.) THEN
+!add radio counterparts/ extra radio counpornents
                         icol12=icol12+1
                         icol11=icol11-1
                         ra_col12(icol12)=-ra(j)
@@ -441,7 +442,7 @@ c PG
                   ENDIF
                   !write(*,*) icol12,icol11
                ELSE
-                  icol12 = icol12 +1
+                  icol12 = icol12 +1 !single radio and X-ray sources
                   ra_col12(icol12)=ra(j)
                   dec_col12(icol12)=dec(j)
                   write(tcol12(icol12),'(i4)') isource
@@ -465,7 +466,7 @@ c PG
             ENDIF
          else !((code(i) .GT. 0 ) .and. (code(i) .LT. 10000 )) then
             om = int(code(j)/100.)
-            if (om .gt. 0) then
+            if (om .gt. 0) then !error circle mode
                icol13 = icol13 + 1
                ra_col13(icol13)=ra(j)
                dec_col13(icol13)=dec(j)
@@ -475,17 +476,20 @@ c              cs = max(1.0,cradio*8./99.)
                cs = max(3.0,cradio*8./99.)
                csr13(icol13)= cs*0.8
                color13(icol13)=om
-            else
+
+            else !pulsar, GRB, and gamma-ray sources
                icol14 = icol14 + 1
                ra_col14(icol14)=ra(j)
                dec_col14(icol14)=dec(j)
-               if (om .ge. -30) then
-                  s14(icol14)=7
+               if (om .eq. -11) then
+                  s14(icol14)=7 !for gamma-ray source
+               else if (om .eq. -22) then ! for GRB
+                  s14(icol14)=10
                else
-                  s14(icol14)=-5
+                  s14(icol14)=-5 !for pulsar
                endif
                !write(*,*) isource
-               if (om .eq. -99 ) then
+               if (om .eq. -99 ) then !for extra pulsar and GRB
                   write(tcol14(icol14),'(i4)') isource
                else
                   write(tcol14(icol14),'(a)') "    "
@@ -664,7 +668,11 @@ C- PG
          do j=1,icol14
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
             call pgsch(1.3)
-            call pgsci(12)
+            if (s14(j) .eq. 10) then
+               call pgsci(3)
+            else
+               call pgsci(12)
+            endif
             call pgpoint(1,x,y,s14(j))
             if (tcol14(j) .ne. "    ") then
                call pgsch(1.)

@@ -4,7 +4,8 @@ c this program read the output from vo tool and make a input for find candidates
       integer*4 icat,i,is,ie,ia,it,in,ip,out,iskip
       integer*4 rah,ram,decd,decm,length,ns,lenact
       real*8 radeg,decdeg,ra_center,dec_center,errrad,errmaj,errmin,errang
-      real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh,ra1,ra2,dec1,dec2
+      real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh
+      real*4 ra1,ra2,dec1,dec2,crtflux
       character*1 sign
       character*2 cratecheck
       character*80 catalog,ra,dec,inputlist,test,outputlist,catname
@@ -69,14 +70,22 @@ c the catalog without source name
                is=0
                ie=index(value(1:len(value)),',')
             endif
-            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) then !check crates counterpart
+            if (catalog(1:it-1) == 'crates') then !check crates counterpart
                read(value(is+1:ie-1),'(a)') cratecheck
-               if ((cratecheck == '1') .or. (cratecheck == '0')) then
+               if (ns .eq. 0) then
+                  if ((cratecheck == '1') .or. (cratecheck == '0')) then
+                     is=ie
+                     ie=index(value(is+1:len(value)),',')+is
+                  else
+                     goto 300
+                  endif
+               else
                   is=ie
                   ie=index(value(is+1:len(value)),',')+is
-               else
-                  goto 300
+                  read(value(is+1:ie-1),'(a)') crtflux
                endif
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
             endif
             if ((catalog(1:it-1) == 'cma') .or. (catalog(1:it-1) == 'north20')) then
                is=ie
@@ -117,9 +126,10 @@ c the catalog without source name
             if (catalog(1:it-1) == 'swxcs') ie=is+30
             if (catalog(1:it-1) == 'pulsar') ie=is+30
             if (catalog(1:it-1) == 'f2psr') ie=is+30
-            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
+c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             if (catalog(1:it-1) == 'north20') ie=is+30
             if (catalog(1:it-1) == 'mst9y') ie=is+30
+            if (catalog(1:it-1) == 'fgrb') ie=is+30
 !the source pos error in front of dec
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
      &           (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
@@ -219,7 +229,7 @@ c read the flux
      &           (catalog(1:it-1) == 'whl') .or. (catalog(1:it-1) == 'swxcs') .or.
      &      ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) .or.
      &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr') .or.
-     &       (catalog(1:it-1) == 'mst9y')) then
+     &       (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'fgrb')) then
                ie=index(value(1:len(value)),',')
                read(value(1:ie-1),'(a)') flux
             endif
@@ -261,6 +271,9 @@ c write the data
      &               .or. (catalog(1:it-1) == '4fgl')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
+            else if ((catalog(1:it-1) == 'crates') .and. (ns .ne. 0)) then
+              write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
+     &        ns,catalog(1:it-1),radeg,decdeg,crtflux,flux(1:ie-1)
             else
                write(13,'(i4,",",a,",",2(f9.5,","),a)') ns,catalog(1:it-1),radeg,decdeg,flux(1:ie-1)
             endif

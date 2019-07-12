@@ -81,7 +81,8 @@ c need to define the range first then plot...
       ivhe=0
       iilc=0
       do j=1,npt(i)
-         if ((spectype(j,i) == 'OUSXB') .and. (frequency(j,i) .eq. 2.418E17)) then
+         if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OUSPEC'))
+     &              .and. (frequency(j,i) .eq. 2.418E17)) then
             ixray=ixray+1
             if (ixray .eq. 1) then
                lcup(1)=max(uflux(j,i),abs(flux(j,i)))
@@ -112,9 +113,9 @@ c need to define the range first then plot...
             endif
             iilc=iilc+1
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
-            if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(1)=testflux
+            if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(3)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
-            if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(1)=testflux
+            if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(3)=testflux
             if (mjdstart(j,i) .lt. mjdlow(3)) mjdlow(3)=mjdstart(j,i)
             if (mjdend(j,i) .gt. mjdup(3)) mjdup(3)=mjdend(j,i)
             freq_lc(iilc)=frequency(j,i)
@@ -196,6 +197,8 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
          endif
       enddo
 
+      write(*,*) iilc,ialma,ixray
+
       if (iilc .eq. 0) then
          write(*,*) 'NO Light Curve Plot'
          stop
@@ -219,17 +222,17 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
          lcup(2)=0
          lclow(2)=0
       endif
+
       lcup=alog10(lcup)+0.5
       lclow=alog10(lclow)-0.5
       mjdlow=mjdlow-20.
       mjdup=mjdup+20.
       mjdavg=(mjdst_lc+mjded_lc)/2.
-c      write(*,*) mjdlow(1),mjdup(1),mjdlow(2),mjdup(2)
 
 !write(*,*) i
 c      IER = PGBEG(0,"/xwindow",1,1)
 c      IER = PGBEG(0,"/xs",1,1)
-      IER = PGBEG(0,output_file,1,2)
+      IER = PGBEG(0,output_file,1,3)
       call pgslw(4)
 c      if ( ns .eq. 99 ) THEN
 c         write(title,'(a,i2.2,1x,i2.2,1x,f4.1,a,a,i2.2,1x,i2.2,1x,f4.1)')

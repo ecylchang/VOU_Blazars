@@ -23,44 +23,44 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(5000,5000),im,imaxi
-      INTEGER*4 radio_type(10000),xmm_type(5000),rosat_type(1000),rtype_source(5000),utype,iifound
-      INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(5000,5000),ibigb,bigbind(100)
-      INTEGER*4 no_found,sfound,nrep(1000),rfound,s,track(1000),t(1000),aim,xrt_type(5000),ncat
+      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(3000,10000),im,imaxi
+      INTEGER*4 radio_type(10000),xmm_type(3000),rosat_type(1000),rtype_source(500),utype,iifound
+      INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(3000,10000),ibigb,bigbind(100)
+      INTEGER*4 no_found,sfound,nrep(500),rfound,s,track(500),t(500),aim,xrt_type(3000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(100)
-      INTEGER*4 ipc_type(200),maxi_type(200)
-      REAL*8 ra_other(10000),dec_other(10000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(5000,5000)
-      REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(5000),dec_xmm(5000),ra_rosat(1000),dec_rosat(1000)
-      REAL*8 ra_swift(5000),dec_swift(5000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
-      REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(5000),dec_source(5000),ra_1kev(5000,5000)
+      INTEGER*4 ipc_type(200),maxi_type(200),igrb
+      REAL*8 ra_other(5000),dec_other(5000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
+      REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
+      REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
+      REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500),ra_1kev(3000,10000)
       real*8 ra_cat(100),dec_cat(100),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200)
-      REAL*4 flux_radio(10000),flux_xmm(5000,6),flux_rosat(1000),flux_chandra(1000,5),radian
-      REAL*4 flux_swift(5000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(5000)
-      REAL*4 frequency_xmm(5000,6),frequency_bmw(500),frequency_rosat(1000)
-      REAL*4 frequency_chandra(1000,5),frequency_swift(5000,5),frequency_ipc(200)
+      REAL*4 flux_radio(10000),flux_xmm(3000,6),flux_rosat(1000),flux_chandra(1000,5),radian
+      REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000)
+      REAL*4 frequency_xmm(3000,6),frequency_bmw(500),frequency_rosat(1000)
+      REAL*4 frequency_chandra(1000,5),frequency_swift(3000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce
-      REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(5000),rrconst(5000)
-      REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(5000),flux2nufnu_sumss
-      REAL*4 flux_1kev(5000,5000),frequency_radio(10000),uflux_1kev(5000,5000),lflux_1kev(5000,5000)
-      REAL*4 xflux(5000),rflux(5000),flux_xpts(5000,5000),frequency_xpts(500,5000),poserr_1kev(5000,5000)
-      real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(5000,5000),lflux_xpts(5000,5000),distrx(5000,5000)
+      REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(500),rrconst(500)
+      REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(10000),flux2nufnu_sumss
+      REAL*4 flux_1kev(3000,10000),frequency_radio(10000),uflux_1kev(3000,10000),lflux_1kev(3000,10000)
+      REAL*4 xflux(500),rflux(500),flux_xpts(3000,10000),frequency_xpts(3000,10000),poserr_1kev(3000,10000)
+      real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(3000,10000),lflux_xpts(3000,10000),distrx(3000,10000)
       real*4 Ferr_radio(10000),FluxU_radio(10000),FluxL_radio(10000),poserr_radio(10000)
-      real*4 Ferr_xmm(5000,6),FluxU_xmm(5000,6),FluxL_xmm(5000,6),poserr_xmm(5000)
+      real*4 Ferr_xmm(3000,6),FluxU_xmm(3000,6),FluxL_xmm(3000,6),poserr_xmm(3000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
-      real*4 Ferr_swift(5000,5),FluxU_swift(5000,5),FluxL_swift(5000,5),poserr_swift(5000)
-      real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200),mjdst_swift(5000),mjded_swift(5000)
+      real*4 Ferr_swift(3000,5),FluxU_swift(3000,5),FluxL_swift(3000,5),poserr_swift(3000)
+      real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200),mjdst_swift(3000),mjded_swift(3000)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
-      real*4 errrad,errmaj,errmin,errang,savemjy(10000),mjdstart(5000,5000),mjdend(5000,5000),mjdavg
+      real*4 errrad,errmaj,errmin,errang,savemjy(5000),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(10000),name_cat(10000),namegam(200)
+      CHARACTER*30 name_other(5000),name_cat(5000),namegam(200)
       CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
-      CHARACTER*8 catalog,uv_type(20000)
+      CHARACTER*8 catalog
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found
       common webprograms
@@ -82,6 +82,7 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       imaxi=0
       igam=0
       ibigb=0
+      igrb=0
       radian = 45.0/atan(1.0)
       flux2nufnu_nvss=1.4e9*1.e-26
       flux2nufnu_sumss=8.43e8*1.e-26 !assumed radio alpha=0.2 !f_0.8 to f_1.4
@@ -293,7 +294,7 @@ c PG end
             ie=index(string(is+1:len(string)),',')+is
             ra_xmm(ixmm)=ra
             dec_xmm(ixmm)=dec
-            IF (ixmm > 5000) Stop 'Too many XMM points'
+            IF (ixmm > 3000) Stop 'Too many XMM points'
             if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xmm(ixmm,1)
             is=ie
             ie=index(string(is+1:len(string)),',')+is
@@ -680,9 +681,10 @@ c PG
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_rosat(irosat),dec_rosat(irosat),int(code)
 c end PG
          ELSE IF ((catalog(1:4) == 'sxps') .or. (catalog(1:7) == 'xrtdeep')
-     &             .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb'))THEN
+     &             .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb')
+     &             .or.  (catalog(1:5) == 'ousxg'))THEN
             iswift=iswift+1
-            IF (iswift > 5000) Stop 'Too many swift points'
+            IF (iswift > 3000) Stop 'Too many swift points'
             ra_swift(iswift)=ra
             dec_swift(iswift)=dec
             frequency_swift(iswift,5)=999
@@ -875,9 +877,13 @@ c end PG
                   FluxU_swift(iswift,4)=FluxU_swift(iswift,4)*3.
                endif
             else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')
-     &                 .or.  (catalog(1:5) == 'ousxb') ) then
-               if (catalog(1:5) == 'ousxb') then
-                  xrt_type(iswift)=3
+     &                 .or.  (catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
+               if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
+                  if (catalog(1:5) == 'ousxb') then
+                     xrt_type(iswift)=3
+                  else
+                     xrt_type(iswift)=4
+                  endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_swift(iswift)
@@ -1484,7 +1490,7 @@ c end PG
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgl')
      &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == 'agile')
-     &           .or.  (catalog(1:5) == 'fmev')) then
+     &           .or.  (catalog(1:5) == 'fmev') .or. (catalog(1:4) == 'fgrb')) then
             igam=igam+1
             ra_gam(igam)=ra
             dec_gam(igam)=dec
@@ -1498,16 +1504,24 @@ c end PG
                ibigb=ibigb+1
                bigbind(igam)=MOD(ibigb,9)
                namegam(igam)(1:9)='1BIGB SED'
+            else if (catalog(1:4) == 'fgrb') then
+               igrb=igrb+1
+               namegam(igam)(5:lenact(namegam(igam))+5)=namegam(igam)(1:lenact(namegam(igam)))
+               namegam(igam)(1:4)='GRB '
             else
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
             endif
             if ((bigbind(igam) .eq. 1) .or. (namegam(igam)(1:9) /= '1BIGB SED')) then
-               write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
-               write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
+               if (namegam(igam)(1:4) /='GRB ') then
+                  write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
+                  write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
+               else
+                  write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
+               endif
             endif
          ELSE
             iother=iother+1
-            IF (iother > 10000) Stop 'Too many catalogued sources'
+            IF (iother > 5000) Stop 'Too many catalogued sources'
             ra_other(iother)=ra
             dec_other(iother)=dec
             is=ie
@@ -1517,9 +1531,6 @@ c end PG
      &           (catalog(1:3) == 'whl')) then
                name_other(iother)(5:lenact(name_other(iother))+5)=name_other(iother)(1:lenact(name_other(iother)))
                name_other(iother)(1:4)=catalog(1:4)
-            else if (catalog(1:6) == 'pulsar') then
-               name_other(iother)(5:lenact(name_other(iother))+5)=name_other(iother)(1:lenact(name_other(iother)))
-               name_other(iother)(1:4)='PSR '
             endif
             !write(*,*) name_other(iother),iother
             if (iother .ne. 1) then
@@ -1527,7 +1538,6 @@ c end PG
                   if (name_other(i) == name_other(i+1)) iother=iother-1
                enddo
             endif
-            !write(*,*) iother
          ENDIF
       ENDDO
  99   CONTINUE
@@ -1662,6 +1672,8 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   xray_type = 9
                ELSE If (xrt_type(i) == 3) THEN
                   xray_type = 11
+               ELSE IF (xrt_type(i) == 4) THEN
+                  xray_type = 14
                ENDIF
                found = .TRUE.
                flux_x = flux_x + flux_swift(i,1)
@@ -1674,7 +1686,7 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                poserr_1kev(ix,k)=poserr_swift(i)
                distrx(ix,k)=dist*3600.
                spec_type(ix,k)=xray_type+50
-               if (spec_type(ix,k) .eq. 61) then
+               if ((spec_type(ix,k) .eq. 61) .or. (spec_type(ix,k) .eq. 64)) then
                   mjdstart(ix,k)=mjdst_swift(i)
                   mjdend(ix,k)=mjded_swift(i)
                else
@@ -1880,6 +1892,7 @@ c            ENDIF
 
          IF (found) THEN 
             ifound = ifound +1
+            write(*,*) 'number of matched',ifound
             no_found = 0
             DO i = 0,5
                IF (types(i) > no_found) THEN
@@ -1891,7 +1904,7 @@ c            ENDIF
                do i = 1,ifound-1
                   call DIST_SKY(ra_radio(k),dec_radio(k),ra_radio(t(i)),dec_radio(t(i)),dist)
                   !if (dist*60 .lt. 0.8) then
-                  if (dist*3600. .lt. 6.) then
+                  if (dist*3600. .lt. 12.) then
                      rfound=rfound+1
                      IF ( ix.NE.0 ) THEN
                      flux_x = flux_x/float(ix)
@@ -2003,7 +2016,7 @@ c               write(*,*) dist*3600.
                      write(*,'(2x,a,1x,a)') name_other(i)
                      ra_other(i) = -ra_other(i)
                   ELSE IF (name_other(i)(1:3) == 'PSR') THEN
-                     type_average = 0
+                     type_average = -88
                      code=-8888
                      write(*,'(2x,a,1x,a)') name_other(i)
                      ra_other(i) = -ra_other(i)
@@ -2020,7 +2033,7 @@ c               write(*,*) dist*3600.
                     write(*,'(2x,a,1x,a)') name_other(i)
                   ENDIF
                ENDIF
-               IF (type_average < 0) THEN
+               IF ((type_average .gt. -20) .and. (type_average .lt. 0)) THEN
                   CALL graphic_code (flux_x,flux_radio(k),type_average,code)
                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_radio(k),dec_radio(k),int(code)
                ELSE if (code .eq. -8888) then
@@ -2034,7 +2047,7 @@ c               write(*,*) dist*3600.
          ELSE !!check radio without matched
             do i=1,iother
                if ( ( (name_other(i)(1:3) == '5BZ') .OR. (name_other(i)(1:4) == '3HSP') .or.
-     &             (name_other(i)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR')) .AND.
+     &           (name_other(i)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR')) .AND.
      &                  (ra_other(i) .gt. 0.) ) THEN
                   CALL DIST_SKY(ra_other(i),dec_other(i),ra_radio(k),dec_radio(k),dist)
                   if (dist*3600. .lt. max(poserr_radio(k),2.) ) found=.true.
@@ -2184,13 +2197,15 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
                xray_type=5
             else if (xrt_type(i) == 3 ) then
                xray_type=11
+            else if (xrt_type(i) == 4) then
+               xray_type=14
             else
                xray_type=9
             endif
             CALL DIST_SKY(ra_center,dec_center,abs(ra_swift(i)),dec_swift(i),dist)
             if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
                if (dist .le. errrad/60.) then
-                  if (xray_type .eq. 11) then
+                  if ((xray_type .eq. 11) .or. (xray_type .eq. 14) )then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(i,1),
      &                flux_swift(i,1),FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),
      &                poserr_swift(i),mjdst_swift(i),mjded_swift(i),xray_type+50
@@ -2212,7 +2227,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
                endif
             else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
                if (dist .le. errmaj/60.) then
-                  if (xray_type .eq. 11) then
+                  if ((xray_type .eq. 11) .or. (xray_type .eq. 14)) then
                      write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(i,1),
      &               flux_swift(i,1),FluxU_swift(i,1),FluxL_swift(i,1),ra_swift(i),dec_swift(i),
      &               poserr_swift(i),mjdst_swift(i),mjded_swift(i),xray_type+50
@@ -2427,8 +2442,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
       savemjy(1:iother)=0.
       DO l=1,iother
          IF ( ( (name_other(l)(1:3) == '5BZ') .OR. (name_other(l)(1:4) == '3HSP') .or.
-     &             (name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:3) == 'PSR'))
-     &             .AND. (ra_other(l) .gt. 0.)) THEN
+     &  (name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:3) == 'PSR')) .AND. (ra_other(l) .gt. 0.)) THEN
             ncat=ncat+1
             ra_cat(ncat)=ra_other(l)
             dec_cat(ncat)=dec_other(l)
@@ -2442,7 +2456,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
                      IF (name_other(l)(1:4) == '3HSP') type_average = -1
                      IF (name_other(l)(1:6) == 'CRATES') type_average = -3
                      IF (name_other(l)(1:3) == 'PSR') then
-                        type_average = 0
+                        type_average = -88
                         code=-8888
                      endif
                      write(*,'(a,a,i4,2x,a)') name_other(l)(1:lenact(name_other(l))),
@@ -2454,7 +2468,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             IF (name_other(l)(1:3) == '5BZ') type_average = -6
             IF (name_other(l)(1:4) == '3HSP') type_average = -5
             IF (name_other(l)(1:6) == 'CRATES') type_average = -7
-            IF (name_other(l)(1:3) == 'PSR') type_average = 0
+            IF (name_other(l)(1:3) == 'PSR') type_average = -99
             sfound=sfound+1
             track2(ncat)=sfound
             if (sfound .ne. 1 ) write(12,*) "===================="
@@ -2469,7 +2483,7 @@ c     &         ra_other(l),dec_other(l),'source type',type_average
      &          ', Known flat spectrum radio source with no radio/X-ray match: ',
      &          achar(27),'[0m',name_other(l)(1:lenact(name_other(l))),' found at a distance of ',
      &                          real(dist),' arcmin '
-            else if (type_average .eq. 0) then
+            else if (type_average .eq. -99) then
                code=-9999
                !write(*,*) code,type_average
                write(*,'("Pulsar",2x,a,2x,f7.3,2x,"arcmin away")') name_other(l)(1:lenact(name_other(l))),dist
@@ -2536,14 +2550,16 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                   if (xrt_type(j) == 1) then
                      xray_type=5
                   else if (xrt_type(j) == 3) then
-                     xrt_type=11
+                     xray_type=11
+                  else if (xrt_type(j) == 4) then
+                     xray_type=14
                   else
                      xray_type=9
                   endif
-                  if (xray_type .eq. 11) then
+                  if ((xray_type .eq. 11) .or. (xray_type .eq. 14))then
 c                     write(17,'(" 2.418E+17",3(2x,es10.3),2(2x,f10.4),2x,i2)')
 c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift(j),mjded_swift(j),xray_type
-                     write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2x,i2)') frequency_swift(j,1),
+                     write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),mjdst_swift(j),mjded_swift(j),xray_type+50
                   else
@@ -2619,25 +2635,37 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
                endif
             enddo
 100   continue
-            if ((type_average .lt. -3)) then
+            if ((type_average .lt. -3) .and. (type_average .gt. -20)) then
+!for no X-ray blazars and CRATES sources
                 if (savemjy(l) .gt. 0.) then
                    if (savemjy(l) .lt. 20.) savemjy(l)=20.
                    call RXgraphic_code(savemjy(l),'R',code)
                    write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
                 endif
             endif
-            if (type_average .ne. 0) CALL graphic_code (1.,1.,type_average,code)
+            if (type_average .gt. -20) CALL graphic_code (1.,1.,type_average,code) !produce code
             !if (type_average .eq. -7) CALL graphic_code (1.,savemjy(l),type_average,code)
             write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code)
          ENDIF
       ENDDO
       WRITE (*,*) '      '
 
-      if (igam .gt. 0) write(*,*) 'Gamma-ray Counterparts'
       do i=1,igam
-         if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:9) /= '1BIGB SED'))
-     &      write(*,*) namegam(i),ra_gam(i),dec_gam(i)
+         if (namegam(i)(1:4) == 'GRB ') then
+            CALL DIST_SKY(ra_gam(i),dec_gam(i),ra_center,dec_center,dist)
+            dist = dist*60
+            write(*,'(a,2x,f7.3,2x,"arcmin away")') namegam(i)(1:lenact(namegam(i))),dist
+         endif
       enddo
+      WRITE (*,*) '      '
+      if (igam-igrb .gt. 0) then
+         write(*,*) 'Gamma-ray Counterparts'
+         do i=1,igam
+            if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:9) /= '1BIGB SED')) then
+               if (namegam(i)(1:4) /= 'GRB ') write(*,*) namegam(i),ra_gam(i),dec_gam(i)
+            endif
+         enddo
+      endif
       WRITE (*,*) '      '
       goto 502
 
@@ -2707,10 +2735,12 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
                xray_type=5
             else if (xrt_type(j) == 3) THEN
                xray_type=11
+            else if (xrt_type(j) == 4) THEN
+               xray_type=14
             else
                xray_type=9
             endif
-            if (xray_type .eq. 11) then
+            if ((xray_type .eq. 11) .or. (xray_type .eq. 14)) then
                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_swift(j,1),
      &                     flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),ra_swift(j),dec_swift(j),
      &                     poserr_swift(j),mjdst_swift(j),mjded_swift(j),xray_type+50
@@ -2795,10 +2825,10 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
       END
 c
       SUBROUTINE print_results (ratio,ra,dec,flux_radio,radio_type,xray_type,
-     &                          flux,const,ra_center,dec_center,source_type)
+     &                          flux,constsub,ra_center,dec_center,source_type)
       IMPLICIT none
       INTEGER*4 rah,ram,id,dm,radio_type,xray_type,source_type
-      REAL*4 ratio,rasec,decsec,const,arx,lognupeak,flux_radio
+      REAL*4 ratio,rasec,decsec,constsub,arx,lognupeak,flux_radio
       REAL*4 flux
       REAL*8 ra,dec,ra_center,dec_center,dist
       CHARACTER*1 sign
@@ -2846,6 +2876,8 @@ c      IF (ratio < 0.) RETURN
          xmission='IPCSLEW'
       ELSE IF (xray_type == 13) THEN
          xmission='MAXISSC'
+      ELSE IF (xray_type == 13) THEN
+         xmission='OUSXG'
       ELSE
          xmission='UNKNOWN'
       ENDIF
@@ -2879,7 +2911,7 @@ c      print *,' xmission, flux-x ',xmission,flux
      &      '' Dist. '',f7.3,'' arcmin'')')
      &      xmission(1:len_trim(xmission)),radio_survey(1:len_trim(radio_survey)),
      &      rah,ram,rasec,sign(1:1),abs(id),abs(dm),abs(decsec),
-     &      flux_radio/const,ratio,arx,lognupeak,type(1:len_trim(type)),dist
+     &      flux_radio/constsub,ratio,arx,lognupeak,type(1:len_trim(type)),dist
          ELSE  
           IF ((abs(arx) > 0.78).AND.(abs(arx) < 0.95)) THEN
             type(1:30) = '           [34;1m possible LBL' 
@@ -2906,7 +2938,7 @@ c      print *,' xmission, flux-x ',xmission,flux
      &       '' Dist. '',f7.3,'' arcmin'')')
      &       xmission(1:len_trim(xmission)),radio_survey(1:len_trim(radio_survey)),
      &       rah,ram,rasec,sign(1:1),abs(id),abs(dm),abs(decsec),
-     &       flux_radio/const,ratio,arx,type(1:len_trim(type)),dist
+     &       flux_radio/constsub,ratio,arx,type(1:len_trim(type)),dist
          ENDIF
       ELSE
            source_type = 5
@@ -2919,7 +2951,7 @@ c      print *,' xmission, flux-x ',xmission,flux
      &       f9.3,a,'' Dist. '',f7.3,'' arcmin'')')
      &       xmission(1:len_trim(xmission)),radio_survey(1:len_trim(radio_survey)),
      &       rah,ram,rasec,sign(1:1),abs(id),abs(dm),abs(decsec),
-     &       flux_radio/const,type(1:len_trim(type)),dist
+     &       flux_radio/constsub,type(1:len_trim(type)),dist
 
       ENDIF
       RETURN
