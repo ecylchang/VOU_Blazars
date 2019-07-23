@@ -2041,13 +2041,13 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                ie=index(string(is+1:len(string)),',')+is
                is=ie
                ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) major
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) minor
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
                posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr_gam(igam)=max(posxerr,posyerr)*3600.
