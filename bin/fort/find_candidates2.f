@@ -25,20 +25,20 @@ c
       IMPLICIT none
       INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s,iverit,veritind(100)
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(100),almaind(500)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(100),almaind(1500)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000),ialma
       INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
-      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(500),f4p8part(1000),ifar,farpart(500),bigbind(100)
+      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
-      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(500),far_ref(500),ir_ref(2),opt_ref(5)
+      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2),opt_ref(5)
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc,lowr_ref(1000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
-      REAL*8 ra_pccs100(500),dec_pccs100(500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
+      REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
       real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(200),dec_vhe(200),ra_alma,dec_alma,mjdtest
@@ -46,18 +46,18 @@ c
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
-      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(500,9),min_dist_cluster,min_dist_far
+      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_cluster,min_dist_far
       REAL*4 usnomag(1000,5),flux_ir(1000,4),irmag(1000,4),frequency_ir(1000,4),uvmag(1000,6),flux_uv(1000,6)
-      REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(500,9)
+      REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
       real*4 flux_far(500),frequency_far(500),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
       real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(5,4),irmag_cand(5,4),irdist(5),freq_ircand(5,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
-      real*4 gamlike(100),pccslike(500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
-      real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(500,9)
-      real*4 Ferr_pccs100(500,9),FluxU_pccs100(500,9),FluxL_pccs100(500,9),poserr_pccs100(500),Ferr2_pccs100(500,9)
-      real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000),snr_pccs100(500,9)
+      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
+      real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
+      real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
+      real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000),snr_pccs100(1500,9)
       real*4 FluxU_ir(1000,4),FluxL_ir(1000,4),poserr_ir(1000),irmagerr(1000,4),intensity
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
@@ -69,7 +69,7 @@ c
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(200),flux_vhe(200),FluxU_vhe(200),FluxL_vhe(200),poserr_vhe(200),Ferr_vhe(200)
       real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 lcurve_type(2000,1000),mjdstart(200),mjdend(200),mjdst_alma(500),mjded_alma(500)
+      real*4 lcurve_type(2000,1000),mjdstart(200),mjdend(200),mjdst_alma(1500),mjded_alma(1500)
       real*4 mjdst_xrt(5000),mjded_xrt(5000),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
       real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg
       CHARACTER*1 sign,flag_4p8(1000,4)
@@ -82,7 +82,7 @@ c      character*80 input_file4,output_file3
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
       CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),name_cat(100)
-      CHARACTER*10 lowrcand_type(5),vhe_type(200),pccs100_type(500),xray_type(5000)
+      CHARACTER*10 lowrcand_type(5),vhe_type(200),pccs100_type(1500),xray_type(5000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found 
       ok = .TRUE.
@@ -635,7 +635,7 @@ c read the data file
      &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353') .or.
      &             (catalog(1:4) == 'pcnt') .or. (catalog(1:4) == 'alma'))  THEN
             ipccs100=ipccs100+1
-            IF (ipccs100 > 500) Stop 'Too many PCCS points'
+            IF (ipccs100 > 1500) Stop 'Too many PCCS points'
             ra_pccs100(ipccs100)=ra
             dec_pccs100(ipccs100)=dec
             name_p(ipccs100)=catalog

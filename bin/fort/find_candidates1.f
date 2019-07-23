@@ -2680,7 +2680,7 @@ c      write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
 c     &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
-         write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.
+c         write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.
          if (dist*3600. .lt. max(poserr_radio(j),2.) ) then !18 arcsec for radio sources
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(j),flux_radio(j),
      &      FluxU_radio(j),FluxL_radio(j),ra_radio(j),dec_radio(j),poserr_radio(j),mjdavg,mjdavg,radio_type(j)
@@ -2690,7 +2690,7 @@ c     &         ra_center,dec_center,'source type',type_average
 c         if (xmm_type(j) == 1) min_dist_xmm=15./3600.
 c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
          call DIST_SKY(ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist)
-         write(*,*) 'XMM',ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist*3600.,poserr_xmm(j)
+c         write(*,*) 'XMM',ra_center,dec_center,ra_xmm(j),dec_xmm(j),dist*3600.,poserr_xmm(j)
          if ( dist*3600. .lt. max(poserr_xmm(j),2.) ) then
             if (xmm_type(j) == 1) then
                xray_type=1
@@ -2729,7 +2729,7 @@ c         if (xmm_type(j) == 2) min_dist_xmm=4./3600.
       enddo
       do j=1,iswift
          call DIST_SKY(ra_center,dec_center,abs(ra_swift(j)),dec_swift(j),dist)
-         write(*,*) 'SXPS',ra_center,dec_center,ra_swift(j),dec_swift(j),dist*3600.,poserr_swift(j)
+c         write(*,*) 'SXPS',ra_center,dec_center,ra_swift(j),dec_swift(j),dist*3600.,poserr_swift(j)
          if ( dist*3600. .lt. max(poserr_swift(j),2.)) then
             if (xrt_type(j) == 1) THEN
                xray_type=5
