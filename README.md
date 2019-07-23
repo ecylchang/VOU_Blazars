@@ -1,6 +1,6 @@
 # VOU_Blazars
 
-VOU-Blazars is an extremely alpha version of blazars search tool. There are still a lot of things to be modified. Such as the SED mode, the counterpart in second phase, the very close radio but not in NVSS psf region, and the cross-matching method need to be updated. Any comments and suggestions are welcomed. 
+VOU-Blazars is an alpha version of blazars search tool. The tool is to identify all the possible blazars in are specified area. Any comments and suggestions are welcomed.
 
 ## Update
 

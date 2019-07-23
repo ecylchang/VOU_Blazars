@@ -5,7 +5,7 @@ c and plots potential blazars of different types based on radio/X-ray ratios
 c
 c The output file should be used as input to the program gnomo_plot_types 
 c that generates a postscript file with a plot in gnomonic coordinates. 
-c In this plot each radio-X/ray match appears as a filled and an open circle with size that is 
+c In this plot each radio-X/ray match appears as a filled and an open circle with size that ispart
 c proportional to the radio flux density (filled circles) and to X-ray flux (open circles)
 c the color coding is as follows
 c orange : possible blazar of the HBL type
@@ -31,7 +31,7 @@ c
       INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(200),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
+      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2),opt_ref(5)
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc,lowr_ref(1000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second
@@ -75,12 +75,12 @@ c
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),date_alma(500)
+      CHARACTER*30 name_other(10000),date_alma(1500)
       character*80 input_file,output_file,input_file2,input_file3,output_file2,refsfile,refs(100)
 c      character*80 input_file4,output_file3
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
-      CHARACTER*10 name_r(1000),name_f(200),name_p(500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
+      CHARACTER*10 name_r(1000),name_f(200),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
       CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),name_cat(100)
       CHARACTER*10 lowrcand_type(5),vhe_type(200),pccs100_type(1500),xray_type(5000)
       CHARACTER*800 string,repflux
