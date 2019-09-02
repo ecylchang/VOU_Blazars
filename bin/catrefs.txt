@@ -22,7 +22,7 @@ AT20G Murphy et al. 2010, MNRAS, 402, 2403!
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 CRATES Healey et al. 2007, ApJS, 171, 61! 
 PCNT The Planck Collaboration, 2018, A&A, 619, A94!
-ALMA Bonato et al. 2018, MNRAS, 478, 1512!
+ALMA Bonato et al. 2019, MNRAS, 485, 1188!
 PCCS2 The Planck Collaboration, 2016, A&A, 594, A26!
 SPIRE Schulz et al. 2017, arXiv:1706.00448!
 WISE Cutri et al. 2013, AllWISE Data Release Products!
@@ -43,7 +43,7 @@ BAT105m Oh et al. 2018, ApJS, 235, 4!
 3FGL Acero et al. 2015, ApJS, 218, 23!
 1BIGB Arsioli et al. 2018, MNRAS, 480, 2165!
 4FGL The Fermi-LAT Collaboration, 2019, arXiv:1902.10045!
-AGILE Pittori et al. 2009, A&A, 506, 1563!
+AGILE Bulgarelli et al. 2019, A&A, 627, A13!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
 VERITAS TBD!
 MAGIC TBD!

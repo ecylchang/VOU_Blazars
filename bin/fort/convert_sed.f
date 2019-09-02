@@ -43,6 +43,9 @@ c      write(*,*) output_file
       ENDIF
       READ(lu_in,'(i4,2x,a,2(2x,f9.5),2x,i2)',end=99) sfound,stringin,rra,rdec,rtype
 c      write(*,*) rra,rdec
+      read(lu_in,*) string
+      read(lu_in,*) string
+      read(lu_in,*) string
       open(lu_out,file=output_file,status='unknown',iostat=ier)
       DO WHILE(ok)
          ul = '  '

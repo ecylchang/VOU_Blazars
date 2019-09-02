@@ -49,6 +49,9 @@ c      write(*,*) output_file
       ra(sfound)=rra
       dec(sfound)=rdec
       stype(sfound)=rtype
+      read(10,*) string
+      read(10,*) string
+      read(10,*) string
       do while (ok)
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),

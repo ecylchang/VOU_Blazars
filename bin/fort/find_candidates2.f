@@ -3254,6 +3254,9 @@ cENDDO
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
          write(14,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
+         write(14,'(2(a,2x),2(a,1x),4(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Catalog   ","Reference"
+         write(14,'(6(a,2x))') "    Hz    "," erg/cm2/s","   upper  ","   lower  ","    MJD   ","    MJD   "
+         write(14,'(a)') "---------------------------------------------------------------------------------------------------------------------------"
          do i=1,npt(j)
 c the refs file
             rrxx_ref(i,j)=iref+1

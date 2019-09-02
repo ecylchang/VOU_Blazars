@@ -4,15 +4,15 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,pttest
-      integer*4 i,sfound,npt(5000),rtype,stype(5000),ivhe,ixray,iilc,ialma
+      integer*4 i,sfound,npt(5000),rtype,stype(1000),ivhe,ixray,iilc,ialma,lctype(5000)
       real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000)
       real*4 rasec,decsec,testflux,mjdstart(5000,1000),mjdend(5000,1000),mjdavg(5000)
-      real*4 mjdlow(3),mjdup(3),lcup(3),lclow(3),flux_lc(5000),uflux_lc(5000),lflux_lc(5000)
+      real*4 mjdlow,mjdup,lcup(3),lclow(3),flux_lc(5000),uflux_lc(5000),lflux_lc(5000)
       real*4 mjdst_lc(5000),mjded_lc(5000),freq_lc(5000),fq1tev,sloperat
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
-      character*80 input_file,output_file,refs(5000,1000)
+      character*80 input_file,output_file,output_file2,refs(5000,1000)
       character*14 stringin
       character*10 spectype(5000,1000)
       character*6 number,xtitle
@@ -26,6 +26,9 @@ c This program plot the SED for candidate
       input_file=string(1:in-1)
       im=index(string(in+1:length),' ')+in
       output_file=string(in+1:im-1)
+      in=im
+      im=index(string(in+1:length),' ')+in
+      output_file2=string(in+1:im-1)
       number=string(im+1:length)
       !write(*,*) number
       if (number == 'finish') then
@@ -51,6 +54,9 @@ c      write(*,*) output_file
       ra(sfound)=rra
       dec(sfound)=rdec
       stype(sfound)=rtype
+      read(10,*) string
+      read(10,*) string
+      read(10,*) string
       do while (ok)
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),
@@ -84,19 +90,24 @@ c need to define the range first then plot...
          if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OUSPEC'))
      &              .and. (frequency(j,i) .eq. 2.418E17)) then
             ixray=ixray+1
-            if (ixray .eq. 1) then
-               lcup(1)=max(uflux(j,i),abs(flux(j,i)))
-               lclow(1)=min(lflux(j,i),abs(flux(j,i)))
-               mjdlow(1)=mjdstart(j,i)
-               mjdup(1)=mjdend(j,i)
-            endif
             iilc=iilc+1
+            if (ixray .eq. 1) then
+               lcup(2)=max(uflux(j,i),abs(flux(j,i)))
+               lclow(2)=min(lflux(j,i),abs(flux(j,i)))
+               if (iilc .eq. 1) mjdlow=mjdstart(j,i)
+               if (iilc .eq. 1) mjdup=mjdend(j,i)
+            endif
+            if (spectype(j,i) == 'OUSPEC') then
+               lctype(iilc)=1
+            else
+               lctype(iilc)=2
+            endif
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
-            if ((testflux .gt. lcup(1)) .and. (testflux .gt. 0.d0)) lcup(1)=testflux
+            if ((testflux .gt. lcup(2)) .and. (testflux .gt. 0.d0)) lcup(2)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
-            if ((testflux .lt. lclow(1)) .and. (testflux .gt. 0.d0)) lclow(1)=testflux
-            if (mjdstart(j,i) .lt. mjdlow(1)) mjdlow(1)=mjdstart(j,i)
-            if (mjdend(j,i) .gt. mjdup(1)) mjdup(1)=mjdend(j,i)
+            if ((testflux .lt. lclow(2)) .and. (testflux .gt. 0.d0)) lclow(2)=testflux
+            if (mjdstart(j,i) .lt. mjdlow) mjdlow=mjdstart(j,i)
+            if (mjdend(j,i) .gt. mjdup) mjdup=mjdend(j,i)
             freq_lc(iilc)=frequency(j,i)
             flux_lc(iilc)=flux(j,i)
             lflux_lc(iilc)=lflux(j,i)
@@ -105,19 +116,20 @@ c need to define the range first then plot...
             mjded_lc(iilc)=mjdend(j,i)
          else if (spectype(j,i) == 'ALMA') then
             ialma=ialma+1
-            if (ialma .eq. 1) then
-               lcup(3)=max(uflux(j,i),abs(flux(j,i)))
-               lclow(3)=min(lflux(j,i),abs(flux(j,i)))
-               mjdlow(3)=mjdstart(j,i)
-               mjdup(3)=mjdend(j,i)
-            endif
             iilc=iilc+1
+            if (ialma .eq. 1) then
+               lcup(1)=max(uflux(j,i),abs(flux(j,i)))
+               lclow(1)=min(lflux(j,i),abs(flux(j,i)))
+               if (iilc .eq. 1) mjdlow=mjdstart(j,i)
+               if (iilc .eq. 1) mjdup=mjdend(j,i)
+            endif
+            lctype(iilc)=3
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
-            if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(3)=testflux
+            if ((testflux .gt. lcup(1)) .and. (testflux .gt. 0.d0)) lcup(1)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
-            if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(3)=testflux
-            if (mjdstart(j,i) .lt. mjdlow(3)) mjdlow(3)=mjdstart(j,i)
-            if (mjdend(j,i) .gt. mjdup(3)) mjdup(3)=mjdend(j,i)
+            if ((testflux .lt. lclow(1)) .and. (testflux .gt. 0.d0)) lclow(1)=testflux
+            if (mjdstart(j,i) .lt. mjdlow) mjdlow=mjdstart(j,i)
+            if (mjdend(j,i) .gt. mjdup) mjdup=mjdend(j,i)
             freq_lc(iilc)=frequency(j,i)
             flux_lc(iilc)=flux(j,i)
             lflux_lc(iilc)=lflux(j,i)
@@ -130,10 +142,10 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
             fq1tev=(1.602E-19)*(1.e12)/(6.626e-34)
             ivhe=ivhe+1
             if (ivhe .eq. 1) then
-               lcup(2)=max(uflux(j,i),abs(flux(j,i)))
-               lclow(2)=min(lflux(j,i),abs(flux(j,i)))
-               mjdup(2)=mjdend(j,i)
-               mjdlow(2)=mjdstart(j,i)
+               lcup(3)=max(uflux(j,i),abs(flux(j,i)))
+               lclow(3)=min(lflux(j,i),abs(flux(j,i)))
+               if (iilc .eq. 0) mjdup=mjdend(j,i)
+               if (iilc .eq. 0) mjdlow=mjdstart(j,i)
             endif
             if (frequency(j,i) .gt. fq1tev) then
                if (ivhe .eq. 1) then
@@ -148,9 +160,11 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                   lflux_lc(iilc)=lflux_lc(iilc)*fq1tev
                   mjdst_lc(iilc)=mjdstart(j,i)
                   mjded_lc(iilc)=mjdend(j,i)
+                  freq_lc(iilc)=frequency(j,i)
+                  lctype(iilc)=4
                else
                   if (mjdstart(j,i) .ne. mjdstart(j-1,i)) then
-                     if (iilc-ixray .ne. 0) then
+                     if (iilc-ixray-ialma .ne. 0) then !exclude the same one
                         if (mjdstart(j,i) .eq. mjdst_lc(iilc)) then
                            goto 600
                         endif
@@ -166,8 +180,10 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                      lflux_lc(iilc)=lflux_lc(iilc)*fq1tev
                      mjdst_lc(iilc)=mjdstart(j,i)
                      mjded_lc(iilc)=mjdend(j,i)
+                     freq_lc(iilc)=frequency(j,i)
+                     lctype(iilc)=4
                   else
-                     if (iilc-ixray .ne. 0) then
+                     if (iilc-ixray-ialma .ne. 0) then
                         if (mjdstart(j,i) .eq. mjdst_lc(iilc)) then
                            goto 600
                         endif
@@ -183,44 +199,83 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                      lflux_lc(iilc)=lflux_lc(iilc)*fq1tev
                      mjdst_lc(iilc)=mjdstart(j,i)
                      mjded_lc(iilc)=mjdend(j,i)
+                     freq_lc(iilc)=frequency(j,i)
+                     lctype(iilc)=4
                   endif
                endif
 c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc),mjded_lc(iilc)
                testflux=max(uflux_lc(iilc),flux_lc(iilc))
-               if ((testflux .gt. lcup(2)) .and. (testflux .gt. 0.d0)) lcup(2)=testflux
+               if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(3)=testflux
                testflux=min(lflux_lc(iilc),flux_lc(iilc))
-               if ((testflux .lt. lclow(2)) .and. (testflux .gt. 0.d0)) lclow(2)=testflux
-               if (mjdst_lc(iilc) .lt. mjdlow(2)) mjdlow(2)=mjdst_lc(iilc)
-               if (mjded_lc(iilc) .gt. mjdup(2)) mjdup(2)=mjdst_lc(iilc)
+               if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(3)=testflux
+               if (mjdst_lc(iilc) .lt. mjdlow) mjdlow=mjdst_lc(iilc)
+               if (mjded_lc(iilc) .gt. mjdup) mjdup=mjdst_lc(iilc)
+            else
+               if (j .ne. npt(i)) then
+                  if ( mjdstart(j,i) .ne. mjdstart(j+1,i) ) then
+                     iilc=iilc+1
+                     sloperat=((flux(j,i)/frequency(j,i))-(flux(j-1,i)/frequency(j-1,i)))
+     &                              /(frequency(j,i)/frequency(j-1,i))
+                     flux_lc(iilc)=(flux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                     flux_lc(iilc)=flux_lc(iilc)*fq1tev
+                     uflux_lc(iilc)=(uflux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                     uflux_lc(iilc)=uflux_lc(iilc)*fq1tev
+                     lflux_lc(iilc)=(lflux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                     lflux_lc(iilc)=lflux_lc(iilc)*fq1tev
+                     mjdst_lc(iilc)=mjdstart(j,i)
+                     mjded_lc(iilc)=mjdend(j,i)
+                     freq_lc(iilc)=frequency(j,i)
+                     lctype(iilc)=4
+                  endif
+               else
+                  iilc=iilc+1
+                  sloperat=((flux(j,i)/frequency(j,i))-(flux(j-1,i)/frequency(j-1,i)))
+     &                              /(frequency(j,i)/frequency(j-1,i))
+                  flux_lc(iilc)=(flux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                  flux_lc(iilc)=flux_lc(iilc)*fq1tev
+                  uflux_lc(iilc)=(uflux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                  uflux_lc(iilc)=uflux_lc(iilc)*fq1tev
+                  lflux_lc(iilc)=(lflux(j,i)/frequency(j,i))*(fq1tev/frequency(j,i))**sloperat
+                  lflux_lc(iilc)=lflux_lc(iilc)*fq1tev
+                  mjdst_lc(iilc)=mjdstart(j,i)
+                  mjded_lc(iilc)=mjdend(j,i)
+                  freq_lc(iilc)=frequency(j,i)
+                  lctype(iilc)=4
+               endif
+               testflux=max(uflux_lc(iilc),flux_lc(iilc))
+               if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(3)=testflux
+               testflux=min(lflux_lc(iilc),flux_lc(iilc))
+               if ((testflux .lt. lclow(3)) .and. (testflux .gt. 0.d0)) lclow(3)=testflux
+               if (mjdst_lc(iilc) .lt. mjdlow) mjdlow=mjdst_lc(iilc)
+               if (mjded_lc(iilc) .gt. mjdup) mjdup=mjdst_lc(iilc)
             endif
   600       continue
          endif
       enddo
 
       write(*,*) iilc,ialma,ixray
+      open(11,file=output_file2,status='unknown',iostat=ier)
 
       if (iilc .eq. 0) then
          write(*,*) 'NO Light Curve Plot'
          stop
       endif
       write(*,*) 'number of pts read for light curve:',iilc!,spectype(npt(sfound),sfound)
-      if (ixray .eq. 0) then
-         mjdlow(1)=0
-         mjdup(1)=0
+      if (iilc .eq. 0) then
+         mjdlow=0
+         mjdup=0
+      endif
+      if (ialma .eq. 0) then
          lcup(1)=0
          lclow(1)=0
       endif
-      if (ialma .eq. 0) then
-         mjdlow(3)=0
-         mjdup(3)=0
-         lcup(3)=0
-         lclow(3)=0
-      endif
-      if (iilc-ixray-ialma .eq. 0) then
-         mjdlow(2)=0
-         mjdup(2)=0
+      if (ixray .eq. 0) then
          lcup(2)=0
          lclow(2)=0
+      endif
+      if (iilc-ixray-ialma .eq. 0) then
+         lcup(3)=0
+         lclow(3)=0
       endif
 
       lcup=alog10(lcup)+0.5
@@ -228,6 +283,8 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
       mjdlow=mjdlow-20.
       mjdup=mjdup+20.
       mjdavg=(mjdst_lc+mjded_lc)/2.
+
+      write(11,'(i4,2x,a,2(2x,f9.5),2x,i2)') i,"matched source",ra(i),dec(i),stype(i)
 
 !write(*,*) i
 c      IER = PGBEG(0,"/xwindow",1,1)
@@ -247,7 +304,7 @@ c      endif
 c      write(*,*) mjdavg(1:8,1)
 
       if (ialma .ne.0) then
-      CALL PGENV(mjdlow(3),mjdup(3),lclow(3),lcup(3),0,1)
+      CALL PGENV(mjdlow,mjdup,lclow(1),lcup(1),0,1)
       if ((iilc-ixray-ialma .eq. 0) .and. (ixray .eq. 0)) then
          xtitle='MJD'
       else
@@ -256,7 +313,9 @@ c      write(*,*) mjdavg(1:8,1)
       CALL PGLAB(xtitle, 'Log \gnf\d\gn\u (erg/s/cm\u2\d)','100 GHz')
       call pgsci(3)
       do j=1,iilc
-         if ((j .le. ialma+ixray) .and. (j .gt. ixray)) then
+         if (freq_lc(j) .lt. 1.e14 ) then
+            write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
+     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
                CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
@@ -286,16 +345,22 @@ c panel for X-ray
       call pgsci(1)
       call pgsch(1.3)
       if (ixray .ne. 0) then
-      CALL PGENV(mjdlow(1),mjdup(1),lclow(1),lcup(1),0,1)
+      CALL PGENV(mjdlow,mjdup,lclow(2),lcup(2),0,1)
       if (iilc-ixray-ialma .eq. 0) then
          xtitle='MJD'
       else
          xtitle=''
       endif
       CALL PGLAB(xtitle, 'Log \gnf\d\gn\u (erg/s/cm\u2\d)','1 keV')
-      call pgsci(4)
       do j=1,iilc
-         if (j .le. ixray) then
+         if ((freq_lc(j) .gt. 1.e14) .and. (freq_lc(j) .lt. 1.e20)) then
+            write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
+     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
+            if (lctype(j) .eq. 1) then
+               call pgsci(5) !light blue, for OUSPEC
+            else
+               call pgsci(4) !Dark blue for OUSXB
+            endif
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
                CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
@@ -325,11 +390,13 @@ c second panel for LC
       call pgsci(1)
       call pgsch(1.3)
       if (ivhe .ne. 0) then
-      CALL PGENV(mjdlow(2),mjdup(2),lclow(2),lcup(2),0,1)
+      CALL PGENV(mjdlow,mjdup,lclow(3),lcup(3),0,1)
       CALL PGLAB('MJD', 'Log \gnf\d\gn\u (erg/s/cm\u2\d)','1 TeV')
       call pgsci(8)
       do j=1,iilc
-         if (j .gt. ixray+ialma) then
+         if (freq_lc(j) .gt. 1.e20) then
+            write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
+     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
                CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
