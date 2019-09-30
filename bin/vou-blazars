@@ -292,6 +292,7 @@ echo conesearch --db ${HERE}/cats2.ini --catalog MST9Y --ra $1  --dec $2 --radiu
 echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fmev.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}agile.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog FermiGRB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fgrb.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog MilliQuas --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mquas.1.csv >> ${pidnm}vosearch.txt
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
@@ -393,7 +394,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
          decint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $6}'`
          typeint=`head -$jj ${pidnm}no_matched_temp.txt | tail -1 |  awk '{print $10}'`
          #declare -i typeint
-         if [ $typeint -gt 50 ]; then
+         if [ $typeint -gt 50 -o $typeint -lt 0 ]; then
             cc=$cc+1
          fi
       done
@@ -617,10 +618,9 @@ do
       cat phase1
    elif [ $source == nocand ]; then
       echo TRY OTHER COORDINATE!!!
-      echo Exit the source exploring routine.
       source=q
    elif [ $source == q ]; then
-      echo STOP !!!!Exit the source exploring routine!!!!
+      echo 
 
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
@@ -677,6 +677,7 @@ do
          zoomin=60.
          echo set default second phase zoomin area to 1.0 arcmin.
       fi
+      rm -f ${pidnm}LC.txt
       rm -f ${pidnm}error_map.*ps
       rm -f ${pidnm}sed.*ps
       rm -f ${pidnm}LC.*ps
@@ -706,7 +707,7 @@ do
       rm -f ${pidnm}Out4SedTool.txt
       rased=`echo $racand | sed 's/\./_/g'`
       decsed=`echo $deccand | sed 's/\./_/g' | sed 's/-/m/g'`
-      ${BINF}/convert_sed ${pidnm}Sed.txt ${pidnm}Out4SedTool.txt
+      ${BINF}/convert_sed ${pidnm}Sed.txt ${pidnm}Out4SedTool.txt ${pidnm}Sed.csv
       [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
 ##############################################################
 

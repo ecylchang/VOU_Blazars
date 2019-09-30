@@ -273,9 +273,11 @@ c      write(*,*) '========================'
                   xxss_type(trackxx(j))=xx_type(j)
                else
 c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
-                  if ((xx_type(j) .eq. 55) .or. (xx_type(j) .eq. 59) .or. (xx_type(j) .eq. 58)) then
+                  if ((xx_type(j) .eq. 55) .or. (xx_type(j) .eq. 59) .or. (xx_type(j) .eq. 58) .or.
+     &                (xx_type(j) .eq. 61) .or. (xx_type(j) .eq. 64)) then
                      if ((xxss_type(trackxx(j)) .ne. 55) .or. (xxss_type(trackxx(j)) .ne. 59)
-     &                 .or. (xxss_type(trackxx(j)) .ne. 58)) then
+     &                .or. (xxss_type(trackxx(j)) .ne. 58) .or. (xxss_type(trackxx(j)) .eq. 61)
+     &                .or. (xxss_type(trackxx(j)) .eq. 64)) then
                         ra_xxss(trackxx(j))=ra_xx(j)
                         dec_xxss(trackxx(j))=dec_xx(j)
                         posindxx(trackxx(j))=j
@@ -288,7 +290,8 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                      endif
                   else if ((xx_type(j) .eq. 51) .or. (xx_type(j) .eq. 52) .or. (xx_type(j) .eq. 57)) then
                      if ((xxss_type(trackxx(j)) .eq. 53) .or. (xxss_type(trackxx(j)) .eq. 54)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)) then
+     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)
+     &                 .or. (xxss_type(trackxx(j)) .eq. 62) .or. (xxss_type(trackxx(j)) .eq. 63)) then
                         ra_xxss(trackxx(j))=ra_xx(j)
                         dec_xxss(trackxx(j))=dec_xx(j)
                         posindxx(trackxx(j))=j
@@ -300,10 +303,11 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                            posindxx(trackxx(j))=j
                         endif
                      endif
-                  else if ((xx_type(j) .eq. 53) .or. (xx_type(j) .eq. 54) .or.
-     &                   (xx_type(j) .eq. 56) .or. (xx_type(j) .eq. 60)) then
+                  else if ((xx_type(j) .eq. 53) .or. (xx_type(j) .eq. 54) .or. (xx_type(j) .eq. 62)
+     &              .or. (xx_type(j) .eq. 56) .or. (xx_type(j) .eq. 60) .or. (xx_type(j) .eq. 63)) then
                      if ((xxss_type(trackxx(j)) .eq. 53) .or. (xxss_type(trackxx(j)) .eq. 54)
-     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)) then
+     &                 .or. (xxss_type(trackxx(j)) .eq. 56) .or. (xxss_type(trackxx(j)) .eq. 60)
+     &                 .or. (xxss_type(trackxx(j)) .eq. 62) .or. (xxss_type(trackxx(j)) .eq. 63)) then
                         if (poserr_xx(j) .lt. poserr_xxss(trackxx(j)) ) then
                            ra_xxss(trackxx(j))=ra_xx(j)
                            dec_xxss(trackxx(j))=dec_xx(j)
@@ -328,8 +332,8 @@ c         write(*,*) i,posind(i),ra_xxss(i),dec_xxss(i),nrep(i),back(i,1:nrep(i)
                   !write(*,*) 'nearby X-ray',ra_xx(i),dec_xx(i),xx_type(ixx)
                   irrrep=irrrep+1
 c                  xrayrepeat(nrep(i),i)=j
-                  trackrr(i)=trackrr(j)
-                  nreprr(trackrr(i))=nreprr(trackrr(i))+1
+                  trackrr(i)=trackrr(j) !for repeated sources track back to the number
+                  nreprr(trackrr(i))=nreprr(trackrr(i))+1 !repeated number
                   repnumberrr(i)=nreprr(trackrr(i))
 c                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))
                   goto 96
@@ -340,7 +344,7 @@ c                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackr
          trackrr(i)=irrss
          nreprr(trackrr(i))=1
          repnumberrr(i)=nreprr(trackrr(i))
-c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i)!,back(i,repnumber(i))
+c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))!,back(i,repnumber(i))
 96    continue
       enddo
       if (irrss+irrrep .ne. irr ) write(*,*) 'Warning! may have the wrong number.'
@@ -348,7 +352,7 @@ c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i)!,back(i,repnumber(i))
       do i=1,irrss
          do j=1,irr
             if (trackrr(j) .eq. i) then
-               backrr(i,repnumberrr(j))=j
+               backrr(i,repnumberrr(j))=j !matrix for repeated source id
                if (repnumberrr(j) .eq. 1) then
                   flux_rrss(trackrr(j))=flux_rr(j)
                   ra_rrss(trackrr(j))=ra_rr(j)
@@ -356,7 +360,7 @@ c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i)!,back(i,repnumber(i))
                   posindrr(trackrr(j))=j
                   rrss_type(trackrr(j))=rr_type(j)
                else
-c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
+c                  write(*,*) j,trackrr(j),rr_type(j),poserr_rr(j),repnumberrr(j)
                   if (rr_type(j) .eq. 1) then
                      if (rrss_type(trackrr(j)) .ne. 1) then
                         ra_rrss(trackrr(j))=ra_rr(j)
@@ -491,11 +495,11 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
       enddo
 
       if ((ipass .eq. 0) .and. (isource .ne. 0)) then
-         print *,achar(27),'[35;1m No candidates were found in intermediate phase',achar(27),'[0m'
+         print *,achar(27),'[35;1m No Candidates Found in Intermediate Phase',achar(27),'[0m'
          stop
       endif
       if (ipass+isource .eq. 0) then
-         print *,achar(27),'[31;1m Unfortunately, no any candidates were found',achar(27),'[0m'
+         print *,achar(27),'[31;1m No Candidates Found！',achar(27),'[0m'
          stop
       endif
 c      write(*,*) pass2(1:ipass)
@@ -505,7 +509,7 @@ c      write(*,*) pass2(1:ipass)
          if (k .le. irr) then
             do s=1,nreprr(k)
                m=backrr(k,s)
-               if (i+isource .ne. 1) write(12,*) "===================="
+               if ((i+isource .ne. 1) .or. (s .ne. 1)) write(12,*) "===================="
                write(12,'(i4,2x,a,2(2x,f9.5),2x,a,2x,i2)') i+isource,"matched source",
      &            ra_rr(m),dec_rr(m),'source type',int(code/10000)
                write(12,'(4(es10.3,2x),2(f9.5,2x),f7.3,2x,2(f10.4,2x),i2)') frequency_rr(m),flux_rr(m),
@@ -514,7 +518,7 @@ c      write(*,*) pass2(1:ipass)
          else
             do s=1,nrepxx(k-irr)
                m=backxx(k-irr,s)
-               if (i+isource .ne. 1) write(12,*) "===================="
+               if ((i+isource .ne. 1) .or. (s .ne. 1)) write(12,*) "===================="
                write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') i+isource,"matched source",
      &           abs(ra_xx(m)),dec_xx(m),'source type',int(code/10000)
                write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,2(f10.4,2x),i2)') frequency_xx(m),flux_xx(m),

@@ -87,7 +87,7 @@ c need to define the range first then plot...
       ivhe=0
       iilc=0
       do j=1,npt(i)
-         if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OUSPEC'))
+         if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OUSPEC') .or. (spectype(j,i) == 'OUSXG'))
      &              .and. (frequency(j,i) .eq. 2.418E17)) then
             ixray=ixray+1
             iilc=iilc+1

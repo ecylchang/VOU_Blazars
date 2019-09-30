@@ -10,8 +10,8 @@ c
       REAL*4 flux,flux_err
       real*8 rra,rdec
       CHARACTER*2 ul
-      character*14 stringin
-      CHARACTER*80 input_file,output_file
+      character*14 stringin,catalog
+      CHARACTER*80 input_file,output_file,output_file2
       Character*150 string
       LOGICAL there,ok
       ok = .TRUE. 
@@ -25,9 +25,14 @@ c
       call rmvlbk(string)
       in=index(string(1:length),' ')
       input_file=string(1:in-1)
-      output_file=string(in+1:length)
+      im=index(string(in+1:length),' ')+in
+      output_file=string(in+1:im-1)
+      in=im
+c      im=index(string(in+1:length),' ')+in
+      output_file2=string(in+1:length)
+
 c      write(*,*) input_file
-c      write(*,*) output_file
+c      write(*,*) output_file2
 
       lu_in = 10
       lu_out = 11
@@ -47,12 +52,15 @@ c      write(*,*) rra,rdec
       read(lu_in,*) string
       read(lu_in,*) string
       open(lu_out,file=output_file,status='unknown',iostat=ier)
+      open(12,file=output_file2,status='unknown',iostat=ier)
+c      write(12,'(f10.5,'','',f10.5)') rra,rdec
+      write(12,'(a)') "freq. ,flux ,err_flux ,MJD_start ,MJD_end ,catalog"
       DO WHILE(ok)
          ul = '  '
          READ(lu_in,'(a)',end=99) string 
 c         print *,'string ',string(1:lenact(string))
          IF (string(2:2).NE.'=') THEN 
-           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend
+           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend,catalog
            flux_err = (err_up-err_lo)/2.
            IF ((flux .NE. 0.) .or. (err_up .ne. 0.)) THEN
              if (flux .lt. 0.) flux = -flux
@@ -65,6 +73,9 @@ c         print *,'string ',string(1:lenact(string))
              write(lu_out,'(f9.5,'' | '',f9.5,'' | '',es10.3,'' | '',es10.3,'' | '',
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')
      &                      rra,rdec,freq,one,flux,flux_err,mjdstart,mjdend,ul
+             write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',
+     &        f10.2,'','',a)') freq,flux,flux_err,mjdstart,mjdend,catalog
+
            ENDIF
          ENDIF
       ENDDO 

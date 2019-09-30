@@ -8,13 +8,13 @@ c
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
       INTEGER*4 lu_out
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(10000),s14(200)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(10000),s14(5000)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
       integer*8 code(10000),icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
-      REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(200)
-      REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(200)
+      REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(5000)
+      REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(5000)
       REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(10000)
       REAL*4 ra_col12(10000),dec_col12(10000),csx12(10000),ra_col13(10000),dec_col13(10000)
       REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(10000)
@@ -37,7 +37,7 @@ c
       CHARACTER*1 sign
       CHARACTER*80 string
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
-      CHARACTER*4 tcol14(200),tcol12(10000)
+      CHARACTER*4 tcol14(5000),tcol12(10000)
       CHARACTER*15 newstring
       CHARACTER*80 device ,strzoom
       CHARACTER*60 title , filein,fileout
@@ -485,11 +485,13 @@ c              cs = max(1.0,cradio*8./99.)
                   s14(icol14)=7 !for gamma-ray source
                else if (om .eq. -22) then ! for GRB
                   s14(icol14)=10
+               else if ((om .eq. -70) .or. (om .eq. -77)) then
+                  s14(icol14)=3
                else
                   s14(icol14)=-5 !for pulsar
                endif
                !write(*,*) isource
-               if (om .eq. -99 ) then !for extra pulsar and GRB
+               if ((om .eq. -99 )) then !for extra pulsar and GRB
                   write(tcol14(icol14),'(i4)') isource
                else
                   write(tcol14(icol14),'(a)') "    "
@@ -498,8 +500,8 @@ c              cs = max(1.0,cradio*8./99.)
             endif
          endif
       ENDDO
-      !write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13
-
+      write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
+c      icol14=0
       !write(*,*) 'CENTER',ra_center,dec_center
 
       IF (icol1.GT.0) THEN 
@@ -664,15 +666,20 @@ C- PG
            !endif
          enddo
       endif
+      write(*,*) 'number of cat. 14 sources',icol14
       if (icol14 .gt. 0) then
          do j=1,icol14
+            !write(*,*) ra_col14(j),dec_col14(j),j,s14(j)
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
             call pgsch(1.3)
             if (s14(j) .eq. 10) then
                call pgsci(3)
+            else if (s14(j) .eq. 3) then
+               CALL pgsci(15)
             else
                call pgsci(12)
             endif
+c            write(*,*) j,s14(j),tcol14(j)
             call pgpoint(1,x,y,s14(j))
             if (tcol14(j) .ne. "    ") then
                call pgsch(1.)

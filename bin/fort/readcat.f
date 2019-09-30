@@ -66,7 +66,7 @@ c the catalog without source name
      &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
-     &          .or. (catalog(1:it-1) == 'veritas') ) then
+     &          .or. (catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'mquas')) then
                is=0
                ie=index(value(1:len(value)),',')
             endif
@@ -222,6 +222,7 @@ c               if (catalog(1:it-1) == 'fermi8yr') poserr=poserr*60.
 c read the flux
             is=ie
             ie=index(value(is+1:len(value)),' ')+is
+            if (catalog(1:it-1) == 'mquas') ie=is+40
             read(value(is+1:ie-1),'(a)') flux
             if ((catalog(1:it-1) == '3hsp') .or. (catalog(1:it-1) == '5bzcat') .or.
      &           (catalog(1:it-1) == 'zw') .or. (catalog(1:it-1) == 'psz2') .or.

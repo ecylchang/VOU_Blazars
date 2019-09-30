@@ -2222,7 +2222,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                if ((FluxL_gam(igam,8) .lt. 0.) .or. (FluxL_gam(igam,8) .eq. flux_gam(igam,8))) then
                  FluxU_gam(igam,8)=Ferr_gam(igam,8)*3.
                  FluxL_gam(igam,8)=0.
-               endif
+               endif 
                call fluxtofdens(slope_gam(igam,1),30.,300.,flux_gam(igam,8),100.,fdens,nudens)
                flux_gam(igam,8)=fdens
                frequency_gam(igam,8)=nudens
@@ -2403,26 +2403,39 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_gam(igam)
-               poserr_gam(igam)=sqrt((0.01+poserr_gam(igam)**2))*3600.
+               poserr_gam(igam)=sqrt((0.1+poserr_gam(igam)**2))*3600.
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) slope_gam(igam,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam,1)
+               slope_gam(igam,1)=slope_gam(igam,1)+1
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1) !30-50 MeV
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1) !0.1-10 GeV
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
                flux_gam(igam,1)=flux_gam(igam,1)*1.e-8
                FluxU_gam(igam,1)=FluxU_gam(igam,1)*1.e-8
                FluxL_gam(igam,1)=FluxL_gam(igam,1)*1.e-8
-               slope_gam(igam,1)=2.0 !!!!!!!!!!change later
-               call fluxtofdens(slope_gam(igam,1),0.03,0.05,flux_gam(igam,1),0.04,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,flux_gam(igam,1),1.,fdens,nudens)
                flux_gam(igam,1)=fdens
                frequency_gam(igam,1)=nudens
-               call fluxtofdens(slope_gam(igam,1),0.03,0.05,FluxU_gam(igam,1),0.04,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,FluxU_gam(igam,1),1.,fdens,nudens)
                FluxU_gam(igam,1)=fdens
-               call fluxtofdens(slope_gam(igam,1),0.03,0.05,FluxL_gam(igam,1),0.04,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,FluxL_gam(igam,1),1.,fdens,nudens)
                FluxL_gam(igam,1)=fdens
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,flux_gam(igam,1),5.,fdens,nudens)
+               flux_gam(igam,2)=fdens
+               frequency_gam(igam,2)=nudens
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,FluxU_gam(igam,1),5.,fdens,nudens)
+               FluxU_gam(igam,2)=fdens
+               call fluxtofdens(slope_gam(igam,1),0.1,10.,FluxL_gam(igam,1),5.,fdens,nudens)
+               FluxL_gam(igam,2)=fdens
                gam_type(igam)='AGILE'
             ELSE IF (catalog(1:4) =='fmev') then
                is=ie
@@ -3510,8 +3523,10 @@ c         enddo
                enddo
             else if (gam_type(i) == 'AGILE') then
                call graphic_code(flux_gam(i,1),94,code)
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
-     &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+               do s=1,2
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+               enddo
             else if (gam_type(i) == 'FermiMeV') then
                call graphic_code(flux_gam(i,1),94,code)
                do s=1,2
