@@ -366,6 +366,9 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       echo set default error circle area to 1 arcmin in Intermediate phase
    fi
    radcrit=`echo $radint | cut -d'.' -f 1`
+   [ -z $radcrit ] && radcrit=1
+   [ $radcrit -lt 1 ] && radcrit=1
+#   echo 'radcrit' $radcrit
    if [ -z $pid ]; then
       process=y
    else
@@ -617,7 +620,7 @@ do
       echo
       cat phase1
    elif [ $source == nocand ]; then
-      echo TRY OTHER COORDINATE!!!
+#      echo TRY OTHER COORDINATE!!!
       source=q
    elif [ $source == q ]; then
       echo 
