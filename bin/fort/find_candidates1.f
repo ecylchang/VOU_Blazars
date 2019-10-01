@@ -30,7 +30,7 @@ c
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(100)
       INTEGER*4 ipc_type(200),maxi_type(200),igrb,xxtt,bary(500)
-      REAL*8 ra_other(5000),dec_other(5000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
+      REAL*8 ra_other(8000),dec_other(8000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
       REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500),ra_1kev(3000,10000)
@@ -59,7 +59,7 @@ c
       real*4 errrad,errmaj,errmin,errang,savemjy(5000),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(5000),name_cat(1000),namegam(200)
+      CHARACTER*30 name_other(8000),name_cat(1000),namegam(200)
       CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
       CHARACTER*8 catalog,classmq(5000)
       CHARACTER*800 string,repflux
@@ -1522,10 +1522,10 @@ c               namegam(igam)(1:4)='GRB '
                   write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
                endif
             endif
-            write(*,*) namegam(igam)
+c            write(*,*) namegam(igam)
          ELSE
             iother=iother+1
-            IF (iother > 5000) Stop 'Too many catalogued sources'
+            IF (iother > 8000) Stop 'Too many catalogued sources'
             ra_other(iother)=ra
             dec_other(iother)=dec
             is=ie
@@ -1555,7 +1555,7 @@ c               namegam(igam)(1:4)='GRB '
             endif
             if (name_other(iother)(1:2) == 'MQ') then
 c               write(*,*) name_other(iother),'   ',classmq(iother)
-               write (11,'(f9.5,2x,f9.5,2x,i6)') ra_other(iother),dec_other(iother),int(-7777)
+               write (13,'(f9.5,2x,f9.5,2x,i6)') ra_other(iother),dec_other(iother),int(-7777)
                ra_other(iother) = -ra_other(iother)
             endif
          ENDIF
@@ -1912,7 +1912,7 @@ c            ENDIF
 
          IF (found) THEN 
             ifound = ifound +1
-            write(*,*) 'number of matched',ifound
+c            write(*,*) 'number of matched',ifound
             no_found = 0
             DO i = 0,5
                IF (types(i) > no_found) THEN
@@ -2071,9 +2071,9 @@ c                     ra_other(i) = -ra_other(i)
                ENDIF
                IF ((type_average .gt. -20) .and. (type_average .lt. 0)) THEN
                   CALL graphic_code (flux_x,flux_radio(k),type_average,code)
-                  write(11,'(f9.5,2x,f9.5,2x,i6)') -ra_other(i),dec_other(i),int(code)
+                  write(11,'(f9.5,2x,f9.5,2x,i6)') abs(ra_other(i)),dec_other(i),int(code)
                ELSE if ((code .eq. -8888)) then!.or. (code .eq. -7000)) then
-                  write(11,'(f9.5,2x,f9.5,2x,i6)') -ra_other(i),dec_other(i),int(code)
+                  write(11,'(f9.5,2x,f9.5,2x,i6)') abs(ra_other(i)),dec_other(i),int(code)
                ENDIF
                type_average=0
                code=0
@@ -2541,9 +2541,9 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          CALL graphic_code (xflux(i),flux_source(i)/rrconst(i),ttsource(i),code)
          if (bary(i) .eq. 0) then
             errfrx=(poserr_source(i))/(poserr_source(i)+xxerr(i))
-c            write(*,*) ra_source(i),dec_source(i),ra_xx(i),dec_xx(i)
-c            write(*,*) poserr_source(i),xxerr(i)
             call DIST_SKY(ra_source(i),dec_source(i),ra_xx(i),dec_xx(i),dist)
+c            write(*,*) ra_source(i),dec_source(i),ra_xx(i),dec_xx(i)
+c            write(*,*) poserr_source(i),xxerr(i),dist,errfrx
         call int_great_circle(ra_source(i),dec_source(i),ra_xx(i),dec_xx(i),errfrx,dist,ra_bary,dec_bary)
          else if (bary(i) .eq. 1) then
             ra_bary=ra_xx(i)
@@ -3094,22 +3094,24 @@ C
       END
 c
 ccc
-      subroutine int_great_circle(lat1,lon1,lat2,lon2,f,d,lat,lon)
+      subroutine int_great_circle(lon1,lat1,lon2,lat2,f,d,lon,lat)
       implicit none
       real*8 lat1,lon1,lat2,lon2,lat,lon,d,radian
       real*4 f,A,B,x,y,z
 
       radian=57.2957795
-      lat1=lat1/radian
+      lat1=(lat1)/radian
       lat2=lat2/radian
       lon1=lon1/radian
       lon2=lon2/radian
       d=d/radian
+c      write(*,*) 'TEST value',lat1,lat2,lon1,lon2,d
       A=sin((1-f)*d)/sin(d)
       B=sin(f*d)/sin(d)
       x = A*cos(lat1)*cos(lon1) +  B*cos(lat2)*cos(lon2)
       y = A*cos(lat1)*sin(lon1) +  B*cos(lat2)*sin(lon2)
       z = A*sin(lat1)           +  B*sin(lat2)
+c      write(*,*) 'TEST value',A,B,x,y,x
       lat=atan2(z,sqrt(x**2+y**2))*radian
       lon=atan2(y,x)*radian
       RETURN
