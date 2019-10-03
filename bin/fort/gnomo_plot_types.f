@@ -94,7 +94,7 @@ c         write(*,*) device
          STOP
       ENDIF
 
-c      ra_o=ra_o+0.15
+c      ra_err2=ra_err2-1.71 !6.56-4.41
 c      dec_o=dec_o+0.1
 c      write(*,*) ra_o,dec_o
 
@@ -227,6 +227,7 @@ c      CALL pgtbox('BNSTDY',step,0,'BNSTDY',step,0)
       CALL PGSCR(10,R,G,B)
       CALL PGPOLY(100,x,y)
 
+
       call pgsci(4)
       CALL pgsls(3)
       CALL pgslw(3)
@@ -271,6 +272,7 @@ c     colore linea
       call pgsci(14)
       call pgscr(14,0.1,0.6,0.3)
 
+      CALL gnom_projection(1,ra_center,dec_center,ra_err2,dec_err2,x_err2,y_err2)
       IF(ra_center.NE.ra_err2.OR.dec_center.NE.dec_err2) THEN
       CALL gnom_ellipse (100,dec_center,ellipser1_2,ellipser2_2,ellipserot_2,x_err2,y_err2,x,y)
       CALL pgline(100,x,y)

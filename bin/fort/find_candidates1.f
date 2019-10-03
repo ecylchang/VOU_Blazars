@@ -3111,9 +3111,10 @@ c      write(*,*) 'TEST value',lat1,lat2,lon1,lon2,d
       x = A*cos(lat1)*cos(lon1) +  B*cos(lat2)*cos(lon2)
       y = A*cos(lat1)*sin(lon1) +  B*cos(lat2)*sin(lon2)
       z = A*sin(lat1)           +  B*sin(lat2)
-c      write(*,*) 'TEST value',A,B,x,y,x
+c      write(*,*) 'TEST value',A,B,x,y,z
       lat=atan2(z,sqrt(x**2+y**2))*radian
       lon=atan2(y,x)*radian
+      if (lon .lt. 0.) lon=lon+360.
       RETURN
       end
 c
