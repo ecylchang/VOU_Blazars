@@ -225,12 +225,17 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) minor
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
-                  if ((is .ne. ie-1) .and. (erraxis .eq. 0.)) read(string(is+1:ie-1),*) erraxis
+                  if ((is .ne. ie-1) .and. (erraxis .ne. 0.)) then
+                     read(string(is+1:ie-1),*) erraxis
+                  else
+                     erraxis=0.
+                  endif
                   is=ie
                   ie=index(string(is+1:len(string)),' ')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
                   posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                   posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
+                  write(*,*) ra_radio(iradio),dec_radio(iradio),major,minor,erraxis
                   if (erraxis .ne. 0.) poserr_radio(iradio)=max(posxerr,posyerr)
                else
                   is=ie
@@ -2083,7 +2088,9 @@ ccccccccc  check X-ray points
             ra_xx(sfound)=0
             dec_xx(sfound)=0
             do i=1,ix
-               if (poserr_1kev(i,k) .lt. 15.) then
+               call DIST_SKY (ra_source(sfound),dec_source(sfound),ra_xx(sfound),dec_source(sfound),dist)
+               if (((poserr_1kev(i,k) .lt. 15.) .and. (poserr_source(sfound) .lt. 15.))
+     &           .or. (dist/3600. .gt. 12.)) then
                   if ((ra_xx(sfound) .eq. 0.) .and. (dec_xx(sfound) .eq. 0.))  then
                      ra_xx(sfound)=ra_1kev(i,k)
                      dec_xx(sfound)=dec_1kev(i,k)
