@@ -235,7 +235,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) posang
                   posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                   posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
-                  write(*,*) ra_radio(iradio),dec_radio(iradio),major,minor,erraxis
+c                  write(*,*) ra_radio(iradio),dec_radio(iradio),major,minor,erraxis
                   if (erraxis .ne. 0.) poserr_radio(iradio)=max(posxerr,posyerr)
                else
                   is=ie
@@ -1561,7 +1561,7 @@ c            write(*,*) namegam(igam)
             if (name_other(iother)(1:2) == 'MQ') then
 c               write(*,*) name_other(iother),'   ',classmq(iother)
                write (13,'(f9.5,2x,f9.5,2x,i6)') ra_other(iother),dec_other(iother),int(-7777)
-               ra_other(iother) = -ra_other(iother)
+c               ra_other(iother) = -ra_other(iother)
             endif
          ENDIF
       ENDDO
@@ -2056,11 +2056,11 @@ c               write(*,*) dist*3600.
                      code=-8888
                      write(*,'(2x,a,1x,a)') name_other(i)
                      ra_other(i) = -ra_other(i)
-c                  ElSE IF (name_other(i)(1:5) == 'mquas') THEN
-c                     type_average = -70
-c                     code=-7000
-c                     write(*,'(2x,a,1x,a)') name_other(i)
-c                     ra_other(i) = -ra_other(i)
+                  ElSE IF (name_other(i)(1:2) == 'MQ') THEN
+                     type_average = -70
+                     code=-7000
+                     write(*,'(2x,a,1x,a)') name_other(i)
+                     ra_other(i) = -ra_other(i)
                   ENDIF
                ENDIF
                IF (dist < min_dist_cluster) THEN
@@ -2077,7 +2077,7 @@ c                     ra_other(i) = -ra_other(i)
                IF ((type_average .gt. -20) .and. (type_average .lt. 0)) THEN
                   CALL graphic_code (flux_x,flux_radio(k),type_average,code)
                   write(11,'(f9.5,2x,f9.5,2x,i6)') abs(ra_other(i)),dec_other(i),int(code)
-               ELSE if ((code .eq. -8888)) then!.or. (code .eq. -7000)) then
+               ELSE if ((code .eq. -8888) .or. (code .eq. -7000)) then
                   write(11,'(f9.5,2x,f9.5,2x,i6)') abs(ra_other(i)),dec_other(i),int(code)
                ENDIF
                type_average=0
@@ -2558,6 +2558,7 @@ c            write(*,*) poserr_source(i),xxerr(i),dist,errfrx
          endif
 c            write(*,*) ra_bary,dec_bary
          write(11,'(f9.5,2x,f9.5,2x,i6)') ra_bary,dec_bary,int(code)
+         
       enddo
       IF (ifound  ==  0) print *,achar(27),'[31;1m No radio/X-ray matches were found.',achar(27),'[0m'
 

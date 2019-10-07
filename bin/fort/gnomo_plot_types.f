@@ -501,7 +501,7 @@ c              cs = max(1.0,cradio*8./99.)
             endif
          endif
       ENDDO
-      write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
+c      write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
 c      icol14=0
       !write(*,*) 'CENTER',ra_center,dec_center
 
@@ -673,8 +673,14 @@ c      write(*,*) 'number of cat. 14 sources',icol14
             !write(*,*) ra_col14(j),dec_col14(j),j,s14(j)
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
             call pgsch(1.3)
-            if ((s14(j) .eq. 10) .or. (s14(j) .eq. 20)) then
+            if (s14(j) .eq. 10) then
                call pgsci(3)
+            else if (s14(j) .eq. 20) then
+               R = 32./255.
+               G = 149./255.
+               B = 83./255.
+               CALL PGSCR(15,R,G,B)
+               call pgsci(15)
             else
                call pgsci(12)
             endif

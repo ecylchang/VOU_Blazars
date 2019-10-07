@@ -421,12 +421,15 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
                   if (aruv .le. 0.75 ) then
                      ii1=ii1+1 !!!remove UV-r slope strange source 0.85
                      nnruv=nnruv+1
-                     if (ii1 .eq. 1) write(*,'(a,i4,a)') "----------------------------------------"
+                     if (ii1 .eq. 1) then
+                         write(*,'(a,i4,a)') "----------------------------------------"
+                         write (*,'(a,i4)') "source nr.", isource+ii1
+                     endif
                      if ((ii1 .eq. 1) .or. ((m .ne. 1) .and. (nnruv .eq. 1)))
-     &                 write(*,'(f9.5,2x,f9.5,a,f9.3,a)') ra_rr(k),dec_rr(k)," radio source ",
-     &                 flux_rr(k)/frequency_rr(k)/1.E-26," mJy"
-                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
-                     write(*,'(6x,"radio-UV slope: ",f6.3)') aruv
+     &                 write(*,'(f9.5,2x,f9.5,a,f9.3,a,2x,i2)') ra_rr(k),dec_rr(k)," radio source ",
+     &                 flux_rr(k)/frequency_rr(k)/1.E-26," mJy",rr_type(k)
+c                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
+c                     write(*,'(6x,"radio-UV slope: ",f6.3)') aruv
                   endif
                endif
             enddo
@@ -438,14 +441,16 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
                   if (alphar .le. 0.7 ) then
                      ii2=ii2+1 !!!remove radio extended sources
                      nnralpha=nnralpha+1
-                     if ((ii2 .eq. 1) .and. (ii1 .eq. 0))
-     &                 write(*,'(a,i4,a)') "----------------------------------------"
+                     if ((ii2 .eq. 1) .and. (ii1 .eq. 0)) then
+                         write(*,'(a,i4,a)') "----------------------------------------"
+                         write (*,'(a,i4)') "source nr.", isource+ii1+ii2
+                     endif
                      if (((ii2 .eq. 1) .and. (ii1 .eq. 0)) .or. ((m .ne. 1) .and. (nnruv .eq. 0)
-     &                .and. (nnralpha .eq. 1))) write(*,'(f9.5,2x,f9.5,a,f9.3,a)')  ra_rr(k),
-     &                dec_rr(k)," radio source ",flux_rr(k)/frequency_rr(k)/1.E-26," mJy"
-                     write(*,'(a,f9.3," mJy",10x,f7.3," arcsec away")')
-     &                type_4p8(j),flux_4p8(j)/flux2nufnu_4p8,dist*3600.
-                     write(*,'("radio slope: ",f6.3)') alphar
+     &                .and. (nnralpha .eq. 1))) write(*,'(f9.5,2x,f9.5,a,f9.3,a,2x,i2)')  ra_rr(k),
+     &                dec_rr(k)," radio source ",flux_rr(k)/frequency_rr(k)/1.E-26," mJy",rr_type(k)
+c                     write(*,'(a,f9.3," mJy",10x,f7.3," arcsec away")')
+c     &                type_4p8(j),flux_4p8(j)/flux2nufnu_4p8,dist*3600.
+c                     write(*,'("radio slope: ",f6.3)') alphar
                   endif
                endif
             enddo
@@ -476,12 +481,15 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
                   if (auvx .le. 1.4) then
                      ii1=ii1+1 !!!remove UV-x slope strange source 0.85
                      nnuvx=nnuvx+1
-                     if (ii1 .eq. 1) write(*,'(a,i4,a)') "----------------------------------------"
+                     if (ii1 .eq. 1) then
+                        write(*,'(a,i4,a)') "----------------------------------------"
+                        write(*,'(a,i4)') "source nr.", ipass+ii1+isource
+                     endif
                      if ((ii1 .eq. 1) .or. ((m .ne. 1) .and. (nnuvx .eq. 1)))
-     $                  write(*,'(f9.5,2x,f9.5,a,es10.3)')  abs(ra_xx(k)),
-     $                  dec_xx(k)," X-ray source with 1 keV flux ",flux_xx(k)
-                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
-                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
+     $                  write(*,'(f9.5,2x,f9.5,a,es10.3,2x,i2)')  abs(ra_xx(k)),
+     $                  dec_xx(k)," X-ray source with 1 keV flux ",flux_xx(k),xx_type(k)
+c                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
+c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
                   endif
                endif
             enddo
