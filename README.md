@@ -1,6 +1,6 @@
 # VOU_Blazars
 
-VOU-BLazars is a tool designed to identify blazars in a given sky region based on multi-frequency information retrieved using Virtual Observatory protocols. This is the first version of the tool; a technical paper describing the tool is in preparation, and a description of the main features is also available in Padovani et al. 2018 MNRAS, 480, 192. Any comments and suggestions are welcomed.
+VOU-BLazars is a tool designed to identify blazars in a given sky region based on multi-frequency information retrieved using Virtual Observatory protocols. This is the first version of the tool; a technical paper describing the tool is submitted to Astronomy and Computing and could be found on arXiv:1909.11455. Any comments and suggestions are welcomed.
 
 ## Update
 
