@@ -28,20 +28,20 @@ c
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(3000,10000),ibigb,bigbind(100)
       INTEGER*4 no_found,sfound,nrep(500),rfound,s,track(500),t(500),aim,xrt_type(3000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(100)
-      INTEGER*4 ipc_type(200),maxi_type(200),igrb,xxtt,bary(500)
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(200)
+      INTEGER*4 ipc_type(200),maxi_type(200),igrb,xxtt,bary(500),rank(500),priority(500)
       REAL*8 ra_other(8000),dec_other(8000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
       REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500),ra_1kev(3000,10000)
-      real*8 ra_cat(1000),dec_cat(1000),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200),ra_bary,dec_bary
+      real*8 ra_cat(200),dec_cat(200),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200),ra_bary,dec_bary
       real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp
       REAL*4 flux_radio(10000),flux_xmm(3000,6),flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
-      REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx
+      REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx,totweight
       REAL*4 frequency_xmm(3000,6),frequency_bmw(500),frequency_rosat(1000)
       REAL*4 frequency_chandra(1000,5),frequency_swift(3000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
-      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis
+      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis,totxerr
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce,poserr_source(500)
       REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(500),rrconst(500)
       REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(10000),flux2nufnu_sumss
@@ -56,12 +56,12 @@ c
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
-      real*4 errrad,errmaj,errmin,errang,savemjy(5000),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
+      real*4 errrad,errmaj,errmin,errang,savemjy(200),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(8000),name_cat(1000),namegam(200)
+      CHARACTER*30 name_other(8000),name_cat(200),namegam(200)
       CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
-      CHARACTER*8 catalog,classmq(5000)
+      CHARACTER*8 catalog,classmq(8000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,catsrc
       common webprograms
@@ -2084,74 +2084,43 @@ c               write(*,*) dist*3600.
                code=0
             ENDDO
             t(ifound)=k !!!recourd the former index
-ccccccccc  check X-ray points
-            ra_xx(sfound)=0
-            dec_xx(sfound)=0
+cccccccccccccccccccccccc  check X-ray points cccccccccccccccccc
+c            ra_xx(sfound)=0
+c            dec_xx(sfound)=0
+            rank(sfound)=0
+c            xxerr(sfound)=0.
+            totweight=0
+            totxerr=0
+            if (ix .gt. 1) rank(sfound)=rank(sfound)+1
+            totweight=sum(1./poserr_1kev(1:ix,k))  !!!!temperately weighting...
+c            write(*,*) 'WEIGHT TOTAL',sfound,totweight
             do i=1,ix
-               call DIST_SKY (ra_source(sfound),dec_source(sfound),ra_xx(sfound),dec_source(sfound),dist)
-               if (((poserr_1kev(i,k) .lt. 15.) .and. (poserr_source(sfound) .lt. 15.))
-     &           .or. (dist/3600. .gt. 12.)) then
-                  if ((ra_xx(sfound) .eq. 0.) .and. (dec_xx(sfound) .eq. 0.))  then
-                     ra_xx(sfound)=ra_1kev(i,k)
-                     dec_xx(sfound)=dec_1kev(i,k)
-                     xxtt=spec_type(i,k)
-                     xxerr(sfound)=poserr_1kev(i,k)
-                  else if ((spec_type(i,k) .eq. 3) .or. (spec_type(i,k) .eq. 4) .or. (spec_type(i,k) .eq. 6)
-     &         .or. (spec_type(i,k) .eq. 12) .or. (spec_type(i,k) .eq. 10) .or. (spec_type(i,k) .eq. 13)) then
-                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
-     &               (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13)) then
-                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
-                           ra_xx(sfound)=ra_1kev(i,k)
-                           dec_xx(sfound)=dec_1kev(i,k)
-                           xxtt=spec_type(i,k)
-                           xxerr(sfound)=poserr_1kev(i,k)
-                        endif
-                     endif
-                  else if ((spec_type(i,k) .eq. 1) .or. (spec_type(i,k).eq. 2) .or. (spec_type(i,k) .eq. 7)) then
-                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
-     &                 (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13)) then
-                        ra_xx(sfound)=ra_1kev(i,k)
-                        dec_xx(sfound)=dec_1kev(i,k)
-                        xxtt=spec_type(i,k)
-                        xxerr(sfound)=poserr_1kev(i,k)
-                     else if ((xxtt .eq. 1) .or. (xxtt.eq. 2) .or. (xxtt .eq. 7)) then
-                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
-                           ra_xx(sfound)=ra_1kev(i,k)
-                           dec_xx(sfound)=dec_1kev(i,k)
-                           xxtt=spec_type(i,k)
-                           xxerr(sfound)=poserr_1kev(i,k)
-                        endif
-                     endif
-                  else if ((spec_type(i,k) .eq. 5) .or. (spec_type(i,k) .eq. 9) .or. (spec_type(i,k) .eq. 11)
-     &             .or. (spec_type(i,k) .eq. 14) .or. (spec_type(i,k) .eq. 8)) then
-                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
-     &                (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13) .or.
-     &                (xxtt .eq. 1) .or. (xxtt.eq. 2) .or. (xxtt .eq. 7)) then
-                        ra_xx(sfound)=ra_1kev(i,k)
-                        dec_xx(sfound)=dec_1kev(i,k)
-                        xxtt=spec_type(i,k)
-                        xxerr(sfound)=poserr_1kev(i,k)
-                     else if ((xxtt .eq. 5) .or. (xxtt.eq. 9) .or. (xxtt .eq. 11)
-     &                       .or. (xxtt.eq. 14) .or. (xxtt .eq. 8)) then
-                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
-                           ra_xx(sfound)=ra_1kev(i,k)
-                           dec_xx(sfound)=dec_1kev(i,k)
-                           xxtt=spec_type(i,k)
-                           xxerr(sfound)=poserr_1kev(i,k)
-                        endif
-                     endif
-                  endif
-               endif
+               ra_xx(sfound)=abs(ra_xx(sfound))+abs(ra_1kev(i,k))*((1./poserr_1kev(i,k))/totweight)
+               dec_xx(sfound)=dec_xx(sfound)+dec_1kev(i,k)*((1./poserr_1kev(i,k))/totweight)
+               totxerr=totxerr+poserr_1kev(i,k)
             enddo
-            if ((ra_xx(sfound) .eq. 0.) .and. (dec_xx(sfound) .eq. 0.)) then
+            xxerr(sfound)=totxerr/float(ix)
+c            write(*,*) 'CHECK X-ray',ra_xx(sfound),dec_xx(sfound)
+            call DIST_SKY (ra_source(sfound),dec_source(sfound),ra_xx(sfound),dec_xx(sfound),dist)
+            if ((xxerr(sfound) .lt. 15.) .and. (poserr_source(sfound) .lt. 15.)) then
+               rank(sfound)=rank(sfound)+1
+c               write(*,*) 'RANK ERROR',xxerr(sfound),poserr_source(sfound)
+            endif
+            if (dist*3600. .lt. 10.) then
+               rank(sfound)=rank(sfound)+1
+c               write(*,*) 'RANK DIST',dist*3600.
+            endif
+            if (((xxerr(sfound) .gt. 15.) .or. (poserr_source(sfound) .gt. 15.)) .and. (dist*3600. .lt. 15.)) then
                ra_xx(sfound)=ra_radio(k)
                dec_xx(sfound)=dec_radio(k)
                bary(sfound)=1
             endif
             if (catsrc) then
+               rank(sfound)=rank(sfound)+1
                ra_xx(sfound)=ra_cattemp
                dec_xx(sfound)=dec_cattemp
                bary(sfound)=1
+c               write(*,*) 'RANK CATS'
             endif
 c            write(*,*) 'TEST X-ray position',ra_xx(sfound),dec_xx(sfound)
             write(*,*) '        '
@@ -2544,6 +2513,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
 
       !write(*,*) sfound,rfound,ifound
       if (ifound .ne. sfound+rfound ) stop 'Warning, might have wrong matched number'
+c      write(*,*) 'RANK=',rank(1:sfound)
       Do i=1,sfound
          CALL graphic_code (xflux(i),flux_source(i)/rrconst(i),ttsource(i),code)
          if (bary(i) .eq. 0) then
@@ -2551,14 +2521,54 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
             call DIST_SKY(ra_source(i),dec_source(i),ra_xx(i),dec_xx(i),dist)
 c            write(*,*) ra_source(i),dec_source(i),ra_xx(i),dec_xx(i)
 c            write(*,*) poserr_source(i),xxerr(i),dist,errfrx
-        call int_great_circle(ra_source(i),dec_source(i),ra_xx(i),dec_xx(i),errfrx,dist,ra_bary,dec_bary)
+            call int_great_circle(ra_source(i),dec_source(i),ra_xx(i),dec_xx(i),errfrx,dist,ra_bary,dec_bary)
          else if (bary(i) .eq. 1) then
             ra_bary=ra_xx(i)
             dec_bary=dec_xx(i)
          endif
 c            write(*,*) ra_bary,dec_bary
          write(11,'(f9.5,2x,f9.5,2x,i6)') ra_bary,dec_bary,int(code)
-         
+         do j=1,sfound
+            if (rank(j) .eq. 4) then
+c               write(*,*) i,j
+               rank(j)=-1
+               priority(i)=j
+               goto 300
+            endif
+         enddo
+         do j=1,sfound
+            if (rank(j) .eq. 3) then
+c               write(*,*) i,j
+               rank(j)=-1
+               priority(i)=j
+               goto 300
+            endif
+         enddo
+         do j=1,sfound
+            if (rank(j) .eq. 2) then
+c              write(*,*) i,j
+               rank(j)=-1
+               priority(i)=j
+               goto 300
+            endif
+         enddo
+         do j=1,sfound
+            if (rank(j) .eq. 1) then
+c               write(*,*) i,j
+               rank(j)=-1
+               priority(i)=j
+               goto 300
+            endif
+         enddo
+         do j=1,sfound
+            if (rank(j) .ge. 0) then
+c               write(*,*) rank(j),i,j
+               rank(j)=-1
+               priority(i)=j
+               goto 300
+            endif
+         enddo
+300      continue
       enddo
       IF (ifound  ==  0) print *,achar(27),'[31;1m No radio/X-ray matches were found.',achar(27),'[0m'
 
@@ -2631,7 +2641,7 @@ c               write(*,'("Million Quasar",2x,a,2x,f7.3,2x,"arcmin away")') name
                   write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(j),
      &            flux_radio(j),FluxU_radio(j),FluxL_radio(j),ra_radio(j),dec_radio(j),
      &            poserr_radio(j),mjdavg,mjdavg,radio_type(j)
-                  savemjy(l)=flux_radio(j)/const(j)
+                  savemjy(ncat)=flux_radio(j)/const(j)
                endif
             enddo
             do j=1,ixmm
@@ -2769,9 +2779,9 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
 100   continue
             if ((type_average .lt. -3) .and. (type_average .gt. -20)) then
 !for no X-ray blazars and CRATES sources
-                if (savemjy(l) .gt. 0.) then
-                   if (savemjy(l) .lt. 20.) savemjy(l)=20.
-                   call RXgraphic_code(savemjy(l),'R',code)
+                if (savemjy(ncat) .gt. 0.) then
+                   if (savemjy(ncat) .lt. 20.) savemjy(l)=20.
+                   call RXgraphic_code(savemjy(ncat),'R',code)
                    write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
                 endif
             endif
@@ -2798,6 +2808,8 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
             endif
          enddo
       endif
+      WRITE (*,*) '      '
+      write(*,*) 'Suggest Priority Order of Source nr.:',priority(1:ifound-rfound)
       WRITE (*,*) '      '
       goto 502
 
@@ -3219,4 +3231,57 @@ c
       RETURN
       end
 
-
+c               call DIST_SKY (ra_source(sfound),dec_source(sfound),ra_1kev(i,k),dec_1kev(i,k),dist)
+c               if (((poserr_1kev(i,k) .lt. 15.) .and. (poserr_source(sfound) .lt. 15.))
+c     &           .or. (dist/3600. .gt. 12.)) then
+c                  if ((ra_xx(sfound) .eq. 0.) .and. (dec_xx(sfound) .eq. 0.))  then
+c                     ra_xx(sfound)=ra_1kev(i,k)
+c                     dec_xx(sfound)=dec_1kev(i,k)
+c                     xxtt=spec_type(i,k)
+c                     xxerr(sfound)=poserr_1kev(i,k)
+c                  else if ((spec_type(i,k) .eq. 3) .or. (spec_type(i,k) .eq. 4) .or. (spec_type(i,k) .eq. 6)
+c     &         .or. (spec_type(i,k) .eq. 12) .or. (spec_type(i,k) .eq. 10) .or. (spec_type(i,k) .eq. 13)) then
+c                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
+c     &               (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13)) then
+c                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
+c                           ra_xx(sfound)=ra_1kev(i,k)
+c                           dec_xx(sfound)=dec_1kev(i,k)
+c                           xxtt=spec_type(i,k)
+c                           xxerr(sfound)=poserr_1kev(i,k)
+c                        endif
+c                     endif
+c                  else if ((spec_type(i,k) .eq. 1) .or. (spec_type(i,k).eq. 2) .or. (spec_type(i,k) .eq. 7)) then
+c                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
+c     &                 (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13)) then
+c                        ra_xx(sfound)=ra_1kev(i,k)
+c                        dec_xx(sfound)=dec_1kev(i,k)
+c                        xxtt=spec_type(i,k)
+c                        xxerr(sfound)=poserr_1kev(i,k)
+c                     else if ((xxtt .eq. 1) .or. (xxtt.eq. 2) .or. (xxtt .eq. 7)) then
+c                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
+c                           ra_xx(sfound)=ra_1kev(i,k)
+c                           dec_xx(sfound)=dec_1kev(i,k)
+c                           xxtt=spec_type(i,k)
+c                           xxerr(sfound)=poserr_1kev(i,k)
+c                        endif
+c                     endif
+c                  else if ((spec_type(i,k) .eq. 5) .or. (spec_type(i,k) .eq. 9) .or. (spec_type(i,k) .eq. 11)
+c     &                   .or. (spec_type(i,k) .eq. 14) .or. (spec_type(i,k) .eq. 8)) then
+c                     if ((xxtt .eq. 3) .or. (xxtt.eq. 4) .or. (xxtt .eq. 6) .or.
+c     &                (xxtt .eq. 12) .or. (xxtt .eq. 10) .or. (xxtt .eq. 13) .or.
+c     &                (xxtt .eq. 1) .or. (xxtt.eq. 2) .or. (xxtt .eq. 7)) then
+c                        ra_xx(sfound)=ra_1kev(i,k)
+c                        dec_xx(sfound)=dec_1kev(i,k)
+c                        xxtt=spec_type(i,k)
+c                        xxerr(sfound)=poserr_1kev(i,k)
+c                     else if ((xxtt .eq. 5) .or. (xxtt.eq. 9) .or. (xxtt .eq. 11)
+c     &                       .or. (xxtt.eq. 14) .or. (xxtt .eq. 8)) then
+c                        if (poserr_1kev(i,k) .lt. xxerr(sfound)) then
+c                           ra_xx(sfound)=ra_1kev(i,k)
+c                           dec_xx(sfound)=dec_1kev(i,k)
+c                           xxtt=spec_type(i,k)
+c                           xxerr(sfound)=poserr_1kev(i,k)
+c                        endif
+c                     endif
+c                  endif
+c               endif
