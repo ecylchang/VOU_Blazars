@@ -644,7 +644,7 @@ c
       REAL*4 emin_areas, emax_areas, emin_aream, emax_aream,nufnu
       REAL*4 emin_areah, emax_areah, fekev, conv
       REAL*4 energy
-      REAL*4 eff_area , anh , alpha , alpha1 , bbreak_energy , redshift
+      REAL*4 eff_area , anh , alpha , alpha1 , bbreak_energy
       REAL*4 tt , ak , aa7 , alpha2 , gamm , bk , t , gamma1 , gamma2
       REAL*4 break_energy, umalpha
       REAL*4 t1 , ekev,reduce
@@ -1371,3 +1371,229 @@ c
       ENDIF
       END
 
+c=============EBL
+
+      SUBROUTINE ebl_flux(emin,emax,ggg,zzz,reduction_factor)
+c
+c
+c Calculates ebl attenuation factor for VHE flux from spectra integrated between emin (TeV) and emax (TeV)
+c
+      IMPLICIT NONE
+      INTEGER*4 i , lu_input, n
+      INTEGER*4 j, length,lenact
+      INTEGER*4 nmax
+      REAL*4 redshift,binz(39),e(50),tau(50,39)
+      REAL*4 emin, emax,ggg,zzz
+      REAL*4 gamma1,gamma2,break_energy,out1,out2,reduction_factor
+      REAL*4 accur, r
+      REAL*4 delta_slope
+      CHARACTER*80 input_file
+      CHARACTER*80 webprograms
+      CHARACTER*200 string
+c      DATA binz/ 0.01, 0.02526316, 0.04052632, 0.05078947, 0.07105263,
+c     & 0.08631579, 0.10157895, 0.11684211, 0.13210526, 0.14736842,
+c     & 0.16263158, 0.17789474, 0.19315789, 0.20842105, 0.22368421,
+c     & 0.23894737, 0.25421053, 0.26947368, 0.28473684, 0.3, 0.35, 0.4,
+c     & 0.45, 0.5, 0.50, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95,
+c     &  1.,1.2,1.4,1.6,1.8,2./
+      EXTERNAL especdebl
+      EXTERNAL noabs
+      COMMON /espebl   / gamma1,gamma2,break_energy,redshift
+      COMMON /bins  / binz,e,tau
+      common webprograms
+      DATA binz/ 0.01, 0.02526316, 0.04052632, 0.05078947, 0.07105263,
+     & 0.08631579, 0.10157895, 0.11684211, 0.13210526, 0.14736842,
+     & 0.16263158, 0.17789474, 0.19315789, 0.20842105, 0.22368421,
+     & 0.23894737, 0.25421053, 0.26947368, 0.28473684, 0.3, 0.35, 0.4,
+     & 0.45, 0.5, 0.50, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95,
+     &  1.,1.2,1.4,1.6,1.8,2./
+c
+c      CALL rdforn(string,length)
+c      IF ( length.NE.0 ) THEN
+c          READ(string,*) emin, emax, gamma1, redshift
+c      ELSE
+c          write(*,*) ' Usage : ebl_flux Min_energy(TeV) max_energy,c photon_spectral_index, redshift'
+c          write(*,*) ' e.g.  : ebl_flux 0.1 10. 2.1 0.6'
+c          stop
+c      ENDIF
+cc      emin=0.01
+cc      emax=0.1
+cc      redshift=1.837
+cc      gamma1=2.07509
+      input_file=webprograms(1:lenact(webprograms)) //
+     &'/count_rate/tau_dominguez11.txt'
+
+c      CALL getlun(lu_input)
+      OPEN (17,file=input_file,status='old')
+c      DO i = 1,5
+c         read (10,'(a)') string
+c      ENDDO
+      DO i = 1,50
+      read (17,*,end=999) e(i),tau(i,1:39)
+c      write(*,*) i,e(i)
+      ENDDO
+999   CONTINUE
+      CLOSE(17)
+      redshift=zzz
+c      write(*,*) redshift,emin,emax,ggg
+      gamma1 = ggg - 1.
+      delta_slope=0.5
+      gamma2 = gamma1 + delta_slope
+      nmax = 2000
+      accur = 1.e-2
+      break_energy = 0.2
+c      break_energy = 0.1
+      IF (redshift .eq. 0.e0) redshift = 0.3
+c      write(*,*) redshift
+      IF (redshift .LT. 0.01 ) redshift = 0.01
+      IF (redshift .GT. 2.0 )  redshift = 2.0
+      CALL  simp1(especdebl,emin,emax,out1,r,n,accur,nmax)
+      CALL  simp1(noabs,emin,emax,out2,r,n,accur,nmax)
+      reduction_factor=out2/out1 !no abs / abs
+c      write (*,*) ' Reduction factor ' , reduction_factor
+      return
+      END
+
+
+
+      FUNCTION tau_ebl(energy)
+c Calculates the amount of obsorption due to EBL given energy and redshift
+      IMPLICIT none
+      INTEGER*4 i, j
+      REAL*4 energy, redshift, binz(39),e(50),tau(50,39),tau_ebl
+      REAL*4 interpolated_tau,x0,x1,y0,y1,y0ie,y1ie
+      REAL*4 gamma1,gamma2,break_energy
+      LOGICAL ok
+      COMMON /espebl   / gamma1,gamma2,break_energy,redshift
+      COMMON /bins  / binz,e,tau
+      IF (energy.LT.e(1) ) THEN
+      tau_ebl = 0.0
+      RETURN
+      ENDIF
+      IF (energy.LT.e(1) .OR. energy.GT.e(50) ) THEN
+      write (*,*) 'Energy ',energy,' outside allowed range (',e(1),e(50),')'
+      stop
+      endif
+      ok = .TRUE.
+      i=1
+      DO WHILE (ok)
+      i = i +1
+      IF (energy.LE.e(i)) ok = .FALSE.
+      ENDDO
+      IF (redshift.LT.binz(1)) THEN
+      j = 1
+      ELSE IF (redshift.GT.binz(39)) THEN
+      j = 39
+      ELSE
+      j=1
+      ok = .TRUE.
+      DO WHILE (ok)
+      j = j +1
+      IF (redshift.LE.binz(j)) ok = .FALSE.
+      ENDDO
+      ENDIF
+      y0 = tau(i-1,j-1)
+      y1 = tau(i,j-1)
+      x0 = e(i-1)
+      x1 = e(i)
+      y0ie = y0 + (y1-y0)*(energy-x0)/(x1-x0)
+      y0 = tau(i-1,j)
+      y1 = tau(i,j)
+      y1ie = y0 + (y1-y0)*(energy-x0)/(x1-x0)
+      x0 = binz(j-1)
+      x1 = binz(j)
+      interpolated_tau = y0ie + (y1ie-y0ie)*(redshift-x0)/(x1-x0)
+c       write (*,*) 'tau(',e(i-1),binz(j-1),'),tau(',e(i-1),binz(j),')',
+c     &              tau(i-1,j-1),tau(i-1,j)
+c       write (*,*) 'tau(',e(i),binz(j-1),'),  tau(',e(i),binz(j),')  ',
+c     &              tau(i,j-1),tau(i,j)
+c       write (*,*) ' interpolated_tau ', interpolated_tau
+      tau_ebl = interpolated_tau
+      RETURN
+      END
+c
+c
+c
+      FUNCTION especdebl(energy)
+      REAL*4 absor , energy , especdebl , break_energy , gamma1 , gamma2
+      REAL*4 tau_ebl
+      REAL*4 redshift, binz(39),e(50),tau(50,39)
+      COMMON /espebl   / gamma1,gamma2,break_energy,redshift
+      COMMON /bins  / binz,e,tau
+      absor = exp(-tau_ebl(energy))
+c      write (*,*) ' absor energy ', absor, energy
+      IF ( energy.LT.break_energy ) THEN
+      especdebl = absor*energy**(-gamma1)
+      ELSE
+      especdebl = absor*energy**(-gamma2)*break_energy**(gamma2-gamma1)
+      ENDIF
+      RETURN
+      END
+c
+c
+c
+      FUNCTION noabs(energy)
+      REAL*4 energy , noabs , break_energy , gamma1 , gamma2, redshift
+      COMMON /espebl   / gamma1,gamma2,break_energy,redshift
+      IF ( energy.LT.break_energy ) THEN
+      noabs = energy**(-gamma1)
+      ELSE
+      noabs = energy**(-gamma2)*break_energy**(gamma2-gamma1)
+      ENDIF
+      RETURN
+      END
+c
+**==SIMP1.FOR
+c
+      SUBROUTINE simp1(akern,a,b,aint,r,n,accur,nmax)
+C
+C      Calculate definite integrals of a function
+C      using Simpson's rule
+C      Inputs :
+C      akern  : function to be integrated, must be a function subroutine
+C               and must be declared 'external' in main program.
+C      a,b    : limits of integration
+C      accur  : relative accuracy required
+C      nmax   : max number of iterations allowed
+C      Outputs:
+C      aint   : integral of function
+C      r      : actual relative accuracy achieved
+C      n      : actual no of iterations performed
+C      ERROR messages
+C      exit 14 : no convergence to accuracy requird achieved
+C      exit 15 : a > b
+      INTEGER*4 n , i , nmax
+      REAL*4 dh , a , b , aint , akern , aone , atwo , afour , t ,
+     &       oldint , r , accur
+      dh = (b-a)/4.D0
+      IF ( dh.EQ.0.D0 ) THEN
+      aint = 0.D0
+      RETURN
+      ENDIF
+      IF ( dh.LT.0.D0 ) THEN
+      WRITE (*,*) ' Simp1 exit 15 , a > b ! ' , dh
+      STOP
+      ENDIF
+      n = 2
+      aone = akern(a) + akern(b)
+      atwo = akern(a+dh+dh)
+      afour = akern(a+dh) + akern(b-dh)
+      aint = dh/3.D0*(aone+2.*atwo+4.D0*afour)
+100   dh = dh/2.D0
+      n = n + n
+      atwo = atwo + afour
+      afour = 0.D0
+      t = a - dh
+      DO 200 i = 1 , n
+      t = t + 2.D0*dh
+      afour = afour + akern(t)
+200   CONTINUE
+      oldint = aint
+      aint = dh/3.D0*(aone+2.D0*atwo+4.D0*afour)
+      r = abs((aint-oldint)/aint)
+      IF ( r.LE.accur ) RETURN
+      IF ( n.LT.nmax ) GOTO 100
+      WRITE (*,*) ' Simp1 exit 14, accuracy required not achieved ' ,
+     &            n , aint , r
+      STOP
+      END

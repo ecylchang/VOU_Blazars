@@ -58,6 +58,7 @@ c      write(*,*) output_file
      &     uflux(npt(sfound),sfound),lflux(npt(sfound),sfound),mjdstart(npt(sfound),sfound),
      &     mjdend(npt(sfound),sfound),spectype(npt(sfound),sfound)!,
 c     &      refs(npt(sfound),sfound)
+c         write(*,*) spectype(npt(sfound),sfound)
       enddo
 99    continue
       npt(sfound)=npt(sfound)-1
@@ -116,6 +117,17 @@ c      IER = PGBEG(0,"/xs",1,1)
       if (stype(i) .eq. 5) call pgsci(1)
       if (stype(i) .eq. 0) call pgsci(12)
       do j=1,npt(i)
+         if (spectype(j,i) == 'DEBL') then
+            call pgsch(0.8)
+            if (((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) .or.
+     &           ((lflux(j,i) .eq. 0.) .and. (uflux(j,i) .ne. 0.) )) then
+               CALL PGPT(1,log10(frequency(j,i)),log10(uflux(j,i)),8)
+            else
+               CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),8)
+               CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
+            endif
+            goto 200
+         endif
          if ((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) then
             call pgsch(1.5)
             CALL PGPT(1,log10(frequency(j,i)),log10(uflux(j,i)),45)
@@ -139,6 +151,7 @@ c      IER = PGBEG(0,"/xs",1,1)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             endif
          endif
+200      continue
       enddo
       call pgsci(1)
       CALL PGEND

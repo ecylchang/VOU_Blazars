@@ -669,7 +669,7 @@ do
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
-      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt $source > ${pidnm}phase2
+      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $source > ${pidnm}phase2
       echo
       cat ${pidnm}phase2
       #open sed.txt
