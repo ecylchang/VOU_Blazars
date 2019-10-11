@@ -85,7 +85,7 @@ c
       CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),name_cat(100)
       CHARACTER*10 lowrcand_type(5),vhe_type(200),pccs100_type(1500),xray_type(5000)
       CHARACTER*800 string,repflux
-      LOGICAL there,ok,found
+      LOGICAL there,ok,found,debl
       common webprograms
       ok = .TRUE.
       found = .FALSE.
@@ -3368,6 +3368,7 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
 
          igamfound=0
          write(*,*) '.......................Gamma-ray..................'
+         debl=.false.
          do i=1,igam
             call Dist_sky(ra_source(j),dec_source(j),ra_gam(i),dec_gam(i),dist)
             !if (dist < min_dist_gam) then
@@ -3385,6 +3386,7 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
                else if (gam_type(i) == '2FHL') then
                   write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,2),dist*60
                else
+                  if (gam_type(i) == '3FHL') debl=.true.
                   write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
                endif
             endif
@@ -3692,12 +3694,14 @@ c         enddo
             endif
             endif
          enddo
+         if ( debl ) then
          do i=1,idebl
             do s=1,6
-               write(14,'(4(es10.3,2x),2(f10.4,2x),"DEBL flux for 3FHL")')
+               write(14,'(4(es10.3,2x),2(f10.4,2x),"DEBL        3FHL EBL-corrected flux")')
      &              frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg
             enddo
          enddo
+         endif
          do i=1,ivhe
             vhe_ref(i)=iref+1
             refs(iref+1)='TBD'

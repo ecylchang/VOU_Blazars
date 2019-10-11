@@ -21,9 +21,9 @@ ATPMN McConnell et al. 2012, MNRAS, 422, 1527!
 AT20G Murphy et al. 2010, MNRAS, 402, 2403!
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 CRATES Healey et al. 2007, ApJS, 171, 61! 
-PCNT The Planck Collaboration, 2018, A&A, 619, A94!
+PCNT The Planck Collaboration 2018, A&A, 619, A94!
 ALMA Bonato et al. 2019, MNRAS, 485, 1188!
-PCCS2 The Planck Collaboration, 2016, A&A, 594, A26!
+PCCS2 The Planck Collaboration 2016, A&A, 594, A26!
 SPIRE Schulz et al. 2017, arXiv:1706.00448!
 WISE Cutri et al. 2013, AllWISE Data Release Products!
 2MASS Skrutskie et al. 2006, AJ, 131, 1163!
@@ -31,18 +31,18 @@ USNO Monet et al. 2003, AJ, 125, 984!
 SDSS Abolfathi et al. 2018, ApJS, 235, 42!
 HST Lasker et al. 2008, AJ, 136, 735!
 PANSTARRS Chambers et al. 2016 arXiv:1612.05560!
-GAIA The Gaia Collaboration, 2016, A&A, 595, A2!
+GAIA The Gaia Collaboration 2016, A&A, 595, A2!
 UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
 XRTSPEC Giommi, P. 2015, JHEAp, 7, 173!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
-3FHL The Fermi-LAT Collaboration, 2017, ApJS, 323, 18!
+3FHL The Fermi-LAT Collaboration 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!
 1BIGB Arsioli et al. 2018, MNRAS, 480, 2165!
-4FGL The Fermi-LAT Collaboration, 2019, arXiv:1902.10045!
+4FGL The Fermi-LAT Collaboration 2019, arXiv:1902.10045!
 AGILE Bulgarelli et al. 2019, A&A, 627, A13!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
 VERITAS TBD!
