@@ -238,9 +238,8 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 
 #analyzing the XRT Deepsky data
 #if [ -n $dockerthere ]; then
-#alias swift_deepsky="docker run -v $PWD/work:/work chbrandt/swift_deepsky"
-#alias caldb_docker "docker run -dt --name caldb_docker chbrandt/heasoft_caldb"
-#alias swift_deepsky "docker run --rm -v $PWD/work:/work --volumes-from caldb_docker chbrandt/swift_deepsky:test"
+#docker run --name caldb chbrandt/heasoft_caldb:swift
+#alias swift_deepsky='docker run --rm -it --volumes-from caldb -v $PWD/work:/work chbrandt/swift_deepsky:latest'
 #swift_deepsky --ra $1 --dec $2 --radius $3
 #echo finish searching swift deep data
 #fi

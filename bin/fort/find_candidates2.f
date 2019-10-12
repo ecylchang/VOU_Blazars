@@ -3696,6 +3696,8 @@ c         enddo
          enddo
          if ( debl ) then
          do i=1,idebl
+c            write(14,'(4(es10.3,2x),2(f10.4,2x),"DEBL        3FHL EBL-corrected flux")')
+c     &              frequency_debl(1,s),flux_debl(1,s),FluxU_debl(1,s),FluxL_debl(1,s),mjdavg,mjdavg
             do s=1,6
                write(14,'(4(es10.3,2x),2(f10.4,2x),"DEBL        3FHL EBL-corrected flux")')
      &              frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg
