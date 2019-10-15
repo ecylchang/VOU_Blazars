@@ -11,7 +11,7 @@ c
       real*8 rra,rdec
       CHARACTER*2 ul
       character*14 stringin,catalog
-      CHARACTER*80 input_file,output_file,output_file2,ref1,ref2,ref3,ref4
+      CHARACTER*80 input_file,output_file,output_file2,ref1,ref2,ref3,ref4,ref5
       Character*200 string,reff
       LOGICAL there,ok
       ok = .TRUE. 
@@ -75,7 +75,10 @@ c         print *,'string ',string(1:lenact(string))
            ie=index(reff(is+1:lenact(reff)),',')+is
            if (is .ne. ie-1) read(reff(is+1:ie-1),'(a)') ref3
            is=ie
-           if (is .ne. ie-1) read(reff(is+1:lenact(reff)),'(a)') ref4
+           ie=index(reff(is+1:lenact(reff)),',')+is
+           if (is .ne. ie-1) read(reff(is+1:ie-1),'(a)') ref4
+           is=ie
+           if (is .ne. ie-1) read(reff(is+1:lenact(reff)),'(a)') ref5
 c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4))
            flux_err = (err_up-err_lo)/2.
            IF ((flux .NE. 0.) .or. (err_up .ne. 0.)) THEN
@@ -89,10 +92,9 @@ c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(r
              write(lu_out,'(f9.5,'' | '',f9.5,'' | '',es10.3,'' | '',es10.3,'' | '',
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')
      &                      rra,rdec,freq,one,flux,flux_err,mjdstart,mjdend,ul
-             write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',f10.2,'','',a,'','',a,a,a,a)')
+             write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',f10.2,'','',a,'','',a,a,a,a,a)')
      &        freq,flux,flux_err,mjdstart,mjdend,catalog,ref1(1:lenact(ref1)),
-     &        ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4))
-
+     &        ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4)),ref5(1:lenact(ref5))
            ENDIF
          ENDIF
       ENDDO 
