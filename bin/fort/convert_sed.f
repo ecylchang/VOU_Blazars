@@ -66,6 +66,7 @@ c         print *,'string ',string(1:lenact(string))
            ref2=' '
            ref3=' '
            ref4=' '
+           ref5=' '
            if (catalog == 'DEBL') reff='3FHL EBL-corrected flux'
            is=index(reff(1:lenact(reff)),',')
            if (is .ne. 0) read(reff(1:is-1),'(a)') ref1

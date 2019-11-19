@@ -412,12 +412,14 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
             do j=1,iuv
                call DIST_SKY(ra_rr(k),dec_rr(k),ra_uv(j),dec_uv(j),dist)
                min_dist=sqrt(poserr_uv(j)**2+poserr_rr(k)**2)
+c               write(*,*) dist,min_dist,flux_rr(k)/frequency_rr(k)
                if ((dist*3600. .lt. max(min_dist,2.)) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
                   if (flux_uv(j,1) .ne. 0.) then
                      aruv = 1.-log10(flux_rr(k)/flux_uv(j,1))/log10(frequency_rr(k)/frequency_uv(j,1))
                   else
                      aruv = 1.-log10(flux_rr(k)/flux_uv(j,2))/log10(frequency_rr(k)/frequency_uv(j,2))
                   endif
+c                  write(*,*) aruv
                   if (aruv .le. 0.75 ) then
                      ii1=ii1+1 !!!remove UV-r slope strange source 0.85
                      nnruv=nnruv+1

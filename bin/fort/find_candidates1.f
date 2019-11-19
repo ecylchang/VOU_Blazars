@@ -30,7 +30,7 @@ c
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(200)
       INTEGER*4 ipc_type(200),maxi_type(200),igrb,xxtt,bary(500),rank(500),priority(500)
-      REAL*8 ra_other(8000),dec_other(8000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
+      REAL*8 ra_other(15000),dec_other(15000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
       REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500),ra_1kev(3000,10000)
@@ -59,9 +59,9 @@ c
       real*4 errrad,errmaj,errmin,errang,savemjy(200),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(8000),name_cat(200),namegam(200)
+      CHARACTER*30 name_other(15000),name_cat(200),namegam(200)
       CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
-      CHARACTER*8 catalog,classmq(8000)
+      CHARACTER*8 catalog,classmq(15000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,catsrc
       common webprograms
@@ -1530,7 +1530,7 @@ c               namegam(igam)(1:4)='GRB '
 c            write(*,*) namegam(igam)
          ELSE
             iother=iother+1
-            IF (iother > 8000) Stop 'Too many catalogued sources'
+            IF (iother > 15000) Stop 'Too many catalogued sources'
             ra_other(iother)=ra
             dec_other(iother)=dec
             is=ie

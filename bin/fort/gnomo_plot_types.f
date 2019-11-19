@@ -95,7 +95,8 @@ c         write(*,*) device
       ENDIF
 
 c      ra_err2=ra_err2-1.71 !6.56-4.41
-c      dec_o=dec_o+0.1
+c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15
+c      dec_o=dec_o+0.1 !0.4 +0.5-0.3
 c      write(*,*) ra_o,dec_o
 
       i = 0
@@ -342,7 +343,7 @@ c      write(title,'(a,2f11.4)') 'Image centre: ',ra_center,dec_center
       xaxis_label = 'R.A. (degrees)'
       yaxis_label = 'Dec. (degrees)'
       CALL pgsch(1.2)
-      CALL pglabel (xaxis_label, yaxis_label, title)
+      CALL pglabel (xaxis_label, yaxis_label,title)
       CALL gnom_projection(1,ra_center,dec_center,ra_o,dec_o,x_o,y_o)
 c     colore
       CALL pgsch(1.)
@@ -672,7 +673,11 @@ c      write(*,*) 'number of cat. 14 sources',icol14
          do j=1,icol14
             !write(*,*) ra_col14(j),dec_col14(j),j,s14(j)
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
-            call pgsch(1.3)
+            if (s14(j) .eq. 7) then
+               call pgsch(1.5)
+            else
+               call pgsch(1.3)
+            endif
             if (s14(j) .eq. 10) then
                call pgsci(3)
             else if (s14(j) .eq. 20) then
