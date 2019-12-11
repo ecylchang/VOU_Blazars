@@ -295,11 +295,36 @@ echo conesearch --db ${HERE}/cats1.ini --catalog MilliQuas --ra $1  --dec $2 --r
 
 #check if the phase 1 data is already there
 ncat1=`cat ${pidnm}vosearch.txt | wc -l`
+rm -f voerror.txt
 sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
+#see if there is an error when searching through VO
+if [ -s voerror.txt ]; then
+   voerror=yes
+   declare -i irunvo=1
+else
+   voerror=no
+fi
+#echo $voerror
+until [ $voerror == no -o $irunvo -ge 3 ]
+do
+   runvo=y
+#   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
+   [ -z $runvo ] && runvo=y
+   rm -f voerror.txt
+   irunvo=irunvo+1
    echo
-   echo finish conesearch phase 1
-   rm -f ${pidnm}vosearch.txt
+   echo Found error when searhcing through VO. Run conesearch again $irunvo
+   [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
+   if [ -s voerror.txt ]; then
+      voerror=yes
+   else
+      voerror=no
+   fi
+done
+echo
+echo finish conesearch phase 1
+rm -f ${pidnm}vosearch.txt
 
 #read the data
 ls ${pidnm}*.1.csv > ${pidnm}catlist1.txt
@@ -406,8 +431,34 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $1 --dec $2 --radius $radint --runit arcmin --columns default -o ${pidnm}gb6.i.csv >> ${pidnm}vosearch.txt
       echo Searching further data in intermediate phase for $cc source
       ncatint=`cat ${pidnm}vosearch.txt | wc -l`
+      rm -f voerror.txt
       sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncatint #1> voerror 2>&1
 #      cat voerror | grep 'ERROR'
+
+# check if there is error during the searching
+      if [ -s voerror.txt ]; then
+         voerror=yes
+         declare -i irunvo=1
+      else
+         voerror=no
+      fi
+#      echo $voerror
+      until [ $voerror == no -o $irunvo -ge 3 ]
+      do
+         runvo=y
+      #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
+         [ -z $runvo ] && runvo=y
+         rm -f voerror.txt
+         irunvo=irunvo+1
+         echo
+         echo Found error when searhcing through VO. Run conesearch again $irunvo
+         [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
+         if [ -s voerror.txt ]; then
+            voerror=yes
+         else
+            voerror=no
+         fi
+      done
       echo
       echo finish conesearch intermediate phase
       rm -f ${pidnm}vosearch.txt
@@ -633,8 +684,32 @@ do
          echo data already downloaded!
          rm -f ${pidnm}vosearch.txt
       else
+         rm -f voerror.txt
          sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
+         if [ -s voerror.txt ]; then
+            voerror=yes
+            declare -i irunvo=1
+         else
+            voerror=no
+         fi
+#      echo $voerror
+         until [ $voerror == no -o $irunvo -ge 3 ]
+         do
+            runvo=y
+#   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
+            [ -z $runvo ] && runvo=y
+            rm -f voerror.txt
+            irunvo=irunvo+1
+            echo
+            echo Found error when searhcing through VO. Run conesearch again $irunvo
+            [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
+            if [ -s voerror.txt ]; then
+               voerror=yes
+            else
+               voerror=no
+            fi
+         done
          rm -f ${pidnm}vosearch.txt
          echo
       fi
