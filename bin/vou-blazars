@@ -299,9 +299,9 @@ rm -f voerror.txt
 sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
 #see if there is an error when searching through VO
+declare -i irunvo=1
 if [ -s voerror.txt ]; then
    voerror=yes
-   declare -i irunvo=1
 else
    voerror=no
 fi
@@ -312,7 +312,7 @@ do
 #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
    [ -z $runvo ] && runvo=y
    rm -f voerror.txt
-   irunvo=irunvo+1
+   irunvo=${irunvo}+1
    echo
    echo Found error when searhcing through VO. Run conesearch again $irunvo
    [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
@@ -436,9 +436,9 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
 #      cat voerror | grep 'ERROR'
 
 # check if there is error during the searching
+      declare -i irunvo=1
       if [ -s voerror.txt ]; then
          voerror=yes
-         declare -i irunvo=1
       else
          voerror=no
       fi
@@ -449,7 +449,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
       #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
          [ -z $runvo ] && runvo=y
          rm -f voerror.txt
-         irunvo=irunvo+1
+         irunvo=${irunvo}+1
          echo
          echo Found error when searhcing through VO. Run conesearch again $irunvo
          [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
@@ -687,9 +687,9 @@ do
          rm -f voerror.txt
          sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
+         declare -i irunvo=1
          if [ -s voerror.txt ]; then
             voerror=yes
-            declare -i irunvo=1
          else
             voerror=no
          fi
@@ -700,7 +700,7 @@ do
 #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
             [ -z $runvo ] && runvo=y
             rm -f voerror.txt
-            irunvo=irunvo+1
+            irunvo=${irunvo}+1
             echo
             echo Found error when searhcing through VO. Run conesearch again $irunvo
             [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
