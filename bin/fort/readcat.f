@@ -8,7 +8,8 @@ c this program read the output from vo tool and make a input for find candidates
       real*4 ra1,ra2,dec1,dec2,crtflux
       character*1 sign
       character*2 cratecheck
-      character*80 catalog,ra,dec,inputlist,test,outputlist,catname
+      character*200 inputlist,outputlist
+      character*80  catalog,ra,dec,catname
       character*1000 head,value
       character*800 flux,string
       logical ok,there

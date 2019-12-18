@@ -10,7 +10,7 @@ c This program plot the SED for candidate
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
-      character*80 input_file,output_file,refs(5000,1000)
+      character*200 input_file,output_file,refs(5000,1000)
       character*14 stringin
       character*10 spectype(5000,1000)
       character*6 number

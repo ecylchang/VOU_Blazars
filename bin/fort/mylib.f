@@ -632,8 +632,8 @@ c
       IMPLICIT none
       INTEGER*4  max_sat , length
       PARAMETER (max_sat=200)
-      CHARACTER*800 file_eff_area , string
-      CHARACTER*800 f_eff_area(max_sat)
+      CHARACTER*200 file_eff_area , string
+      CHARACTER*200 f_eff_area(max_sat)
       CHARACTER*40 satellite(max_sat), instrument(max_sat)
       CHARACTER*1 yesno
       INTEGER*4 lu_input , model , ifear , ifl , itype
@@ -653,8 +653,7 @@ c
       REAL*4 eemin_areas(max_sat), eemax_areas(max_sat)
       REAL*4 eemin_aream(max_sat), eemax_aream(max_sat)
       REAL*4 eemin_areah(max_sat), eemax_areah(max_sat)
-      CHARACTER*80 webprograms
-      CHARACTER*800 filename, stringin
+      CHARACTER*200 webprograms,filename, stringin
       LOGICAL ok
       EXTERNAL espec
       EXTERNAL eacma
@@ -1387,9 +1386,7 @@ c
       REAL*4 gamma1,gamma2,break_energy,out1,out2,reduction_factor
       REAL*4 accur, r
       REAL*4 delta_slope
-      CHARACTER*80 input_file
-      CHARACTER*80 webprograms
-      CHARACTER*200 string
+      CHARACTER*200 input_file,webprograms,string
 c      DATA binz/ 0.01, 0.02526316, 0.04052632, 0.05078947, 0.07105263,
 c     & 0.08631579, 0.10157895, 0.11684211, 0.13210526, 0.14736842,
 c     & 0.16263158, 0.17789474, 0.19315789, 0.20842105, 0.22368421,

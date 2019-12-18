@@ -60,7 +60,7 @@ c
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(15000),name_cat(200),namegam(200)
-      CHARACTER*80 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
+      CHARACTER*200 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
       CHARACTER*8 catalog,classmq(15000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,catsrc
@@ -144,7 +144,7 @@ c         write(*,*) 'the aim',aim
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv' 
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found. No pts in phase 1 '')')
+         write (*,'('' file '',a,'' not found. No data found in phase 1 '')')
      &     input_file(1:lenact(input_file))
          STOP
       ENDIF

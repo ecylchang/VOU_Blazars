@@ -20,7 +20,7 @@
       real*4 uvmag(10000,2),uvmagerr(10000,2),slope_gam(50),specerr_gam(50)
       real*4 frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),poserr_gam(50),Ferr_gam(50)
       real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
-      character*80 input_file,input_file2,input_file3,output_file
+      character*200 input_file,input_file2,input_file3,output_file
       character*10 catalog,type_4p8(500)
       character*800 string
       LOGICAL there,ok,found
@@ -45,7 +45,7 @@ c      min_dist_4p8=30./3600.
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found. No pts in Intermediate phase '')')
+         write (*,'('' file '',a,'' not found. No data found in Intermediate phase '')')
      &     input_file(1:lenact(input_file))
          STOP
       ENDIF

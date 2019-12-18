@@ -11,7 +11,8 @@ c
       real*8 rra,rdec
       CHARACTER*2 ul
       character*14 stringin,catalog
-      CHARACTER*80 input_file,output_file,output_file2,ref1,ref2,ref3,ref4,ref5
+      CHARACTER*200 input_file,output_file,output_file2
+      character*80 ref1,ref2,ref3,ref4,ref5
       Character*200 string,reff
       LOGICAL there,ok
       ok = .TRUE. 

@@ -77,8 +77,8 @@ c
       character*4 flag_ir(1000,2)
       character*6 aim
       CHARACTER*30 name_other(10000),date_alma(1500)
-      character*80 input_file,output_file,input_file2,input_file3,output_file2
-      character*80 webprograms,refsfile,refs(100)
+      character*200 input_file,output_file,input_file2,input_file3,output_file2
+      character*200 webprograms,refsfile,refs(100)
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(200),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
@@ -173,7 +173,7 @@ c         input_file4=string(in+1:im-1)
 
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found. No extra data from phase 2.'')')
+         write (*,'('' file '',a,'' not found. No data found in phase 2.'')')
      &     input_file(1:lenact(input_file))
          open(18,file=input_file,status='unknown',iostat=ier)
          write(18,'("RA= ",f9.5,2x,"Dec= ",f9.5,2x,"Searching radius= ",f6.2)')
