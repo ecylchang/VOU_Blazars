@@ -144,11 +144,10 @@ c         write(*,*) 'the aim',aim
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv' 
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found '')')
+         write (*,'('' file '',a,'' not found. No pts in phase 1 '')')
      &     input_file(1:lenact(input_file))
          STOP
       ENDIF
-
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)

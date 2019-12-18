@@ -311,6 +311,7 @@ do
    runvo=y
 #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
    [ -z $runvo ] && runvo=y
+   cat voerror.txt > vosearch.txt
    rm -f voerror.txt
    irunvo=${irunvo}+1
    echo
@@ -448,6 +449,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
          runvo=y
       #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
          [ -z $runvo ] && runvo=y
+         cat voerror.txt > vosearch.txt
          rm -f voerror.txt
          irunvo=${irunvo}+1
          echo
@@ -465,7 +467,7 @@ if [ -s ${pidnm}no_matched_temp.txt ]; then
 
 #read the Intermediate phase data
       ls ${pidnm}*.i.csv > ${pidnm}catlist_int.txt
-      rm -f ${pidnm}outputint.csv
+      rm -f ${pidnm}output_int.csv
       echo
       [ -s ${pidnm}catlist_int.txt ] && ${BINF}/readcat ${pidnm}catlist_int.txt ${pidnm}output_int.csv $1 $2 $3 $4 $5 $6 $7 $8
 
@@ -670,10 +672,10 @@ do
       echo
       cat phase1
    elif [ $source == nocand ]; then
-#      echo TRY OTHER COORDINATE!!!
+      echo No Candidates Found!!!
       source=q
    elif [ $source == q ]; then
-      echo 
+      echo
 
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
@@ -699,6 +701,7 @@ do
             runvo=y
 #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
             [ -z $runvo ] && runvo=y
+            cat voerror.txt > vosearch.txt
             rm -f voerror.txt
             irunvo=${irunvo}+1
             echo

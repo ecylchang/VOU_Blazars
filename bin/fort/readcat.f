@@ -21,7 +21,7 @@ c this program read the output from vo tool and make a input for find candidates
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
       iskip=index(outputlist(1:len(outputlist)),'_output')
-c      write(*,*) iskip
+c      write(*,*) iskip iskip for online version PID 
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
 c      write(*,*) ra_center,dec_center,radius,nh

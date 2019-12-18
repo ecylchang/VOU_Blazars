@@ -169,14 +169,19 @@ c         input_file4=string(in+1:im-1)
       lu_in = 10
       lu_output = 11
       in = index(input_file(1:lenact(input_file)),'.')
-      IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv' 
+      IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
+
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found '')')
+         write (*,'('' file '',a,'' not found. No extra data from phase 2.'')')
      &     input_file(1:lenact(input_file))
-         STOP
+         open(18,file=input_file,status='unknown',iostat=ier)
+         write(18,'("RA= ",f9.5,2x,"Dec= ",f9.5,2x,"Searching radius= ",f6.2)')
+     &      0.,0.,0.
+         write(18,'("nH= ",es9.3,2x,"Error circle/elliptical= ",4(f6.2,2x))') 0.,0.,0.,0.,0.
+c         write(18,'("0,nvss,41.21762,11.53044,1.097,33,1.4,26.7,2.7,19.3,,-69.5")')
+         close(18)
       ENDIF
-
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(13,file=input_file2,status='old',iostat=ier)
       open(12,file=input_file3,status='old',iostat=ier)

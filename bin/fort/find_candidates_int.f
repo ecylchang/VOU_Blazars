@@ -45,7 +45,7 @@ c      min_dist_4p8=30./3600.
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found '')')
+         write (*,'('' file '',a,'' not found. No pts in Intermediate phase '')')
      &     input_file(1:lenact(input_file))
          STOP
       ENDIF
