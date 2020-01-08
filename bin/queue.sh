@@ -81,6 +81,7 @@ do
 done < $LIST
 
 echo
+#if $CNT
 [ "$VERBOSE" = "1" ] && echo "Searching $CNT catalogs"
 
 # Check if any halo was found. If not, finish the run..
@@ -135,7 +136,7 @@ do
          1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
       else
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAIL\033[0m "
+         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m "
          echo $_file >> voerror.txt
       fi
       unset PIDs[$PID]

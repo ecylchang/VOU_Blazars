@@ -1928,7 +1928,7 @@ c            write(*,*) 'number of matched',ifound
                do i = 1,ifound-1
                   call DIST_SKY(ra_radio(k),dec_radio(k),ra_radio(t(i)),dec_radio(t(i)),dist)
                   !if (dist*60 .lt. 0.8) then
-                  if (dist*3600. .lt. 12.) then
+                  if (dist*3600. .lt. 6.) then
                      rfound=rfound+1
                      IF ( ix.NE.0 ) THEN
                      flux_x = flux_x/float(ix)
@@ -2030,7 +2030,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
             DO i=1,iother
                CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_other(i),
      &                       dec_other(i),dist)
-c               write(*,*) dist*3600.
+c               write(*,*) 'CHECK CAT.',ra_radio(k),dec_radio(k),ra_other(i),dec_other(i),dist*3600.
                IF (dist*3600. < max(poserr_radio(k),10.)) THEN !!!!!
                   IF (name_other(i)(1:4) == '3HSP') THEN
                      type_average = -1

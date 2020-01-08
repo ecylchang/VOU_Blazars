@@ -95,6 +95,7 @@ c         write(*,*) device
       ENDIF
 
 c      ra_err2=ra_err2-1.71 !6.56-4.41
+c      dec_err2
 c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15
 c      dec_o=dec_o+0.1 !0.4 +0.5-0.3
 c      write(*,*) ra_o,dec_o
@@ -612,10 +613,10 @@ c           CALL PGSCR(8,R,G,B)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
-               call pgtext(x,y,tcol12(j))
-               write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
-            endif
+c            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
+c               call pgtext(x,y,tcol12(j))
+c               write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
+c            endif
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN
@@ -675,6 +676,8 @@ c      write(*,*) 'number of cat. 14 sources',icol14
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
             if (s14(j) .eq. 7) then
                call pgsch(1.5)
+            else if (s14(j) .eq. 20) then
+               call pgsch(4.)
             else
                call pgsch(1.3)
             endif
