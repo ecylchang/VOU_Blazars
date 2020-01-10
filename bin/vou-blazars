@@ -665,7 +665,7 @@ do
    done
 
 #check if the number input are not valid, or the user want to quit
-   if [ ! -f ${pidnm}vosearch.txt -a ${source} != q -a ${source} != candlist -a ${source} != nocand  -a ${source} != sed ]; then
+   if [ ! -f ${pidnm}vosearch.txt -a ${source} != q -a ${source} != candlist -a ${source} != nocand  -a ${source} != sed -a ${source} != a ]; then
       source=nosource
    fi
    if [ $source == nosource ]; then
@@ -678,11 +678,11 @@ do
       source=q
    elif [ $source == q ]; then
       echo
-#   elif [ $source == a ]; then
-#      rm -rf vou-aladin.html
-#      ${BINF}/aladin_interface
+   elif [ $source == a ]; then
+      rm -rf ${pidnm}vou-aladin.html
+      ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html
 #    mv vou-aladin.html ~/.
-#      open vou-aladin.html
+      open ${pidnm}vou-aladin.html
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
       ncat2=`cat ${pidnm}vosearch.txt | wc -l`
@@ -692,11 +692,11 @@ do
          echo data already downloaded!
          rm -f ${pidnm}vosearch.txt
       else
-         rm -f voerror.txt
+         rm -f ${pidnm}voerror.txt
          sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
          declare -i irunvo=1
-         if [ -s voerror.txt ]; then
+         if [ -s ${pidnm}voerror.txt ]; then
             voerror=yes
          else
             voerror=no
@@ -707,13 +707,13 @@ do
             runvo=y
 #   [ -z $pid ] && read -p "Found error when searhcing through VO. Type 'n' to skip and continue; otherwise, rerun the VO conesearch" runvo
             [ -z $runvo ] && runvo=y
-            cat voerror.txt > vosearch.txt
-            rm -f voerror.txt
+            cat ${pidnm}voerror.txt > ${pidnm}vosearch.txt
+            rm -f ${pidnm}voerror.txt
             irunvo=${irunvo}+1
             echo
             echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
             [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f ${pidnm}vosearch.txt -n $ncat1
-            if [ -s voerror.txt ]; then
+            if [ -s ${pidnm}voerror.txt ]; then
                voerror=yes
             else
                voerror=no
@@ -780,10 +780,10 @@ do
          echo
          ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}lc.ps/cps ${pidnm}LC.txt $source
          [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
-#         rm -rf vou-aladin.html
-#         ${BINF}/aladin_error_map
+         rm -rf ${pidnm}vou-aladin.html
+         ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html
 # mv vou-aladin.html ~/.
-#         open vou-aladin.html
+         open ${pidnm}vou-aladin.html
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps

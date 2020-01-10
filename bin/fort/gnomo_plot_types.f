@@ -676,8 +676,8 @@ c      write(*,*) 'number of cat. 14 sources',icol14
             CALL gnom_projection(1,ra_center,dec_center,ra_col14(j),dec_col14(j),x,y)
             if (s14(j) .eq. 7) then
                call pgsch(1.5)
-            else if (s14(j) .eq. 20) then
-               call pgsch(4.)
+c            else if (s14(j) .eq. 20) then
+c               call pgsch(4.)
             else
                call pgsch(1.3)
             endif
