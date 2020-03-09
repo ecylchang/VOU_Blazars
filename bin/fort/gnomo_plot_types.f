@@ -613,10 +613,10 @@ c           CALL PGSCR(8,R,G,B)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
             call pgsch(1.)
-c            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
-c               call pgtext(x,y,tcol12(j))
-c               write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
-c            endif
+            if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
+               call pgtext(x,y,tcol12(j))
+               write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
+            endif
          ENDDO
       ENDIF
       IF (icol11.GT.0) THEN

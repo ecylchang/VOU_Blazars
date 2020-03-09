@@ -72,7 +72,7 @@ c
       real*4 lcurve_type(2000,1000),mjdstart(200),mjdend(200),mjdst_alma(1500),mjded_alma(1500)
       real*4 mjdst_xrt(5000),mjded_xrt(5000),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
       real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor
-      real*4 flux_debl(50,6),FluxU_debl(50,6),FluxL_debl(50,6),frequency_debl(50,6)
+      real*4 flux_debl(50,6),FluxU_debl(50,6),FluxL_debl(50,6),frequency_debl(50,6),zsource(400)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -171,17 +171,17 @@ c         input_file4=string(in+1:im-1)
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
 
-      INQUIRE (FILE=input_file,EXIST=there)
-      IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found. No data found in phase 2.'')')
-     &     input_file(1:lenact(input_file))
-         open(18,file=input_file,status='unknown',iostat=ier)
-         write(18,'("RA= ",f9.5,2x,"Dec= ",f9.5,2x,"Searching radius= ",f6.2)')
-     &      0.,0.,0.
-         write(18,'("nH= ",es9.3,2x,"Error circle/elliptical= ",4(f6.2,2x))') 0.,0.,0.,0.,0.
+c      INQUIRE (FILE=input_file,EXIST=there)
+c      IF (.NOT.there) THEN
+c         write (*,'('' file '',a,'' not found. No data found in phase 2.'')')
+c     &     input_file(1:lenact(input_file))
+c         open(18,file=input_file,status='unknown',iostat=ier)
+c         write(18,'("RA= ",f9.5,2x,"Dec= ",f9.5,2x,"Searching radius= ",f6.2)')
+c     &      0.,0.,0.
+c         write(18,'("nH= ",es9.3,2x,"Error circle/elliptical= ",4(f6.2,2x))') 0.,0.,0.,0.,0.
 c         write(18,'("0,nvss,41.21762,11.53044,1.097,33,1.4,26.7,2.7,19.3,,-69.5")')
-         close(18)
-      ENDIF
+c         close(18)
+c      ENDIF
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(13,file=input_file2,status='old',iostat=ier)
       open(12,file=input_file3,status='old',iostat=ier)
@@ -222,74 +222,80 @@ c read the sed.txt first
       npt(1:1000)=0
 202   continue
       read(12,'(i4,a)',end=200,err=200) sfound,string
+      !write(*,*) sfound,string
       do while(ok)
-      npt(sfound)=npt(sfound)+1
-      read(12,'(es10.3,a)',end=201,err=201) frequency(npt(sfound),sfound),string
-      !write(*,*) frequency(npt(sfound),sfound)
-      if ((frequency(npt(sfound),sfound) .lt. 1.e10) .or. (frequency(npt(sfound),sfound) .eq. 2.418e17)) then
-         read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),lflux(npt(
-     &   sfound),sfound),ra_rrxx(npt(sfound),sfound),dec_rrxx(npt(sfound),sfound),epos(npt(sfound),sfound),
-     &   mjdst_rrxx(npt(sfound),sfound),mjded_rrxx(npt(sfound),sfound),spec_type(npt(sfound),sfound)
-         if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 64)) then
-            iousxb=iousxb+1
-            recordmjd(1:3,iousxb)=[iousxb,npt(sfound),sfound]
-         endif
+      if (sfound .ge. 1000) then
+         read(12,*,end=201,err=201) zsource(1:isource)
+         write(*,*) "redshift",zsource(1:isource)
       else
-         read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
-     &       lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
-         if ((spec_type(npt(sfound),sfound) .eq. 11) .or. (spec_type(npt(sfound),sfound) .eq. 14)) then
-            iswort=iswort+1
-            iiswort=iswort/4
-            if (MOD(iswort,4) .ne. 0) iiswort=iiswort+1
-            mjdst_rrxx(npt(sfound),sfound)=mjdst_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
-            mjded_rrxx(npt(sfound),sfound)=mjded_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
+         npt(sfound)=npt(sfound)+1
+         read(12,'(es10.3,a)',end=201,err=201) frequency(npt(sfound),sfound),string
+         !write(*,*) frequency(npt(sfound),sfound)
+         if ((frequency(npt(sfound),sfound) .lt. 1.e10) .or. (frequency(npt(sfound),sfound) .eq. 2.418e17)) then
+            read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),lflux(npt(
+     &      sfound),sfound),ra_rrxx(npt(sfound),sfound),dec_rrxx(npt(sfound),sfound),epos(npt(sfound),sfound),
+     &      mjdst_rrxx(npt(sfound),sfound),mjded_rrxx(npt(sfound),sfound),spec_type(npt(sfound),sfound)
+            if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 64)) then
+               iousxb=iousxb+1
+               recordmjd(1:3,iousxb)=[iousxb,npt(sfound),sfound]
+            endif
          else
-            mjdst_rrxx(npt(sfound),sfound)=55000.
-            mjded_rrxx(npt(sfound),sfound)=55000.
+            read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
+     &          lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
+            if ((spec_type(npt(sfound),sfound) .eq. 11) .or. (spec_type(npt(sfound),sfound) .eq. 14)) then
+               iswort=iswort+1
+               iiswort=iswort/4
+               if (MOD(iswort,4) .ne. 0) iiswort=iiswort+1
+               mjdst_rrxx(npt(sfound),sfound)=mjdst_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
+               mjded_rrxx(npt(sfound),sfound)=mjded_rrxx(recordmjd(2,iiswort),recordmjd(3,iiswort))
+            else
+               mjdst_rrxx(npt(sfound),sfound)=55000.
+               mjded_rrxx(npt(sfound),sfound)=55000.
+            endif
          endif
-      endif
-      if ((spec_type(npt(sfound),sfound) .eq. 59) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
-         frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
-         ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
-      endif
+         if ((spec_type(npt(sfound),sfound) .eq. 59) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
+            frequency(npt(sfound),sfound)=(1.602E-19)*(3.e3)/(6.626e-34)
+            ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
+         endif
       !write(*,*) sfound,frequency(npt(sfound),sfound),spec_type(npt(sfound),sfound),epos(npt(sfound),sfound)
-      if ((spec_type(npt(sfound),sfound) .eq. 60) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
-         frequency(npt(sfound),sfound)=(1.602E-19)*(3.5e3)/(6.626e-34)
-         ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
-      endif
-      if (frequency(npt(sfound),sfound) .gt. 1.E11 ) then
-      if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
+         if ((spec_type(npt(sfound),sfound) .eq. 60) .and. (ra_rrxx(npt(sfound),sfound) .lt. 0.)) then
+            frequency(npt(sfound),sfound)=(1.602E-19)*(3.5e3)/(6.626e-34)
+            ra_rrxx(npt(sfound),sfound)=abs(ra_rrxx(npt(sfound),sfound))
+         endif
+         if (frequency(npt(sfound),sfound) .gt. 1.E11 ) then
+         if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
      &      rrxx_type(npt(sfound),sfound)='XMMSL'
-      if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
+         if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
      &      rrxx_type(npt(sfound),sfound)='3XMM'
-      if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
+         if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
-      if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
+         if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
      &      rrxx_type(npt(sfound),sfound)='WGA'
-      if ((spec_type(npt(sfound),sfound) .eq. 55) .or. (spec_type(npt(sfound),sfound) .eq. 5))
+         if ((spec_type(npt(sfound),sfound) .eq. 55) .or. (spec_type(npt(sfound),sfound) .eq. 5))
      &      rrxx_type(npt(sfound),sfound)='SXPS'
-      if ((spec_type(npt(sfound),sfound) .eq. 56) .or. (spec_type(npt(sfound),sfound) .eq. 6))
+         if ((spec_type(npt(sfound),sfound) .eq. 56) .or. (spec_type(npt(sfound),sfound) .eq. 6))
      &      rrxx_type(npt(sfound),sfound)='IPC'
-      if ((spec_type(npt(sfound),sfound) .eq. 57) .or. (spec_type(npt(sfound),sfound) .eq. 7))
+         if ((spec_type(npt(sfound),sfound) .eq. 57) .or. (spec_type(npt(sfound),sfound) .eq. 7))
      &      rrxx_type(npt(sfound),sfound)='BMW'
-      if ((spec_type(npt(sfound),sfound) .eq. 58) .or. (spec_type(npt(sfound),sfound) .eq. 8))
+         if ((spec_type(npt(sfound),sfound) .eq. 58) .or. (spec_type(npt(sfound),sfound) .eq. 8))
      &      rrxx_type(npt(sfound),sfound)='CHANDRA'
-      if ((spec_type(npt(sfound),sfound) .eq. 59) .or. (spec_type(npt(sfound),sfound) .eq. 9))
+         if ((spec_type(npt(sfound),sfound) .eq. 59) .or. (spec_type(npt(sfound),sfound) .eq. 9))
      &      rrxx_type(npt(sfound),sfound)='XRTDEEP'
-      if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
+         if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
      &      rrxx_type(npt(sfound),sfound)='MAXIGSC'
-      if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 11))
+         if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 11))
      &      rrxx_type(npt(sfound),sfound)='OUSXB'
-      if ((spec_type(npt(sfound),sfound) .eq. 62) .or. (spec_type(npt(sfound),sfound) .eq. 12))
+         if ((spec_type(npt(sfound),sfound) .eq. 62) .or. (spec_type(npt(sfound),sfound) .eq. 12))
      &      rrxx_type(npt(sfound),sfound)='IPCSL'
-      if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
+         if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
      &      rrxx_type(npt(sfound),sfound)='MAXISSC'
-      if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
+         if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
      &      rrxx_type(npt(sfound),sfound)='OUSXG'
-      else
-         if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
-         if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
-         if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
+         else
+            if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
+            if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
+            if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
+         endif
       endif
       enddo
 201   continue
@@ -328,8 +334,12 @@ c read the data file
       is = index(string(1:len(string)),'=')
       ie = index(string(is+5:len(string)),' ') +is+4
       read(string(is+1:ie-1),*) nh
-      !write(*,*) nh ! print out nh, end of reading nh
-      !write(*,*) "nh=",nh!nh=5.e20
+      if (nh .eq. 0.d0) THEN
+         write (*,'('' file '',a,'' not found. No data found in phase 2.'')')
+     &     input_file(1:lenact(input_file))
+      endif
+c      write(*,*) ra_center,dec_center,radius
+c      write(*,*) nh
       !nh=5.e20
       DO WHILE(ok)
 300   continue
@@ -3460,7 +3470,7 @@ c   ENDIF
 cENDDO
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
-         write(14,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
+         write(14,'(i4,2x,a,2(2x,f9.5),2x,i2,2x,f5.3)') j,"matched source",ra_source(j),dec_source(j),typer(j),zsource(j)
          write(14,'(2(a,2x),2(a,1x),4(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Catalog   ","Reference"
          write(14,'(6(a,2x))') "    Hz    "," erg/cm2/s","   upper  ","   lower  ","    MJD   ","    MJD   "
          write(14,'(a)') "---------------------------------------------------------------------------------------------------------------------------"

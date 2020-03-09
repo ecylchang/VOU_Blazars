@@ -56,7 +56,8 @@ c
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
       real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
-      real*4 errrad,errmaj,errmin,errang,savemjy(200),mjdstart(3000,10000),mjdend(3000,10000),mjdavg
+      real*4 errrad,errmaj,errmin,errang,mjdstart(3000,10000),mjdend(3000,10000),mjdavg
+      real*4 savemjy(200),zz(15000),zsource(500)
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(15000),name_cat(200),namegam(200)
@@ -69,6 +70,7 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       found = .FALSE.
       catsrc=.false.
       nrep(1:500)=1
+      zsource(1:500)=0.
       ifound = 0
       sfound = 0
       rfound = 0
@@ -1537,8 +1539,11 @@ c            write(*,*) namegam(igam)
                ie=index(string(is+1:len(string)),',')+is
                read(string(is+1:ie-1),'(a)') name_other(iother)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                read(string(is+1:ie-1),'(a)') classmq(iother)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) zz(iother)
             else
                ie=len(string)
                read(string(is+1:ie-1),'(a)') name_other(iother)
@@ -2060,6 +2065,7 @@ c               write(*,*) 'CHECK CAT.',ra_radio(k),dec_radio(k),ra_other(i),dec
                      code=-7000
                      write(*,'(2x,a,1x,a)') name_other(i)
                      ra_other(i) = -ra_other(i)
+                     zsource(sfound)=zz(i)
                   ENDIF
                ENDIF
                IF (dist < min_dist_cluster) THEN
@@ -2790,6 +2796,9 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
          ENDIF
       ENDDO
       WRITE (*,*) '      '
+      write(12,*) "===================="
+      write(12,'(i4,2x,a)') 1000,"Redshift"
+      write(12,*) zsource(1:sfound)
 
       do i=1,igam
          if (namegam(i)(1:3) == 'GRB') then

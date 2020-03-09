@@ -258,7 +258,7 @@ rm -f ${pidnm}*.1.csv
 echo conesearch --db ${HERE}/cats1.ini --catalog NVSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}nvss.1.csv > ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog FIRST --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}first.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sumss.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sxps.1.csv >> ${pidnm}vosearch.txt
+#echo conesearch --db ${HERE}/cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sxps.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SDS82 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sds82.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxb.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxg.1.csv >> ${pidnm}vosearch.txt
@@ -529,7 +529,7 @@ until [ $source == sed -o $source == q ]
 do
    if [ ${13} != s -a $source != nocand ]; then
       echo
-      if [ -z "$VOUB_AUTOSED" ]; then
+      if [ -z $VOUB_AUTOSED ]; then
 #        cat ${pidnm}phase1
         if [ -z $pid ]; then
            read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zoomin showsed
@@ -537,11 +537,27 @@ do
            source=q
         fi
       else
-        [ -f ${pidnm}Sed_temp.txt ] && `grep "matched source" ${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > ${pidnm}sources.list`
-        [ `wc -l ${pidnm}sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
-        source=$(head -n1 ${pidnm}sources.list)
-        tail -n +2 ${pidnm}sources.list > ${pidnm}sources.tmp
-        mv ${pidnm}sources.tmp ${pidnm}sources.list
+        runiter=`ls ${pidnm}*.$source.2.csv 2>/dev/null | wc -l`
+        if [ $VOUB_AUTOSED == all -a ${runiter} -eq 0 ]; then
+           [ -f ${pidnm}Sed_temp.txt ] && `grep "matched source" ${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > ${pidnm}sources.list`
+#           cat sources.list
+        elif [ $VOUB_AUTOSED == part -a ${runiter} -eq 0 ]; then
+           cat phase1 | tail -2 | head -1 |awk '{print $7 "\n" $8 "\n" $9 "\n" $10 "\n" $11}' > sources.list
+        fi
+        #cat sources.list
+        #[ `wc -l ${pidnm}sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
+        declare -i sourcenb
+        sourcenb=`cat ${pidnm}sources.list | wc -l`
+        sourcenb=${sourcenb}-1
+        if [ $sourcenb -ge 0 ]; then
+           source=`head -1 ${pidnm}sources.list`
+        #echo $sourcenb
+           cat ${pidnm}sources.list | tail -${sourcenb} > ${pidnm}sources.tmp
+           mv ${pidnm}sources.tmp ${pidnm}sources.list
+        else
+           source=q
+        fi
+      #elif [ $VOUB_AUTOSED=part ]; then
       fi
       ln=`cat ${pidnm}find_out_temp.txt | wc -l`
    elif [ ${13} == s ]; then
@@ -748,6 +764,10 @@ do
       rm -f ${pidnm}output2.csv
       echo
       [ -s ${pidnm}catlist2.txt ] && ${BINF}/readcat ${pidnm}catlist2.txt ${pidnm}output2.csv $racand $deccand $3 $nhval 0. 0. 0. 0.
+      if [ ! -s ${pidnm}output2.csv ]; then
+         echo RA= $rar Dec= $decr radius= $3 > output2.csv
+         echo nH= 0.0 Error circle/elliptical= 0.  0.  0.  0.  0. >> output2.csv
+      fi
 
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
@@ -834,3 +854,4 @@ rm -f ${pidnm}*.i.csv
 rm -f ${pidnm}*.2.csv
 rm -f ${pidnm}xrtdeep.csv
 [ $source == sed ] && unset zoomin
+unset VOUB_AUTOSED
