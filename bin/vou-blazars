@@ -258,7 +258,7 @@ rm -f ${pidnm}*.1.csv
 echo conesearch --db ${HERE}/cats1.ini --catalog NVSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}nvss.1.csv > ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog FIRST --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}first.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sumss.1.csv >> ${pidnm}vosearch.txt
-#echo conesearch --db ${HERE}/cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sxps.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sxps.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SDS82 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sds82.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxb.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxg.1.csv >> ${pidnm}vosearch.txt
@@ -696,8 +696,8 @@ do
       echo
    elif [ $source == a ]; then
       rm -rf ${pidnm}vou-aladin.html
-      ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html
-#    mv vou-aladin.html ~/.
+      ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html $3
+#      mv vou-aladin.html ~/
       open ${pidnm}vou-aladin.html
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
@@ -802,7 +802,7 @@ do
          [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
          rm -rf ${pidnm}vou-aladin.html
          ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html
-# mv vou-aladin.html ~/.
+#         mv vou-aladin.html ~/
          open ${pidnm}vou-aladin.html
       fi
       # ps2eps -B -q sed.ps -R +

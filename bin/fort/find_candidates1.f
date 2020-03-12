@@ -908,15 +908,15 @@ c end PG
                   FluxL_swift(iswift,2)=flux_swift(iswift,2)-Ferr_swift(iswift,2)
                   frequency_swift(iswift,2)=(1.602E-19)*(5.e2)/(6.626e-34)
                   if ((Ferr_swift(iswift,2) .lt. 0) .or. (FluxL_swift(iswift,2) .lt. 0)) then
-                     if (flux_swift(iswift,2) .gt. 0.) then
+c                     if (flux_swift(iswift,2) .gt. 0.) then
                         FluxU_swift(iswift,2)=flux_swift(iswift,2)
                         flux_swift(iswift,2)=0.
                         FluxL_swift(iswift,2)=0.
-                     else
-                        FluxL_swift(iswift,2)=0.
-                        FluxU_swift(iswift,2)=0.
-                        flux_swift(iswift,2)=0.
-                     endif
+c                     else
+c                        FluxL_swift(iswift,2)=0.
+c                        FluxU_swift(iswift,2)=0.
+c                        flux_swift(iswift,2)=0.
+c                     endif
                   endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
@@ -928,15 +928,15 @@ c end PG
                   FluxL_swift(iswift,1)=flux_swift(iswift,1)-Ferr_swift(iswift,1)
                   frequency_swift(iswift,1)=(1.602E-19)*(1.e3)/(6.626e-34)
                   if ((Ferr_swift(iswift,1) .lt. 0) .or. (FluxL_swift(iswift,1) .lt. 0)) then
-                     if (flux_swift(iswift,1) .gt. 0.) then
+c                     if (flux_swift(iswift,1) .gt. 0.) then
                         FluxU_swift(iswift,1)=flux_swift(iswift,1)
                         flux_swift(iswift,1)=0.
                         FluxL_swift(iswift,1)=0.
-                     else
-                        FluxL_swift(iswift,1)=0.
-                        FluxU_swift(iswift,1)=0.
-                        flux_swift(iswift,1)=0.
-                     endif
+c                     else
+c                        FluxL_swift(iswift,1)=0.
+c                        FluxU_swift(iswift,1)=0.
+c                        flux_swift(iswift,1)=0.
+c                     endif
                   endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
@@ -948,15 +948,15 @@ c end PG
                   FluxL_swift(iswift,3)=flux_swift(iswift,3)-Ferr_swift(iswift,3)
                   frequency_swift(iswift,3)=(1.602E-19)*(1.5e3)/(6.626e-34)
                   if ((Ferr_swift(iswift,3) .lt. 0) .or. (FluxL_swift(iswift,3) .lt. 0)) then
-                     if (flux_swift(iswift,3) .gt. 0.) then
+c                     if (flux_swift(iswift,3) .gt. 0.) then
                         FluxU_swift(iswift,3)=flux_swift(iswift,3)
                         flux_swift(iswift,3)=0.
                         FluxL_swift(iswift,3)=0.
-                     else
-                        FluxL_swift(iswift,3)=0.
-                        FluxU_swift(iswift,3)=0.
-                        flux_swift(iswift,3)=0.
-                     endif
+c                     else
+c                        FluxL_swift(iswift,3)=0.
+c                        FluxU_swift(iswift,3)=0.
+c                        flux_swift(iswift,3)=0.
+c                     endif
                   endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
@@ -968,15 +968,15 @@ c end PG
                   FluxL_swift(iswift,4)=flux_swift(iswift,4)-Ferr_swift(iswift,4)
                   frequency_swift(iswift,4)=(1.602E-19)*(3.e3)/(6.626e-34)
                   if ((Ferr_swift(iswift,4) .lt. 0) .or. (FluxL_swift(iswift,4) .lt. 0)) then
-                     if (flux_swift(iswift,4) .gt. 0.) then
+c                     if (flux_swift(iswift,4) .gt. 0.) then
                         FluxU_swift(iswift,4)=flux_swift(iswift,4)
                         flux_swift(iswift,4)=0.
                         FluxL_swift(iswift,4)=0.
-                     else
-                        FluxL_swift(iswift,4)=0.
-                        FluxU_swift(iswift,4)=0.
-                        flux_swift(iswift,4)=0.
-                     endif
+c                     else
+c                        FluxL_swift(iswift,4)=0.
+c                        FluxU_swift(iswift,4)=0.
+c                        flux_swift(iswift,4)=0.
+c                     endif
                   endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
@@ -988,15 +988,15 @@ c end PG
                   FluxL_swift(iswift,5)=flux_swift(iswift,5)-Ferr_swift(iswift,5)
                   frequency_swift(iswift,5)=(1.602E-19)*(4.5e3)/(6.626e-34)
                   if ((Ferr_swift(iswift,5) .lt. 0) .or. (FluxL_swift(iswift,5) .lt. 0)) then
-                     if (flux_swift(iswift,5) .gt. 0.) then
+c                     if (flux_swift(iswift,5) .gt. 0.) then
                         FluxU_swift(iswift,5)=flux_swift(iswift,5)
                         flux_swift(iswift,5)=0.
                         FluxL_swift(iswift,5)=0.
-                     else
-                        FluxL_swift(iswift,5)=0.
-                        FluxU_swift(iswift,5)=0.
-                        flux_swift(iswift,5)=0.
-                     endif
+c                     else
+c                        FluxL_swift(iswift,5)=0.
+c                        FluxU_swift(iswift,5)=0.
+c                        flux_swift(iswift,5)=0.
+c                     endif
                   endif
                   if (flux_swift(iswift,1) .eq. 0.) then
                      if (flux_swift(iswift,3) .ne. 0.) then
