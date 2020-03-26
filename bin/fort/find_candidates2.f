@@ -23,25 +23,27 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output, in,im,rfound,ir100found,s,iverit,veritind(100)
+      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output,in,im,rfound,ir100found,s,iverit,veritind(100)
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
       INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(100),almaind(1500)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
       INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000),ialma
-      INTEGER*4 iusno, iofound, length,ialphar,iofound_index(100),ipccs100,ifarfound,filen_x(5000),ibigb
+      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(5000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),iref,r
-      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2),opt_ref(5)
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),nptlc(1000),lcfound,itevlc,lowr_ref(1000)
-      integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl
+      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),r
+      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2),opt_ref(5),ibigb
+      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(200),lowr_ref(1000),iflcuv,flcuvpart(6000)
+      integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
+      integer*4 iircheck,indirlc(1000),iirlc,i4fgl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
-      REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(5),dec_ircand(5)
+      REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(1000),dec_ir(1000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
-      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),dec_lowr(1000)
-      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(200),dec_vhe(200),ra_alma,dec_alma,mjdtest
+      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),ra_flcuv(6000)
+      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(200),dec_vhe(200),ra_alma,dec_alma,dec_flcuv(6000)
+      real*8 dec_lowr(1000),mjdtest,ra_gamslp(5),dec_gamslp(5)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -52,7 +54,7 @@ c
       real*4 flux_far(500),frequency_far(500),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
       real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
-      real*4 flux_ircand(5,4),irmag_cand(5,4),irdist(5),freq_ircand(5,4),flux_usnocand(5,5),usnomag_cand(5,5)
+      real*4 flux_ircand(1000,4),irmag_cand(1000,4),irdist(1000),freq_ircand(1000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
       real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
@@ -62,17 +64,19 @@ c
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
-      real*4 uflux_ircand(5,4),lflux_ircand(5,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
+      real*4 uflux_ircand(1000,4),lflux_ircand(1000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
       real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(5),epos_usnocand(5),Ferr_xray(5000,2)
       real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(1000)
       real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(200),flux_vhe(200),FluxU_vhe(200),FluxL_vhe(200),poserr_vhe(200),Ferr_vhe(200)
-      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 lcurve_type(2000,1000),mjdstart(200),mjdend(200),mjdst_alma(1500),mjded_alma(1500)
-      real*4 mjdst_xrt(5000),mjded_xrt(5000),ftev_lc(200),uftev_lc(200),lftev_lc(200),fq1tev,sloperat
-      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor
+c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
+      real*4 mjdstart(200),mjdend(200),mjdst_alma(1500),mjded_alma(1500),mjdst_xrt(5000),mjded_xrt(5000)
+      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor,fq1tev,sloperat
       real*4 flux_debl(50,6),FluxU_debl(50,6),FluxL_debl(50,6),frequency_debl(50,6),zsource(400)
+      real*4 frequency_flcuv(6000,3),flux_flcuv(6000,3),FluxU_flcuv(6000,3),FluxL_flcuv(6000,3),slope_flcuv(6000)
+      real*4 mjdst_flcuv(6000),mjded_flcuv(6000),Ferr_flcuv(6000,3),metst(6000),meted(6000),ts(6000),duration(6000)
+      real*4 mjdst_irlc(1000),mjded_irlc(1000),mjdst_irlccand(1000),mjded_irlccand(1000),poserr_gamslp(5),gamslp(5)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(1000,2)
       character*6 aim
@@ -106,8 +110,9 @@ c
       iverit=0
       ivhe=0
       ialma=0
-      itevlc=0
       idebl=0
+      iflcuv=0
+      iirlc=0
       radian = 45.0/atan(1.0)
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       sign=' '
@@ -266,7 +271,7 @@ c read the sed.txt first
          if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
      &      rrxx_type(npt(sfound),sfound)='XMMSL'
          if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
-     &      rrxx_type(npt(sfound),sfound)='3XMM'
+     &      rrxx_type(npt(sfound),sfound)='4XMM'
          if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
          if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
@@ -1064,8 +1069,8 @@ c               dec_alma=dec_pccs100(ipccs100)
             FluxU_far(ifar)=FluxU_far(ifar)*frequency_far(ifar)*1.E-26
             FluxL_far(ifar)=FluxL_far(ifar)*frequency_far(ifar)*1.E-26
             !write(*,*) frequency_far(ifar),FluxU_far(ifar),flux_far(ifar),FluxL_far(ifar)
-         ELSE IF ((catalog(1:4) == 'wise') .OR.
-     &             (catalog(1:5) == '2mass') ) THEN
+         ELSE IF ((catalog(1:4) == 'wise') .OR. (catalog(1:7) == 'neowise')
+     &            .or.  (catalog(1:5) == '2mass') ) THEN
             iir=iir+1
             IF (iir > 1000) Stop 'Too many Infrared points'
             if (iir .ne. 1) THEN
@@ -1092,8 +1097,13 @@ c               dec_alma=dec_pccs100(ipccs100)
             IF (catalog(1:4) == 'wise') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
-               poserr_ir(iir)=poserr_ir(iir)*2.
+               if (catalog(1:5) == 'wise ') then
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
+                  poserr_ir(iir)=poserr_ir(iir)*2.
+               else
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_irlc(iir)
+                  mjded_irlc(iir)=mjdst_irlc(iir)
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,1)
@@ -1124,24 +1134,61 @@ c               dec_alma=dec_pccs100(ipccs100)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,4)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
+               if (catalog(1:5) == 'wise ') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+               else
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+               ENDIF
                if (is .ne. ie-1) read(string(is+1:ie-1),*) irmagerr(iir,4)
                call mag2flux (nh,irmag(iir,4),'ww4',flux_ir(iir,4),frequency_ir(iir,4))
                call mag2flux (nh,irmag(iir,4)-irmagerr(iir,4),'ww4',FluxU_ir(iir,4),frequency_ir(iir,4))
                call mag2flux (nh,irmag(iir,4)+irmagerr(iir,4),'ww4',FluxL_ir(iir,4),frequency_ir(iir,4))
+               if (catalog(1:5) == 'wise ') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_ir(iir,2)
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_ir(iir,1)
+                  ir_type(iir)='WISE'
+                  if (flag_ir(iir,1)(1:1) == 'C') flux_ir(iir,1)=-flux_ir(iir,1)
+                  if (flag_ir(iir,1)(2:2) == 'C') flux_ir(iir,2)=-flux_ir(iir,2)
+                  if (flag_ir(iir,1)(3:3) == 'C') flux_ir(iir,3)=-flux_ir(iir,3)
+                  if (flag_ir(iir,1)(4:4) == 'C') flux_ir(iir,4)=-flux_ir(iir,4)
+                else
+                  ir_type(iir)='WISELC'
+                  iirlc=iirlc+1
+                  indirlc(iirlc)=iir
+                endif
+               !write(*,*) catalog(1:4),flux_ir(iir,1),flux_ir(iir,2),flux_ir(iir,3),flux_ir(iir,4)
+            ELSE if (catalog(1:7) == 'neowise') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_ir(iir,2)
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) irmagerr(iir,1)
+               call mag2flux (nh,irmag(iir,1),'ww1',flux_ir(iir,1),frequency_ir(iir,1))
+               call mag2flux (nh,irmag(iir,1)-irmagerr(iir,1),'ww1',FluxU_ir(iir,1),frequency_ir(iir,1))
+               call mag2flux (nh,irmag(iir,1)+irmagerr(iir,1),'ww1',FluxL_ir(iir,1),frequency_ir(iir,1))
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) irmag(iir,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) irmagerr(iir,2)
+               call mag2flux (nh,irmag(iir,2),'ww2',flux_ir(iir,2),frequency_ir(iir,2))
+               call mag2flux (nh,irmag(iir,2)-irmagerr(iir,2),'ww2',FluxU_ir(iir,2),frequency_ir(iir,2))
+               call mag2flux (nh,irmag(iir,2)+irmagerr(iir,2),'ww2',FluxL_ir(iir,2),frequency_ir(iir,2))
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_ir(iir,1)
-               ir_type(iir)='WISE'
-               if (flag_ir(iir,1)(1:1) == 'C') flux_ir(iir,1)=-flux_ir(iir,1)
-               if (flag_ir(iir,1)(2:2) == 'C') flux_ir(iir,2)=-flux_ir(iir,2)
-               if (flag_ir(iir,1)(3:3) == 'C') flux_ir(iir,3)=-flux_ir(iir,3)
-               if (flag_ir(iir,1)(4:4) == 'C') flux_ir(iir,4)=-flux_ir(iir,4)
-               !write(*,*) catalog(1:4),flux_ir(iir,1),flux_ir(iir,2),flux_ir(iir,3),flux_ir(iir,4)
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_irlc(iir)
+               mjded_irlc(iir)=mjdst_irlc(iir)
+               ir_type(iir)='NEOWISE'
+               iirlc=iirlc+1
+               indirlc(iirlc)=iir
             ELSE IF (catalog(1:5) == '2mass') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -2249,6 +2296,11 @@ c               write(*,*) flux_gam(igam,7)
                FluxU_gam(igam,8)=fdens
                call fluxtofdens(slope_gam(igam,1),30.,300.,FluxL_gam(igam,8),100.,fdens,nudens)
                FluxL_gam(igam,8)=fdens
+               i4fgl=i4fgl+1
+               ra_gamslp(i4fgl)=ra_gam(igam)
+               dec_gamslp(i4fgl)=dec_gam(igam)
+               poserr_gamslp(i4fgl)=poserr_gam(igam)
+               gamslp(i4fgl)=slope_gam(igam,1)
                gam_type(igam)='4FGL'
             ELSE IF (catalog(1:4) == '3fhl') then
                idebl=idebl+1
@@ -2680,6 +2732,105 @@ c               write(*,*) flux_gam(igam,7)
                gam_type(igam)='FermiMeV'
             ENDIF
             !write(*,*) catalog,FluxU_gam(igam,4),flux_gam(igam,4),FluxL_gam(igam,4)
+         ELSE IF (catalog(1:5) == 'flcuv') THEN
+            iflcuv=iflcuv+1
+            ra_flcuv(iflcuv)=ra
+            dec_flcuv(iflcuv)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_flcuv(iflcuv)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_flcuv(iflcuv)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_flcuv(iflcuv,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_flcuv(iflcuv,1)
+            FluxU_flcuv(iflcuv,1)=flux_flcuv(iflcuv,1)+Ferr_flcuv(iflcuv,1)
+            FluxL_flcuv(iflcuv,1)=flux_flcuv(iflcuv,1)-Ferr_flcuv(iflcuv,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) duration(iflcuv)
+            if (log10(duration(iflcuv)) .lt. 5.) THEN
+               iflcuv=iflcuv-1
+               goto 300
+            endif
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_flcuv(iflcuv,3)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_flcuv(iflcuv,3)
+            FluxU_flcuv(iflcuv,3)=flux_flcuv(iflcuv,3)+Ferr_flcuv(iflcuv,3)
+            FluxL_flcuv(iflcuv,3)=flux_flcuv(iflcuv,3)-Ferr_flcuv(iflcuv,3)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_flcuv(iflcuv,2)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_flcuv(iflcuv,2)
+            FluxU_flcuv(iflcuv,2)=flux_flcuv(iflcuv,2)+Ferr_flcuv(iflcuv,2)
+            FluxL_flcuv(iflcuv,2)=flux_flcuv(iflcuv,2)-Ferr_flcuv(iflcuv,2)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            ie=index(string(is+1:len(string)),' ')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) ts(iflcuv)
+            if ((FluxL_flcuv(iflcuv,1) .le. 0.) .or. (flux_flcuv(iflcuv,1) .le. 0.)
+     $        .or. (ts(iflcuv) .lt. 10.)) then
+               FluxU_flcuv(iflcuv,1)=flux_flcuv(iflcuv,1)
+               flux_flcuv(iflcuv,1)=0.
+               FluxL_flcuv(iflcuv,1)=0.
+               if (FluxU_flcuv(iflcuv,1) .le. 0.) FluxU_flcuv(iflcuv,1)=0.
+            endif
+            if ((FluxL_flcuv(iflcuv,2) .le. 0.) .or. (flux_flcuv(iflcuv,2) .le. 0.)
+     $        .or. (ts(iflcuv) .lt. 10.)) then
+               FluxU_flcuv(iflcuv,2)=flux_flcuv(iflcuv,2)
+               flux_flcuv(iflcuv,2)=0.
+               FluxL_flcuv(iflcuv,2)=0.
+               if (FluxU_flcuv(iflcuv,2) .le. 0. ) FluxU_flcuv(iflcuv,2)=0.
+            endif
+            if ((FluxL_flcuv(iflcuv,3) .le. 0.) .or. (flux_flcuv(iflcuv,3) .le. 0.)
+     $        .or. (ts(iflcuv) .lt. 10.)) then
+              FluxU_flcuv(iflcuv,3)=flux_flcuv(iflcuv,3)
+              flux_flcuv(iflcuv,3)=0.
+              FluxL_flcuv(iflcuv,3)=0.
+              if (FluxU_flcuv(iflcuv,3) .le. 0. ) FluxU_flcuv(iflcuv,3)=0.
+            endif
+            if (i4fgl .gt. 0) then
+               do s=1,i4fgl
+                  call DIST_SKY(ra_gamslp(s),dec_gamslp(s),ra_flcuv(iflcuv),dec_flcuv(iflcuv),dist)
+                  if (dist*3600. .lt. poserr_gamslp(s)) slope_flcuv(iflcuv)=gamslp(s)
+               enddo
+            else
+               slope_flcuv(iflcuv)=2.
+            endif
+            !write(*,*) flux_flcuv(iflcuv,1:3),slope_flcuv(iflcuv)
+            call fluxtofdens(slope_flcuv(iflcuv),0.1,300.,flux_flcuv(iflcuv,1),1.,fdens,nudens)
+            flux_flcuv(iflcuv,1)=fdens
+            frequency_flcuv(iflcuv,1)=nudens
+            call fluxtofdens(slope_flcuv(iflcuv),0.1,300.,FluxU_flcuv(iflcuv,1),1.,fdens,nudens)
+            FluxU_flcuv(iflcuv,1)=fdens
+            call fluxtofdens(slope_flcuv(iflcuv),0.1,300.,FluxL_flcuv(iflcuv,1),1.,fdens,nudens)
+            FluxL_flcuv(iflcuv,1)=fdens
+            call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,flux_flcuv(iflcuv,2),0.5,fdens,nudens)
+            flux_flcuv(iflcuv,2)=fdens
+            frequency_flcuv(iflcuv,2)=nudens
+            call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,FluxU_flcuv(iflcuv,2),0.5,fdens,nudens)
+            FluxU_flcuv(iflcuv,2)=fdens
+            call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,FluxL_flcuv(iflcuv,2),0.5,fdens,nudens)
+            FluxL_flcuv(iflcuv,2)=fdens
+            call fluxtofdens(slope_flcuv(iflcuv),1.,300.,flux_flcuv(iflcuv,3),10.,fdens,nudens)
+            flux_flcuv(iflcuv,3)=fdens
+            frequency_flcuv(iflcuv,3)=nudens
+            call fluxtofdens(slope_flcuv(iflcuv),1.,300.,FluxU_flcuv(iflcuv,3),10.,fdens,nudens)
+            FluxU_flcuv(iflcuv,3)=fdens
+            call fluxtofdens(slope_flcuv(iflcuv),1.,300.,FluxL_flcuv(iflcuv,3),10.,fdens,nudens)
+            FluxL_flcuv(iflcuv,3)=fdens
          ELSE IF ((catalog(1:5) == 'magic') .or. (catalog(1:7) == 'veritas')) then
             ivhe=ivhe+1
             ra_vhe(ivhe)=ra
@@ -2753,12 +2904,14 @@ c               write(*,*) flux_gam(igam,7)
       ENDDO
  99   CONTINUE
       write(*,*)"     "
-      write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam,ivhe
+      write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam,ivhe,iflcuv
       CLOSE (lu_in)
       open(14,file=output_file2,status='unknown',iostat=ier)
 c      open(17,file=output_file3,status='unknown',iostat=ier)
       write(*,*)"     "
 
+c      write(*,*) "Check FLC",frequency_flcuv(iflcuv,1),flux_flcuv(iflcuv,1),mjdst_flcuv(iflcuv),iflcuv
+c      write(*,*) frequency_flcuv(iflcuv,3),flux_flcuv(iflcuv,3),duration(iflcuv)
 
       if (aim == 'sed') then
          isource=1
@@ -2783,12 +2936,12 @@ c      open(17,file=output_file3,status='unknown',iostat=ier)
             endif
             endif
          enddo
-         if (f4p8part(i) .eq. 0) write(*,*) "Warning!!!Check 4.8 GHz counterpart."
+c         if (f4p8part(i) .eq. 0) write(*,*) "Warning!!!Check 4.8 GHz counterpart."
       enddo
-      if (i4p8 .ne. 0) then
-         write(*,*) "5 GHz",f4p8like(1:i4p8)
-         write(*,*) "5 GHz",f4p8part(1:i4p8)
-      endif
+c      if (i4p8 .ne. 0) then
+c         write(*,*) "5 GHz",f4p8like(1:i4p8)
+c         write(*,*) "5 GHz",f4p8part(1:i4p8)
+c      endif
 
       do i=1,ipccs100
          pccspart(i)=0
@@ -2808,7 +2961,7 @@ c            write(*,*) ra_source(j),dec_source(j),ra_pccs100(i),dec_pccs100(i),
             endif
             endif
          enddo
-         if (pccspart(i) .eq. 0) write(*,*) "Warning!!!Check 100 GHz counterpart."
+c         if (pccspart(i) .eq. 0) write(*,*) "Warning!!!Check 100 GHz counterpart."
       enddo
 c      if (ipccs100 .ne. 0) then
 c         write(*,*) "100 GHz",pccslike(1:ipccs100)
@@ -2832,12 +2985,12 @@ c      endif
             endif
             endif
          enddo
-         if (farpart(i) .eq. 0) write(*,*) "Warning!!!Check far-IR counterpart."
+c         if (farpart(i) .eq. 0) write(*,*) "Warning!!!Check far-IR counterpart."
       enddo
-      if (ifar .ne. 0) then
-         write(*,*) "far IR",farlike(1:ifar)
-         write(*,*) "far IR",farpart(1:ifar)
-      endif
+c      if (ifar .ne. 0) then
+c         write(*,*) "far IR",farlike(1:ifar)
+c         write(*,*) "far IR",farpart(1:ifar)
+c      endif
 
       do i=1,igam
          gamlike(i)=-100.
@@ -2858,12 +3011,12 @@ c      endif
             endif
             endif
          enddo
-         if (gampart(i) .eq. 0) write(*,*) "Warning!!!Check Gamma-ray counterpar."
+c         if (gampart(i) .eq. 0) write(*,*) "Warning!!!Check Gamma-ray counterpar."
       enddo
-      if (igam .ne. 0) then
-         write(*,*) "gamma-ray",gamlike(1:igam)
-         write(*,*) "gamma-ray",gampart(1:igam)
-      endif
+c      if (igam .ne. 0) then
+c         write(*,*) "gamma-ray",gamlike(1:igam)
+c         write(*,*) "gamma-ray",gampart(1:igam)
+c      endif
 
       open(lu_output,file=output_file(1:lenact(output_file)),status='unknown',iostat=ier)
       if (ns .ne. 0) then
@@ -3092,7 +3245,9 @@ c         write(*,*) iirfound,ii1,ii2
          IF (iirfound == 0) then
             write(*,'('' NO IR object within '',f5.2,'' arcsec'')') max(epos(1,j)*1.3,2.)
          else
-            do i=1,iirfound
+            iircheck=iirfound
+c            write(*,*) iircheck,iirfound
+            do i=1,iircheck
                airx=99.99
                arir=99.99
                if ((flux_x .ne. 0.) .and. (flux_ircand(i,2) .ne. 0.))
@@ -3101,8 +3256,31 @@ c         write(*,*) iirfound,ii1,ii2
      &               arir = 1.-log10(flux_r/flux_ircand(i,2))/log10(1.4e9/freq_ircand(i,2))
                write(*,'(a,"IR-X-ray slope: ",f6.3,",",2x,"radio-IR slope: ",f6.3,",",2x,f7.3," arcsec away")')
      &             ircand_type(i),airx,arir,irdist(i)*3600.
+cccccccc           check candidate has lc or not
+               do s=1,iir
+                  if (((ir_type(indirlc(s)) == 'WISELC') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
+     &                .and. (ircand_type(i) == 'WISE')) then
+                     call DIST_SKY(ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s)),dist)
+                     !write(*,*) i,indirlc(s),ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s))
+                     if (dist*3600. .le. 2.) then
+                        iirfound=iirfound+1
+                        flux_ircand(iirfound,1:4)=flux_ir(indirlc(s),1:4)
+                        uflux_ircand(iirfound,1:4)=FluxU_ir(indirlc(s),1:4)
+                        lflux_ircand(iirfound,1:4)=FluxL_ir(indirlc(s),1:4)
+                        irmag_cand(iirfound,1:4)=irmag(indirlc(s),1:4)
+                        freq_ircand(iirfound,1:4)=frequency_ir(indirlc(s),1:4)
+                        ra_ircand(iirfound)=ra_ir(indirlc(s))
+                        dec_ircand(iirfound)=dec_ir(indirlc(s))
+                        ircand_type(iirfound)=ir_type(indirlc(s))
+                        mjdst_irlccand(iirfound)=mjdst_irlc(indirlc(s))
+                        mjded_irlccand(iirfound)=mjded_irlc(indirlc(s))
+c                        write(*,*)
+                     endif
+                 endif
+               enddo
             enddo
          endif
+         write(*,*) iirfound
 
          write(*,*) '.......................Optical........................'
          ii1=0
@@ -3445,6 +3623,19 @@ c         if (ixray == 0 ) write(*,*) NO BAT detection within 8 arcmin
          !write(*,*) igamfound
          IF (igamfound == 0) write(*,'('' NO Gamma-ray detection within '',f5.0,'' arcmin'')') min_dist_gam*60.
 
+         iflcuvfound=0
+         do i=1,iflcuv
+            flcuvpart(i)=0
+            call Dist_sky(ra_source(j),dec_source(j),ra_flcuv(i),dec_flcuv(i),dist)
+c            write(*,*) i,dist*3600.,epos(1,j)
+            min_dist=epos(1,j)
+            !write(*,*) min_dist,dist*3600.
+            if (dist*3600. < 12. ) then !5 arcsec fixed value
+                flcuvpart(i)=j
+                iflcuvfound=iflcuvfound+1
+            endif
+         enddo
+
          write(*,*) '.......................TeV..................'
          do i=1,ivhe
             if (filen_v(i) .eq. j) then ! no coordinate, so use the file number
@@ -3597,6 +3788,11 @@ c         enddo
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
      &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
                enddo
+            else if ((ircand_type(i) == 'WISELC') .or. (ircand_type(i) == 'NEOWISE')) then
+               do s=1,4
+                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
+     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdst_irlccand(i),mjded_irlccand(i),ircand_type(i),refs(ir_ref(i))
+               enddo
             else
                call graphic_code(irmag_cand(i,2),52,code)
                do s=2,4
@@ -3604,7 +3800,8 @@ c         enddo
      &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
                enddo
             endif
-            write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
+            if ((ircand_type(i) /= 'WISELC') .and. (ircand_type(i) /= 'NEOWISE'))
+     &        write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
          enddo
          do i=1,iofound
             opt_ref(i)=iref+1
@@ -3755,6 +3952,14 @@ c     &              frequency_debl(1,s),flux_debl(1,s),FluxU_debl(1,s),FluxL_de
             enddo
          enddo
          endif
+         do i=1,iflcuv
+            if (flcuvpart(i) .eq. j) then
+               do s=1,3
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),"FMonLC      Fermi LAT monitored sources")')
+     &                          frequency_flcuv(i,s),flux_flcuv(i,s),FluxU_flcuv(i,s),FluxL_flcuv(i,s),mjdst_flcuv(i),mjded_flcuv(i)
+               enddo
+            endif
+         enddo
          do i=1,ivhe
             vhe_ref(i)=iref+1
             refs(iref+1)='TBD'

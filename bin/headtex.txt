@@ -1,0 +1,17 @@
+\documentclass[12pt,a4paper]{article} 
+\usepackage[utf8]{inputenc} 
+\usepackage{geometry} 
+\usepackage{graphicx,rotating} 
+\usepackage{subfig} 
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape}
+\usepackage{epstopdf}
+\epstopdfDeclareGraphicsRule{.gif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .gif`-gif-converted-to.png}
+\AppendGraphicsExtensions{.gif}
+
+\title{\bf \Huge VOU-Blazars Results}
+\author{\small Yu-Ling Chang}
+\date{\small \today}
+
+\begin{document}
+\maketitle

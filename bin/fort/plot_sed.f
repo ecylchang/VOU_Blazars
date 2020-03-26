@@ -4,15 +4,15 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
-      integer*4 i,sfound,npt(5000),rtype,stype(5000)
-      real*4 frequency(5000,1000),flux(5000,1000),uflux(5000,1000),lflux(5000,1000),sedup,sedlow
-      real*4 rasec,decsec,testflux,mjdstart(5000,1000),mjdend(5000,1000)
+      integer*4 i,sfound,npt(15000),rtype,stype(15000)
+      real*4 frequency(15000,1000),flux(15000,1000),uflux(15000,1000),lflux(15000,1000),sedup,sedlow
+      real*4 rasec,decsec,testflux,mjdstart(15000,1000),mjdend(15000,1000)
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
-      character*200 input_file,output_file,refs(5000,1000)
+      character*200 input_file,output_file,refs(15000,1000)
       character*14 stringin
-      character*10 spectype(5000,1000)
+      character*10 spectype(15000,1000)
       character*6 number
       character*1 sign
       logical ok,there
@@ -117,6 +117,7 @@ c      IER = PGBEG(0,"/xs",1,1)
       if (stype(i) .eq. 5) call pgsci(1)
       if (stype(i) .eq. 0) call pgsci(12)
       do j=1,npt(i)
+c         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')) then
          if (spectype(j,i) == 'DEBL') then
             call pgsch(0.8)
             if (((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) .or.
@@ -142,7 +143,9 @@ c      IER = PGBEG(0,"/xs",1,1)
             CALL PGPT(1,log10(frequency(j,i)),log10(-flux(j,i)),13)
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
          else
-            if (spectype(j,i) == 'XRTSPEC') then
+            if ((spectype(j,i) == 'XRTSPEC') .or. (spectype(j,i) == 'OUSPEC')
+     &          .or. (spectype(j,i) == 'FMonLC') .or. (spectype(j,i) == 'NEOWISE')
+     &          .or.  (spectype(j,i) == 'WISELC') .or. (spectype(j,i) == 'ALMA')) then
                call pgsch(0.5)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),3)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
@@ -151,6 +154,7 @@ c      IER = PGBEG(0,"/xs",1,1)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),-17)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             endif
+c         endif
          endif
 200      continue
       enddo

@@ -38,16 +38,16 @@ BINF="${HERE}/fort"
 handle_ps () {
     [ `which ps2eps 2> /dev/null` ] || return 0
     FILE_PS=$1
-    if [ $FILE_PS == sed.ps -o $FILE_PS == LC.ps ]; then
+    if [ $FILE_PS == sed.ps -o $FILE_PS == LC.ps -o $FILE_PS == LC_fermi.ps ]; then
        ps2eps -B -q $FILE_PS -R +
     else
        ps2eps -B -q $FILE_PS
     fi
-    if [ `which open 2> /dev/null` ]; then
-      open ${FILE_PS%.ps}.eps
-    else
-      gv ${FILE_PS%.ps}.eps &
-    fi
+#    if [ `which open 2> /dev/null` ]; then
+#      open ${FILE_PS%.ps}.eps
+#    else
+#      gv ${FILE_PS%.ps}.eps &
+#    fi
     rm -f $FILE_PS
 }
 
@@ -264,7 +264,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius
 echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxg.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog RASS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}rass.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog XMMSL --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}xmmsl.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog 3XMM --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3xmm.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog 4XMM --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4xmm.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog BMW --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}bmw.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog WGACAT --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}wgacat.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPC2E --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ipc.1.csv >> ${pidnm}vosearch.txt
@@ -293,6 +293,7 @@ if [ ${13} != s ]; then #skip the catalogs that we don't plot its data on SED
    echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}agile.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog FermiGRB --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}fgrb.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog MilliQuas --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}mquas.1.csv >> ${pidnm}vosearch.txt
+#   echo conesearch --db ${HERE}/cats1.ini --catalog 4LAC --ra $1  --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4lac.1.csv >> ${pidnm}vosearch.txt
 fi
 
 #check if the phase 1 data is already there
@@ -381,6 +382,7 @@ fi
 ##############################################################
 
 rm -f ${pidnm}Intermediate_out.txt
+rm -f ${pidnm}output_int.csv
 if [ -s ${pidnm}no_matched_temp.txt ]; then
 #check the error circle
    if [ $5 != 0. -a $6 == 0. ]; then
@@ -506,6 +508,16 @@ fi
 [ -f output1.csv -a -d Results/$xrtnm ] && cp output1.csv Results/$xrtnm/output1.csv
 [ -f output_int.csv -a -d Results/$xrtnm ] && cp output_int.csv Results/$xrtnm/output_int.csv
 
+[ -d Results/$xrtnm ] && echo \\section{$1 $2} > texcand.txt
+if [ ${13} != s -a -d Results/$xrtnm ]; then
+   echo \\begin{figure}[h!] >> texcand.txt
+   echo \\centering >> texcand.txt
+   echo \\includegraphics[width=0.49\\linewidth]{Results/$xrtnm/candidates.eps} >> texcand.txt
+   echo \\includegraphics[width=0.49\\linewidth]{Results/$xrtnm/RX_map.eps} >> texcand.txt
+   echo \\caption{Left: Candidates Map. Right: Radio-X-ray map.} >> texcand.txt
+   echo \\end{figure} >> texcand.txt
+fi
+
 
 
 
@@ -517,6 +529,7 @@ fi
 
 #begin phase 2 setup, leave the tool when no candidates
 rm -f ${pidnm}*.2.csv
+rm -f texsed*
 source=1
 
 if [ ! -s ${pidnm}find_out_temp.txt ]; then
@@ -648,6 +661,8 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog PCNT --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o ${pidnm}pcnt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}alma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wise.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}2mass.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire250.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE350 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire350.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -671,6 +686,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o ${pidnm}agile.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}fmev.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog FermiLCuv --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}flcuv.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}magictt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}veritas.$nn.2.csv >> ${pidnm}vosearch.txt
             echo $rar $decr $typer $nn
@@ -695,10 +711,10 @@ do
    elif [ $source == q ]; then
       echo
    elif [ $source == a ]; then
-      rm -rf ${pidnm}vou-aladin.html
-      ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html $3
+      rm -rf ${pidnm}vou-aladin-cand.html
+      ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-cand.html $3
 #      mv vou-aladin.html ~/
-      open ${pidnm}vou-aladin.html
+#      open ${pidnm}vou-aladin-cand.html
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
       ncat2=`cat ${pidnm}vosearch.txt | wc -l`
@@ -787,6 +803,7 @@ do
       rm -f ${pidnm}error_map.*ps
       rm -f ${pidnm}sed.*ps
       rm -f ${pidnm}LC.*ps
+      rm -f ${pidnm}LC_fermi.*ps
       if [ $plotsed != N ]; then
          ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_posix.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
          handle_ps ${pidnm}error_map.ps
@@ -798,12 +815,13 @@ do
          ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
          handle_ps ${pidnm}sed.ps
          echo
-         ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}lc.ps/cps ${pidnm}LC.txt $source
+         ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}Lc.ps/cps ${pidnm}LC.txt ${pidnm}LC_fermi.ps/cps $source
          [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
-         rm -rf ${pidnm}vou-aladin.html
-         ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin.html
+         [ -f ${pidnm}LC_fermi.ps ] && handle_ps ${pidnm}LC_fermi.ps
+         rm -rf ${pidnm}vou-aladin-error.html
+         ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-error.html
 #         mv vou-aladin.html ~/
-         open ${pidnm}vou-aladin.html
+#         open ${pidnm}vou-aladin-error.html
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps
@@ -821,18 +839,44 @@ do
       [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
 ##############################################################
 
-#save the results as a tex pdf
-      #cp sed.eps 4tex/sed$source.eps
-      #cp error_map.eps 4tex/error_map$source.eps
-      #cp candidates.eps 4tex/.
-      #cp RX_map.eps 4tex/.
-
 #save the phase 2 results in the folder
       [ -d Results/$xrtnm -a -f sed.*ps ] && cp sed.*ps Results/$xrtnm/$source"_"sed.eps
       [ -d Results/$xrtnm -a -f error_map.*ps ] && cp error_map.*ps Results/$xrtnm/$source"_"error_map.eps
       [ -d Results/$xrtnm -a -f LC.*ps ] && cp LC.*ps Results/$xrtnm/$source"_"LC.eps
+      [ -d Results/$xrtnm -a -f LC_fermi.*ps ] && cp LC_fermi.*ps Results/$xrtnm/$source"_"LC_fermi.eps
       [ -d Results/$xrtnm -a -f Sed.txt ] && cp Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm -a -f output2.csv ] && cp output2.csv Results/$xrtnm/$source"_"output2.csv
+
+#save the results as a tex pdf
+#      cp sed.eps fortex/$source"_"sed.eps
+#      cp error_map.eps fortex/$source"_"error_map.eps
+#      cp LC.eps fortex/$source"_"LC.eps
+#      cp candidates.eps fortex/.
+#      cp RX_map.eps fortex/.
+      
+#copy figure text to tex file
+      [ ${13} != s -a -d Results/$xrtnm ] && echo \\subsection{Candidate No. $source}  > texsed_$source.txt
+      [ ${13} != s -a -d Results/$xrtnm ] && echo Candidate position: $racand , $deccand >> texsed_$source.txt
+      [ ${13} != s -a -d Results/$xrtnm ] && echo \\begin{figure}[h!] >> texsed_$source.txt
+      [ ${13} != s -a -d Results/$xrtnm ] && echo \\centering >> texsed_$source.txt
+      [ -d Results/$xrtnm -a -f sed.*ps ] && echo \\includegraphics[width=0.3\\linewidth]{Results/$xrtnm/$source"_"error_map.eps} >> texsed_$source.txt
+      [ -d Results/$xrtnm -a -f error_map.*ps ] && echo \\includegraphics[width=0.69\\linewidth]{Results/$xrtnm/$source"_"sed.eps} >> texsed_$source.txt
+      [ ${13} != s -a -d Results/$xrtnm ] && echo \\caption{Left: Error Circle Map. Right: SED.} >> texsed_$source.txt
+      [ ${13} != s -a -d Results/$xrtnm ] && echo \\end{figure} >> texsed_$source.txt
+      if [ -f LC.*ps -a -d Results/$xrtnm ]; then
+         echo \\begin{figure}[h!] >> texsed_$source.txt
+         echo \\centering >> texsed_$source.txt
+         echo \\includegraphics[width=0.95\\linewidth]{Results/$xrtnm/$source"_"LC.eps} >> texsed_$source.txt
+         echo \\caption{Light Curve.} >> texsed_$source.txt
+         echo \\end{figure} >> texsed_$source.txt
+      fi
+      if [ -f LC_fermi.*ps -a -d Results/$xrtnm ]; then
+         echo \\begin{figure}[h!] >> texsed_$source.txt
+         echo \\centering >> texsed_$source.txt
+         echo \\includegraphics[width=0.95\\linewidth]{Results/$xrtnm/$source"_"LC_fermi.eps} >> texsed_$source.txt
+         echo \\caption{Fermi gamma-ray Light Curve.} >> texsed_$source.txt
+         echo \\end{figure} >> texsed_$source.txt
+      fi
 
 #PID number for online version
       if [ $pid ]; then
@@ -840,6 +884,7 @@ do
          [ -f ${pidnm}sed.eps ] && mv ${pidnm}sed.eps $pid"_"$source"_"sed.eps
          [ -f ${pidnm}error_map.eps ] && mv ${pidnm}error_map.eps $pid"_"$source"_"error_map.eps
          [ -f ${pidnm}LC.eps ] && mv ${pidnm}LC.eps $pid"_"$source"_"LC.eps
+         [ -f ${pidnm}LC_fermi.eps ] && mv ${pidnm}LC_fermi.eps $pid"_"$source"_"LC_fermi.eps
          [ -f ${pidnm}error_map.txt ] && mv ${pidnm}error_map.txt $pid"_"$source"_"error_map.txt
          [ -f ${pidnm}Sed.txt ] && mv ${pidnm}Sed.txt $pid"_"$source"_"sed.txt
          [ -f ${pidnm}Out4SedTool.txt ] && mv ${pidnm}Out4SedTool.txt $pid"_"$source"_"Out4SedTool.txt
@@ -847,11 +892,24 @@ do
    fi
 done
 
+# Make a tex pdf file
+if [ -d Results/$xrtnm ]; then
+   cat ${HERE}/headtex.txt > vou-blazars.tex
+   cat texcand.txt >> vou-blazars.tex
+   cat texsed_*.txt >> vou-blazars.tex
+   echo \\end{document} >> vou-blazars.tex
+   pdflatex vou-blazars.tex
+   open vou-blazars.pdf
+fi
+
 #remove the vo files from various catalogs
 rm -rf eada_files
 rm -f ${pidnm}*.1.csv
 rm -f ${pidnm}*.i.csv
 rm -f ${pidnm}*.2.csv
 rm -f ${pidnm}xrtdeep.csv
+rm -f Results/$xrtnm/*.pdf
+rm -f vou-blazars.aux
+rm -f vou-blazars.log
 [ $source == sed ] && unset zoomin
 unset VOUB_AUTOSED

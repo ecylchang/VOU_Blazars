@@ -296,7 +296,7 @@ c PG end
             if ((ppss(iradio) .gt. 0.15) .and. (radio_type(iradio) .eq. 1)) iradio=iradio-1
             !write(*,*) catalog,flux_radio(iradio)/const(iradio),iradio
          ELSE IF ( (catalog(1:5) == 'xmmsl') .OR.
-     &             (catalog(1:4) == '3xmm') )  THEN
+     &             (catalog(1:4) == '4xmm') )  THEN
             ixmm=ixmm+1
             is=ie
             ie=index(string(is+1:len(string)),',')+is
@@ -414,7 +414,7 @@ c PG end
                FluxU_xmm(ixmm,3)=fdens
                call fluxtofdens(0.9,2.,12.,FluxL_xmm(ixmm,3),7.,fdens,nudens)
                FluxL_xmm(ixmm,3)=fdens
-            ELSE IF (catalog(1:4) == '3xmm') THEN
+            ELSE IF (catalog(1:4) == '4xmm') THEN
                xmm_type(ixmm)=2
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3005,7 +3005,7 @@ c      IF (ratio < 0.) RETURN
       IF (xray_type == 1) THEN
          xmission='XMMSLEW'
       ELSE IF (xray_type == 2) THEN
-         xmission='3XMM'
+         xmission='4XMM'
       ELSE IF (xray_type == 3) THEN
          xmission='RASS'
       ELSE IF (xray_type == 4) THEN
