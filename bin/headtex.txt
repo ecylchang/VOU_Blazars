@@ -10,7 +10,7 @@
 \AppendGraphicsExtensions{.gif}
 
 \title{\bf \Huge VOU-Blazars Results}
-\author{\small Yu-Ling Chang}
+\author{\small Yu-Ling Chang and Paolo Giommi}
 \date{\small \today}
 
 \begin{document}
