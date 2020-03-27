@@ -661,8 +661,8 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog PCNT --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o ${pidnm}pcnt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}alma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wise.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
+#            echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
+#            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}2mass.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire250.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE350 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire350.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -895,11 +895,11 @@ done
 # Make a tex pdf file
 if [ -d Results/$xrtnm ]; then
    cat ${HERE}/headtex.txt > vou-blazars.tex
-   cat texcand.txt >> vou-blazars.tex
-   cat texsed_*.txt >> vou-blazars.tex
+   cat texcand.txt 2>/dev/null >> vou-blazars.tex
+   cat texsed_*.txt 2>/dev/null >> vou-blazars.tex
    echo \\end{document} >> vou-blazars.tex
-   pdflatex vou-blazars.tex
-   open vou-blazars.pdf
+#   pdflatex vou-blazars.tex
+#   open vou-blazars.pdf
 fi
 
 #remove the vo files from various catalogs
