@@ -433,7 +433,7 @@ c PG
                      csx11(icol11)= 1.2
                      csr11(icol11)= cs
                      if (cradio .gt. 0.) THEN
-c add radio counterparts/ extra radio counpornents
+c add radio counterparts/ extra radio counpornents, remove crates components
                         icol12=icol12+1
                         icol11=icol11-1
                         ra_col12(icol12)=-ra(j)

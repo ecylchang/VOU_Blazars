@@ -104,9 +104,9 @@ c need to define the range first then plot...
                if (iilc .eq. 1) mjdup=mjdend(j,i)
             endif
             if (spectype(j,i) == 'OUSPEC') then
-               lctype(iilc)=10
+               lctype(iilc)=31
             else
-               lctype(iilc)=20
+               lctype(iilc)=30
             endif
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
             if ((testflux .gt. lcup(3)) .and. (testflux .gt. 0.d0)) lcup(3)=testflux
@@ -129,7 +129,7 @@ c need to define the range first then plot...
                if (iilc .eq. 1) mjdlow=mjdstart(j,i)
                if (iilc .eq. 1) mjdup=mjdend(j,i)
             endif
-            lctype(iilc)=30
+            lctype(iilc)=10
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
             if ((testflux .gt. lcup(1)) .and. (testflux .gt. 0.d0)) lcup(1)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
@@ -154,7 +154,7 @@ c need to define the range first then plot...
                if (lcup(2) .eq. 0.) lcup(2)=5.e-10
                if (lclow(2) .eq. 0.) lclow(2)=5.e-12
             endif
-            lctype(iilc)=40
+            lctype(iilc)=20
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
             if ((testflux .gt. lcup(2)) .and. (testflux .gt. 0.d0)) lcup(2)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
@@ -167,7 +167,7 @@ c need to define the range first then plot...
             uflux_lc(iilc)=uflux(j,i)
             mjdst_lc(iilc)=mjdstart(j,i)
             mjded_lc(iilc)=mjdend(j,i)
-          else if (spectype(j,i) == 'FMonLC') then
+          else if ((spectype(j,i) == 'FMonLC') .or. (spectype(j,i) == 'FTAptLC')) then
             iflcuv=iflcuv+1
             iilc=iilc+1
             if (iflcuv .eq. 1) then
@@ -182,12 +182,15 @@ c need to define the range first then plot...
             endif
 c            write(*,*) lcup(3),lclow(3)
             if (frequency(j,i) .eq. 2.418e23) then
-               lctype(iilc)=50
+               lctype(iilc)=40
             else if (frequency(j,i) .eq. 2.418e24) then
-               lctype(iilc)=52
+               lctype(iilc)=42
+            else if (frequency(j,i) .eq. 2.418e25) then
+               lctype(iilc)=43
             else
-               lctype(iilc)=51
+               lctype(iilc)=41
             endif
+            if (spectype(j,i) == 'FMonLC') lctype(iilc)=lctype(iilc)+5
             testflux=max(uflux(j,i),abs(flux(j,i))) ! range for 1kev
             if ((testflux .gt. lcup(4)) .and. (testflux .gt. 0.d0)) lcup(4)=testflux
             testflux=min(lflux(j,i),abs(flux(j,i)))
@@ -227,7 +230,7 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                   mjdst_lc(iilc)=mjdstart(j,i)
                   mjded_lc(iilc)=mjdend(j,i)
                   freq_lc(iilc)=fq1tev
-                  lctype(iilc)=60
+                  lctype(iilc)=50
                else
                   if (mjdstart(j,i) .ne. mjdstart(j-1,i)) then
                      if (iilc-ixray-ialma-iflcuv .ne. 0) then !exclude the same one
@@ -247,7 +250,7 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                      mjdst_lc(iilc)=mjdstart(j,i)
                      mjded_lc(iilc)=mjdend(j,i)
                      freq_lc(iilc)=fq1tev
-                     lctype(iilc)=60
+                     lctype(iilc)=50
                   else
                      if (iilc-ixray-ialma-iflcuv .ne. 0) then
                         if (mjdstart(j,i) .eq. mjdst_lc(iilc)) then
@@ -266,7 +269,7 @@ c   frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
                      mjdst_lc(iilc)=mjdstart(j,i)
                      mjded_lc(iilc)=mjdend(j,i)
                      freq_lc(iilc)=fq1tev
-                     lctype(iilc)=60
+                     lctype(iilc)=50
                   endif
                endif
 c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc),mjded_lc(iilc)
@@ -291,7 +294,7 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
                      mjdst_lc(iilc)=mjdstart(j,i)
                      mjded_lc(iilc)=mjdend(j,i)
                      freq_lc(iilc)=fq1tev
-                     lctype(iilc)=60
+                     lctype(iilc)=50
                   endif
                else
                   iilc=iilc+1
@@ -306,7 +309,7 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
                   mjdst_lc(iilc)=mjdstart(j,i)
                   mjded_lc(iilc)=mjdend(j,i)
                   freq_lc(iilc)=fq1tev
-                  lctype(iilc)=60
+                  lctype(iilc)=50
                endif
                testflux=max(uflux_lc(iilc),flux_lc(iilc))
                if ((testflux .gt. lcup(5)) .and. (testflux .gt. 0.d0)) lcup(5)=testflux
@@ -322,6 +325,7 @@ c               write(*,*) ixray,iilc,flux_lc(iilc),uflux_lc(iilc),mjdst_lc(iilc
       write(*,*) iilc,ialma,iir,ixray,iflcuv
       !write(*,*) freq_lc(1:iilc),flux_lc(1:iilc)
       open(11,file=output_file2,status='unknown',iostat=ier)
+      ivhe=0
 
       if (iilc .eq. 0) then
          write(*,*) 'NO Light Curve Plot'
@@ -521,7 +525,11 @@ c   Fermi light curve
          if (freq_lc(j) .eq. 2.418e23) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
-            call pgsci(12) !Purple for Fermi
+            if (lctype(j) .eq. 45) then
+               call pgsci(6) !Purple for Fermi
+            else
+               call pgsci(12)
+            endif
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
                CALL PGPT(1,mjdavg(j),log10(uflux_lc(j)),45)
@@ -585,7 +593,7 @@ c TeV panel for LC
       call pgsci(1)
       CALL PGEND
 
-      if (iflcuv .ne. 0) then
+      if (iflcuv .ne. 0) then !!!!need to think more carefully about the mon and apt
       IERGAM = PGBEG(1,output_file3,1,3)
       call pgslw(4)
       CALL PGSCRN(0, 'White', IERGAM)
@@ -593,9 +601,9 @@ c TeV panel for LC
       call pgsch(1.7)
       call pgsci(1)
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
-      CALL PGLAB('MJD','Log \gnf\d\gn\u (erg/s/cm\u2\d)','500 MeV')
+      CALL PGLAB('MJD','Log \gnf\d\gn\u (erg/s/cm\u2\d)','600 MeV')
       do j=1,iilc
-         if (lctype(j) .eq. 51) then
+         if ((lctype(j) .eq. 41)) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi
@@ -626,11 +634,11 @@ c TeV panel for LC
       call pgsch(1.7)
       call pgsci(1)
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
-      CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','1 GeV')
+      CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','10 GeV')
       do j=1,iilc
-         if (lctype(j) .eq. 50) then
-c            write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
-c     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
+         if ((lctype(j) .eq. 42)) then
+            write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
+     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi
             if ((flux_lc(j) .eq. lflux_lc(j)) .and. (flux_lc(j) .eq. uflux_lc(j))) then
                call pgsch(1.5)
@@ -659,9 +667,9 @@ c     *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
       call pgsch(1.7)
       call pgsci(1)
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
-      CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','10 GeV')
+      CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','100 GeV')
       do j=1,iilc
-         if (lctype(j) .eq. 52) then
+         if ((lctype(j) .eq. 43)) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi

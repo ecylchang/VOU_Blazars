@@ -545,7 +545,7 @@ do
       if [ -z $VOUB_AUTOSED ]; then
 #        cat ${pidnm}phase1
         if [ -z $pid ]; then
-           read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zoomin showsed
+           read -p "Please enter the source number and zoom in area (in arcsec) intered: (Type 'q' to quit) (Type 'candlist' to show all candidates)" source zzinput zoomin showsed
         else
            source=q
         fi
@@ -616,11 +616,32 @@ do
    [ -z $source ] && source=0 #no input
    [ -z $showsed ] && showsed=nosed
    if [ $zoomin ]; then
-      if [ $zoomin == osed ]; then
-         zoomin=30.
+       if [ $zoomin == osed ]; then
          showsed=osed
+         zzinput1=`echo $zzinput | cut -d'.' -f1`
+         if [ $zzinput1 -gt 5 ]; then
+            zoomin=$zzinput
+            zzinput=0
+         else
+            zoomin=60
+         fi
+      fi
+   else
+      if [ $zzinput ]; then
+         if [ $zzinput == osed ]; then
+            showsed=osed
+            zzinput=0
+         else
+            zzinput1=`echo $zzinput | cut -d'.' -f1`
+            if [ $zzinput1 -gt 5 ]; then
+               showsed=nosed
+               zoomin=$zzinput
+               zzinput=0
+            fi
+         fi
       fi
    fi
+#   echo snr=$source redshift=$zzinput area=$zoomin sed=$showsed
 
 #read the find_out list and the second phase ra dec
    declare -i nn
@@ -661,7 +682,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog PCNT --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o ${pidnm}pcnt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}alma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wise.$nn.2.csv >> ${pidnm}vosearch.txt
-#            echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}2mass.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire250.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -686,7 +707,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog 1BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}1bigb.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o ${pidnm}agile.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}fmev.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog FermiLCuv --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}flcuv.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o ${pidnm}fmonlc.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}magictt.$nn.2.csv >> ${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}veritas.$nn.2.csv >> ${pidnm}vosearch.txt
             echo $rar $decr $typer $nn
@@ -714,7 +735,7 @@ do
       rm -rf ${pidnm}vou-aladin-cand.html
       ${BINF}/aladin_interface ${pidnm}output1.csv ${pidnm}find_out_temp.txt ${pidnm}candidates_posix.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-cand.html $3
 #      mv vou-aladin.html ~/
-      open ${pidnm}vou-aladin-cand.html
+#      open ${pidnm}vou-aladin-cand.html
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
       ncat2=`cat ${pidnm}vosearch.txt | wc -l`
@@ -776,6 +797,15 @@ do
          cat ${pidnm}magictt.$magic.2.csv | grep -v '#' > ${pidnm}magic.$magic.2.csv #deal with MAGIC extension
          rm -f ${pidnm}magictt.$magic.2.csv
       fi
+#### check the extra Fermi LC
+      if [ -s ftaptlc.csv ]; then
+         if [ $source == sed ]; then
+            ftaptlc=1
+         else
+            ftaptlc=$source
+         fi
+         cp ftaptlc.csv ftaptlc.$ftaptlc.2.csv
+      fi
       ls ${pidnm}*.2.csv > ${pidnm}catlist2.txt
       rm -f ${pidnm}output2.csv
       echo
@@ -788,7 +818,8 @@ do
 #running the PHASAE 2
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
-      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $source > ${pidnm}phase2
+      [ -z $zzinput ] && zzinput=0
+      ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $zzinput $source > ${pidnm}phase2
       echo
       cat ${pidnm}phase2
       #open sed.txt
@@ -821,7 +852,7 @@ do
          rm -rf ${pidnm}vou-aladin-error.html
          ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-error.html
 #         mv vou-aladin.html ~/
-         open ${pidnm}vou-aladin-error.html
+#         open ${pidnm}vou-aladin-error.html
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps
@@ -911,5 +942,5 @@ rm -f ${pidnm}xrtdeep.csv
 rm -f Results/$xrtnm/*.pdf
 rm -f vou-blazars.aux
 rm -f vou-blazars.log
-[ $source == sed ] && unset zoomin
+unset zoomin zzinput
 unset VOUB_AUTOSED

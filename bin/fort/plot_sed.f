@@ -110,24 +110,21 @@ c      IER = PGBEG(0,"/xs",1,1)
          sedlow=alog10(sedlow)-0.5
       CALL PGENV(8.,27.,sedlow,sedup,0,1)
       CALL PGLAB('Log \gn (Hz)', 'Log \gnf\d\gn\u (erg/s/cm\u2\d)',title)
-      if (stype(i) .eq. 1) call pgsci(8)
-      if (stype(i) .eq. 2) call pgsci(5)
-      if (stype(i) .eq. 3) call pgsci(4)
-      if (stype(i) .eq. 4) call pgsci(3)
-      if (stype(i) .eq. 5) call pgsci(1)
-      if (stype(i) .eq. 0) call pgsci(12)
+c      if (stype(i) .eq. 1) call pgsci(8)
+c      if (stype(i) .eq. 2) call pgsci(5)
+c      if (stype(i) .eq. 3) call pgsci(4)
+c      if (stype(i) .eq. 4) call pgsci(3)
+c      if (stype(i) .eq. 5) call pgsci(1)
+c      if (stype(i) .eq. 0) call pgsci(12)
       do j=1,npt(i)
-c         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')) then
+         call pgsci(1)
+         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')
+     &     .and. (spectype(j,i) /= 'FTAptLC') .and. (spectype(j,i) /= 'NEOWISE')) then
          if (spectype(j,i) == 'DEBL') then
-            call pgsch(0.8)
-            if (((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) .or.
-     &           ((lflux(j,i) .eq. 0.) .and. (uflux(j,i) .ne. 0.) )) then
-               CALL PGPT(0,log10(frequency(j,i)),log10(uflux(j,i)),8)
-               call PGPT(0,log10(frequency(j,i)),log10(uflux(j,i))-0.07,31)
-            else
-               CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),8)
-               CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
-            endif
+            call pgsch(1.2)
+            call pgsci(8)
+            CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),13)
+            CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             goto 200
          endif
          if ((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) then
@@ -144,8 +141,7 @@ c         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')) the
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
          else
             if ((spectype(j,i) == 'XRTSPEC') .or. (spectype(j,i) == 'OUSPEC')
-     &          .or. (spectype(j,i) == 'FMonLC') .or. (spectype(j,i) == 'NEOWISE')
-     &          .or.  (spectype(j,i) == 'WISELC') .or. (spectype(j,i) == 'ALMA')) then
+     &          .or. (spectype(j,i) == 'ALMA')) then
                call pgsch(0.5)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),3)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
@@ -154,7 +150,7 @@ c         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')) the
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),-17)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             endif
-c         endif
+         endif
          endif
 200      continue
       enddo

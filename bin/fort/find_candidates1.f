@@ -2787,7 +2787,7 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
                 if (savemjy(ncat) .gt. 0.) then
                    if (savemjy(ncat) .lt. 20.) savemjy(l)=20.
                    call RXgraphic_code(savemjy(ncat),'R',code)
-                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000)
+                   write(11,'(f9.5,2x,f9.5,2x,i6)') ra_other(l),dec_other(l),int(code+60000) !radio source to CRATES
                 endif
             endif
             if (type_average .gt. -20) CALL graphic_code (1.,1.,type_average,code) !produce code

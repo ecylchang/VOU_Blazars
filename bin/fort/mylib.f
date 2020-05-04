@@ -1370,7 +1370,7 @@ c
       ENDIF
       END
 
-c=============EBL
+c=========================EBL
 
       SUBROUTINE ebl_flux(emin,emax,ggg,zzz,reduction_factor)
 c
@@ -1385,7 +1385,7 @@ c
       REAL*4 emin, emax,ggg,zzz
       REAL*4 gamma1,gamma2,break_energy,out1,out2,reduction_factor
       REAL*4 accur, r
-      REAL*4 delta_slope
+      REAL*4 delta_slope,tau_ebl
       CHARACTER*200 input_file,webprograms,string
 c      DATA binz/ 0.01, 0.02526316, 0.04052632, 0.05078947, 0.07105263,
 c     & 0.08631579, 0.10157895, 0.11684211, 0.13210526, 0.14736842,
@@ -1404,19 +1404,6 @@ c     &  1.,1.2,1.4,1.6,1.8,2./
      & 0.23894737, 0.25421053, 0.26947368, 0.28473684, 0.3, 0.35, 0.4,
      & 0.45, 0.5, 0.50, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95,
      &  1.,1.2,1.4,1.6,1.8,2./
-c
-c      CALL rdforn(string,length)
-c      IF ( length.NE.0 ) THEN
-c          READ(string,*) emin, emax, gamma1, redshift
-c      ELSE
-c          write(*,*) ' Usage : ebl_flux Min_energy(TeV) max_energy,c photon_spectral_index, redshift'
-c          write(*,*) ' e.g.  : ebl_flux 0.1 10. 2.1 0.6'
-c          stop
-c      ENDIF
-cc      emin=0.01
-cc      emax=0.1
-cc      redshift=1.837
-cc      gamma1=2.07509
       input_file=webprograms(1:lenact(webprograms)) //
      &'/count_rate/tau_dominguez11.txt'
 
@@ -1444,9 +1431,13 @@ c      break_energy = 0.1
 c      write(*,*) redshift
       IF (redshift .LT. 0.01 ) redshift = 0.01
       IF (redshift .GT. 2.0 )  redshift = 2.0
-      CALL  simp1(especdebl,emin,emax,out1,r,n,accur,nmax)
-      CALL  simp1(noabs,emin,emax,out2,r,n,accur,nmax)
-      reduction_factor=out2/out1 !no abs / abs
+      if (emin .eq. emax) then
+         reduction_factor=1./exp(-tau_ebl(emin))
+      else
+         CALL  simp1(especdebl,emin,emax,out1,r,n,accur,nmax)
+         CALL  simp1(noabs,emin,emax,out2,r,n,accur,nmax)
+         reduction_factor=out2/out1 !no abs / abs
+      endif
 c      write (*,*) ' Reduction factor ' , reduction_factor
       return
       END
