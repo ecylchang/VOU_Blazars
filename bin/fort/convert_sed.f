@@ -9,7 +9,7 @@ c
       REAL*4 mjdstart,mjdend, freq, one, err_up,err_lo
       REAL*4 flux,flux_err
       real*8 rra,rdec
-      CHARACTER*2 ul
+      CHARACTER*2 flag,ul
       character*14 stringin,catalog
       CHARACTER*200 input_file,output_file,output_file2
       character*80 ref1,ref2,ref3,ref4,ref5
@@ -55,20 +55,20 @@ c      write(*,*) rra,rdec
       open(lu_out,file=output_file,status='unknown',iostat=ier)
       open(12,file=output_file2,status='unknown',iostat=ier)
 c      write(12,'(f10.5,'','',f10.5)') rra,rdec
-      write(12,'(a)') "freq. ,flux ,err_flux ,MJD_start ,MJD_end ,catalog,reference"
+      write(12,'(a)') "freq. ,flux ,err_flux ,MJD_start ,MJD_end ,flag,catalog,reference"
       DO WHILE(ok)
          ul = '  '
          READ(lu_in,'(a)',end=99) string 
 c         print *,'string ',string(1:lenact(string))
          IF (string(2:2).NE.'=') THEN
-           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend,catalog
+           READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend,flag,catalog
            read(string(85:lenact(string)),'(a)') reff
            ref1=' '
            ref2=' '
            ref3=' '
            ref4=' '
            ref5=' '
-           if (catalog == 'DEBL') reff='3FHL EBL-corrected flux'
+c           if (catalog == 'DEBL') reff='3FHL EBL-corrected flux'
            is=index(reff(1:lenact(reff)),',')
            if (is .ne. 0) read(reff(1:is-1),'(a)') ref1
            ie=index(reff(is+1:lenact(reff)),',')+is
@@ -85,8 +85,9 @@ c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(r
            flux_err = (err_up-err_lo)/2.
            IF ((flux .NE. 0.) .or. (err_up .ne. 0.)) THEN
              if (flux .lt. 0.) flux = -flux
-             IF ((flux_err == 0.) .and. (err_up .ne. 0.)) ul='UL'
-             if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
+c             IF ((flux_err == 0.) .and. (err_up .ne. 0.)) ul='UL'
+c             if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
+             if (flag == 'UL') ul='UL'
              if (flux_err .gt. flux) then
                 flux=2.*flux_err
                 flux_err=0.
@@ -94,8 +95,8 @@ c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(r
              write(lu_out,'(f9.5,'' | '',f9.5,'' | '',es10.3,'' | '',es10.3,'' | '',
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')
      &                      rra,rdec,freq,one,flux,flux_err,mjdstart,mjdend,ul
-             write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',f10.2,'','',a,'','',a,a,a,a,a)')
-     &        freq,flux,flux_err,mjdstart,mjdend,catalog,ref1(1:lenact(ref1)),
+             write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',f10.2,'','',a,'','',a,'','',a,a,a,a,a)')
+     &        freq,flux,flux_err,mjdstart,mjdend,flag,catalog,ref1(1:lenact(ref1)),
      &        ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4)),ref5(1:lenact(ref5))
            ENDIF
          ENDIF

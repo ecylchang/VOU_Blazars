@@ -32,7 +32,7 @@ c
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),r
-      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2),opt_ref(5),ibigb
+      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(1000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(1000),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(1000),iirlc,i4fgl,filen_a(8000)
@@ -84,6 +84,9 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*30 name_other(10000),date_alma(1500)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
+      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500),ir_flag(1000,4)
+      character*4 uv_flag(300,6),xray_flag(5000,2),gam_flag(100,8),vhe_flag(500),lowr_flag(1000)
+      character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(1000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
@@ -3975,7 +3978,7 @@ cENDDO
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
          write(14,'(i4,2x,a,2(2x,f9.5),2x,i2,2x,f5.3)') j,"matched source",ra_source(j),dec_source(j),typer(j),redshift
-         write(14,'(2(a,2x),2(a,1x),4(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Catalog   ","Reference"
+         write(14,'(2(a,2x),2(a,1x),5(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Flag","Catalog   ","Reference"
          write(14,'(6(a,2x))') "    Hz    "," erg/cm2/s","   upper  ","   lower  ","    MJD   ","    MJD   "
          write(14,'(a)') "---------------------------------------------------------------------------------------------------------------------------"
          do i=1,npt(j)
@@ -3987,8 +3990,15 @@ c the refs file
                   rrxx_ref(i,j)=r
                endif
             enddo
-            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),
-     &       mjdst_rrxx(i,j),mjded_rrxx(i,j),rrxx_type(i,j),refs(rrxx_ref(i,j))
+            if ((flux(i,j) .eq. lflux(i,j)) .and. (flux(i,j) .eq. uflux(i,j))) then
+               rrxx_flag(i,j)=' UL '
+            else if ((lflux(i,j) .eq. 0.) .and. (uflux(i,j) .ne. 0.) ) then
+               rrxx_flag(i,j)=' UL '
+            else
+               rrxx_flag(i,j)=' PT '
+            endif
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency(i,j),flux(i,j),uflux(i,j),lflux(i,j),
+     &       mjdst_rrxx(i,j),mjded_rrxx(i,j),rrxx_flag(i,j),rrxx_type(i,j),refs(rrxx_ref(i,j))
             if (frequency(i,j) .lt. 1.E10) then
                call graphic_code(flux(i,j),11,code)
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
@@ -4011,8 +4021,15 @@ c         enddo
                   lowr_ref(i)=r
                endif
             enddo
-            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_lowrcand(i),flux_lowrcand(i),
-     *       uflux_lowrcand(i),lflux_lowrcand(i),mjdavg,mjdavg,lowrcand_type(i),refs(lowr_ref(i))
+            if ((flux_lowrcand(i) .eq. lflux_lowrcand(i)) .and. (flux_lowrcand(i) .eq. uflux_lowrcand(i))) then
+               lowr_flag(i)=' UL '
+            else if ((lflux_lowrcand(i) .eq. 0.) .and. (uflux_lowrcand(i) .ne. 0.) ) then
+               lowr_flag(i)=' UL '
+            else
+               lowr_flag(i)=' PT '
+            endif
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_lowrcand(i),flux_lowrcand(i),uflux_lowrcand(i),
+     *       lflux_lowrcand(i),mjdavg,mjdavg,lowr_flag(i),lowrcand_type(i),refs(lowr_ref(i))
          enddo
          do i=1,i4p8
             f4p8_ref(i)=iref+1
@@ -4024,28 +4041,51 @@ c         enddo
             enddo
             if (f4p8part(i) .eq. j) then
             if ((f4p8_type(i) == 'PMN') .or. (f4p8_type(i) == 'GB87') .or. (f4p8_type(i) == 'GB6')) THEN
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
-     &             FluxL_4p8(i,1),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
+               if ((flux_4p8(i,1) .eq. FluxL_4p8(i,1)) .and. (flux_4p8(i,1) .eq. FluxU_4p8(i,1))) then
+                  f4p8_flag(i,1)=' UL '
+               else if ((FluxL_4p8(i,1) .eq. 0.) .and. (FluxU_4p8(i,1) .ne. 0.) ) then
+                  f4p8_flag(i,1)=' UL '
+               else
+                  f4p8_flag(i,1)=' PT '
+               endif
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_4p8(i,1),flux_4p8(i,1),FluxU_4p8(i,1),
+     &             FluxL_4p8(i,1),mjdavg,mjdavg,f4p8_flag(i,1),f4p8_type(i),refs(f4p8_ref(i))
             else if (f4p8_type(i) == 'CRATES') then
                do s=2,2
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &            FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
+                  if ((flux_4p8(i,s) .eq. FluxL_4p8(i,s)) .and. (flux_4p8(i,s) .eq. FluxU_4p8(i,s))) then
+                     f4p8_flag(i,s)=' UL '
+                  else if ((FluxL_4p8(i,s) .eq. 0.) .and. (FluxU_4p8(i,s) .ne. 0.) ) then
+                     f4p8_flag(i,s)=' UL '
+                  else
+                     f4p8_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),FluxU_4p8(i,s),
+     &            FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_flag(i,s),f4p8_type(i),refs(f4p8_ref(i))
                enddo
             else if (f4p8_type(i) == 'ATPMN') then
                do s=1,2
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &               FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
+                  if ((flux_4p8(i,s) .eq. FluxL_4p8(i,s)) .and. (flux_4p8(i,s) .eq. FluxU_4p8(i,s))) then
+                     f4p8_flag(i,s)=' UL '
+                  else if ((FluxL_4p8(i,s) .eq. 0.) .and. (FluxU_4p8(i,s) .ne. 0.) ) then
+                     f4p8_flag(i,s)=' UL '
+                  else
+                     f4p8_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),FluxU_4p8(i,s),
+     &              FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_flag(i,s),f4p8_type(i),refs(f4p8_ref(i))
                enddo
-            else if (f4p8_type(i) == 'AT20G') then
+            else if ((f4p8_type(i) == 'AT20G') .or. (f4p8_type(i) == 'NORTH20')) then
                do s=1,3
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &               FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
+                  if ((flux_4p8(i,s) .eq. FluxL_4p8(i,s)) .and. (flux_4p8(i,s) .eq. FluxU_4p8(i,s))) then
+                     f4p8_flag(i,s)=' UL '
+                  else if ((FluxL_4p8(i,s) .eq. 0.) .and. (FluxU_4p8(i,s) .ne. 0.) ) then
+                     f4p8_flag(i,s)=' UL '
+                  else
+                     f4p8_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),FluxU_4p8(i,s),
+     &              FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_flag(i,s),f4p8_type(i),refs(f4p8_ref(i))
                enddo
-            else if (f4p8_type(i) == 'NORTH20') then
-              do s=1,3
-                 write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),
-     &              FluxU_4p8(i,s),FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_type(i),refs(f4p8_ref(i))
-              enddo
             endif
             endif
          enddo
@@ -4059,17 +4099,38 @@ c         enddo
             enddo
             if (pccspart(i) .eq. j) then
                if (pccs100_type(i) == 'PCCS2') then
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,i3,a,2x,a)') frequency_pccs100(i,1),
-     &              flux_pccs100(i,1),FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdavg,mjdavg,
+                  if ((flux_pccs100(i,1) .eq. FluxL_pccs100(i,1)) .and. (flux_pccs100(i,1) .eq. FluxU_pccs100(i,1))) then
+                     pccs100_flag(i,1)=' UL '
+                  else if ((FluxL_pccs100(i,1) .eq. 0.) .and. (FluxU_pccs100(i,1) .ne. 0.) ) then
+                     pccs100_flag(i,1)=' UL '
+                  else
+                     pccs100_flag(i,1)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,i3,a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
+     &              FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdavg,mjdavg,pccs100_flag(i,1),
      &              'PCCS2',int(frequency_pccs100(i,1)/1.e9),' GHz',refs(pccs100_ref(i))
                else if (pccs100_type(i) == 'ALMA') then
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
+                  if ((flux_pccs100(i,1) .eq. FluxL_pccs100(i,1)) .and. (flux_pccs100(i,1) .eq. FluxU_pccs100(i,1))) then
+                     pccs100_flag(i,1)=' UL '
+                  else if ((FluxL_pccs100(i,1) .eq. 0.) .and. (FluxU_pccs100(i,1) .ne. 0.) ) then
+                     pccs100_flag(i,1)=' UL '
+                  else
+                     pccs100_flag(i,1)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_pccs100(i,1),flux_pccs100(i,1),
      &             FluxU_pccs100(i,1),FluxL_pccs100(i,1),mjdst_alma(i),
-     &             mjded_alma(i),pccs100_type(i),refs(pccs100_ref(i))
+     &             mjded_alma(i),pccs100_flag(i,1),pccs100_type(i),refs(pccs100_ref(i))
                else
                   do s=1,9
-                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_pccs100(i,s),flux_pccs100(i,s),
-     &               FluxU_pccs100(i,s),FluxL_pccs100(i,s),mjdavg,mjdavg,pccs100_type(i),refs(pccs100_ref(i))
+                     if ((flux_pccs100(i,s) .eq. FluxL_pccs100(i,s)) .and. (flux_pccs100(i,s) .eq. FluxU_pccs100(i,s))) then
+                        pccs100_flag(i,s)=' UL '
+                     else if ((FluxL_pccs100(i,s) .eq. 0.) .and. (FluxU_pccs100(i,s) .ne. 0.) ) then
+                        pccs100_flag(i,s)=' UL '
+                     else
+                        pccs100_flag(i,s)=' PT '
+                     endif
+                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_pccs100(i,s),flux_pccs100(i,s),FluxU_pccs100(i,s),
+     &               FluxL_pccs100(i,s),mjdavg,mjdavg,pccs100_flag(i,s),pccs100_type(i),refs(pccs100_ref(i))
                   enddo
                endif
             endif
@@ -4083,8 +4144,15 @@ c         enddo
                endif
             enddo
             if (farpart(i) .eq. j) then
-            write(14,'(4(es10.3,2x),2(f10.4,2x),a,i3,4x,a)') frequency_far(i),flux_far(i),FluxU_far(i),
-     &          FluxL_far(i),mjdavg,mjdavg,'SPIRE',int(3.E14/frequency_far(i)),refs(far_ref(i))
+            if ((flux_far(i) .eq. FluxL_far(i)) .and. (flux_far(i) .eq. FluxU_far(i))) then
+               far_flag(i)=' UL '
+            else if ((FluxL_far(i) .eq. 0.) .and. (FluxU_far(i) .ne. 0.) ) then
+               far_flag(i)=' UL '
+            else
+               far_flag(i)=' PT '
+            endif
+            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,i3,4x,a)') frequency_far(i),flux_far(i),FluxU_far(i),
+     &       FluxL_far(i),mjdavg,mjdavg,far_flag(i),'SPIRE',int(3.E14/frequency_far(i)),refs(far_ref(i))
             endif
          enddo
          do i=1,iirfound
@@ -4098,19 +4166,52 @@ c         enddo
             if (ircand_type(i) == 'WISE') then
                call graphic_code(irmag_cand(i,2),51,code)
                do s=1,4
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
-     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
+                  if ((flux_ircand(i,s) .eq. lflux_ircand(i,s)) .and. (flux_ircand(i,s) .eq. uflux_ircand(i,s))) then
+                     ir_flag(i,s)=' UL '
+                  else if ((lflux_ircand(i,s) .eq. 0.) .and. (uflux_ircand(i,s) .ne. 0.) ) then
+                     ir_flag(i,s)=' UL '
+                  else
+                     ir_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),uflux_ircand(i,s),
+     &             lflux_ircand(i,s),mjdavg,mjdavg,ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
                enddo
-            else if ((ircand_type(i) == 'WISELC') .or. (ircand_type(i) == 'NEOWISE')) then
+            else if (ircand_type(i) == 'WISELC') then
                do s=1,4
-                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),
-     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdst_irlccand(i),mjded_irlccand(i),ircand_type(i),refs(ir_ref(i))
+                  if ((flux_ircand(i,s) .eq. lflux_ircand(i,s)) .and. (flux_ircand(i,s) .eq. uflux_ircand(i,s))) then
+                     ir_flag(i,s)=' UL '
+                  else if ((lflux_ircand(i,s) .eq. 0.) .and. (uflux_ircand(i,s) .ne. 0.) ) then
+                     ir_flag(i,s)=' UL '
+                  else
+                     ir_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),uflux_ircand(i,s),
+     &          lflux_ircand(i,s),mjdst_irlccand(i),mjded_irlccand(i),ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
                enddo
+            else if (ircand_type(i) == 'NEOWISE') then
+               do s=1,2
+                  if ((flux_ircand(i,s) .eq. lflux_ircand(i,s)) .and. (flux_ircand(i,s) .eq. uflux_ircand(i,s))) then
+                     ir_flag(i,s)=' UL '
+                  else if ((lflux_ircand(i,s) .eq. 0.) .and. (uflux_ircand(i,s) .ne. 0.) ) then
+                     ir_flag(i,s)=' UL '
+                  else
+                     ir_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),uflux_ircand(i,s),
+     &   lflux_ircand(i,s),mjdst_irlccand(i),mjded_irlccand(i),ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
+                      enddo
             else
                call graphic_code(irmag_cand(i,2),52,code)
                do s=2,4
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_ircand(1,s),flux_ircand(1,s),
-     &             uflux_ircand(i,s),lflux_ircand(i,s),mjdavg,mjdavg,ircand_type(i),refs(ir_ref(i))
+                  if ((flux_ircand(i,s) .eq. lflux_ircand(i,s)) .and. (flux_ircand(i,s) .eq. uflux_ircand(i,s))) then
+                     ir_flag(i,s)=' UL '
+                  else if ((lflux_ircand(i,s) .eq. 0.) .and. (uflux_ircand(i,s) .ne. 0.) ) then
+                     ir_flag(i,s)=' UL '
+                  else
+                     ir_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_ircand(1,s),flux_ircand(1,s),uflux_ircand(i,s),
+     &             lflux_ircand(i,s),mjdavg,mjdavg,ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
                enddo
             endif
             if ((ircand_type(i) /= 'WISELC') .and. (ircand_type(i) /= 'NEOWISE'))
@@ -4125,17 +4226,45 @@ c         enddo
                endif
             enddo
             if (optcand_type(i) == 'USNO' ) then
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,2),flux_usnocand(i,2),
-     &         uflux_usnocand(i,2),lflux_usnocand(i,2),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,4),flux_usnocand(i,4),
-     &          uflux_usnocand(i,4),lflux_usnocand(i,4),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
+               if ((flux_usnocand(i,2) .eq. lflux_usnocand(i,2)) .and. (flux_usnocand(i,2) .eq. uflux_usnocand(i,2))) then
+                  opt_flag(i,2)=' UL '
+               else if ((lflux_usnocand(i,2) .eq. 0.) .and. (uflux_usnocand(i,2) .ne. 0.) ) then
+                  opt_flag(i,2)=' UL '
+               else
+                  opt_flag(i,2)=' PT '
+               endif
+               if ((flux_usnocand(i,4) .eq. lflux_usnocand(i,4)) .and. (flux_usnocand(i,4) .eq. uflux_usnocand(i,4))) then
+                  opt_flag(i,4)=' UL '
+               else if ((lflux_usnocand(i,4) .eq. 0.) .and. (uflux_usnocand(i,4) .ne. 0.) ) then
+                  opt_flag(i,4)=' UL '
+               else
+                  opt_flag(i,4)=' PT '
+               endif
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,2),flux_usnocand(i,2),uflux_usnocand(i,2),
+     &         lflux_usnocand(i,2),mjdavg,mjdavg,opt_flag(i,2),optcand_type(i),refs(opt_ref(i))
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,4),flux_usnocand(i,4),uflux_usnocand(i,4),
+     &          lflux_usnocand(i,4),mjdavg,mjdavg,opt_flag(i,4),optcand_type(i),refs(opt_ref(i))
             ELSE if (optcand_type(i) == 'GAIA' ) then
-                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,1),flux_usnocand(i,1),
-     &           uflux_usnocand(i,1),lflux_usnocand(i,1),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
+                if ((flux_usnocand(i,1) .eq. lflux_usnocand(i,1)) .and. (flux_usnocand(i,1) .eq. uflux_usnocand(i,1))) then
+                   opt_flag(i,1)=' UL '
+                else if ((lflux_usnocand(i,s) .eq. 0.) .and. (uflux_usnocand(i,s) .ne. 0.) ) then
+                   opt_flag(i,1)=' UL '
+                else
+                   opt_flag(i,1)=' PT '
+                endif
+                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_usnocand(i,1),flux_usnocand(i,1),uflux_usnocand(i,1),
+     &           lflux_usnocand(i,1),mjdavg,mjdavg,opt_flag(i,1),optcand_type(i),refs(opt_ref(i))
             ELSE
                do s=1,5
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_usnocand(i,s),flux_usnocand(i,s),
-     &            uflux_usnocand(i,s),lflux_usnocand(i,s),mjdavg,mjdavg,optcand_type(i),refs(opt_ref(i))
+                  if ((flux_usnocand(i,s) .eq. lflux_usnocand(i,s)) .and. (flux_usnocand(i,s) .eq. uflux_usnocand(i,s))) then
+                     opt_flag(i,s)=' UL '
+                  else if ((lflux_usnocand(i,s) .eq. 0.) .and. (uflux_usnocand(i,s) .ne. 0.) ) then
+                     opt_flag(i,s)=' UL '
+                  else
+                     opt_flag(i,s)=' PT '
+                  endif
+                write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,2x,a)') freq_usnocand(i,s),flux_usnocand(i,s),uflux_usnocand(i,s),
+     &            lflux_usnocand(i,s),mjdavg,mjdavg,opt_flag(i,s),optcand_type(i),refs(opt_ref(i))
                enddo
             endif
             intensity=max(usnomag_cand(i,1),usnomag_cand(i,2),usnomag_cand(i,3),usnomag_cand(i,4),usnomag_cand(i,5))
@@ -4156,13 +4285,27 @@ c         enddo
             enddo
             if (uvcand_type(i) == 'GALEX') then
                do s=3,4
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
-     &            uflux_uvcand(i,s),lflux_uvcand(i,s),mjdavg,mjdavg,uvcand_type(i),refs(uv_ref(i))
+                  if ((flux_uvcand(i,s) .eq. lflux_uvcand(i,s)) .and. (flux_uvcand(i,s) .eq. uflux_uvcand(i,s))) then
+                     uv_flag(i,s)=' UL '
+                  else if ((lflux_uvcand(i,s) .eq. 0.) .and. (uflux_uvcand(i,s) .ne. 0.) ) then
+                     uv_flag(i,s)=' UL '
+                  else
+                     uv_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),uflux_uvcand(i,s),
+     &            lflux_uvcand(i,s),mjdavg,mjdavg,uv_flag(i,s),uvcand_type(i),refs(uv_ref(i))
                enddo
             else
                do s=1,6
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),
-     &            uflux_uvcand(i,s),lflux_uvcand(i,s),mjdavg,mjdavg,uvcand_type(i),refs(uv_ref(i))
+                  if ((flux_uvcand(i,s) .eq. lflux_uvcand(i,s)) .and. (flux_uvcand(i,s) .eq. uflux_uvcand(i,s))) then
+                     uv_flag(i,s)=' UL '
+                  else if ((lflux_uvcand(i,s) .eq. 0.) .and. (uflux_uvcand(i,s) .ne. 0.) ) then
+                     uv_flag(i,s)=' UL '
+                  else
+                     uv_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,2x,a)') freq_uvcand(i,s),flux_uvcand(i,s),uflux_uvcand(i,s),
+     &            lflux_uvcand(i,s),mjdavg,mjdavg,uv_flag(i,s),uvcand_type(i),refs(uv_ref(i))
                enddo
             endif
             intensity=max(uvmag_cand(i,1),uvmag_cand(i,2),uvmag_cand(i,3),uvmag_cand(i,4),uvmag_cand(i,5))
@@ -4179,18 +4322,39 @@ c         enddo
             enddo
             if (xraypart(i) .eq. j) then
                if (xray_type(i) == 'XRTSPEC') then
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),
-     &            FluxU_xray(i,1),FluxL_xray(i,1),mjdst_xrt(i),mjded_xrt(i),xray_type(i),refs(xray_ref(i))
+                  if ((flux_xray(i,1) .eq. FluxL_xray(i,1)) .and. (flux_xray(i,1) .eq. FluxU_xray(i,1))) then
+                     xray_flag(i,1)=' UL '
+                  else if ((FluxL_xray(i,1) .eq. 0.) .and. (FluxU_xray(i,1) .ne. 0.) ) then
+                     xray_flag(i,1)=' UL '
+                  else
+                     xray_flag(i,1)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_xray(i,1),flux_xray(i,1),FluxU_xray(i,1),
+     &            FluxL_xray(i,1),mjdst_xrt(i),mjded_xrt(i),xray_flag(i,1),xray_type(i),refs(xray_ref(i))
                else if (xray_type(i) == 'BAT105m') then
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),
-     &             FluxU_xray(i,1),FluxL_xray(i,1),mjdavg,mjdavg,xray_type(i),refs(xray_ref(i))
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,2),flux_xray(i,2),
-     &             FluxU_xray(i,2),FluxL_xray(i,2),mjdavg,mjdavg,xray_type(i),refs(xray_ref(i))
+                  do s=1,2
+                     if ((flux_xray(i,s) .eq. FluxL_xray(i,s)) .and. (flux_xray(i,s) .eq. FluxU_xray(i,s))) then
+                        xray_flag(i,s)=' UL '
+                     else if ((FluxL_xray(i,s) .eq. 0.) .and. (FluxU_xray(i,s) .ne. 0.) ) then
+                        xray_flag(i,s)=' UL '
+                     else
+                        xray_flag(i,s)=' PT '
+                     endif
+                    write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,2x,a)') frequency_xray(i,s),flux_xray(i,s),FluxU_xray(i,s),
+     &               FluxL_xray(i,s),mjdavg,mjdavg,xray_flag(i,s),xray_type(i),refs(xray_ref(i))
+                  enddo
                else if (xray_type(i) == 'OUSPEC') then
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,1),flux_xray(i,1),
-     &             FluxU_xray(i,1),FluxL_xray(i,1),mjdst_xrt(i),mjded_xrt(i),xray_type(i),refs(xray_ref(i))
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_xray(i,2),flux_xray(i,2),
-     &             FluxU_xray(i,2),FluxL_xray(i,2),mjdst_xrt(i),mjded_xrt(i),xray_type(i),refs(xray_ref(i))
+                  do s=1,2
+                     if ((flux_xray(i,s) .eq. FluxL_xray(i,s)) .and. (flux_xray(i,s) .eq. FluxU_xray(i,s))) then
+                        xray_flag(i,s)=' UL '
+                     else if ((FluxL_xray(i,s) .eq. 0.) .and. (FluxU_xray(i,s) .ne. 0.) ) then
+                        xray_flag(i,s)=' UL '
+                     else
+                        xray_flag(i,s)=' PT '
+                     endif
+                    write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_xray(i,s),flux_xray(i,s),FluxU_xray(i,s),
+     &             FluxL_xray(i,s),mjdst_xrt(i),mjded_xrt(i),xray_flag(i,s),xray_type(i),refs(xray_ref(i))
+                  enddo
                endif
                if (((xrtspind(i) .lt. 2).and. (xray_type(i) == 'XRTSPEC') ).or. (xray_type(i) == 'BAT105m')) then
                   call graphic_code(flux_xray(i,1),82,code)
@@ -4210,42 +4374,91 @@ c         enddo
             if (gam_type(i) == '2FHL' ) then
                call graphic_code(flux_gam(i,1),92,code)
                do s=1,4
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),FluxU_gam(i,s),
+     &             FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '3FGL') then
                call graphic_code(flux_gam(i,1),91,code)
                do s=1,7
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '3FHL') then
                call graphic_code(flux_gam(i,1),92,code)
                do s=1,6
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == '1BIGB') then
                if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
-     &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+               if ((flux_gam(i,1) .eq. FluxL_gam(i,1)) .and. (flux_gam(i,1) .eq. FluxU_gam(i,1))) then
+                  gam_flag(i,1)=' UL '
+               else if ((FluxL_gam(i,1) .eq. 0.) .and. (FluxU_gam(i,1) .ne. 0.) ) then
+                  gam_flag(i,1)=' UL '
+               else
+                  gam_flag(i,1)=' PT '
+               endif
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
+     &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
             else if (gam_type(i) == '4FGL') then
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,8
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == 'AGILE') then
                call graphic_code(flux_gam(i,1),94,code)
                do s=1,5
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &             FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             else if (gam_type(i) == 'FermiMeV') then
                call graphic_code(flux_gam(i,1),94,code)
                do s=1,2
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
-     &              FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_type(i),refs(gam_ref(i))
+                  if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
+                     gam_flag(i,s)=' UL '
+                  else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then
+                     gam_flag(i,s)=' UL '
+                  else
+                     gam_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
+     &              FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             endif
             if (gam_type(i) == '1BIGB') then
@@ -4258,8 +4471,16 @@ c         enddo
          do i=1,iflcuv
             if (flcuvpart(i) .eq. j) then
                do s=1,4
-                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,"  Fermi LAT monitored sources")')
-     &                          frequency_flcuv(i,s),flux_flcuv(i,s),FluxU_flcuv(i,s),FluxL_flcuv(i,s),mjdst_flcuv(i),mjded_flcuv(i),flcuv_type(i)
+                  if ((flux_flcuv(i,s) .eq. FluxL_flcuv(i,s)) .and. (flux_flcuv(i,s) .eq. FluxU_flcuv(i,s))) then
+                     flcuv_flag(i,s)=' UL '
+                  else if ((FluxL_flcuv(i,s) .eq. 0.) .and. (FluxU_flcuv(i,s) .ne. 0.) ) then
+                     flcuv_flag(i,s)=' UL '
+                  else
+                     flcuv_flag(i,s)=' PT '
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,"  Fermi LAT Aperture LC analysis")') frequency_flcuv(i,s),
+     &             flux_flcuv(i,s),FluxU_flcuv(i,s),FluxL_flcuv(i,s),mjdst_flcuv(i),
+     &             mjded_flcuv(i),flcuv_flag(i,s),flcuv_type(i)
                enddo
             endif
          enddo
@@ -4272,14 +4493,28 @@ c         enddo
                endif
             enddo
             if (filen_v(i) .eq. j) then
-               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
-     &             FluxL_vhe(i),mjdstart(i),mjdend(i),vhe_type(i),refs(vhe_ref(i))
+               if ((flux_vhe(i) .eq. FluxL_vhe(i)) .and. (flux_vhe(i) .eq. FluxU_vhe(i))) then
+                  vhe_flag(i)=' UL '
+               else if ((FluxL_vhe(i) .eq. 0.) .and. (FluxU_vhe(i) .ne. 0.) ) then
+                  vhe_flag(i)=' UL '
+               else
+                  vhe_flag(i)=' PT '
+               endif
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_vhe(i),flux_vhe(i),FluxU_vhe(i),
+     &             FluxL_vhe(i),mjdstart(i),mjdend(i),vhe_flag(i),vhe_type(i),refs(vhe_ref(i))
             endif
          enddo
          do i=1,idebl
             do s=1,5
-               if (frequency_debl(i,s) .gt. 0.) write(14,'(4(es10.3,2x),2(f10.4,2x),"DEBL        EBL-corrected flux")')
-     &              frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg
+               if ((flux_debl(i,s) .eq. FluxL_debl(i,s)) .and. (flux_debl(i,s) .eq. FluxU_debl(i,s))) then
+                  debl_flag(i,s)=' UL '
+               else if ((FluxL_debl(i,s) .eq. 0.) .and. (FluxU_debl(i,s) .ne. 0.) ) then
+                  debl_flag(i,s)=' UL '
+               else
+                  debl_flag(i,s)=' PT '
+               endif
+               if (frequency_debl(i,s) .gt. 0.) write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
+     &         frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg,debl_flag(i,s)
             enddo
          enddo
          write(*,*) '.......................source type and cataloged..................'

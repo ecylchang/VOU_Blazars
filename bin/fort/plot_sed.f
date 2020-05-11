@@ -14,6 +14,7 @@ c This program plot the SED for candidate
       character*14 stringin
       character*10 spectype(15000,1000)
       character*6 number
+      character*2 flag(15000,1000)
       character*1 sign
       logical ok,there
       ok = .true.
@@ -56,7 +57,7 @@ c      write(*,*) output_file
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),
      &     uflux(npt(sfound),sfound),lflux(npt(sfound),sfound),mjdstart(npt(sfound),sfound),
-     &     mjdend(npt(sfound),sfound),spectype(npt(sfound),sfound)!,
+     &     mjdend(npt(sfound),sfound),flag(npt(sfound),sfound),spectype(npt(sfound),sfound)!,
 c     &      refs(npt(sfound),sfound)
 c         write(*,*) spectype(npt(sfound),sfound)
       enddo
@@ -118,30 +119,31 @@ c      if (stype(i) .eq. 5) call pgsci(1)
 c      if (stype(i) .eq. 0) call pgsci(12)
       do j=1,npt(i)
          call pgsci(1)
-         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')
-     &     .and. (spectype(j,i) /= 'FTAptLC') .and. (spectype(j,i) /= 'NEOWISE')) then
+c         if ((spectype(j,i) /= 'FMonLC') .and. (spectype(j,i) /= 'WISELC')
+c     &     .and. (spectype(j,i) /= 'FTAptLC') .and. (spectype(j,i) /= 'NEOWISE')) then
          if (spectype(j,i) == 'DEBL') then
             call pgsch(1.2)
             call pgsci(8)
-            CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),13)
+            CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),11)
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             goto 200
          endif
-         if ((flux(j,i) .eq. lflux(j,i)) .and. (flux(j,i) .eq. uflux(j,i))) then
+         if (flag(j,i) == 'UL' ) then
             call pgsch(1.5)
             CALL PGPT(1,log10(frequency(j,i)),log10(uflux(j,i)),45)
             call PGPT(1,log10(frequency(j,i)),log10(uflux(j,i))-0.07,31)
-         else if ((lflux(j,i) .eq. 0.) .and. (uflux(j,i) .ne. 0.) ) then
-            call pgsch(1.5)
-            CALL PGPT(1,log10(frequency(j,i)),log10(uflux(j,i)),45)
-            call PGPT(1,log10(frequency(j,i)),log10(uflux(j,i))-0.07,31)
+c         else if ((lflux(j,i) .eq. 0.) .and. (uflux(j,i) .ne. 0.) ) then
+c            call pgsch(1.5)
+c            CALL PGPT(1,log10(frequency(j,i)),log10(uflux(j,i)),45)
+c            call PGPT(1,log10(frequency(j,i)),log10(uflux(j,i))-0.07,31)
          else if (flux(j,i) .lt. 0.) then
             call pgsch(1.2)
             CALL PGPT(1,log10(frequency(j,i)),log10(-flux(j,i)),13)
             CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
          else
-            if ((spectype(j,i) == 'XRTSPEC') .or. (spectype(j,i) == 'OUSPEC')
-     &          .or. (spectype(j,i) == 'ALMA')) then
+            if ((spectype(j,i) == 'XRTSPEC') .or. (spectype(j,i) == 'OUSPEC') .or. (spectype(j,i) == 'ALMA')
+     &         .or. (spectype(j,i) == 'FMonLC') .or. (spectype(j,i) == 'FTAptLC')
+     &         .or. (spectype(j,i) == 'WISELC') .or. (spectype(j,i) == 'NEOWISE')) then
                call pgsch(0.5)
                CALL PGPT(1,log10(frequency(j,i)),log10(flux(j,i)),3)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
@@ -151,7 +153,7 @@ c      if (stype(i) .eq. 0) call pgsci(12)
                CALL PGERRY(1,log10(frequency(j,i)),log10(uflux(j,i)),log10(lflux(j,i)),1.0)
             endif
          endif
-         endif
+c         endif
 200      continue
       enddo
       call pgsci(1)
