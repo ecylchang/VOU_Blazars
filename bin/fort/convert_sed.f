@@ -62,7 +62,8 @@ c      write(12,'(f10.5,'','',f10.5)') rra,rdec
 c         print *,'string ',string(1:lenact(string))
          IF (string(2:2).NE.'=') THEN
            READ(string(1:lenact(string)),*) freq, flux, err_up, err_lo, mjdstart,mjdend,flag,catalog
-           read(string(85:lenact(string)),'(a)') reff
+           read(string(91:lenact(string)),'(a)') reff
+c           write(*,*) reff
            ref1=' '
            ref2=' '
            ref3=' '
@@ -96,7 +97,7 @@ c             if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
      &        es10.3,'' | '',es10.3,'' | '',f10.2,'' | '',f10.2,'' |'',1x,a,''|'')')
      &                      rra,rdec,freq,one,flux,flux_err,mjdstart,mjdend,ul
              write(12,'(es10.3,'','',es10.3,'','',es10.3,'','',f10.2,'','',f10.2,'','',a,'','',a,'','',a,a,a,a,a)')
-     &        freq,flux,flux_err,mjdstart,mjdend,flag,catalog,ref1(1:lenact(ref1)),
+     &        freq,flux,flux_err,mjdstart,mjdend,ul,catalog,ref1(1:lenact(ref1)),
      &        ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4)),ref5(1:lenact(ref5))
            ENDIF
          ENDIF
