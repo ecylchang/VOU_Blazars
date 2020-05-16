@@ -317,6 +317,7 @@ c         write(*,*) "redshift",zsource(1:isource)
 200   continue
       close(12)
 
+c         write(*,*) "redshift",zsource(1:isource)
 c read the reference file
       iref=0
       Do WHILE(ok)
@@ -1829,6 +1830,7 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
             dec_gam(igam)=dec
             name_g(igam)=catalog
             filen_g(igam)=filen
+            
             If (catalog(1:4) == '2fhl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -2123,6 +2125,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                FluxL_gam(igam,7)=fdens
                if (zsource(ns) .gt. 0.) redshift=zsource(ns)
                if (zzinput .gt. 0.) redshift=zzinput
+               write(*,*) redshift,idebl
                if (redshift .gt. 0.) then ! convert the debl flux
                   idebl=idebl+1
                   call ebl_flux(0.06,0.06,slope_gam(igam,1),redshift,reduction_factor)
@@ -2394,6 +2397,7 @@ c               write(*,*) flux_gam(igam,7)
                FluxL_gam(igam,7)=fdens
                if (zsource(ns) .gt. 0.) redshift=zsource(ns)
                if (zzinput .gt. 0.) redshift=zzinput
+               write(*,*) redshift,idebl
                if (redshift .gt. 0.) then ! convert the debl flux
                   idebl=idebl+1
                   call ebl_flux(0.02,0.02,slope_gam(igam,1),redshift,reduction_factor)
@@ -2563,6 +2567,7 @@ c               write(*,*) flux_gam(igam,7)
                if (zzfermi .gt. 0) redshift=zzfermi
                if (zsource(ns) .gt. 0.) redshift=zsource(ns)
                if (zzinput .gt. 0.) redshift=zzinput
+               write(*,*) redshift,idebl
 c               if (((FluxL_gam(igam,1) .eq. 0.) .and. (FluxU_gam(igam,1) .gt. 0.)) .or. (redshift .eq. 0.)) then
 c                  idebl=idebl+1
 c                  call ebl_flux(0.01,1.,slope_gam(igam,1),redshift,reduction_factor)
@@ -3074,17 +3079,17 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                Lfluxind=FluxL_flcuv(iflcuv,2)
             endif
             call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,fluxind,0.6,fdens,nudens)
+            fluxind=flux_flcuv(iflcuv,2)
             flux_flcuv(iflcuv,2)=fdens
             frequency_flcuv(iflcuv,2)=nudens
             call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,Ufluxind,0.6,fdens,nudens)
+            Ufluxind=FluxU_flcuv(iflcuv,2)
             FluxU_flcuv(iflcuv,2)=fdens
             call fluxtofdens(slope_flcuv(iflcuv),0.3,1.,Lfluxind,0.6,fdens,nudens)
+            Lfluxind=FluxL_flcuv(iflcuv,2)
             FluxL_flcuv(iflcuv,2)=fdens
             if (catalog(1:6) == 'fmonlc') then
                engmax=300.
-               fluxind=flux_flcuv(iflcuv,2)
-               Ufluxind=FluxU_flcuv(iflcuv,2)
-               Lfluxind=FluxL_flcuv(iflcuv,2)
             else
                engmax=30.
                fluxind=flux_flcuv(iflcuv,3)
@@ -3148,7 +3153,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
                   call ebl_flux(gammatev,gammatev,2.2,redshift,reduction_factor)
-                  if ((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) then
+                  if (((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) .or. ((FluxL_vhe(ivhe) .eq. flux_vhe(ivhe)) .and. (FluxU_vhe(ivhe) .eq. flux_vhe(ivhe))))then
                      flux_debl(idebl,1)=0. !correction of EBL
                      FluxU_debl(idebl,1)=0.
                      FluxL_debl(idebl,1)=0.
@@ -3202,7 +3207,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
                   call ebl_flux(gammatev,gammatev,2.2,redshift,reduction_factor)
-                  if ((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) then
+                  if (((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) .or. ((FluxL_vhe(ivhe) .eq. flux_vhe(ivhe)) .and. (FluxU_vhe(ivhe) .eq. flux_vhe(ivhe))))then
                      flux_debl(idebl,1)=0. !correction of EBL
                      FluxU_debl(idebl,1)=0.
                      FluxL_debl(idebl,1)=0.
@@ -4513,7 +4518,7 @@ c         enddo
                else
                   debl_flag(i,s)=' Det'
                endif
-               if (frequency_debl(i,s) .gt. 0.) write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
      &         frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg,debl_flag(i,s)
             enddo
          enddo
