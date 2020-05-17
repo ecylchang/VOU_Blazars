@@ -88,8 +88,8 @@ c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(r
              if (flux .lt. 0.) flux = -flux
 c             IF ((flux_err == 0.) .and. (err_up .ne. 0.)) ul='UL'
 c             if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
-             if (flag == 'UL') ul='UL'
-             if (flux_err .gt. flux) then
+             if (flag == 'UL')then
+                ul='UL'
                 flux=2.*flux_err
                 flux_err=0.
              endif

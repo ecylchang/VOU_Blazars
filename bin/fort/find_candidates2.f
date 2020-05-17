@@ -35,7 +35,7 @@ c
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(1000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(1000),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(1000),iirlc,i4fgl,filen_a(8000)
+      integer*4 iircheck,indirlc(1000),iirlc,i4fgl,filen_a(8000),eblnn(200)
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
@@ -93,7 +93,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),name_cat(100),name_a(8000),flcuv_type(8000)
       CHARACTER*10 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(5000)
       CHARACTER*800 string,repflux
-      LOGICAL there,ok,found!,debl
+      LOGICAL there,ok,found,debl
       common webprograms
       ok = .TRUE.
       found = .FALSE.
@@ -356,7 +356,9 @@ c      write(*,*) ra_center,dec_center,radius
 c      write(*,*) nh
       !nh=5.e20
 
-c        write(*,*) zsource(ns),zzinput
+c        write(*,*) zsource(ns),zzinput,redshift
+      if (zsource(ns) .gt. 0.) redshift=zsource(ns)
+      if (zzinput .gt. 0.) redshift=zzinput
 
       DO WHILE(ok)
 300    continue
@@ -1806,7 +1808,6 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:4) == '4fgl') .or.
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == 'agile')) then
-            redshift=0.
             igam=igam+1
             If (igam > 100) stop 'Too many Gamma-ray points'
             if (igam .ne. 1) THEN
@@ -1864,10 +1865,9 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   FluxU_gam(igam,1)=Ferr_gam(igam,1)*3.
                   FluxL_gam(igam,1)=0.
                endif
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
                if  (redshift .gt. 0) then
                   idebl=idebl+1
+                  eblnn(igam)=idebl
                   call ebl_flux(0.05,2.,slope_gam(igam,2),redshift,reduction_factor)
                   flux_debl(idebl,1)=flux_gam(igam,1)*reduction_factor
                   FluxU_debl(idebl,1)=FluxU_gam(igam,1)*reduction_factor
@@ -2123,11 +2123,9 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                FluxU_gam(igam,7)=fdens
                call fluxtofdens(slope_gam(igam,1),10.,100.,FluxL_gam(igam,7),60.,fdens,nudens)
                FluxL_gam(igam,7)=fdens
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
-               write(*,*) redshift,idebl
                if (redshift .gt. 0.) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam)=idebl
                   call ebl_flux(0.06,0.06,slope_gam(igam,1),redshift,reduction_factor)
                   if ((FluxL_gam(igam,7) .eq. 0.) .and. (FluxU_gam(igam,7) .gt. 0.)) then
                      flux_debl(idebl,1)=0. !correction of EBL
@@ -2395,11 +2393,9 @@ c               write(*,*) flux_gam(igam,7)
                FluxU_gam(igam,7)=fdens
                call fluxtofdens(slope_gam(igam,1),10.,30.,FluxL_gam(igam,7),20.,fdens,nudens)
                FluxL_gam(igam,7)=fdens
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
-               write(*,*) redshift,idebl
                if (redshift .gt. 0.) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam)=idebl
                   call ebl_flux(0.02,0.02,slope_gam(igam,1),redshift,reduction_factor)
                   if ((FluxL_gam(igam,7) .eq. 0.) .and. (FluxU_gam(igam,7) .gt. 0.)) then
                      frequency_debl(idebl,1)=frequency_gam(igam,7)
@@ -2564,10 +2560,12 @@ c               write(*,*) flux_gam(igam,7)
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) zzfermi
                !write(*,*) '4fgl=',redshift,'input=',zzinput,'million=',zsource(2)
-               if (zzfermi .gt. 0) redshift=zzfermi
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
-               write(*,*) redshift,idebl
+               if (redshift .eq. 0) then
+                  if (zzfermi .gt. 0) redshift=zzfermi
+               endif
+c               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
+c               if (zzinput .gt. 0.) redshift=zzinput
+               !write(*,*) redshift,idebl
 c               if (((FluxL_gam(igam,1) .eq. 0.) .and. (FluxU_gam(igam,1) .gt. 0.)) .or. (redshift .eq. 0.)) then
 c                  idebl=idebl+1
 c                  call ebl_flux(0.01,1.,slope_gam(igam,1),redshift,reduction_factor)
@@ -2584,6 +2582,7 @@ c               endif
                FluxL_gam(igam,1)=fdens
                if (redshift .gt. 0.) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam)=idebl
                   call ebl_flux(0.05,0.05,slope_gam(igam,1),redshift,reduction_factor)
                   if ((FluxL_gam(igam,1) .eq. 0.) .and. (FluxU_gam(igam,1) .gt. 0.)) then
                      flux_debl(idebl,1)=0. !correction of EBL
@@ -2723,6 +2722,7 @@ c                  FluxL_debl(idebl,1)=fdens
                endif
                endif
                gam_type(igam)='3FHL'
+               if (zsource(ns)+zzinput .eq. 0) redshift=0
             ELSE IF (catalog(1:5) =='1bigb') then
                ibigb=ibigb+1
                bigbind(igam)=MOD(ibigb,9)
@@ -2743,12 +2743,11 @@ c                  FluxL_debl(idebl,1)=fdens
                   FluxU_gam(igam,1)=0.
                   FluxL_gam(igam,1)=0.
                endif
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
                gammatev=frequency_gam(igam,1)/(2.418e26)
                slope_gam(igam,1)=1.8 !!!!!!!!!!!change later
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam)=idebl
                   call ebl_flux(gammatev,gammatev,slope_gam(igam,1),redshift,reduction_factor)
                   if ((FluxL_gam(igam,1) .eq. flux_gam(igam,1)) .and. (FluxU_gam(igam,1) .ge. flux_gam(igam,1))) then
                      flux_debl(idebl,1)=0. !correction of EBL
@@ -2919,6 +2918,7 @@ c                  FluxL_debl(idebl,1)=fdens
                FluxL_gam(igam,2)=fdens
                gam_type(igam)='FermiMeV'
             ENDIF
+            poserr_gam=poserr_gam*1.1
             !write(*,*) catalog,FluxU_gam(igam,4),flux_gam(igam,4),FluxL_gam(igam,4)
          ELSE IF ((catalog(1:6) == 'fmonlc') .or. (catalog(1:7) == 'ftaptlc')) THEN
             iflcuv=iflcuv+1
@@ -3147,8 +3147,6 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                endif
                mjdstart(ivhe)=mjdavg
                mjdend(ivhe)=mjdavg
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
                gammatev=frequency_vhe(ivhe)/(2.418e26)
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
@@ -3201,8 +3199,6 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                FluxU_vhe(ivhe)=FluxU_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                FluxL_vhe(ivhe)=FluxL_vhe(ivhe)*1.E-4*1.602E-19*1.E7*1.E12*frequency_vhe(ivhe)**2
                frequency_vhe(ivhe)=(1.602E-19)*(frequency_vhe(ivhe)*1.e12)/(6.626e-34)
-               if (zsource(ns) .gt. 0.) redshift=zsource(ns)
-               if (zzinput .gt. 0.) redshift=zzinput
                gammatev=frequency_vhe(ivhe)/(2.418e26)
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
@@ -3924,6 +3920,7 @@ c         debl=.false.
 !            if (gampart(i) .eq. j) then
             gampart(i)=0
             min_dist=sqrt(poserr_gam(i)**2+epos(1,j)**2)
+            !write(*,*) dist*3600.,min_dist,gam_type(i)
             if (dist*3600. .lt. min_dist) then
                gampart(i)=j
                igamfound=igamfound+1
@@ -3939,6 +3936,8 @@ c                  debl=.true.
 c                  if ((gam_type(i) == '3FHL') .or. (gam_type(i) == '3FGL') .or. (gam_type(i) == '4FGL')) debl=.true.
                   write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
                endif
+            else
+              eblnn(i)=0
             endif
          enddo
          !write(*,*) igamfound
@@ -3980,6 +3979,7 @@ c      no_found=types(i)
 c      type_average = i
 c   ENDIF
 cENDDO
+         !write(*,*) 'TEST number',eblnn(1:igam)
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
          write(14,'(i4,2x,a,2(2x,f9.5),2x,i2,2x,f5.3)') j,"matched source",ra_source(j),dec_source(j),typer(j),redshift
@@ -4510,6 +4510,11 @@ c         enddo
             endif
          enddo
          do i=1,idebl
+            debl=.false.
+            do s=1,igam
+               if (i .eq. eblnn(s)) debl=.true.
+            enddo
+            if (debl) then
             do s=1,5
                if ((flux_debl(i,s) .eq. FluxL_debl(i,s)) .and. (flux_debl(i,s) .eq. FluxU_debl(i,s))) then
                   debl_flag(i,s)=' UL '
@@ -4521,6 +4526,7 @@ c         enddo
                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
      &         frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg,debl_flag(i,s)
             enddo
+            endif
          enddo
          write(*,*) '.......................source type and cataloged..................'
          do i=1,icat

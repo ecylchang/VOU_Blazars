@@ -2796,9 +2796,9 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
          ENDIF
       ENDDO
       WRITE (*,*) '      '
-      write(12,*) "===================="
-      write(12,'(i4,2x,a)') 1000,"Redshift"
-      write(12,*) zsource(1:sfound)
+      if (sfound .gt. 0) write(12,*) "===================="
+      if (sfound .gt. 0) write(12,'(i4,2x,a)') 1000,"Redshift"
+      if (sfound .gt. 0) write(12,*) zsource(1:sfound)
 
       do i=1,igam
          if (namegam(i)(1:3) == 'GRB') then
