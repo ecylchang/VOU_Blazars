@@ -16,6 +16,7 @@ c This program plot the SED for candidate
       character*14 stringin
       character*10 spectype(15000,1000)
       character*6 number,xtitle
+      character*4 flag(15000,1000)
       character*1 sign
       logical ok,there
       ok = .true.
@@ -64,7 +65,7 @@ c This program plot the SED for candidate
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),
      &      uflux(npt(sfound),sfound),lflux(npt(sfound),sfound),mjdstart(npt(sfound),sfound),
-     &      mjdend(npt(sfound),sfound),spectype(npt(sfound),sfound)
+     &      mjdend(npt(sfound),sfound),flag(npt(sfound),sfound),spectype(npt(sfound),sfound)
 c     &      refs(npt(sfound),sfound)
       enddo
 99    continue
