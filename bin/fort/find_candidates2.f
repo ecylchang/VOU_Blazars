@@ -35,7 +35,7 @@ c
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(1000),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(200)
+      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(200),maxebl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
@@ -3065,6 +3065,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             else
                engmin=0.3
             endif
+            !write(*,*) flux_flcuv(iflcuv,1:4)
             call fluxtofdens(slope_flcuv(iflcuv),engmin,300.,flux_flcuv(iflcuv,1),1.,fdens,nudens)
             flux_flcuv(iflcuv,1)=fdens
             frequency_flcuv(iflcuv,1)=nudens
@@ -3120,7 +3121,6 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             FluxL_flcuv(iflcuv,4)=fdens
             !write(*,*) iflcuv,flux_flcuv(iflcuv,1:4)
          ELSE IF ((catalog(1:5) == 'magic') .or. (catalog(1:7) == 'veritas')) then
-            redshift=0.
             ivhe=ivhe+1
             ra_vhe(ivhe)=ra
             dec_vhe(ivhe)=dec
@@ -3237,6 +3237,8 @@ c      write(*,*) frequency_flcuv(iflcuv,3),flux_flcuv(iflcuv,3),duration(iflcuv
          ra_source(1)=ra_center
          dec_source(1)=dec_center
       endif
+      maxebl=maxval(eblnn)
+      !write(*,*) maxebl
 
       do i=1,i4p8
          f4p8part(i)=0
@@ -3952,8 +3954,8 @@ c                  if ((gam_type(i) == '3FHL') .or. (gam_type(i) == '3FGL') .or.
             call Dist_sky(ra_source(j),dec_source(j),ra_flcuv(i),dec_flcuv(i),dist)
 c            write(*,*) i,dist*3600.,epos(1,j)
 ccc            min_dist=sqrt(poserr_flcuv(i)**2+epos(1,j)**2)
-            !write(*,*) min_dist,dist*3600.
-                if (dist*3600. < 15. ) then !5 arcsec fixed value
+                !write(*,*) dist*60.
+                if (dist*60. < 30. ) then !5 arcsec fixed value
                 flcuvpart(i)=j
                 iflcuvfound=iflcuvfound+1
             endif
@@ -4517,6 +4519,7 @@ c         enddo
             do s=1,igam
                if (i .eq. eblnn(s)) debl=.true.
             enddo
+            if (i .gt. maxebl) debl=.true.
             if (debl) then
             do s=1,5
                if ((flux_debl(i,s) .eq. FluxL_debl(i,s)) .and. (flux_debl(i,s) .eq. FluxU_debl(i,s))) then
@@ -4526,7 +4529,8 @@ c         enddo
                else
                   debl_flag(i,s)=' Det'
                endif
-               if (frequency_debl(i,s) .gt. 0.) write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
+               !if (frequency_debl(i,s) .gt. 0.)
+               write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,"DEBL        EBL-corrected flux")')
      &         frequency_debl(i,s),flux_debl(i,s),FluxU_debl(i,s),FluxL_debl(i,s),mjdavg,mjdavg,debl_flag(i,s)
             enddo
             endif

@@ -84,13 +84,13 @@ c           if (catalog == 'DEBL') reff='3FHL EBL-corrected flux'
            if (is .ne. ie-1) read(reff(is+1:lenact(reff)),'(a)') ref5
 c           write(*,*) ref1(1:lenact(ref1)),ref2(1:lenact(ref2)),ref3(1:lenact(ref3)),ref4(1:lenact(ref4))
            flux_err = (err_up-err_lo)/2.
-           IF ((flux .NE. 0.) .and. (err_up .ne. 0.)) THEN
+           IF ((flux .NE. 0.) .or. (err_up .ne. 0.)) THEN
              if (flux .lt. 0.) flux = -flux
 c             IF ((flux_err == 0.) .and. (err_up .ne. 0.)) ul='UL'
 c             if ((err_up .ne. 0.) .and. (err_lo .eq. 0.)) ul='UL'
              if (flag == 'UL')then
                 ul='UL'
-                flux=2.*flux_err
+                if (flux_err .gt. 0) flux=2.*flux_err
                 flux_err=0.
              endif
              if ((flux_err .gt. flux) .and. (flag == 'De')) flux_err=min(err_up-flux,flux-err_lo)

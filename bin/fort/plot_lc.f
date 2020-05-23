@@ -604,7 +604,7 @@ c TeV panel for LC
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
       CALL PGLAB('MJD','Log \gnf\d\gn\u (erg/s/cm\u2\d)','600 MeV')
       do j=1,iilc
-         if ((lctype(j) .eq. 41)) then
+         if ((lctype(j) .eq. 41) .or. (lctype(j) .eq. 46)) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi
@@ -637,7 +637,7 @@ c TeV panel for LC
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
       CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','10 GeV')
       do j=1,iilc
-         if ((lctype(j) .eq. 42)) then
+         if ((lctype(j) .eq. 42) .or. (lctype(j) .eq. 47)) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi
@@ -670,7 +670,7 @@ c TeV panel for LC
       CALL PGENV(mjdstgam,mjdedgam,lclow(4),lcup(4),0,1)
       CALL PGLAB('','Log \gnf\d\gn\u (erg/s/cm\u2\d)','100 GeV')
       do j=1,iilc
-         if ((lctype(j) .eq. 43)) then
+         if ((lctype(j) .eq. 43) .or. (lctype(j) .eq. 48)) then
             write(11,'(4(es10.3,2x),2(f10.4,2x),i2)') freq_lc(j),flux_lc(j),
      *        uflux_lc(j),lflux_lc(j),mjdst_lc(j),mjded_lc(j),lctype(j)
             call pgsci(12) !Purple for Fermi
