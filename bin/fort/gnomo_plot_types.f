@@ -381,29 +381,29 @@ c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -6
                icol1 = icol1 +1
                ra_col1(icol1)=ra(j)
                dec_col1(icol1)=dec(j)
-               csr1(icol1)= cs
-               csx1(icol1)= cx
+               csr1(icol1)= cs*0.8
+               csx1(icol1)= cx*0.7
                write(tcol1(icol1),'(i4)') isource
             ELSE IF (om.EQ.2) THEN
                icol2 = icol2 +1
                   ra_col2(icol2)=ra(j)
                   dec_col2(icol2)=dec(j)
-                  csr2(icol2)= cs
-                  csx2(icol2)= cx
+                  csr2(icol2)= cs*0.8
+                  csx2(icol2)= cx*0.7
                   write(tcol2(icol2),'(i4)') isource
             ELSE IF (om.EQ.3) THEN
                   icol3 = icol3 +1
                   ra_col3(icol3)=ra(j)
                   dec_col3(icol3)=dec(j)
-                  csr3(icol3)= cs
-                  csx3(icol3)= cx
+                  csr3(icol3)= cs*0.8
+                  csx3(icol3)= cx*0.7
                   write(tcol3(icol3),'(i4)') isource
             ELSE IF (om.EQ.4) THEN
                   icol4 = icol4 +1
                   ra_col4(icol4)=ra(j)
                   dec_col4(icol4)=dec(j)
-                  csr4(icol4)= cs
-                  csx4(icol4)= cx
+                  csr4(icol4)= cs*0.8
+                  csx4(icol4)= cx*0.7
                   write(tcol4(icol4),'(i4)') isource
             ELSE IF (om.LT.0) THEN        ! case of catalogued sources
 c PG 
@@ -431,7 +431,7 @@ c PG
                   ELSE IF (om .EQ. -3) THEN  ! CRATES
                      s11(icol11) = 6
                      csx11(icol11)= 1.2
-                     csr11(icol11)= cs
+                     csr11(icol11)= cs*0.8
                      if (cradio .gt. 0.) THEN
 c add radio counterparts/ extra radio counpornents, remove crates components
                         icol12=icol12+1
@@ -439,7 +439,7 @@ c add radio counterparts/ extra radio counpornents, remove crates components
                         ra_col12(icol12)=-ra(j)
                         dec_col12(icol12)=dec(j)
                         s12(icol12) = 17
-                        csr12(icol12)= cs*0.9
+                        csr12(icol12)= cs*0.8!*0.9
                         csx12(icol12)= 0.
                      endif
                   ENDIF
@@ -452,10 +452,10 @@ c add radio counterparts/ extra radio counpornents, remove crates components
                   IF (om == -8) THEN  ! Simple X-ray  source
                      s12(icol12) = 21
                      csr12(icol12)= 0.
-                     csx12(icol12)= cx*0.8
+                     csx12(icol12)= cx*0.6
                   ELSE IF (om == -9) THEN  ! Simple radio source
                      s12(icol12) = 17
-                     csr12(icol12)= cs*0.9
+                     csr12(icol12)= cs*0.7
                      csx12(icol12)= 0.
                   ENDIF
                ENDIF
@@ -521,7 +521,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx1(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(8)
-           call pgsch(1.)
+           call pgsch(0.8)
            CALL PGTEXT (X, Y, tcol1(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col1(j),dec_col1(j),x(1),y(1),tcol1(j)
         ENDDO
@@ -536,7 +536,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx2(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(5)
-           call pgsch(1.)
+           call pgsch(0.8)
            CALL PGTEXT (X, Y, tcol2(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col2(j),dec_col2(j),x(1),y(1),tcol2(j)
         ENDDO
@@ -551,7 +551,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx3(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(4)
-           call pgsch(1.)
+           call pgsch(0.8)
            CALL PGTEXT (X, Y, tcol3(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col3(j),dec_col3(j),x(1),y(1),tcol3(j)
         ENDDO
@@ -570,7 +570,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx4(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(3)
-           call pgsch(1.)
+           call pgsch(0.8)
            CALL PGTEXT (X, Y, tcol4(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col4(j),dec_col4(j),x(1),y(1),tcol4(j)
         ENDDO
@@ -589,7 +589,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx5(j))
            CALL pgpoint(1,x,y,21)
            CALL pgsci(17)
-           call pgsch(1.)
+           call pgsch(0.8)
            CALL PGTEXT (X, Y, tcol5(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col5(j),dec_col5(j),x(1),y(1),tcol5(j)
         ENDDO
@@ -612,7 +612,7 @@ c           CALL PGSCR(8,R,G,B)
                CALL pgsci(2)
             ENDIF
             CALL pgpoint(1,x,y,s12(j))
-            call pgsch(1.)
+            call pgsch(0.8)
             if ((filein(iskip+1:iskip+17) == 'find_out_temp.txt') .and. (ra_col12(j).gt. 0.)) then
                call pgtext(x,y,tcol12(j))
                write (lu_out,'(4(1x,f10.4),a)') ra_col12(j),dec_col12(j),x(1),y(1),tcol12(j)
@@ -634,7 +634,7 @@ c           CALL PGSCR(8,R,G,B)
            CALL pgsch(csx11(j))
            CALL pgpoint(1,x,y,s11(j))
            if (tcol11(j) .ne. "    ") then
-              call pgsch(1.)
+              call pgsch(0.8)
               CALL PGTEXT (X, Y, tcol11(j))
            write (lu_out,'(4(1x,f10.4),a)') ra_col11(j),dec_col11(j),x(1),y(1),tcol11(j)
            endif
@@ -695,7 +695,7 @@ c               call pgsch(4.)
 c            write(*,*) j,s14(j),tcol14(j)
             call pgpoint(1,x,y,s14(j))
             if (tcol14(j) .ne. "    ") then
-               call pgsch(1.)
+               call pgsch(0.8)
                CALL PGTEXT (X, Y, tcol14(j))
                write (lu_out,'(4(1x,f10.4),a)') ra_col14(j),dec_col14(j),x(1),y(1),tcol14(j)
             endif
