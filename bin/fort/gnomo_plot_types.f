@@ -452,10 +452,10 @@ c add radio counterparts/ extra radio counpornents, remove crates components
                   IF (om == -8) THEN  ! Simple X-ray  source
                      s12(icol12) = 21
                      csr12(icol12)= 0.
-                     csx12(icol12)= cx*0.6
+                     csx12(icol12)= cx*0.45
                   ELSE IF (om == -9) THEN  ! Simple radio source
                      s12(icol12) = 17
-                     csr12(icol12)= cs*0.7
+                     csr12(icol12)= cs*0.55
                      csx12(icol12)= 0.
                   ENDIF
                ENDIF
