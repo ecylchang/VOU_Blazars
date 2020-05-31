@@ -31,19 +31,19 @@ c
       INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(5000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(1000),r
+      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(200),r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(1000),iflcuv,flcuvpart(8000)
+      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(200),maxebl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
-      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(1000)
+      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
       real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),ra_flcuv(8000)
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),ra_alma,dec_alma,dec_flcuv(8000)
-      real*8 dec_lowr(1000),mjdtest,ra_gamslp(5),dec_gamslp(5)
+      real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -66,8 +66,8 @@ c
       real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
       real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
       real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(5000,2)
-      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(1000)
-      real*4 frequency_lowr(1000),flux_lowr(1000),FluxU_lowr(1000),FluxL_lowr(1000),poserr_lowr(1000)
+      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(200)
+      real*4 frequency_lowr(200),flux_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
 c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
@@ -77,7 +77,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       real*4 frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),slope_flcuv(8000)
       real*4 mjdst_flcuv(8000),mjded_flcuv(8000),Ferr_flcuv(8000,4),metst(8000),meted(8000),ts(8000),duration(8000)
       real*4 mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000),poserr_gamslp(5),gamslp(5)
-      real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev
+      real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(2000,2)
       character*6 aim
@@ -85,12 +85,12 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500),ir_flag(1000,4)
-      character*4 uv_flag(300,6),xray_flag(5000,2),gam_flag(100,8),vhe_flag(500),lowr_flag(1000)
+      character*4 uv_flag(300,6),xray_flag(5000,2),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
       CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(5000)
       CHARACTER*10 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000),name_l(1000),lowr_type(1000),name_cat(100),name_a(8000),flcuv_type(8000)
+      CHARACTER*10 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
       CHARACTER*10 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(5000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,debl
@@ -629,7 +629,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             endif
                !write(*,*) catalog,FluxU_4p8(i4p8,1),flux_4p8(i4p8,1),FluxL_4p8(i4p8,1)
                !write(*,*) catalog,"Flag: ",flag_4p8(i4p8,1),flag_4p8(i4p8,2),flag_4p8(i4p8,3),flag_4p8(i4p8,4)
-         ELSE IF (catalog(1:7) == 'wish352') then
+          ELSE IF ((catalog(1:7) == 'wish352') .or. (catalog(1:7) == 'tgss150') .or. (catalog(1:5) == 'gleam')) then
             ilowr=ilowr+1
             ra_lowr(ilowr)=ra
             dec_lowr(ilowr)=dec
@@ -652,22 +652,66 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   endif
                enddo
             endif
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
-            is=ie
-            ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
-            FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
-            FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
-            frequency_lowr(ilowr)=3.52e8
-            flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
-            FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
-            FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
-            posxerr=sqrt(1.5**2+0.12**2)
-            posyerr=sqrt(1+0.09**2)
-            poserr_lowr(ilowr)=2*sqrt(posxerr**2+posyerr**2)
-            lowr_type(ilowr)='WISH'
+            if (catalog(1:7) == 'wish352') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+               FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+               FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+               frequency_lowr(ilowr)=3.52e8
+               flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               posxerr=sqrt(1.5**2+0.12**2)
+               posyerr=sqrt(1+0.09**2)
+               poserr_lowr(ilowr)=2*sqrt(posxerr**2+posyerr**2)
+               lowr_type(ilowr)='WISH'
+           else IF (catalog(1:7) == 'tgss150') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)poserr_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+               FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+               FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+               frequency_lowr(ilowr)=1.5e8
+               flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)rms_lowr
+               poserr_lowr(ilowr)=poserr_lowr(ilowr)+rms_lowr
+               lowr_type(ilowr)='TGSS150'
+           else IF (catalog(1:5) == 'gleam') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)poserr_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+               FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+               FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+               frequency_lowr(ilowr)=2.e8
+               flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)rms_lowr
+               !poserr_lowr(ilowr)=poserr_lowr(ilowr)+rms_lowr
+               lowr_type(ilowr)='GLEAM'
+           endif
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.
      &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353') .or.

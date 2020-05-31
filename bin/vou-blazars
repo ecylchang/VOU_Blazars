@@ -666,8 +666,8 @@ do
          nn=$nn+1
          if [ $nn = $source -o $source == sed ]; then
             echo conesearch --db ${HERE}/cats2.ini --catalog WISH352 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}wish352.$nn.2.csv > ${pidnm}vosearch.txt
-#            echo conesearch --db ${HERE}/cats2.ini --catalog TGSS150 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}tgss150.$nn.2.csv >> ${pidnm}vosearch.txt
-#            echo conesearch --db ${HERE}/cats2.ini --catalog GLEAM --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}gleam.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog TGSS150 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}tgss150.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog GLEAM --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}gleam.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PMN --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}pmn.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}gb6.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GB87 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}gb87.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -939,7 +939,7 @@ fi
 rm -rf eada_files
 rm -f ${pidnm}*.1.csv
 rm -f ${pidnm}*.i.csv
-rm -f ${pidnm}*.2.csv
+#rm -f ${pidnm}*.2.csv
 rm -f ${pidnm}xrtdeep.csv
 rm -f Results/$xrtnm/*.pdf
 rm -f vou-blazars.aux

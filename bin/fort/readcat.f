@@ -134,8 +134,8 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             if (catalog(1:it-1) == 'fgrb') ie=is+30
 !the source pos error in front of dec
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
-     &           (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
-     &           (catalog(1:it-1) == 'gaia') ) then
+     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'gleam') .or.
+     &      (catalog(1:it-1) == 'gaia') .or. (catalog(1:it-1) == 'tgss150')) then
                read(value(is+1:ie-1),*) posxerr
                if ((catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'gb6')) posxerr=posxerr*15.
                is=ie
@@ -192,8 +192,8 @@ c read other pos_err
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
-     &          (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
-     &          (catalog(1:it-1) == 'gaia')) then
+     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'gleam') .or.
+     &      (catalog(1:it-1) == 'gaia') .or. (catalog(1:it-1) == 'tgss150')) then
                is=ie
                ie=index(value(is+1:len(value)),',')+is
                read(value(is+1:ie-1),*) posyerr
@@ -266,7 +266,8 @@ c write the data
      &               (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'hst') .or.
      &               (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'wise') .or.
      &               (catalog(1:5) == 'spire') .or. (catalog(1:it-1) == 'cma') .or.
-     &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') ) then
+     &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
+     &               (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam')) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
