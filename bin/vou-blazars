@@ -665,8 +665,8 @@ do
       if  [ $typer -gt 10000 -o $typer -lt -40000 -o $typer -eq 99 -o $typer -eq -9999 ]; then
          nn=$nn+1
          if [ $nn = $source -o $source == sed ]; then
-            echo conesearch --db ${HERE}/cats2.ini --catalog WISH352 --ra $rar --dec $decr --radius 20 --runit arcsec --columns default -o ${pidnm}wish352.$nn.2.csv > ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog TGSS150 --ra $rar --dec $decr --radius 20 --runit arcsec --columns default -o ${pidnm}tgss150.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISH352 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}wish352.$nn.2.csv > ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog TGSS150 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}tgss150.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GLEAM --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}gleam.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PMN --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}pmn.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}gb6.$nn.2.csv >> ${pidnm}vosearch.txt
@@ -685,7 +685,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}alma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wise.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISELC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}wiselc.$nn.2.csv >> ${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
+#            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}neowise.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o ${pidnm}2mass.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire250.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE350 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}spire350.$nn.2.csv >> ${pidnm}vosearch.txt
