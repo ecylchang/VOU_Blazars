@@ -1852,7 +1852,7 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                xray_type(ixray)='BAT105m'
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
-         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:4) == '4fgl') .or.
+         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:7) == '4fgldr2') .or.
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == 'agile')) then
             igam=igam+1
@@ -2265,7 +2265,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr_gam(igam)=max(posxerr,posyerr)*3600.
                gam_type(igam)='3FGL'
-            ELSE IF (catalog(1:4) == '4fgl') then
+            ELSE IF (catalog(1:7) == '4fgldr2') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                is=ie
@@ -2501,7 +2501,7 @@ c               write(*,*) flux_gam(igam,7)
                dec_gamslp(i4fgl)=dec_gam(igam)
                poserr_gamslp(i4fgl)=poserr_gam(igam)
                gamslp(i4fgl)=slope_gam(igam,1)
-               gam_type(igam)='4FGL'
+               gam_type(igam)='4FGL-DR2'
             ELSE IF (catalog(1:4) == '3fhl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -4475,7 +4475,7 @@ c         enddo
                endif
                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
      &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_flag(i,1),gam_type(i),refs(gam_ref(i))
-            else if (gam_type(i) == '4FGL') then
+            else if (gam_type(i) == '4FGL-DR2') then
                call graphic_code(flux_gam(i,1),93,code)
                do s=1,8
                   if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then

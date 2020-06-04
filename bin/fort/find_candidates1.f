@@ -1495,7 +1495,7 @@ c end PG
             endif
             CALL RXgraphic_code(flux_maxi(imaxi,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
-         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgl')
+         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgldr2')
      &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == 'agile')
      &           .or.  (catalog(1:5) == 'fmev') .or. (catalog(1:4) == 'fgrb')) then
