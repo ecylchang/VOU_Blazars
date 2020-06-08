@@ -120,6 +120,7 @@ c the catalog without source name
             ie=index(value(is+1:len(value)),',')+is
             if (catalog(1:it-1) == '3hsp')  ie=is+30
             if (catalog(1:it-1) == '5bzcat') ie=is+30
+            if (catalog(1:it-1) == 'bros') ie=is+30
             if (catalog(1:it-1) == 'zw') ie=is+30
             if (catalog(1:it-1) == 'psz2') ie=is+30
             if (catalog(1:it-1) == 'abell') ie=is+30
@@ -232,7 +233,8 @@ c read the flux
      &           (catalog(1:it-1) == 'whl') .or. (catalog(1:it-1) == 'swxcs') .or.
      &      ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) .or.
      &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr') .or.
-     &       (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'fgrb')) then
+     &       (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'fgrb')
+     &       .or. (catalog(1:it-1) == 'bros')) then
                ie=index(value(1:len(value)),',')
                read(value(1:ie-1),'(a)') flux
             endif

@@ -2051,7 +2051,7 @@ c               write(*,*) 'CHECK CAT.',ra_radio(k),dec_radio(k),ra_other(i),dec
                      ra_cattemp=-ra_other(i)
                      dec_cattemp=dec_other(i)
                      catsrc=.true.
-                  ELSE IF (name_other(i)(1:6) == 'CRATES') THEN
+                  ELSE IF ((name_other(i)(1:6) == 'CRATES') .or. (name_other(i)(1:4) == 'BROS')) THEN
                      type_average = -3
                      write(*,'(2x,a,1x,a)') name_other(i)
                      ra_other(i) = -ra_other(i)
@@ -2133,7 +2133,8 @@ c            write(*,*) 'TEST X-ray position',ra_xx(sfound),dec_xx(sfound)
             do i=1,iother
                if ( ( (name_other(i)(1:3) == '5BZ') .OR. (name_other(i)(1:4) == '3HSP') .or.
      &           (name_other(i)(1:6) == 'CRATES') .or. (name_other(i)(1:3) == 'PSR') .or.
-     &           (name_other(i)(1:5) == 'mquas')) .AND. (ra_other(i) .gt. 0.) ) THEN
+     &           (name_other(i)(1:5) == 'mquas') .or. (name_other(i)(1:4) == 'BROS'))
+     &            .AND. (ra_other(i) .gt. 0.) ) THEN
                   CALL DIST_SKY(ra_other(i),dec_other(i),ra_radio(k),dec_radio(k),dist)
                   if (dist*3600. .lt. max(poserr_radio(k),2.) ) found=.true.
                endif
@@ -2170,7 +2171,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .OR. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_xmm(i),dec_xmm(i),dist)
                if (dist*3600. .lt. max(poserr_xmm(i),10.)) found=.true.
              endif
@@ -2234,7 +2235,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS') ) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_rosat(i),dec_rosat(i),dist)
                if (dist*3600. .lt. max(poserr_rosat(i),10.)) found=.true.
             endif
@@ -2272,7 +2273,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),abs(ra_swift(i)),dec_swift(i),dist)
                if (dist*3600. .lt. max(poserr_swift(i),10.)) found=.true.
             endif
@@ -2346,7 +2347,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_ipc(i),dec_ipc(i),dist)
                if (dist*3600. .lt. max(poserr_ipc(i),10.)) found=.true.
             endif
@@ -2384,7 +2385,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &       (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_bmw(i),dec_bmw(i),dist)
                if (dist*3600. .lt. max(poserr_bmw(i),10.)) found=.true.
             endif
@@ -2418,7 +2419,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),ra_chandra(i),dec_chandra(i),dist)
                if (dist*3600. .lt. max(poserr_chandra(i),10.)) found=.true.
             endif
@@ -2462,7 +2463,7 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          do j=1,iother
             if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
      &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
-     &             (name_other(j)(1:5) == 'mquas')) .AND. (ra_other(j) .gt. 0.) ) THEN
+     &       (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
                CALL DIST_SKY(ra_other(j),dec_other(j),abs(ra_maxi(i)),dec_maxi(i),dist)
                if (dist*3600. .lt. max(poserr_maxi(i),10.)) found=.true.
             endif
@@ -2581,7 +2582,7 @@ c               write(*,*) rank(j),i,j
       DO l=1,iother
          IF ( ( (name_other(l)(1:3) == '5BZ') .OR. (name_other(l)(1:4) == '3HSP') .or.
      &  (name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:3) == 'PSR') .or.
-     &  (name_other(l)(1:5) == 'mquas')) .AND. (ra_other(l) .gt. 0.)) THEN
+     &  (name_other(l)(1:5) == 'mquas') .or. (name_other(l)(1:4) == 'BROS')) .AND. (ra_other(l) .gt. 0.)) THEN
             ncat=ncat+1
             ra_cat(ncat)=ra_other(l)
             dec_cat(ncat)=dec_other(l)
@@ -2593,7 +2594,7 @@ c               write(*,*) rank(j),i,j
                      track2(ncat)=track2(j)
                      IF (name_other(l)(1:3) == '5BZ') type_average = -2
                      IF (name_other(l)(1:4) == '3HSP') type_average = -1
-                     IF (name_other(l)(1:6) == 'CRATES') type_average = -3
+                     IF ((name_other(l)(1:6) == 'CRATES').or. (name_other(l)(1:4) == 'BROS')) type_average = -3
                      IF (name_other(l)(1:3) == 'PSR') then
                         type_average = -88
                         code=-8888
@@ -2610,7 +2611,7 @@ c                     endif
             endif
             IF (name_other(l)(1:3) == '5BZ') type_average = -6
             IF (name_other(l)(1:4) == '3HSP') type_average = -5
-            IF (name_other(l)(1:6) == 'CRATES') type_average = -7
+            IF ((name_other(l)(1:6) == 'CRATES') .or. (name_other(l)(1:4) == 'BROS')) type_average = -7
             IF (name_other(l)(1:3) == 'PSR') type_average = -99
 c            IF (name_other(l)(1:5) == 'mquas') type_average = -77
             sfound=sfound+1
