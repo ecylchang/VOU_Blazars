@@ -41,6 +41,7 @@ XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
 XRTSPEC Giommi, P. 2015, JHEAp, 7, 173!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
+BEPPOSAX Giommi et al. 2002, Babs. conf.!
 3FHL The Fermi-LAT Collaboration 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!

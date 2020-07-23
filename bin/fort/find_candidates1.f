@@ -1795,6 +1795,7 @@ c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for th
 c            ELSE
 c               min_dist = min_dist_bmw
 c            ENDIF
+            !write(*,*) dist,max(min_dist,2./3600.)
             IF (dist < max(min_dist,2./3600.)) THEN
                found = .TRUE.
                xray_type = 7
@@ -3114,11 +3115,11 @@ C
       IMPLICIT NONE
       REAL*8 dist,alpha1,alpha2,delta1,delta2,costheta
       REAL*8 radian
-      radian=57.2957795
+      radian=57.2957795 !(180/pi), degree to radian
       costheta=sin(delta1/radian)*sin(delta2/radian)+
      &         cos(delta1/radian)*cos(delta2/radian)*
      &         cos((alpha1-alpha2)/radian)
-      dist=acos(costheta)*radian
+      dist=acos(costheta)*radian !radian to degree.
       RETURN
       END
 c

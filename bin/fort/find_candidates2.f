@@ -1717,7 +1717,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             ENDIF
             !write(*,*) catalog,FluxU_uv(iuv,6),flux_uv(iuv,6),FluxL_uv(iuv,6),frequency_uv(iuv,6)
          else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105')
-     &            .or. (catalog(1:6) == 'ouspec')) then
+     &         .or. (catalog(1:6) == 'ouspec') .or. (catalog(1:8) == 'bepposax')) then
             ixray=ixray+1
             if (ixray .ne. 1) THEN
                do j=1,ixray-1
@@ -1770,6 +1770,34 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                endif
                poserr_xray(ixray)=5.
                xray_type(ixray)='XRTSPEC'
+            else if (catalog(1:8) == 'bepposax') then
+c               ixrtsp=ixrtsp+1
+c               xrtspind(ixray)=ixrtsp
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_xray(ixray,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,1)
+               !if (flux_xray(ixray) .le. 0.) write(*,*) ixray,frequency_xray(ixray),flux_xray(ixray)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_xrt(ixray)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_xrt(ixray)
+               FluxU_xray(ixray,1)=flux_xray(ixray,1)+Ferr_xray(ixray,1)
+               FluxL_xray(ixray,1)=flux_xray(ixray,1)-Ferr_xray(ixray,1)
+               if ((flux_xray(ixray,1) .lt. 0.) .or. (FluxL_xray(ixray,1) .lt. 0.)) then
+                  flux_xray(ixray,1)=0.
+                  FluxU_xray(ixray,1)=0.
+                  FluxL_xray(ixray,1)=0.
+               endif
+               poserr_xray(ixray)=10.
+               xray_type(ixray)='BEPPOSAX'
             else if (catalog(1:6) == 'ouspec') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -4375,7 +4403,7 @@ c         enddo
                endif
             enddo
             if (xraypart(i) .eq. j) then
-               if (xray_type(i) == 'XRTSPEC') then
+               if ((xray_type(i) == 'XRTSPEC') .or. (xray_type(i) == 'BEPPOSAX')) then
                   if ((flux_xray(i,1) .eq. FluxL_xray(i,1)) .and. (flux_xray(i,1) .eq. FluxU_xray(i,1))) then
                      xray_flag(i,1)=' UL '
                   else if ((FluxL_xray(i,1) .eq. 0.) .and. (FluxU_xray(i,1) .ne. 0.) ) then

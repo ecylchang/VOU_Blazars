@@ -68,11 +68,11 @@ $ export PGPLOT_DIR='YOUR_PGPLOT_LIBRARY_DIRECTORY'
 **Otherwise, you could compile all Fortran programs by**
 First compile mylib.f with command.
 ```bash
-$ gfortran -c mylib.f -ffixed-line-length-132
+$ gfortran -c mylib.f -ffixed-line-length-500
 ```
 and then all the other programs (with .f file name) with command
 ```bash
-$ gfortran -o $XXX $XXX.f -ffixed-line-length-132 mylib.o -L${HOME}/pgplot -lpgplot
+$ gfortran -o $XXX $XXX.f -ffixed-line-length-500 mylib.o -L${HOME}/pgplot -lpgplot
 ```
 **Change the PGPLOT path to where you put the PGPLOT library.**
 
