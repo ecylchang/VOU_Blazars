@@ -282,7 +282,7 @@ if [ ${13} != s ]; then #skip the catalogs that we don't plot its data on SED
    echo conesearch --db ${HERE}/cats1.ini --catalog SWXCS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}swxcs.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog 3HSP --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}3hsp.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats2.ini --catalog CRATES --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}crates.1.csv >> ${pidnm}vosearch.txt
-#   echo conesearch --db ${HERE}/cats1.ini --catalog BROS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}bros.1.csv >> ${pidnm}vosearch.txt
+   echo conesearch --db ${HERE}/cats1.ini --catalog BROS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}bros.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}pulsar.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}f2psr.1.csv >> ${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL-DR2 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4fgldr2.1.csv >> ${pidnm}vosearch.txt

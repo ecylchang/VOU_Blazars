@@ -121,6 +121,7 @@ c need to define the range first then plot...
             uflux_lc(iilc)=uflux(j,i)
             mjdst_lc(iilc)=mjdstart(j,i)
             mjded_lc(iilc)=mjdend(j,i)
+c         else if (spectype(j,i) == 'BEPPOSAX')
          else if (spectype(j,i) == 'ALMA') then
             ialma=ialma+1
             iilc=iilc+1
