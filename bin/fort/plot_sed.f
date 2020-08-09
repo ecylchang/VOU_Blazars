@@ -12,7 +12,7 @@ c This program plot the SED for candidate
       character*100 title
       character*200 input_file,output_file,refs(15000,1000)
       character*14 stringin
-      character*10 spectype(15000,1000)
+      character*15 spectype(15000,1000)
       character*6 number
       character*2 flag(15000,1000)
       character*1 sign

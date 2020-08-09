@@ -62,7 +62,7 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(15000),name_cat(200),namegam(200)
       CHARACTER*200 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
-      CHARACTER*8 catalog,classmq(15000)
+      CHARACTER*15 catalog,classmq(15000)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,catsrc
       common webprograms
@@ -688,15 +688,15 @@ c PG
             CALL RXgraphic_code(flux_rosat(irosat),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_rosat(irosat),dec_rosat(irosat),int(code)
 c end PG
-         ELSE IF ((catalog(1:4) == 'sxps') .or. (catalog(1:7) == 'xrtdeep')
-     &             .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb')
-     &             .or.  (catalog(1:5) == 'ousxg'))THEN
+         ELSE IF ((catalog(1:5) == '2sxps') .or. (catalog(1:7) == 'xrtdeep')
+     &           .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb')
+     &           .or.  (catalog(1:5) == 'ousxg') .or. (catalog(1:4) == 'ousx'))THEN
             iswift=iswift+1
             IF (iswift > 3000) Stop 'Too many swift points'
             ra_swift(iswift)=ra
             dec_swift(iswift)=dec
             frequency_swift(iswift,5)=999
-            if (catalog(1:4) == 'sxps') then
+            if (catalog(1:5) == '2sxps') then
                xrt_type(iswift)=1
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -884,13 +884,15 @@ c end PG
                if ((FluxU_swift(iswift,4) .ne. 0.) .and. (flux_swift(iswift,4) .eq. 0.)) then
                   FluxU_swift(iswift,4)=FluxU_swift(iswift,4)*3.
                endif
-            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82')
-     &                 .or.  (catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
-               if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
+            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82') .or. (catalog(1:4) == 'ousx')
+     &        .or.  (catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
+               if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:4) == 'ousx')) then
                   if (catalog(1:5) == 'ousxb') then
                      xrt_type(iswift)=3
-                  else
+                  else if (catalog(1:5) == 'ousxb') then
                      xrt_type(iswift)=4
+                  else
+                     xrt_type(iswift)=5
                   endif
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
@@ -1178,7 +1180,7 @@ c PG
             CALL RXgraphic_code(flux_bmw(ibmw),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') ra_bmw(ibmw),dec_bmw(ibmw),int(code)
 c end PG
-         ELSE IF (catalog(1:7) == 'chandra') THEN
+         ELSE IF (catalog(1:11) == 'chandracsc2') THEN
             ichandra=ichandra+1
             IF (ichandra > 1000) Stop 'Too many Chandra points'
             ra_chandra(ichandra)=ra
@@ -1497,7 +1499,7 @@ c end PG
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgldr2')
      &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
-     &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == 'agile')
+     &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == '2agile')
      &           .or.  (catalog(1:5) == 'fmev') .or. (catalog(1:4) == 'fgrb')) then
             igam=igam+1
             ra_gam(igam)=ra
@@ -1703,6 +1705,8 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   xray_type = 11
                ELSE IF (xrt_type(i) == 4) THEN
                   xray_type = 14
+               ELSE IF (xrt_type(i) == 5) THEN
+                  xray_type = 15
                ENDIF
                found = .TRUE.
                flux_x = flux_x + flux_swift(i,1)
@@ -3005,21 +3009,21 @@ c      IF (ratio < 0.) RETURN
          radio_survey='UNKNOWN'
       ENDIF
       IF (xray_type == 1) THEN
-         xmission='XMMSLEW'
+         xmission='XMMSLEW2'
       ELSE IF (xray_type == 2) THEN
-         xmission='4XMM'
+         xmission='4XMM-DR9'
       ELSE IF (xray_type == 3) THEN
          xmission='RASS'
       ELSE IF (xray_type == 4) THEN
          xmission='WGA'
       ELSE IF (xray_type == 5) THEN
-         xmission='SXPS'
+         xmission='2SXPS'
       ELSE IF (xray_type == 6) THEN
          xmission='IPC'
       ELSE IF (xray_type == 7) THEN
          xmission='BMW'
       ELSE IF (xray_type == 8) THEN
-         xmission='CHANDRA'
+         xmission='Chandra-CSC2'
       ELSE IF (xray_type == 9) THEN
          xmission='XRTDEEP'
       ELSE IF (xray_type == 10) THEN
@@ -3032,6 +3036,8 @@ c      IF (ratio < 0.) RETURN
          xmission='MAXISSC'
       ELSE IF (xray_type == 14) THEN
          xmission='OUSXG'
+      ELSE IF (xray_type == 15) THEN
+         xmission='OUSX'
       ELSE
          xmission='UNKNOWN'
       ENDIF

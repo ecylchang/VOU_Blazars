@@ -84,7 +84,7 @@ c         write(*,*) device
               STOP
            ENDIF
 
-         read(stringin(ip+1:length-1),*) ra_center,dec_center,err_radius
+         read(stringin(ip+1:length),*) ra_center,dec_center,err_radius
      & ,radius,ra_o,dec_o,ellipser1,ellipser2,ellipserot,err_radius_2
      & ,ellipser1_2,ellipser2_2,ellipserot_2,ra_err2,dec_err2
       ELSE

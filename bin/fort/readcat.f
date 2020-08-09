@@ -59,7 +59,7 @@ c            write(*,*) is,ie
 c gamma-ray catalog print name
             if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')
      &          .or. (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'mst9y')
-     &          .or. (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')) then
+     &          .or. (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')) then
                read(value(1:is-1),'(a)') catname
             endif
 c the catalog without source name
@@ -69,7 +69,7 @@ c the catalog without source name
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
      &          .or. (catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'mquas')
      &          .or. (catalog(1:it-1) == 'wiselc') .or. (catalog(1:it-1) == 'neowise')
-     &          .or. (catalog(1:it-1) == 'bepposax')) then
+     &          .or. (catalog(1:it-1) == 'bepposax') .or. (catalog(1:it-1) == 'vlssr')) then
                is=0
                ie=index(value(1:len(value)),',')
             endif
@@ -104,8 +104,31 @@ c the catalog without source name
                   ie=index(value(is+1:len(value)),',')+is
                   is=ie
                   ie=index(value(is+1:len(value)),',')+is
-
                endif
+            endif
+            if (catalog(1:it-1) == 'iraspsc') then
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
+               is=ie
+               ie=index(value(is+1:len(value)),',')+is
             endif
             read(value(is+1:ie-1),'(a)') ra
             ia=index(value(is+1:ie-1),' ')
@@ -136,14 +159,15 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             if (catalog(1:it-1) == 'fgrb') ie=is+30
 !the source pos error in front of dec
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
-     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'gleam') .or.
+     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
+     &      (catalog(1:it-1) == 'gleam') .or. (catalog(1:it-1) == 'lotss') .or.
      &      (catalog(1:it-1) == 'gaia') .or. (catalog(1:it-1) == 'tgss150')) then
                read(value(is+1:ie-1),*) posxerr
                if ((catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'gb6')) posxerr=posxerr*15.
                is=ie
                ie=index(value(is+1:len(value)),',')+is
             endif
-            if (catalog(1:it-1) == 'chandra') then
+            if (catalog(1:it-1) == 'chandracsc2') then
                read(value(is+1:ie-1),*) posang
                is=ie
                ie=index(value(is+1:len(value)),',')+is
@@ -158,6 +182,7 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
                ie=index(value(is+1:len(value)),',')+is
                !write(*,*) posxerr,posyerr,poserr
             endif
+            if (catalog(1:it-1) == 'iraspsc') ie=index(value(is+1:len(value)),' ')+is
             read(value(is+1:ie-1),'(a)') dec
             if (ia .ne. 0) then
                sign=dec(1:1)
@@ -194,7 +219,8 @@ c read other pos_err
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
-     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'gleam') .or.
+     &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
+     &      (catalog(1:it-1) == 'gleam') .or. (catalog(1:it-1) == 'lotss') .or.
      &      (catalog(1:it-1) == 'gaia') .or. (catalog(1:it-1) == 'tgss150')) then
                is=ie
                ie=index(value(is+1:len(value)),',')+is
@@ -202,8 +228,13 @@ c read other pos_err
                poserr=sqrt((posxerr*posxerr)+(posyerr*posyerr))
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
-            if (catalog(1:it-1) == '2mass')  then
-               is=ie
+            if ((catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'iraspsc')
+     &             .or. (catalog(1:it-1) == 'akaribsc'))  then
+               if (catalog(1:it-1) == 'iraspsc') then
+                  is=index(value(1:len(value)),',')
+               else
+                  is=ie
+               endif
                ie=index(value(is+1:len(value)),',')+is
                if (is .ne. ie-1) read(value(is+1:ie-1),*) major
                is=ie
@@ -261,20 +292,21 @@ c read the flux
                endif
             endif
 c write the data
-            if (catalog(1:7) == 'chandra') then
+            if (catalog(1:7) == 'chandracsc2') then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),decdeg,radeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == 'nvss') .or. (catalog(1:it-1) == 'sumss') .or.
-     &               (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'gb6') .or.
-     &               (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'hst') .or.
-     &               (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'wise') .or.
-     &               (catalog(1:5) == 'spire') .or. (catalog(1:it-1) == 'cma') .or.
-     &               (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
-     &               (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam')) then
+     &         (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'gb6') .or.
+     &         (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'hst') .or.
+     &         (catalog(1:it-1) == 'uvot') .or. (catalog(1:it-1) == 'wise') .or.
+     &         (catalog(1:5) == 'spire') .or. (catalog(1:it-1) == 'cma') .or.
+     &         (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
+     &         (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam') .or.
+     &    (catalog(1:it-1) == 'lotss') .or. (catalog(1:it-1) == 'akaribsc').or. (catalog(1:it-1) == 'iraspsc')) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
-     &               (catalog(1:it-1) == 'agile') .or. (catalog(1:it-1) == 'fmev')
+     &               (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')
      &               .or. (catalog(1:it-1) == '4fgldr2')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)

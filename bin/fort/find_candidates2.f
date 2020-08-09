@@ -51,7 +51,7 @@ c
       REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_cluster,min_dist_far
       REAL*4 usnomag(1000,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
       REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
-      real*4 flux_far(500),frequency_far(500),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
+      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
       real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
@@ -59,7 +59,7 @@ c
       real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
       real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
-      real*4 Ferr_far(500),FluxU_far(500),FluxL_far(500),poserr_far(500),slope_xray(5000),snr_pccs100(1500,9)
+      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(5000),snr_pccs100(1500,9)
       real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
@@ -84,14 +84,14 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*30 name_other(10000),date_alma(1500)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
-      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500),ir_flag(1000,4)
+      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(1000,4)
       character*4 uv_flag(300,6),xray_flag(5000,2),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
-      CHARACTER*10 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
-      CHARACTER*10 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(5000)
-      CHARACTER*10 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
-      CHARACTER*10 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
-      CHARACTER*10 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(5000)
+      CHARACTER*15 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
+      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(5000)
+      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
+      CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
+      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(5000),far_type(200)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,debl
       common webprograms
@@ -277,21 +277,21 @@ c         write(*,*) "redshift",zsource(1:isource)
          endif
          if (frequency(npt(sfound),sfound) .gt. 1.E11 ) then
          if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
-     &      rrxx_type(npt(sfound),sfound)='XMMSL'
+     &      rrxx_type(npt(sfound),sfound)='XMMSL2'
          if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
-     &      rrxx_type(npt(sfound),sfound)='4XMM'
+     &      rrxx_type(npt(sfound),sfound)='4XMM-DR9'
          if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
          if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
      &      rrxx_type(npt(sfound),sfound)='WGA'
          if ((spec_type(npt(sfound),sfound) .eq. 55) .or. (spec_type(npt(sfound),sfound) .eq. 5))
-     &      rrxx_type(npt(sfound),sfound)='SXPS'
+     &      rrxx_type(npt(sfound),sfound)='2SXPS'
          if ((spec_type(npt(sfound),sfound) .eq. 56) .or. (spec_type(npt(sfound),sfound) .eq. 6))
      &      rrxx_type(npt(sfound),sfound)='IPC'
          if ((spec_type(npt(sfound),sfound) .eq. 57) .or. (spec_type(npt(sfound),sfound) .eq. 7))
      &      rrxx_type(npt(sfound),sfound)='BMW'
          if ((spec_type(npt(sfound),sfound) .eq. 58) .or. (spec_type(npt(sfound),sfound) .eq. 8))
-     &      rrxx_type(npt(sfound),sfound)='CHANDRA'
+     &      rrxx_type(npt(sfound),sfound)='Chandra-CSC2'
          if ((spec_type(npt(sfound),sfound) .eq. 59) .or. (spec_type(npt(sfound),sfound) .eq. 9))
      &      rrxx_type(npt(sfound),sfound)='XRTDEEP'
          if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
@@ -304,6 +304,8 @@ c         write(*,*) "redshift",zsource(1:isource)
      &      rrxx_type(npt(sfound),sfound)='MAXISSC'
          if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
      &      rrxx_type(npt(sfound),sfound)='OUSXG'
+         if ((spec_type(npt(sfound),sfound) .eq. 65) .or. (spec_type(npt(sfound),sfound) .eq. 15))
+     &      rrxx_type(npt(sfound),sfound)='OUSX'
          else
             if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
             if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
@@ -629,7 +631,8 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             endif
                !write(*,*) catalog,FluxU_4p8(i4p8,1),flux_4p8(i4p8,1),FluxL_4p8(i4p8,1)
                !write(*,*) catalog,"Flag: ",flag_4p8(i4p8,1),flag_4p8(i4p8,2),flag_4p8(i4p8,3),flag_4p8(i4p8,4)
-          ELSE IF ((catalog(1:7) == 'wish352') .or. (catalog(1:7) == 'tgss150') .or. (catalog(1:5) == 'gleam')) then
+          ELSE IF ((catalog(1:7) == 'wish352') .or. (catalog(1:7) == 'tgss150') .or. (catalog(1:5) == 'gleam')
+     &           .or. (catalog(1:5) == 'lotss') .or. (catalog(1:5) == 'vlssr')) then
             ilowr=ilowr+1
             ra_lowr(ilowr)=ra
             dec_lowr(ilowr)=dec
@@ -711,6 +714,39 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                if (is .ne. ie-1) read(string(is+1:ie-1),*)rms_lowr
                !poserr_lowr(ilowr)=poserr_lowr(ilowr)+rms_lowr
                lowr_type(ilowr)='GLEAM'
+           else IF (catalog(1:5) == 'vlssr') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+               FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+               FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+               frequency_lowr(ilowr)=7.4e7
+               flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-23
+               FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-23
+               FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-23
+               poserr_lowr(ilowr)=sqrt((3**2)+(3.4**2))
+               lowr_type(ilowr)='VLSSR'
+           else IF (catalog(1:5) == 'lotss') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)poserr_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_lowr(ilowr)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_lowr(ilowr)
+               FluxU_lowr(ilowr)=flux_lowr(ilowr)+Ferr_lowr(ilowr)
+               FluxL_lowr(ilowr)=flux_lowr(ilowr)-Ferr_lowr(ilowr)
+               frequency_lowr(ilowr)=1.44e8
+               flux_lowr(ilowr)=flux_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxU_lowr(ilowr)=FluxU_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+               FluxL_lowr(ilowr)=FluxL_lowr(ilowr)*frequency_lowr(ilowr)*1.E-26
+           !poserr_lowr(ilowr)=poserr_lowr(ilowr)+rms_lowr
+               lowr_type(ilowr)='LoTSS'
            endif
          ELSE IF ( (catalog(1:6) == 'pccs44') .OR. (catalog(1:6) == 'pccs70') .or.
      &             (catalog(1:7) == 'pccs143') .or. (catalog(1:7) == 'pccs100') .or.
@@ -1084,7 +1120,8 @@ c               dec_alma=dec_pccs100(ipccs100)
                pccs100_type(ipccs100)='PCCS2'
             !write(*,*) catalog,poserr_pccs100(ipccs100)
             endif
-         ELSE IF (catalog(1:5) == 'spire') THEN
+         ELSE IF ((catalog(1:5) == 'spire') .OR. (catalog(1:6) == 'hatlas') .OR.
+     &             (catalog(1:8) == 'akaribsc') .OR. (catalog(1:7) == 'iraspsc')) THEN
             ifar=ifar+1
             IF (ifar > 500) Stop 'Too many Hershel SPIRE points'
             ra_far(ifar)=ra
@@ -1108,25 +1145,202 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   endif
                enddo
             endif
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_far(ifar)
-            poserr_far(ifar)=poserr_far(ifar)*2.
-            is=ie
-            ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar)
-            is=ie
-            ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar)
-            if (catalog(1:8) == 'spire250') frequency_far(ifar)=(3.E8/2.5e-4)
-            if (catalog(1:8) == 'spire350') frequency_far(ifar)=(3.E8/3.5e-4)
-            if (catalog(1:8) == 'spire500') frequency_far(ifar)=(3.E8/5.e-4)
-            FluxU_far(ifar)=flux_far(ifar)+Ferr_far(ifar)
-            FluxL_far(ifar)=flux_far(ifar)-Ferr_far(ifar)
-            flux_far(ifar)=flux_far(ifar)*frequency_far(ifar)*1.E-26
-            FluxU_far(ifar)=FluxU_far(ifar)*frequency_far(ifar)*1.E-26
-            FluxL_far(ifar)=FluxL_far(ifar)*frequency_far(ifar)*1.E-26
+            if (catalog(1:5) == 'spire') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_far(ifar)
+               poserr_far(ifar)=poserr_far(ifar)*2.
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,1)
+               if (catalog(1:8) == 'spire250') frequency_far(ifar,1)=(3.E8/2.5e-4)
+               if (catalog(1:8) == 'spire350') frequency_far(ifar,1)=(3.E8/3.5e-4)
+               if (catalog(1:8) == 'spire500') frequency_far(ifar,1)=(3.E8/5.e-4)
+               FluxU_far(ifar,1)=flux_far(ifar,1)+Ferr_far(ifar,1)
+               FluxL_far(ifar,1)=flux_far(ifar,1)-Ferr_far(ifar,1)
+               flux_far(ifar,1)=flux_far(ifar,1)*frequency_far(ifar,1)*1.E-26
+               FluxU_far(ifar,1)=FluxU_far(ifar,1)*frequency_far(ifar,1)*1.E-26
+               FluxL_far(ifar,1)=FluxL_far(ifar,1)*frequency_far(ifar,1)*1.E-26
+               far_type(ifar)='SPIRE'
             !write(*,*) frequency_far(ifar),FluxU_far(ifar),flux_far(ifar),FluxL_far(ifar)
+            Else if (catalog(1:7) == 'iraspsc') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_far(ifar)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,4)
+               Ferr_far(ifar,1)=flux_far(ifar,1)*Ferr_far(ifar,1)*1.e-2
+               FluxU_far(ifar,1)=flux_far(ifar,1)+Ferr_far(ifar,1)
+               FluxL_far(ifar,1)=flux_far(ifar,1)-Ferr_far(ifar,1)
+               frequency_far(ifar,1)=(3.E8/1.2e-5)
+               flux_far(ifar,1)=flux_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxU_far(ifar,1)=FluxU_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxL_far(ifar,1)=FluxL_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               Ferr_far(ifar,2)=flux_far(ifar,2)*Ferr_far(ifar,2)*1.e-2
+               FluxU_far(ifar,2)=flux_far(ifar,2)+Ferr_far(ifar,2)
+               FluxL_far(ifar,2)=flux_far(ifar,2)-Ferr_far(ifar,2)
+               frequency_far(ifar,2)=(3.E8/2.5e-5)
+               flux_far(ifar,2)=flux_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxU_far(ifar,2)=FluxU_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxL_far(ifar,2)=FluxL_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               Ferr_far(ifar,3)=flux_far(ifar,3)*Ferr_far(ifar,3)*1.e-2
+               FluxU_far(ifar,3)=flux_far(ifar,3)+Ferr_far(ifar,3)
+               FluxL_far(ifar,3)=flux_far(ifar,3)-Ferr_far(ifar,3)
+               frequency_far(ifar,3)=(3.E8/6.e-5)
+               flux_far(ifar,3)=flux_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxU_far(ifar,3)=FluxU_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxL_far(ifar,3)=FluxL_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               Ferr_far(ifar,4)=flux_far(ifar,4)*Ferr_far(ifar,4)*1.e-2
+               FluxU_far(ifar,4)=flux_far(ifar,4)+Ferr_far(ifar,4)
+               FluxL_far(ifar,4)=flux_far(ifar,4)-Ferr_far(ifar,4)
+               frequency_far(ifar,4)=(3.E8/1.e-4)
+               flux_far(ifar,4)=flux_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxU_far(ifar,4)=FluxU_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxL_far(ifar,4)=FluxL_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               far_type(ifar)='IRAS-PSC'
+            Else if (catalog(1:8) == 'akaribsc') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_far(ifar)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,3)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,4)
+               FluxU_far(ifar,1)=flux_far(ifar,1)+Ferr_far(ifar,1)
+               FluxL_far(ifar,1)=flux_far(ifar,1)-Ferr_far(ifar,1)
+               frequency_far(ifar,1)=(3.E8/6.e-5)
+               flux_far(ifar,1)=flux_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxU_far(ifar,1)=FluxU_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxL_far(ifar,1)=FluxL_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxU_far(ifar,2)=flux_far(ifar,2)+Ferr_far(ifar,2)
+               FluxL_far(ifar,2)=flux_far(ifar,2)-Ferr_far(ifar,2)
+               frequency_far(ifar,2)=(3.E8/9.e-5)
+               flux_far(ifar,2)=flux_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxU_far(ifar,2)=FluxU_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxL_far(ifar,2)=FluxL_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxU_far(ifar,3)=flux_far(ifar,3)+Ferr_far(ifar,3)
+               FluxL_far(ifar,3)=flux_far(ifar,3)-Ferr_far(ifar,3)
+               frequency_far(ifar,3)=(3.E8/1.4e-4)
+               flux_far(ifar,3)=flux_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxU_far(ifar,3)=FluxU_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxL_far(ifar,3)=FluxL_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxU_far(ifar,4)=flux_far(ifar,4)+Ferr_far(ifar,4)
+               FluxL_far(ifar,4)=flux_far(ifar,4)-Ferr_far(ifar,4)
+               frequency_far(ifar,4)=(3.E8/1.6e-4)
+               flux_far(ifar,4)=flux_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxU_far(ifar,4)=FluxU_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxL_far(ifar,4)=FluxL_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               far_type(ifar)='AKARIBSC'
+            ELSE
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,1)
+               FluxU_far(ifar,1)=flux_far(ifar,1)+Ferr_far(ifar,1)
+               FluxL_far(ifar,1)=flux_far(ifar,1)-Ferr_far(ifar,1)
+               frequency_far(ifar,1)=(3.E8/2.5e-4)
+               flux_far(ifar,1)=flux_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxU_far(ifar,1)=FluxU_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               FluxL_far(ifar,1)=FluxL_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,2)
+               FluxU_far(ifar,2)=flux_far(ifar,2)+Ferr_far(ifar,2)
+               FluxL_far(ifar,2)=flux_far(ifar,2)-Ferr_far(ifar,2)
+               frequency_far(ifar,2)=(3.E8/3.5e-4)
+               flux_far(ifar,2)=flux_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxU_far(ifar,2)=FluxU_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               FluxL_far(ifar,2)=FluxL_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,3)
+               FluxU_far(ifar,3)=flux_far(ifar,3)+Ferr_far(ifar,3)
+               FluxL_far(ifar,3)=flux_far(ifar,3)-Ferr_far(ifar,3)
+               frequency_far(ifar,3)=(3.E8/5.e-4)
+               flux_far(ifar,3)=flux_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxU_far(ifar,3)=FluxU_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               FluxL_far(ifar,3)=FluxL_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,4)
+               FluxU_far(ifar,4)=flux_far(ifar,4)+Ferr_far(ifar,4)
+               FluxL_far(ifar,4)=flux_far(ifar,4)-Ferr_far(ifar,4)
+               frequency_far(ifar,4)=(3.E8/1.e-4)
+               flux_far(ifar,4)=flux_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxU_far(ifar,4)=FluxU_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               FluxL_far(ifar,4)=FluxL_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,5)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_far(ifar,5)
+               FluxU_far(ifar,5)=flux_far(ifar,5)+Ferr_far(ifar,5)
+               FluxL_far(ifar,5)=flux_far(ifar,5)-Ferr_far(ifar,5)
+               frequency_far(ifar,5)=(3.E8/1.6e-4)
+               flux_far(ifar,5)=flux_far(ifar,5)*frequency_far(ifar,5)*1.E-23
+               FluxU_far(ifar,5)=FluxU_far(ifar,5)*frequency_far(ifar,5)*1.E-23
+               FluxL_far(ifar,5)=FluxL_far(ifar,5)*frequency_far(ifar,5)*1.E-23
+               poserr_far(ifar)=3.
+               if (catalog(1:7) == 'hatlas1') far_type(ifar)='H-ATLAS-DR1'
+               if (catalog(1:7) == 'hatlas2') far_type(ifar)='H-ATLAS-DR2'
+            endif
          ELSE IF ((catalog(1:4) == 'wise') .OR. (catalog(1:7) == 'neowise')
      &            .or.  (catalog(1:5) == '2mass') ) THEN
             iir=iir+1
@@ -1882,7 +2096,7 @@ c               xrtspind(ixray)=ixrtsp
             endif
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:7) == '4fgldr2') .or.
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')
-     &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == 'agile')) then
+     &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == '2agile')) then
             igam=igam+1
             If (igam > 100) stop 'Too many Gamma-ray points'
             if (igam .ne. 1) THEN
@@ -2836,7 +3050,7 @@ c                  FluxL_debl(idebl,1)=fdens
                   endif
                endif
                gam_type(igam)='1BIGB'
-            ELSE IF (catalog(1:5) =='agile') then
+            ELSE IF (catalog(1:5) =='2agile') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                is=ie
@@ -2952,7 +3166,7 @@ c                  FluxL_debl(idebl,1)=fdens
                FluxU_gam(igam,5)=fdens
                call fluxtofdens(slope_gam(igam,1),3.,10.,FluxL_gam(igam,5),6.,fdens,nudens)
                FluxL_gam(igam,5)=fdens
-               gam_type(igam)='AGILE'
+               gam_type(igam)='2AGILE'
             ELSE IF (catalog(1:4) =='fmev') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3550,14 +3764,14 @@ c        write(*,*) ir100found
         !IF (dist < min_dist_pccs100) THEN
            !if (farpart(i) .eq. j) then
             farpart(i)=0
-            min_dist=sqrt(poserr_pccs100(i)**2+epos(1,j)**2)
-           if (dist*3600. .lt. min_dist) then
+            min_dist=sqrt(poserr_far(i)**2+epos(1,j)**2)
+            if (dist*3600. .lt. min_dist) then
               farpart(i)=j
               ifarfound=ifarfound+1
-              write(*,'("far IR flux density",2x,f9.3,",",2x,f7.3," arcsec away")')
-     &               flux_far(i)/(frequency_far(i)*1.E-26),dist*3600.
-              if ((flux_x .ne. 0.) .and. (flux_far(i) .ne. 0.))
-     &             farirx = 1.-log10(flux_far(i)/flux_x)/log10(frequency_far(i)/2.418e17)
+              write(*,'(a," flux density",2x,f9.3,",",2x,f7.3," arcsec away")') far_type(i),
+     &               flux_far(i,1)/(frequency_far(i,1)*1.E-26),dist*3600.
+              if ((flux_x .ne. 0.) .and. (flux_far(i,1) .ne. 0.))
+     &             farirx = 1.-log10(flux_far(i,1)/flux_x)/log10(frequency_far(i,1)/2.418e17)
               write(*,'(6x,''far Infrared - X-ray slope: '',f6.3)') farirx
            ENDIF
          ENDDO
@@ -4060,7 +4274,7 @@ cENDDO
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
          write(14,'(i4,2x,a,2(2x,f9.5),2x,i2,2x,f5.3)') j,"matched source",ra_source(j),dec_source(j),typer(j),redshift
-         write(14,'(2(a,2x),2(a,1x),5(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Flag","Catalog   ","Reference"
+         write(14,'(2(a,2x),2(a,1x),5(a,2x))') " Frequency","   nufnu  "," nufnu unc."," nufnu unc.","start time"," end time ","Flag","Catalog        ","Reference"
          write(14,'(6(a,2x))') "    Hz    "," erg/cm2/s","   upper  ","   lower  ","    MJD   ","    MJD   "
          write(14,'(a)') "---------------------------------------------------------------------------------------------------------------------------"
          do i=1,npt(j)
@@ -4218,23 +4432,49 @@ c         enddo
             endif
          enddo
          do i=1,ifar
-            pccs100_ref(i)=iref+1
+            far_ref(i)=iref+1
             refs(iref+1)='TBD'
             do r=1,iref
-               if (name_cat(r) == 'SPIRE') THEN
+               if (far_type(i) == name_cat(r)) THEN
                   far_ref(i)=r
                endif
             enddo
             if (farpart(i) .eq. j) then
-            if ((flux_far(i) .eq. FluxL_far(i)) .and. (flux_far(i) .eq. FluxU_far(i))) then
-               far_flag(i)=' UL '
-            else if ((FluxL_far(i) .eq. 0.) .and. (FluxU_far(i) .ne. 0.) ) then
-               far_flag(i)=' UL '
-            else
-               far_flag(i)=' Det'
-            endif
-            write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,i3,4x,a)') frequency_far(i),flux_far(i),FluxU_far(i),
-     &       FluxL_far(i),mjdavg,mjdavg,far_flag(i),'SPIRE',int(3.E14/frequency_far(i)),refs(far_ref(i))
+               if (far_type(i) == 'SPIRE') THEN
+                  if ((flux_far(i,1) .eq. FluxL_far(i,1)) .and. (flux_far(i,1) .eq. FluxU_far(i,1))) then
+                     far_flag(i,1)=' UL '
+                  else if ((FluxL_far(i,1) .eq. 0.) .and. (FluxU_far(i,1) .ne. 0.) ) then
+                     far_flag(i,1)=' UL '
+                  else
+                     far_flag(i,1)=' Det'
+                  endif
+                  write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,i3,4x,a)') frequency_far(i,1),flux_far(i,1),FluxU_far(i,1),
+     &            FluxL_far(i,1),mjdavg,mjdavg,far_flag(i,1),'SPIRE',int(3.E14/frequency_far(i,1)),refs(far_ref(i))
+               else if ((far_type(i) == 'IRAS-PSC') .or. (far_type(i) == 'AKARIBSC')) THEN
+                  do s=1,4
+                     if ((flux_far(i,s) .eq. FluxL_far(i,s)) .and. (flux_far(i,s) .eq. FluxU_far(i,s))) then
+                        far_flag(i,s)=' UL '
+                     else if ((FluxL_far(i,s) .eq. 0.) .and. (FluxU_far(i,s) .ne. 0.) ) then
+                        far_flag(i,s)=' UL '
+                     else
+                        far_flag(i,s)=' Det'
+                     endif
+                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_far(i,s),flux_far(i,s),FluxU_far(i,s),
+     &               FluxL_far(i,s),mjdavg,mjdavg,far_flag(i,s),far_type(i),refs(far_ref(i))
+                  enddo
+               else
+                  do s=1,5
+                     if ((flux_far(i,s) .eq. FluxL_far(i,s)) .and. (flux_far(i,s) .eq. FluxU_far(i,s))) then
+                        far_flag(i,s)=' UL '
+                     else if ((FluxL_far(i,s) .eq. 0.) .and. (FluxU_far(i,s) .ne. 0.) ) then
+                        far_flag(i,s)=' UL '
+                     else
+                        far_flag(i,s)=' Det'
+                     endif
+                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_far(i,s),flux_far(i,s),FluxU_far(i,s),
+     &               FluxL_far(i,s),mjdavg,mjdavg,far_flag(i,s),far_type(i),refs(far_ref(i))
+                  enddo
+               endif
             endif
          enddo
          do i=1,iirfound
@@ -4516,7 +4756,7 @@ c         enddo
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
      &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
-            else if (gam_type(i) == 'AGILE') then
+            else if (gam_type(i) == '2AGILE') then
                call graphic_code(flux_gam(i,1),94,code)
                do s=1,5
                   if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
