@@ -260,8 +260,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog FIRST --ra $1 --dec $2 --radius
 echo conesearch --db ${HERE}/cats1.ini --catalog SUMSS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sumss.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog 2SXPS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}2sxps.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog SDS82 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}sds82.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxb.1.csv >> ${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxg.1.csv >> ${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog OUSX --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousx.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog RASS --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}rass.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog XMMSL2 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}xmmsl2.1.csv >> ${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog 4XMM-DR9 --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}4xmmdr9.1.csv >> ${pidnm}vosearch.txt
@@ -709,6 +708,8 @@ do
 #            echo conesearch --db ${HERE}/cats2.ini --catalog CMA --ra $rar  --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}cma.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog XRTSPEC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}xrtspec.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog OUSPEC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o ${pidnm}ouspec.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxb.$nn.2.csv >> ${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $1 --dec $2 --radius $3 --runit arcmin --columns default -o ${pidnm}ousxg.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog BEPPOSAX --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o ${pidnm}bepposax.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog BAT105 --ra $rar --dec $decr --radius 10 --runit arcmin --columns default -o ${pidnm}bat105.$nn.2.csv >> ${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o ${pidnm}3fgl.$nn.2.csv >> ${pidnm}vosearch.txt

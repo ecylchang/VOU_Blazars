@@ -35,7 +35,7 @@ c
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(200),maxebl
+      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
@@ -65,8 +65,8 @@ c
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
       real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
-      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(5000,2)
-      real*4 frequency_xray(5000,2),flux_xray(5000,2),FluxU_xray(5000,2),FluxL_xray(5000,2),Ferr_lowr(200)
+      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(5000,5)
+      real*4 frequency_xray(5000,5),flux_xray(5000,5),FluxU_xray(5000,5),FluxL_xray(5000,5),Ferr_lowr(200)
       real*4 frequency_lowr(200),flux_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
@@ -85,7 +85,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(1000,4)
-      character*4 uv_flag(300,6),xray_flag(5000,2),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
+      character*4 uv_flag(300,6),xray_flag(5000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
       CHARACTER*15 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(5000)
@@ -1931,7 +1931,8 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             ENDIF
             !write(*,*) catalog,FluxU_uv(iuv,6),flux_uv(iuv,6),FluxL_uv(iuv,6),frequency_uv(iuv,6)
          else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105')
-     &         .or. (catalog(1:6) == 'ouspec') .or. (catalog(1:8) == 'bepposax')) then
+     &         .or. (catalog(1:6) == 'ouspec') .or. (catalog(1:8) == 'bepposax')
+     &         .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == 'ousxb')) then
             ixray=ixray+1
             if (ixray .ne. 1) THEN
                do j=1,ixray-1
@@ -2059,6 +2060,104 @@ c               xrtspind(ixray)=ixrtsp
                FluxL_xray(ixray,2)=fdens
                poserr_xray(ixray)=5.
                xray_type(ixray)='OUSPEC'
+            else if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_xrt(ixray)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_xrt(ixray)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,2)
+               FluxU_xray(ixray,2)=flux_xray(ixray,2)+Ferr_xray(ixray,2)
+               FluxL_xray(ixray,2)=flux_xray(ixray,2)-Ferr_xray(ixray,2)
+               frequency_xray(ixray,2)=(1.602E-19)*(5.e2)/(6.626e-34)
+               if ((Ferr_xray(ixray,2) .lt. 0) .or. (FluxL_xray(ixray,2) .lt. 0)) then
+                  FluxU_xray(ixray,2)=flux_xray(ixray,2)
+                  flux_xray(ixray,2)=0.
+                  FluxL_xray(ixray,2)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,1)
+               FluxU_xray(ixray,1)=flux_xray(ixray,1)+Ferr_xray(ixray,1)
+               FluxL_xray(ixray,1)=flux_xray(ixray,1)-Ferr_xray(ixray,1)
+               frequency_xray(ixray,1)=(1.602E-19)*(1.e3)/(6.626e-34)
+               if ((Ferr_xray(ixray,1) .lt. 0) .or. (FluxL_xray(ixray,1) .lt. 0)) then
+                  FluxU_xray(ixray,1)=flux_xray(ixray,1)
+                  flux_xray(ixray,1)=0.
+                  FluxL_xray(ixray,1)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,3)
+               FluxU_xray(ixray,3)=flux_xray(ixray,3)+Ferr_xray(ixray,3)
+               FluxL_xray(ixray,3)=flux_xray(ixray,3)-Ferr_xray(ixray,3)
+               frequency_xray(ixray,3)=(1.602E-19)*(1.5e3)/(6.626e-34)
+               if ((Ferr_xray(ixray,3) .lt. 0) .or. (FluxL_xray(ixray,3) .lt. 0)) then
+                  FluxU_xray(ixray,3)=flux_xray(ixray,3)
+                  flux_xray(ixray,3)=0.
+                  FluxL_xray(ixray,3)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,4)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,4)
+               FluxU_xray(ixray,4)=flux_xray(ixray,4)+Ferr_xray(ixray,4)
+               FluxL_xray(ixray,4)=flux_xray(ixray,4)-Ferr_xray(ixray,4)
+               frequency_xray(ixray,4)=(1.602E-19)*(3.e3)/(6.626e-34)
+               if ((Ferr_xray(ixray,4) .lt. 0) .or. (FluxL_xray(ixray,4) .lt. 0)) then
+                  FluxU_xray(ixray,4)=flux_xray(ixray,4)
+                  flux_xray(ixray,4)=0.
+                  FluxL_xray(ixray,4)=0.
+               endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,5)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,5)
+               FluxU_xray(ixray,5)=flux_xray(ixray,5)+Ferr_xray(ixray,5)
+               FluxL_xray(ixray,5)=flux_xray(ixray,5)-Ferr_xray(ixray,5)
+               frequency_xray(ixray,5)=(1.602E-19)*(4.5e3)/(6.626e-34)
+               if ((Ferr_xray(ixray,5) .lt. 0) .or. (FluxL_xray(ixray,5) .lt. 0)) then
+                  FluxU_xray(ixray,5)=flux_xray(ixray,5)
+                  flux_xray(ixray,5)=0.
+                  FluxL_xray(ixray,5)=0.
+               endif
+               if (flux_xray(ixray,1) .eq. 0.) then
+                   if (flux_xray(ixray,3) .ne. 0.) then
+                      flux_xray(ixray,1)=(flux_xray(ixray,3)/frequency_xray(ixray,3))*(1./1.5)**(-0.9)
+                      FluxU_xray(ixray,1)=(FluxU_xray(ixray,3)/frequency_xray(ixray,3))*(1./1.5)**(-0.9)
+                      FluxL_xray(ixray,1)=(FluxL_xray(ixray,3)/frequency_xray(ixray,3))*(1./1.5)**(-0.9)
+                   else
+                      flux_xray(ixray,1)=(flux_xray(ixray,4)/frequency_xray(ixray,4))*(1./3.)**(-0.9)
+                      FluxU_xray(ixray,1)=(FluxU_xray(ixray,4)/frequency_xray(ixray,4))*(1./3.)**(-0.9)
+                      FluxL_xray(ixray,1)=(FluxL_xray(ixray,4)/frequency_xray(ixray,4))*(1./3.)**(-0.9)
+                   endif
+                  flux_xray(ixray,1)=flux_xray(ixray,1)*frequency_xray(ixray,1)
+                  FluxU_xray(ixray,1)=FluxU_xray(ixray,1)*frequency_xray(ixray,1)
+                  FluxL_xray(ixray,1)=FluxL_xray(ixray,1)*frequency_xray(ixray,1)
+               endif
+               if (catalog(1:5) == 'ousxb') then
+                  xray_type(ixray)='OUSXB'
+               else
+                  xray_type(ixray)='OUSXG'
+               endif
+               poserr_xray(ixray)=7.
+               !write(*,*) 'xrt'
             else if (catalog(1:6) == 'bat105') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3439,6 +3538,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                gammatev=frequency_vhe(ivhe)/(2.418e26)
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam+ivhe)=idebl
                   call ebl_flux(gammatev,gammatev,2.2,redshift,reduction_factor)
                   if (((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) .or. ((FluxL_vhe(ivhe) .eq. flux_vhe(ivhe)) .and. (FluxU_vhe(ivhe) .eq. flux_vhe(ivhe))))then
                      flux_debl(idebl,1)=0. !correction of EBL
@@ -3491,6 +3591,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                gammatev=frequency_vhe(ivhe)/(2.418e26)
                if ((redshift .gt. 0.) .and. (gammatev .ge. 0.02 )) then ! convert the debl flux
                   idebl=idebl+1
+                  eblnn(igam+ivhe)=idebl
                   call ebl_flux(gammatev,gammatev,2.2,redshift,reduction_factor)
                   if (((FluxL_vhe(ivhe) .eq. 0.) .and. (FluxU_vhe(ivhe) .eq. 0.)) .or. ((FluxL_vhe(ivhe) .eq. flux_vhe(ivhe)) .and. (FluxU_vhe(ivhe) .eq. flux_vhe(ivhe))))then
                      flux_debl(idebl,1)=0. !correction of EBL
@@ -3509,7 +3610,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
       ENDDO
  99   CONTINUE
       write(*,*)"     "
-      write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,igam,ivhe,iflcuv
+      write(*,*) 'Number of candidates each band:',i4p8,ipccs100,ifar,iir,iusno,iuv,ixray,igam,ivhe,iflcuv
       CLOSE (lu_in)
       open(14,file=output_file2,status='unknown',iostat=ier)
 c      open(17,file=output_file3,status='unknown',iostat=ier)
@@ -3523,8 +3624,8 @@ c      write(*,*) frequency_flcuv(iflcuv,3),flux_flcuv(iflcuv,3),duration(iflcuv
          ra_source(1)=ra_center
          dec_source(1)=dec_center
       endif
-      maxebl=maxval(eblnn)
-      !write(*,*) maxebl
+c      maxebl=maxval(eblnn)
+c      write(*,*) maxebl,idebl
 
       do i=1,i4p8
          f4p8part(i)=0
@@ -4252,6 +4353,8 @@ ccc            min_dist=sqrt(poserr_flcuv(i)**2+epos(1,j)**2)
             if (filen_v(i) .eq. j) then ! no coordinate, so use the file number
                if (magicind(i) .eq. 1) write(*,*) 'MAGIC source'
                if (veritind(i) .eq. 1) write(*,*) 'VERITAS source'
+            else
+               eblnn(igam+i)=0
             endif
          enddo
          if (ivhe .eq. 0) then
@@ -4270,7 +4373,7 @@ c      no_found=types(i)
 c      type_average = i
 c   ENDIF
 cENDDO
-         !write(*,*) 'TEST number',eblnn(1:igam)
+         write(*,*) 'TEST number',eblnn(1:igam)
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
          write(14,'(i4,2x,a,2(2x,f9.5),2x,i2,2x,f5.3)') j,"matched source",ra_source(j),dec_source(j),typer(j),redshift
@@ -4677,6 +4780,18 @@ c         enddo
                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_xray(i,s),flux_xray(i,s),FluxU_xray(i,s),
      &             FluxL_xray(i,s),mjdst_xrt(i),mjded_xrt(i),xray_flag(i,s),xray_type(i),refs(xray_ref(i))
                   enddo
+               else if ((xray_type(i) == 'OUSXG') .or. (xray_type(i) == 'OUSXB')) then
+                  do s=1,5
+                     if ((flux_xray(i,s) .eq. FluxL_xray(i,s)) .and. (flux_xray(i,s) .eq. FluxU_xray(i,s))) then
+                        xray_flag(i,s)=' UL '
+                     else if ((FluxL_xray(i,s) .eq. 0.) .and. (FluxU_xray(i,s) .ne. 0.) ) then
+                        xray_flag(i,s)=' UL '
+                     else
+                        xray_flag(i,s)=' Det'
+                     endif
+                     write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_xray(i,s),flux_xray(i,s),FluxU_xray(i,s),
+     &               FluxL_xray(i,s),mjdst_xrt(i),mjded_xrt(i),xray_flag(i,s),xray_type(i),refs(xray_ref(i))
+                  enddo
                endif
                if (((xrtspind(i) .lt. 2).and. (xray_type(i) == 'XRTSPEC') ).or. (xray_type(i) == 'BAT105m')) then
                   call graphic_code(flux_xray(i,1),82,code)
@@ -4828,10 +4943,11 @@ c         enddo
          enddo
          do i=1,idebl
             debl=.false.
-            do s=1,igam
+            do s=1,igam+ivhe
                if (i .eq. eblnn(s)) debl=.true.
             enddo
-            if (i .gt. maxebl) debl=.true.
+            !write(*,*) maxebl
+c            if (i .gt. maxebl) debl=.true.
             if (debl) then
             do s=1,5
                if ((flux_debl(i,s) .eq. FluxL_debl(i,s)) .and. (flux_debl(i,s) .eq. FluxU_debl(i,s))) then
@@ -4847,21 +4963,21 @@ c         enddo
             enddo
             endif
          enddo
-         write(*,*) '.......................source type and cataloged..................'
-         do i=1,icat
-            call Dist_sky(ra_source(j),dec_source(j),ra_cat(i),dec_cat(i),dist)
-            if (dist < min_dist_other) then
-               if (type_cat(i) .eq. -4) then
-                  write(*,*) "Warning!!Might be associated to a cluster."
-               else if (type_cat(i) .eq. -2) then
-                  write(*,*) "Known blazar!!"
-               else if (type_cat(i) .eq. -3) then
-                  write(*,*) "Flat radio spectrum source!!"
-               else
-                  write(*,*) "Already in 3HSP!!"
-               endif
-            endif
-         enddo
+c         write(*,*) '.......................source type and cataloged..................'
+c         do i=1,icat
+c            call Dist_sky(ra_source(j),dec_source(j),ra_cat(i),dec_cat(i),dist)
+c            if (dist < min_dist_other) then
+c               if (type_cat(i) .eq. -4) then
+c                  write(*,*) "Warning!!Might be associated to a cluster."
+c               else if (type_cat(i) .eq. -2) then
+c                  write(*,*) "Known blazar!!"
+c               else if (type_cat(i) .eq. -3) then
+c                  write(*,*) "Flat radio spectrum source!!"
+c               else
+c                  write(*,*) "Already in 3HSP!!"
+c               endif
+c            endif
+c         enddo
          write(*,*) '        '
          if (j .ne. isource ) write(14,*) "===================="
       ENDDO
