@@ -65,6 +65,8 @@ handle_ps () {
 nhthere=`which nh`
 
 #read the parameters input
+echo Running VOU-Blazars V1.92
+echo
 echo $# parameters input.
 #rm -f 4tex/*eps
 #rm -f 4tex/*pdf
@@ -734,12 +736,12 @@ do
       source=nosource
    fi
    if [ $source == nosource ]; then
-      echo NO SOURCE NUMBER FIND!
+      echo SOURCE NUMBER NOT FOUND!
    elif [ $source == candlist ]; then
       echo
       cat phase1
    elif [ $source == nocand ]; then
-      echo No Candidates Found!!!
+      echo Candidates NOT Found!!!
       source=q
    elif [ $source == q ]; then
       echo
