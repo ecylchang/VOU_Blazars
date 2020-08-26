@@ -101,9 +101,7 @@ The optional error radius could be :
 * one circle and one elliptical (circle first)
 * nothing
 
-* R.A. Dec. are in degrees
-* Search radius is in arcmin
-* nH is in cm^2
+> R.A. Dec. are in degrees, search radius is in arcmin, nH is in cm^2.
 
 * The radius of the error circles and the axes of the error ellipticals are in arcmin. 
   * The error radius is set to 0, if not specified.
