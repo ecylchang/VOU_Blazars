@@ -101,10 +101,16 @@ The optional error radius could be :
 * one circle and one elliptical (circle first)
 * nothing
 
-The R.A. Dec. are in degrees, and searching radius is in arcmin.
-nH is in cm^2.The radius of the error circles and the axes of the error ellipticals are in arcmin. The position angle is in degree, north-east on sky.
-The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft). The error radius are set to 0. If not specify.
-The last cardinal thing to mention is that if two error circles or ellipticals are specified, the one with a larger size should input first.
+* R.A. Dec. are in degrees
+* Search radius is in arcmin
+* nH is in cm^2
+
+* The radius of the error circles and the axes of the error ellipticals are in arcmin. 
+  * The error radius is set to 0, if not specified.
+* The position angle is in degree, north-east on sky.
+* The nh are set to 5.e20 if not specified and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft). 
+
+> The last cardinal thing to mention is that if two error circles or ellipticals are specified, the one with a larger size should input first.
 
 
 ## Examples
