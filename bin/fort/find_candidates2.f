@@ -1289,6 +1289,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                flux_far(ifar,1)=flux_far(ifar,1)*frequency_far(ifar,1)*1.E-23
                FluxU_far(ifar,1)=FluxU_far(ifar,1)*frequency_far(ifar,1)*1.E-23
                FluxL_far(ifar,1)=FluxL_far(ifar,1)*frequency_far(ifar,1)*1.E-23
+               if ((FluxL_far(ifar,1) .le. 0.) .or. (FluxL_far(ifar,1) .eq. flux_far(ifar,1))) then
+                  flux_far(ifar,1)=0.
+                  fluxL_far(ifar,1)=0.
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,2)
@@ -1301,6 +1305,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                flux_far(ifar,2)=flux_far(ifar,2)*frequency_far(ifar,2)*1.E-23
                FluxU_far(ifar,2)=FluxU_far(ifar,2)*frequency_far(ifar,2)*1.E-23
                FluxL_far(ifar,2)=FluxL_far(ifar,2)*frequency_far(ifar,2)*1.E-23
+               if ((FluxL_far(ifar,2) .le. 0.) .or. (FluxL_far(ifar,2) .eq. flux_far(ifar,2))) then
+                  flux_far(ifar,2)=0.
+                  fluxL_far(ifar,2)=0.
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,3)
@@ -1313,6 +1321,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                flux_far(ifar,3)=flux_far(ifar,3)*frequency_far(ifar,3)*1.E-23
                FluxU_far(ifar,3)=FluxU_far(ifar,3)*frequency_far(ifar,3)*1.E-23
                FluxL_far(ifar,3)=FluxL_far(ifar,3)*frequency_far(ifar,3)*1.E-23
+               if ((FluxL_far(ifar,3) .le. 0.) .or. (FluxL_far(ifar,3) .eq. flux_far(ifar,3))) then
+                  flux_far(ifar,3)=0.
+                  fluxL_far(ifar,3)=0.
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,4)
@@ -1325,6 +1337,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                flux_far(ifar,4)=flux_far(ifar,4)*frequency_far(ifar,4)*1.E-23
                FluxU_far(ifar,4)=FluxU_far(ifar,4)*frequency_far(ifar,4)*1.E-23
                FluxL_far(ifar,4)=FluxL_far(ifar,4)*frequency_far(ifar,4)*1.E-23
+               if ((FluxL_far(ifar,4) .le. 0.) .or. (FluxL_far(ifar,4) .eq. flux_far(ifar,4))) then
+                  flux_far(ifar,4)=0.
+                  fluxL_far(ifar,4)=0.
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_far(ifar,5)
@@ -1337,6 +1353,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                flux_far(ifar,5)=flux_far(ifar,5)*frequency_far(ifar,5)*1.E-23
                FluxU_far(ifar,5)=FluxU_far(ifar,5)*frequency_far(ifar,5)*1.E-23
                FluxL_far(ifar,5)=FluxL_far(ifar,5)*frequency_far(ifar,5)*1.E-23
+               if ((FluxL_far(ifar,5) .le. 0.) .or. (FluxL_far(ifar,5) .eq. flux_far(ifar,5))) then
+                  flux_far(ifar,5)=0.
+                  fluxL_far(ifar,5)=0.
+               endif
                poserr_far(ifar)=3.
                if (catalog(1:7) == 'hatlas1') far_type(ifar)='H-ATLAS-DR1'
                if (catalog(1:7) == 'hatlas2') far_type(ifar)='H-ATLAS-DR2'
