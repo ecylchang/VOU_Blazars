@@ -1,0 +1,29 @@
+-----This is the Config file of the VOU-Blazarzs-----
+
+### nH column density
+NHVAL:  5.e20
+
+---------------
+
+###error circle 1 !!!!Set the 
+RADIUS1: 50
+
+###error elliptical 1
+MAJOR1:  0
+MINOR1:  0
+POSANG1:  0
+
+---------------
+
+###error circle 2
+RADIUS2:  0
+
+###error elliptical2
+MAJOR2:  30
+MINOR2:  25
+POSANG2:  70
+
+---------------
+
+###Running Mode (f=Normal Finding candidates mode, s=SED mode, l=LC mode, m=Map mode)
+MODE:  f

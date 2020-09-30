@@ -1,34 +1,4 @@
 #!/bin/bash
-#To run the tool,  RA, DEC, SEARCHING RADIUS are mandatory to input., and the other parameters, nH and error regions are optionals.
-#The input could be RA, Dec, Radius, nH (if specified), error radius (if specified)
-
-#The error radius could be :
-#-one circle or two circle. (error radius)
-#-one elliptical or two elliptical (major axis, minor axis, angle)
-#-One circle and one elliptical (circle first)
-#-nothing
-
-#The R.A. Dec. are in degrees, and searching radius is in arcmin.
-#nH is in cm^2
-#The radius of the error circles and the axes of the error ellipticals are in arcmin.
-#The position angle is in degree, north-east on sky.
-
-#The nh are set to 5.e20 if no specify and no Heasoft installed. (If you have installed the Heasoft, and did not specify the nh, it will use the value calculated by Heasoft)
-#The error radius are set to 0. If not specify.
-
-#output EXAMPLES
-#e.g.: source vou-blazars 153.76 49.43 30.
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 7 (With 2 error circles, one radius 15, the other radius is 7)
-#e.g.: source vou-blazars 153.76 49.43 30. 15 7 (Same as above, just no specify nh)
-#e.g.: source vou-blazars 153.76 49.43 30. 15 (Only specify one error circle radius, and the other is set to 0.)
-#e.g.: source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
-#e.g.: source vou-blazars 153.76 49.43 30. 20 15 10 120(Specify two error regions, one is circle with radius 20, the other is elliptical 15 10 120degree)
-#Note that if you specify one circle and one elliptical, circle go first.
-#e.g. source vou-blazars 153.76 49.43 30. 3.e21 20 15 10 120(Same as above, but also specify the nh value)
-#e.g. source vou-blazars 153.76 49.43 30. 3.e21 15 10 120 5 2 90(Specify two error ellipticals)
-
-
 
 # Directory where the fortran binaries are:
 #
@@ -67,15 +37,13 @@ nhthere=`which nh`
 #read the parameters input
 echo Running VOU-Blazars V1.92
 echo
-echo $# parameters input.
-#rm -f 4tex/*eps
-#rm -f 4tex/*pdf
+
+
 #message when output parameters are less than 3 or too many parameters input
-until [ $# -ge 3 -a $# -le 11 ]
+until [ $# -eq 3 ]
 do
-   read -p "Please enter the ra, dec, radius, (nh: only if when heasoft are not installed), (error_major_axis, error_minor_axis, position_angle/error circle radius) " ra dec radius nhval rr1 major1 minor1 angle1 rr2 major2 minor2 angle2
-   set $ra $dec $radius $nhval $rr1 $major1 $minor1 $angle1 $rr2 $major2 $minor2 $angle2
-   echo $#
+   read -p "Please enter the ra, dec, radius" ra dec radius #nhval rr1 major1 minor1 angle1 rr2 major2 minor2 angle2
+   set $ra $dec $radius #$nhval $rr1 $major1 $minor1 $angle1 $rr2 $major2 $minor2 $angle2
 done
 
 #read the XRT Deepsky name and create the file to store the results
@@ -124,103 +92,40 @@ else
    fi
 fi
 
-#check if the number 4 parameter are nh value or not
-if [ $# -ge 4 ]; then
-   ttt=`echo $4 | grep '[eE]'`
-   if [ -z $ttt ]; then
-      ttnh=wonh
-   else
-      ttnh=wnh
-   fi
-else
-   ttnh=wonh
-fi
-
+#read the parameters input from configuration file
 #read the nh, or set the default nh value
 if [ -z $nhthere ]; then
-   nhval=5.E20
-   if [ $# -eq 3 -o $ttnh != wnh ]; then
-      echo set default nh 5.E20
-   fi
+   nhval=`grep 'NHVAL' ${HERE}/config_vou.txt | awk '{print $2}'`
 else
 #   echo $ranh $decnh
    nh equinox=2000 ra=$ranh dec=$decnh > ${pidnm}nhvalue.txt
    nhval=`tail -1 ${pidnm}nhvalue.txt |  awk '{print $7}'`
    rm -f ${pidnm}nhvalue.txt
 fi
-#check if the SED mode need plotting or not
-if [ ${@: -1} == -s ]; then #last parameter
-   set ${@: 1 : $#-1} s
-   plotsed=N
-else
-   plotsed=Y
+
+r1=`grep 'RADIUS1' ${HERE}/config_vou.txt | awk '{print $2}'`
+emaj1=`grep 'MAJOR1' ${HERE}/config_vou.txt | awk '{print $2}'`
+emin1=`grep 'MINOR1' ${HERE}/config_vou.txt | awk '{print $2}'`
+posa1=`grep 'POSANG1' ${HERE}/config_vou.txt | awk '{print $2}'`
+r2=`grep 'RADIUS2' ${HERE}/config_vou.txt | awk '{print $2}'`
+emaj2=`grep 'MAJOR2' ${HERE}/config_vou.txt | awk '{print $2}'`
+emin2=`grep 'MINOR2' ${HERE}/config_vou.txt | awk '{print $2}'`
+posa2=`grep 'POSANG2' ${HERE}/config_vou.txt | awk '{print $2}'`
+runmode=`grep 'MODE' ${HERE}/config_vou.txt | awk '{print $2}'`
+if [ $runmode == s -o $runmode == -s ]; then
+   r1=0
+   emaj1=0
+   emin1=0
+   posa1=0
+   r2=0
+   emaj2=0
+   emin2=0
+   posa2=0
 fi
 
-#read the parameters input
-if [ $# -eq 3 ]; then
-   set $ranh $decnh $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. f
-   echo set default error elliptical axes and angle: 0. 0. 0.
-elif [ $# -eq 4 -a $ttnh == wnh ]; then
-   set $ranh $decnh $3 $4 0. 0. 0. 0. 0. 0. 0. 0. f
-   echo set default error elliptical axes and angle: 0. 0. 0.
-elif [ $# -eq 4 -a $ttnh != wnh -a $4 != s ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. f
-elif [ $# -eq 4 -a $ttnh != wnh -a $4 == s ]; then
-   set $ranh $decnh $3 $nhval 0. 0. 0. 0. 0. 0. 0. 0. $4
-   echo set default error elliptical axes and angle: 0. 0. 0.
-   echo SED plotting mode
-elif [ $# -eq 5 -a $ttnh == wnh -a $5 != s ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. 0. 0. 0. f
-elif [ $# -eq 5 -a $ttnh == wnh -a $5 == s ]; then
-   set $ranh $decnh $3 $4 0. 0. 0. 0. 0. 0. 0. 0. $5
-   echo SED plotting mode
-elif [ $# -eq 5 -a $ttnh != wnh -a $5 != s ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. $5 0. 0. 0. f
-elif [ $# -eq 5 -a $ttnh != wnh -a $5 == s ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. 0. 0. 0. $5
-   echo SED plotting mode
-elif [ $# -eq 6 -a $ttnh != wnh -a $6 != s ]; then
-   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. f
-elif [ $# -eq 6 -a -a $ttnn != wnh -a $6 == s ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. $5 0. 0. 0. $6
-   echo SED plotting mode
-elif [ $# -eq 6 -a $ttnh == wnh -a $6 != s ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. $6 0. 0. 0. f
-elif [ $# -eq 6 -a $ttnh == wnh -a $6 == s ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. 0. 0. 0. $6
-   echo SED plotting mode
-elif [ $# -eq 7 -a $ttnh != wnh -a $7 == s ]; then
-   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. 0. 0. 0. $7
-   echo SED plotting mode
-elif [ $# -eq 7 -a $ttnh != wnh -a $7 != s ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 f
-elif [ $# -eq 7 -a $ttnh == wnh -a $7 != s ]; then
-   set $ranh $decnh $3 $4 0. $5 $6 $7 0. 0. 0. 0. f
-elif [ $# -eq 7 -a $ttnh == wnh -a $7 == s ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. $6 0. 0. 0. $7
-   echo SED plotting mode
-elif [ $# -eq 8 -a $ttnh == wnh -a $8 != s ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. $6 $7 $8 f
-elif [ $# -eq 8 -a $ttnh != wnh ]; then
-   set $ranh $decnh $3 $nhval $4 0. 0. 0. 0. $5 $6 $7 $8
-   echo SED plotting mode
-elif [ $# -eq 8 -a $ttnh == wnh -a $8 == s ]; then
-   set $ranh $decnh $3 $4 0. $5 $6 $7 0. 0. 0. 0. $8
-   echo SED plotting mode
-elif [ $# -eq 9 -a $ttnh == wnh ]; then
-   set $ranh $decnh $3 $4 $5 0. 0. 0. 0. $6 $7 $8 $9
-   echo SED plotting mode
-elif [ $# -eq 9 -a $ttnh != wnh ]; then
-   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 f
-elif [ $# -eq 10 -a $ttnh == wnh ]; then
-   set $ranh $decnh $3 $4 0. $5 $6 $7 0. $8 $9 ${10} f
-elif [ $# -eq 10 -a $ttnh != wnh ]; then
-   set $ranh $decnh $3 $nhval 0. $4 $5 $6 0. $7 $8 $9 ${10}
-   echo SED plotting mode
-elif [ $# -eq 11 ]; then
-   set $ranh $decnh $3 $4 0. $5 $6 $7 0. $8 $9 ${10} ${11}
-   echo SED plotting mode
-fi
+set $ranh $decnh $3 $nhval $r1 $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $runmode
+
+
 
 #if the radius of the circle smaller than the elliptical semi-major axis
 if [ $5 != 0. -a ${11} != 0. ]; then
@@ -236,6 +141,19 @@ if [ $5 != 0. -a ${11} != 0. ]; then
       fi
    fi
 fi
+
+
+
+#check if the SED mode need plotting or not
+if [ ${@: -1} == -s ]; then #last parameter
+   set ${@: 1 : $#-1} s
+   plotsed=N
+else
+   plotsed=Y
+fi
+
+
+
 echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
 
 #analyzing the XRT Deepsky data
