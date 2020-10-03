@@ -170,7 +170,7 @@ c         input_file4=string(in+1:im-1)
 c         write(*,*) zzinput,aim
          if (aim == 'finish') then
             Stop '!!!!Exit the source exploring routine!!!!'
-         else if (aim == 'sed') then
+         else if ((aim == 'sed') .or. (aim == 'lcurve')) then
             ns=1
          else
             read(aim,*) ns

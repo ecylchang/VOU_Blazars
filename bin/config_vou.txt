@@ -1,12 +1,12 @@
------This is the Config file of the VOU-Blazarzs-----
+-----This is the Config file of the VOU-Blazars-----
 
 ### nH column density
 NHVAL:  5.e20
 
 ---------------
 
-###error circle 1 !!!!Set the 
-RADIUS1: 50
+###error circle 1 
+RADIUS1: 0
 
 ###error elliptical 1
 MAJOR1:  0
@@ -19,11 +19,12 @@ POSANG1:  0
 RADIUS2:  0
 
 ###error elliptical2
-MAJOR2:  30
-MINOR2:  25
-POSANG2:  70
+MAJOR2:  0
+MINOR2:  0
+POSANG2:  0
 
 ---------------
 
-###Running Mode (f=Normal Finding candidates mode, s=SED mode, l=LC mode, m=Map mode)
+###Running Mode (f=Normal Finding candidates mode, s=SED mode, l=LC mode, m=Map mode, age, multi-frequency things, valuable sources)
 MODE:  f
+TYPE: blazars

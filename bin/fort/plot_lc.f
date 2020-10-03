@@ -37,7 +37,7 @@ c This program plot the SED for candidate
       !write(*,*) number
       if (number == 'finish') then
          Stop '!!!!Exit the source exploring routine!!!!'
-      else if (number == 'sed') then
+      else if ((number == 'sed') .or. (number == 'lcurve')) then
          ns=99
       else
          read(number,*) ns
