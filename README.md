@@ -93,30 +93,30 @@ $ ./bin/vou-blazars --ra RA --dec DEC --area SEARCH_AREA
 
 Usage: vou-blazars { --ra <degrees> --dec <degrees> --area <arcmin> }
 
-ARGUMENTS:
- --ra     : Right Ascension (in DEGREES)
- --dec    : Declination (in DEGREES)
- --area   : Searchin Radius (in ARC-MINUTES) around RA,DEC to search for observations
+ARGUMENTS: <br />
+ --ra     : Right Ascension (in DEGREES) <br />
+ --dec    : Declination (in DEGREES) <br />
+ --area   : Searchin Radius (in ARC-MINUTES) around RA,DEC to search for observations <br />
 
-OPTIONS:
---mode    : Running mode
-      Options are 'f' find candidate mode (default): finding interesing candidates within a specified region
-                          's' SED mode: obtaining SED for a specified source with given R.A. Dec.
-                          'l' Light curve mode: obtaining light curve for a specified source with given R.A. Dec.
+OPTIONS: <br />
+--mode    : Running mode <br />
+      Options are 'f' find candidate mode (default): finding interesing candidates within a specified region <br />
+                          's' SED mode: obtaining SED for a specified source with given R.A. Dec. <br />
+                          'l' Light curve mode: obtaining light curve for a specified source with given R.A. Dec. <br />
 
---nh      : nH column density (in cm^2). Default is 5.e20 cm^2
-            (If the user has installed Heasoft and did not specify the nh, it will use the value calculated by Heasoft)
+--nh      : nH column density (in cm^2). Default is 5.e20 cm^2 <br />
+            (If the user has installed Heasoft and did not specify the nh, it will use the value calculated by Heasoft) <br />
 
-First and larger error region, circle (--radius) or elliptical (--major --minor --angle)
---radius  : Error circle radius (in ARC-MINUTES). Default is 0
---major   : Error elliptical major axis (in ARC-MINUTES). Default is 0
---minor   : Error elliptical minor axis (in ARC-MINUTES). Default is 0
---angle   : Position angle of the error elliptical (in DEGREES). Default is 0
+First and larger error region, circle (--radius) or elliptical (--major --minor --angle) <br />
+--radius  : Error circle radius (in ARC-MINUTES). Default is 0 <br />
+--major   : Error elliptical major axis (in ARC-MINUTES). Default is 0 <br />
+--minor   : Error elliptical minor axis (in ARC-MINUTES). Default is 0 <br />
+--angle   : Position angle of the error elliptical (in DEGREES). Default is 0 <br />
 
-Second and smaller error region, circle (--radius2) or elliptical (--major2 --minor2 --angle2)
---radius2 : Second error circle radius (in ARC-MINUTES). Default is 0
---major2  : Second error elliptical major axis (in ARC-MINUTES). Default is 0
---minor2  : Second error elliptical minor axis (in ARC-MINUTES). Default is 0
+Second and smaller error region, circle (--radius2) or elliptical (--major2 --minor2 --angle2) <br />
+--radius2 : Second error circle radius (in ARC-MINUTES). Default is 0 <br />
+--major2  : Second error elliptical major axis (in ARC-MINUTES). Default is 0 <br />
+--minor2  : Second error elliptical minor axis (in ARC-MINUTES). Default is 0 <br />
 --angle2  : Position angle of the second error elliptical (in DEGREES). Default is 0
 
 
