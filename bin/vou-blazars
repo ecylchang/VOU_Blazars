@@ -820,19 +820,25 @@ do
       rm -f ${pidnm}LC.*ps
       rm -f ${pidnm}LC_fermi.*ps
       if [ $plotsed != N ]; then
-         ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_posix.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
-         handle_ps ${pidnm}error_map.ps
+         if [ $runmode == f ]; then
+            ${BINF}/gnomo_plot_types ${pidnm}error_map.txt,${pidnm}candidates_posix.txt,${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+            handle_ps ${pidnm}error_map.ps
+         fi
       # ps2eps -B -q error_map.ps
       # open error_map.eps
 
 #plot the SED
          echo
-         ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
-         handle_ps ${pidnm}sed.ps
+         if [ $runmode != l ]; then
+            ${BINF}/plot_sed ${pidnm}Sed.txt ${pidnm}sed.ps/cps $source
+            handle_ps ${pidnm}sed.ps
+         fi
          echo
-         ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}Lc.ps/cps ${pidnm}LC.txt ${pidnm}LC_fermi.ps/cps $source
-         [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
-         [ -f ${pidnm}LC_fermi.ps ] && handle_ps ${pidnm}LC_fermi.ps
+         if [ $runmode != s ]; then
+            ${BINF}/plot_lc ${pidnm}Sed.txt ${pidnm}Lc.ps/cps ${pidnm}LC.txt ${pidnm}LC_fermi.ps/cps $source
+            [ -f ${pidnm}LC.ps ] && handle_ps ${pidnm}LC.ps
+            [ -f ${pidnm}LC_fermi.ps ] && handle_ps ${pidnm}LC_fermi.ps
+         fi
          rm -rf ${pidnm}vou-aladin-error.html
          ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-error.html
 #         mv vou-aladin.html ~/
