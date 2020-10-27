@@ -124,19 +124,21 @@ do
       wait $PID
       PSTS=$?
       cats=`echo $_file | awk '{print $5}'`
+      ref=`grep ^${cats}[^BGMNW] ${CURDIR}/catrefs.txt | cut -d'!' -f1 | cut -d' ' -f2- `
+      
 #      echo $cats $PSTS
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
-         echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m "
+         echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m -- ${ref}"
       elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND -- ${ref}"
       elif [ $cats == MAGIC -o $cats == VERITAS ]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND "
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND -- ${ref}"
       else
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m "
+         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m -- ${ref}"
          echo $_file >> voerror.txt
       fi
       unset PIDs[$PID]

@@ -94,7 +94,7 @@ c need to define the range first then plot...
       iir=0
       iilc=0
       do j=1,npt(i)
-         if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OUSPEC') .or. (spectype(j,i) == 'OUSXG'))
+         if (((spectype(j,i) == 'OUSXB') .or. (spectype(j,i) == 'OULC') .or. (spectype(j,i) == 'OUSXG'))
      &              .and. (frequency(j,i) .eq. 2.418E17)) then
             ixray=ixray+1
             iilc=iilc+1
@@ -104,7 +104,7 @@ c need to define the range first then plot...
                if (iilc .eq. 1) mjdlow=mjdstart(j,i)
                if (iilc .eq. 1) mjdup=mjdend(j,i)
             endif
-            if (spectype(j,i) == 'OUSPEC') then
+            if (spectype(j,i) == 'OULC') then
                lctype(iilc)=31
             else
                lctype(iilc)=30
@@ -144,7 +144,7 @@ c         else if (spectype(j,i) == 'BEPPOSAX')
             uflux_lc(iilc)=uflux(j,i)
             mjdst_lc(iilc)=mjdstart(j,i)
             mjded_lc(iilc)=mjdend(j,i)
-          else if (((spectype(j,i) == 'WISELC') .or. (spectype(j,i) == 'NEOWISE'))
+          else if (((spectype(j,i) == 'WISEME') .or. (spectype(j,i) == 'NEOWISE'))
      &      .and. (frequency(j,i) .eq. 6.517e13)) then
             iir=iir+1
             iilc=iilc+1

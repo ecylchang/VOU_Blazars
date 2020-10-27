@@ -1,20 +1,35 @@
 NVSS Condon et al. 1998, AJ, 115, 1693!
 FIRST White et al. 1997, ApJ, 475 479!
 SUMSS Manch et al. 2003, MNRAS, 342, 1117!
+VLASSQL Gordon et al. 2020, RNAAS, 4, 10!
+2SXPS Evans et al. 2020, ApJS, 247, 54!
+SDS82 Brandt and Giommi in preparation!
+1OUSX Giommi et al. in preparation!
 RASS Boller et al. 2016, A&A, 103, 1!
-4XMM-DR9 Webb et al. 2019, A&A submitted!
 XMMSL2 Saxton et al. 2008, A&A, 480, 611!
-WGA White et al. 2000, VizieR, IX/31/wgacat!
-2SXPS Evans et al. 2019, ApJS in press!
-XRTDEEP Brandt et al. in preparation!
-IPC Harris et al. 1990, VizieR, IX/13/2e!
-IPCSL Munz et al. 1992, ApJS, 80, 257!
+4XMM-DR9 Webb et al. 2019, A&A submitted!
 BMW Panzera et al. 2003, A&A, 399, 351!
+WGACAT White et al. 2000, VizieR, IX/31/wgacat!
+IPC2E Harris et al. 1990, VizieR, IX/13/2e!
+IPCSL Munz et al. 1992, ApJS, 80, 257!
 Chandra-CSC2 Evans et al. 2010, ApJS, 189, 37!
-OUSXB Giommi et al. 2019, A&A, 631, A116!
-OUSXG Giommi et al. 2020, A&A submitted!
 MAXI TBD!
-WISH De Bruce et al. 2002, A&A, 394, 59!
+ZWCLUSTERS Zwicky et al. 1968, VizieR, VII/190!
+PSZ2 The Planck Collaboration, 2016, A&A, 594, A27!
+ABELL Abell et al. 1989, ApJS, 70, 1!
+MCXC Piffaretti et al. 2011, A&A, 534, A109!
+5BZCat Massaro et al. 2015, Ap&SS, 357, 75!
+SDSSWHL Wen et al. 2009, ApJS, 183, 197!
+SWXCS Liu et al. 2015, ApJS, 216, 2!
+3HSP Chang et al. 2019, A&A, 632, A77!
+FermiGRB Ajello et al. 2019, ApJ, 878, 52!
+MilliQuas Flesch et al. 2015, PASA, 32, e010!
+BROS Itoh et al., in prep!
+MST9Y Campana et al. 2018, A&A, 619, A23!
+PULSAR Manchester et al. 2005, AJ, 129, 1993!
+F2PSR The Fermi-LAT Collaboration, 2013!
+XRTDEEP Brandt et al. in preparation!
+WISH352 De Bruce et al. 2002, A&A, 394, 59!
 GLEAM Hurley-Walker et al. 2017, MNRAS, 464, 1164!
 TGSS150 Intema et al. 2017, A&A, 598, A781!
 VLSSR Lane et al. 2014, MNRAS, 440,327!
@@ -27,25 +42,38 @@ AT20G Murphy et al. 2010, MNRAS, 402, 2403!
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 CRATES Healey et al. 2007, ApJS, 171, 61! 
 PCNT The Planck Collaboration 2018, A&A, 619, A94!
+PCCS44 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS70 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS100 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS143 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS217 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS353 The Planck Collaboration 2018, A&A, 619, A94!
+PCCS2 The Planck Collaboration 2018, A&A, 619, A94!
 ALMA Bonato et al. 2019, MNRAS, 485, 1188!
-PCCS2 The Planck Collaboration 2016, A&A, 594, A26!
 SPIRE Schulz et al. 2017, arXiv:1706.00448!
 H-ATLAS-DR1 Valiante et al. 2016, MNRAS, 462, 3146!  
 H-ATLAS-DR2 Maddox et al. 2018, ApJS, 236, 30!
-AKIRABSC Yamamura et al. 2010, VizieR, II, 298!
+H-ATLAS-DR2NGP Maddox et al. 2018, ApJS, 236, 30
+H-ATLAS-DR2SGP Maddox et al. 2018, ApJS, 236, 30
+AKARIBSC Yamamura et al. 2010, VizieR, II, 298!
 IRAS-PSC IPAC, 1986, VizieR, II, 125!
 WISE Cutri et al. 2013, AllWISE Data Release Products!
+WISEME Cutri et al. 2013, AllWISE Data Release Products!
+NEOWISE TBD!
 2MASS Skrutskie et al. 2006, AJ, 131, 1163!
 USNO Monet et al. 2003, AJ, 125, 984!
 SDSS Abolfathi et al. 2018, ApJS, 235, 42!
-HST Lasker et al. 2008, AJ, 136, 735!
-PANSTARRS Chambers et al. 2016 arXiv:1612.05560!
+HSTGSC Lasker et al. 2008, AJ, 136, 735!
+PanSTARRS Chambers et al. 2016 arXiv:1612.05560!
 GAIA The Gaia Collaboration 2016, A&A, 595, A2!
 UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
 XRTSPEC Giommi, P. 2015, JHEAp, 7, 173!
+OUSXB Giommi et al. 2019, A&A, 631, A116!
+OUSXG Giommi et al. 2020, A&A submitted!
+OULC Giommi et al. in preparation!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 BEPPOSAX Giommi et al. 2002, Babs. conf.!
 3FHL The Fermi-LAT Collaboration 2017, ApJS, 323, 18!
@@ -55,5 +83,6 @@ BEPPOSAX Giommi et al. 2002, Babs. conf.!
 4FGL-DR2 The Fermi-LAT Collaboration 2020, ApJS, 247, 33!
 2AGILE Bulgarelli et al. 2019, A&A, 627, A13!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
+FMonLC Fermi Monitored sources! 
 VERITAS TBD!
 MAGIC TBD!

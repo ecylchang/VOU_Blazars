@@ -283,11 +283,11 @@ c         write(*,*) "redshift",zsource(1:isource)
          if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
          if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))
-     &      rrxx_type(npt(sfound),sfound)='WGA'
+     &      rrxx_type(npt(sfound),sfound)='WGACAT'
          if ((spec_type(npt(sfound),sfound) .eq. 55) .or. (spec_type(npt(sfound),sfound) .eq. 5))
      &      rrxx_type(npt(sfound),sfound)='2SXPS'
          if ((spec_type(npt(sfound),sfound) .eq. 56) .or. (spec_type(npt(sfound),sfound) .eq. 6))
-     &      rrxx_type(npt(sfound),sfound)='IPC'
+     &      rrxx_type(npt(sfound),sfound)='IPC2E'
          if ((spec_type(npt(sfound),sfound) .eq. 57) .or. (spec_type(npt(sfound),sfound) .eq. 7))
      &      rrxx_type(npt(sfound),sfound)='BMW'
          if ((spec_type(npt(sfound),sfound) .eq. 58) .or. (spec_type(npt(sfound),sfound) .eq. 8))
@@ -297,19 +297,16 @@ c         write(*,*) "redshift",zsource(1:isource)
          if ((spec_type(npt(sfound),sfound) .eq. 60) .or. (spec_type(npt(sfound),sfound) .eq. 10))
      &      rrxx_type(npt(sfound),sfound)='MAXIGSC'
          if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 11))
-     &      rrxx_type(npt(sfound),sfound)='OUSXB'
+     &      rrxx_type(npt(sfound),sfound)='1OUSX'
          if ((spec_type(npt(sfound),sfound) .eq. 62) .or. (spec_type(npt(sfound),sfound) .eq. 12))
      &      rrxx_type(npt(sfound),sfound)='IPCSL'
          if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
      &      rrxx_type(npt(sfound),sfound)='MAXISSC'
-         if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
-     &      rrxx_type(npt(sfound),sfound)='OUSXG'
-         if ((spec_type(npt(sfound),sfound) .eq. 65) .or. (spec_type(npt(sfound),sfound) .eq. 15))
-     &      rrxx_type(npt(sfound),sfound)='OUSX'
          else
             if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
             if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
             if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
+            if (spec_type(npt(sfound),sfound) .eq. 4) rrxx_type(npt(sfound),sfound)='VLASSQL'
          endif
       endif
       enddo
@@ -671,7 +668,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                posxerr=sqrt(1.5**2+0.12**2)
                posyerr=sqrt(1+0.09**2)
                poserr_lowr(ilowr)=2*sqrt(posxerr**2+posyerr**2)
-               lowr_type(ilowr)='WISH'
+               lowr_type(ilowr)='WISH352'
            else IF (catalog(1:7) == 'tgss150') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1450,7 +1447,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   if (flag_ir(iir,1)(3:3) == 'C') flux_ir(iir,3)=-flux_ir(iir,3)
                   if (flag_ir(iir,1)(4:4) == 'C') flux_ir(iir,4)=-flux_ir(iir,4)
                 else
-                  ir_type(iir)='WISELC'
+                  ir_type(iir)='WISEME'
                   iirlc=iirlc+1
                   indirlc(iirlc)=iir
                 endif
@@ -1702,7 +1699,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                CALL  mag2flux (nh,usnomag(iusno,5),'I  ',flux_usno(iusno,5),frequency_usno(iusno,5))
          CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'I  ',FluxU_usno(iusno,5),frequency_usno(iusno,5))
          CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'I  ',FluxL_usno(iusno,5),frequency_usno(iusno,5))
-               opt_type(iusno)='HST'
+               opt_type(iusno)='HSTGSC'
             else if (catalog(1:9) == 'panstarrs') THEN
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1753,7 +1750,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                CALL  mag2flux (nh,usnomag(iusno,5),'psy',flux_usno(iusno,5),frequency_usno(iusno,5))
         CALL  mag2flux (nh,usnomag(iusno,5)-usnomagerr(iusno,5),'psy',FluxU_usno(iusno,5),frequency_usno(iusno,5))
         CALL  mag2flux (nh,usnomag(iusno,5)+usnomagerr(iusno,5),'psy',FluxL_usno(iusno,5),frequency_usno(iusno,5))
-               opt_type(iusno)='PANSTARRS'
+               opt_type(iusno)='PanSTARRS'
             else if (catalog(1:4) == 'gaia') THEN
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -1951,7 +1948,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             ENDIF
             !write(*,*) catalog,FluxU_uv(iuv,6),flux_uv(iuv,6),FluxL_uv(iuv,6),frequency_uv(iuv,6)
          else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105')
-     &         .or. (catalog(1:6) == 'ouspec') .or. (catalog(1:8) == 'bepposax')
+     &         .or. (catalog(1:4) == 'oulc') .or. (catalog(1:8) == 'bepposax')
      &         .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == 'ousxb')) then
             ixray=ixray+1
             if (ixray .ne. 1) THEN
@@ -2033,7 +2030,7 @@ c               xrtspind(ixray)=ixrtsp
                endif
                poserr_xray(ixray)=10.
                xray_type(ixray)='BEPPOSAX'
-            else if (catalog(1:6) == 'ouspec') then
+            else if (catalog(1:4) == 'oulc') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_xray(ixray,1)
@@ -2079,7 +2076,7 @@ c               xrtspind(ixray)=ixrtsp
                call fluxtofdens2(slope_xray(ixray),2.,10.,FluxL_xray(ixray,2),4.5,fdens,nudens)
                FluxL_xray(ixray,2)=fdens
                poserr_xray(ixray)=5.
-               xray_type(ixray)='OUSPEC'
+               xray_type(ixray)='OULC'
             else if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3449,7 +3446,12 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             if (i4fgl .gt. 0) then
                do s=1,i4fgl
                   call DIST_SKY(ra_gamslp(s),dec_gamslp(s),ra_flcuv(iflcuv),dec_flcuv(iflcuv),dist)
-                  if (dist*3600. .lt. poserr_gamslp(s)) slope_flcuv(iflcuv)=gamslp(s)
+                  !write(*,*) ra_gamslp(s),dec_gamslp(s),ra_flcuv(iflcuv),dec_flcuv(iflcuv),dist*3600.,poserr_gamslp(s)
+                  if (dist*3600. .lt. poserr_gamslp(s)*1.1) then
+                     slope_flcuv(iflcuv)=gamslp(s)
+                  else
+                     slope_flcuv(iflcuv)=2.0
+                  endif
                   if (catalog(1:7) == 'ftaptlc') then
                      poserr_flcuv(iflcuv)=poserr_gamslp(s)
                   else
@@ -3470,7 +3472,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             else
                engmin=0.3
             endif
-            !write(*,*) flux_flcuv(iflcuv,1:4)
+            !write(*,*) flux_flcuv(iflcuv,1:4),slope_flcuv(iflcuv),i4fgl
             call fluxtofdens(slope_flcuv(iflcuv),engmin,300.,flux_flcuv(iflcuv,1),1.,fdens,nudens)
             flux_flcuv(iflcuv,1)=fdens
             frequency_flcuv(iflcuv,1)=nudens
@@ -3986,7 +3988,7 @@ c            write(*,*) iircheck,iirfound
      &             ircand_type(i),airx,arir,irdist(i)*3600.
 cccccccc           check candidate has lc or not
                do s=1,iir
-                  if (((ir_type(indirlc(s)) == 'WISELC') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
+                  if (((ir_type(indirlc(s)) == 'WISEME') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
      &                .and. (ircand_type(i) == 'WISE')) then
                      call DIST_SKY(ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s)),dist)
                      !write(*,*) i,indirlc(s),ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s))
@@ -4077,7 +4079,7 @@ c                        write(*,*)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'HST'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'HSTGSC'))THEN
                iofound = iofound+1
                ii3=ii3+1
                if (ii3 .eq. 1) then
@@ -4106,7 +4108,7 @@ c                        write(*,*)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
-            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'PANSTARRS'))THEN
+            else IF (( dist*3600. < max(min_dist,2.)  ) .and. (opt_type(i) == 'PanSTARRS'))THEN
                iofound = iofound+1
                ii4=ii4+1
                if (ii4 .eq. 1) then
@@ -4332,8 +4334,8 @@ c         debl=.false.
 !            if (gampart(i) .eq. j) then
             gampart(i)=0
             min_dist=sqrt(poserr_gam(i)**2+epos(1,j)**2)
-            !write(*,*) dist*3600.,min_dist,gam_type(i)
-            if (dist*3600. .lt. min_dist) then
+            !write(*,*) dist*3600.,min_dist*1.1,gam_type(i)
+            if (dist*3600. .lt. min_dist*1.1) then
                gampart(i)=j
                igamfound=igamfound+1
                if (igamfound > 20) stop 'Too many Gamma-ray candidate'
@@ -4621,7 +4623,7 @@ c         enddo
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') freq_ircand(i,s),flux_ircand(i,s),uflux_ircand(i,s),
      &             lflux_ircand(i,s),mjdavg,mjdavg,ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
                enddo
-            else if (ircand_type(i) == 'WISELC') then
+            else if (ircand_type(i) == 'WISEME') then
                do s=1,4
                   if ((flux_ircand(i,s) .eq. lflux_ircand(i,s)) .and. (flux_ircand(i,s) .eq. uflux_ircand(i,s))) then
                      ir_flag(i,s)=' UL '
@@ -4659,7 +4661,7 @@ c         enddo
      &             lflux_ircand(i,s),mjdavg,mjdavg,ir_flag(i,s),ircand_type(i),refs(ir_ref(i))
                enddo
             endif
-            if ((ircand_type(i) /= 'WISELC') .and. (ircand_type(i) /= 'NEOWISE'))
+            if ((ircand_type(i) /= 'WISEME') .and. (ircand_type(i) /= 'NEOWISE'))
      &        write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_ircand(i),dec_ircand(i),int(code),epos_ircand(i)
          enddo
          do i=1,iofound
@@ -4714,9 +4716,9 @@ c         enddo
             endif
             intensity=max(usnomag_cand(i,1),usnomag_cand(i,2),usnomag_cand(i,3),usnomag_cand(i,4),usnomag_cand(i,5))
             if (optcand_type(i) == 'SDSS') call graphic_code(usnomag_cand(i,3),61,code)
-            if (optcand_type(i) == 'HST') call graphic_code(intensity,62,code)
+            if (optcand_type(i) == 'HSTGSC') call graphic_code(intensity,62,code)
             if (optcand_type(i) == 'USNO') call graphic_code(usnomag_cand(i,2),63,code)
-            if (optcand_type(i) == 'PANSTARRS') call graphic_code(usnomag_cand(i,3),61,code)
+            if (optcand_type(i) == 'PanSTARRS') call graphic_code(usnomag_cand(i,3),61,code)
             if (optcand_type(i) == 'GAIA') call graphic_code(usnomag_cand(i,2),63,code)
         write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_usnocand(i),dec_usnocand(i),int(code),epos_usnocand(i)
          enddo
@@ -4788,7 +4790,7 @@ c         enddo
                     write(14,'(4(es10.3,2x),2(f10.4,2x)a,2x,a,2x,a)') frequency_xray(i,s),flux_xray(i,s),FluxU_xray(i,s),
      &               FluxL_xray(i,s),mjdavg,mjdavg,xray_flag(i,s),xray_type(i),refs(xray_ref(i))
                   enddo
-               else if (xray_type(i) == 'OUSPEC') then
+               else if (xray_type(i) == 'OULC') then
                   do s=1,2
                      if ((flux_xray(i,s) .eq. FluxL_xray(i,s)) .and. (flux_xray(i,s) .eq. FluxU_xray(i,s))) then
                         xray_flag(i,s)=' UL '

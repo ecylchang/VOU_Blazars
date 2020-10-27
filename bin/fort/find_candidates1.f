@@ -38,7 +38,7 @@ c
       real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp
       REAL*4 flux_radio(10000),flux_xmm(3000,6),flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
       REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx,totweight
-      REAL*4 frequency_xmm(3000,6),frequency_bmw(500),frequency_rosat(1000)
+      REAL*4 frequency_xmm(3000,6),frequency_bmw(500),frequency_rosat(1000),flux2nufnu_vlass
       REAL*4 frequency_chandra(1000,5),frequency_swift(3000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis,totxerr
@@ -90,6 +90,7 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       radian = 45.0/atan(1.0)
       flux2nufnu_nvss=1.4e9*1.e-26
       flux2nufnu_sumss=8.43e8*1.e-26 !assumed radio alpha=0.2 !f_0.8 to f_1.4
+      flux2nufnu_vlass=3.e9*1.e-26
 c approximate flux conversions from cts/s to erg/cm2/s at 1 kev (NH=5.e20)
       flux2nufnu_rosat=7.e-12!!!!
       !flux2nufnu_xmm=7.e-13
@@ -192,9 +193,8 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
          is=ie
          ie=index(string(is+1:len(string)),',')+is
          read(string(is+1:ie-1),*) dec
-         IF ( (catalog(1:4) == 'nvss') .OR.
-     &        (catalog(1:5) == 'first') .OR.
-     &        (catalog(1:5) == 'sumss') ) THEN
+         IF ( (catalog(1:4) == 'nvss') .OR. (catalog(1:5) == 'first') .or.
+     &        (catalog(1:7) == 'vlassql') .OR. (catalog(1:5) == 'sumss') ) THEN
             iradio=iradio+1
             IF (iradio > 10000) Stop 'Too many NVSS/SUMSS points'
             ra_radio(iradio)=ra
@@ -204,9 +204,11 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
             IF (catalog(1:4) == 'nvss') radio_type(iradio) = 2
             IF (catalog(1:5) == 'first') radio_type(iradio) = 1
             IF (catalog(1:5) == 'sumss') radio_type(iradio) = 3
-            IF ((catalog(1:5) == 'sumss') .or. (catalog(1:4) == 'nvss')) THEN
+            IF (catalog(1:7) == 'vlassql') radio_type(iradio) = 4
+            IF ((catalog(1:5) == 'sumss') .or. (catalog(1:4) == 'nvss')
+     &               .or. (catalog(1:7) == 'vlassql')) THEN
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_radio(iradio)
-               poserr_radio(iradio)=poserr_radio(iradio)*2. !95% error
+               poserr_radio(iradio)=poserr_radio(iradio)*2.*(1./0.95) !95% error
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_radio(iradio)
@@ -281,6 +283,9 @@ c               write(*,*) 'act',poserr_radio(iradio)
             IF (catalog(1:5) == 'sumss') then
                const(iradio) = flux2nufnu_sumss
                frequency_radio(iradio)=8.43E8
+            else if (catalog(1:7) == 'vlassql') then
+               const(iradio) = flux2nufnu_vlass
+               frequency_radio(iradio)=3.e9
             else
                const(iradio) = flux2nufnu_nvss
                frequency_radio(iradio)=1.4e9
@@ -690,7 +695,7 @@ c PG
 c end PG
          ELSE IF ((catalog(1:5) == '2sxps') .or. (catalog(1:7) == 'xrtdeep')
      &           .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb')
-     &           .or.  (catalog(1:5) == 'ousxg') .or. (catalog(1:4) == 'ousx'))THEN
+     &           .or.  (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == '1ousx'))THEN
             iswift=iswift+1
             IF (iswift > 3000) Stop 'Too many swift points'
             ra_swift(iswift)=ra
@@ -884,16 +889,10 @@ c end PG
                if ((FluxU_swift(iswift,4) .ne. 0.) .and. (flux_swift(iswift,4) .eq. 0.)) then
                   FluxU_swift(iswift,4)=FluxU_swift(iswift,4)*3.
                endif
-            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82') .or. (catalog(1:4) == 'ousx')
+            else if ((catalog(1:7) == 'xrtdeep') .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == '1ousx')
      &        .or.  (catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg')) then
-               if ((catalog(1:5) == 'ousxb') .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:4) == 'ousx')) then
-                  if (catalog(1:5) == 'ousxb') then
-                     xrt_type(iswift)=3
-                  else if (catalog(1:5) == 'ousxb') then
-                     xrt_type(iswift)=4
-                  else
-                     xrt_type(iswift)=5
-                  endif
+               if ((catalog(1:5) == '1ousx')) then
+                  xrt_type(iswift)=3
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_swift(iswift)
@@ -1703,10 +1702,6 @@ c            write(*,*) 'XRT',dist*3600.,min_dist*3600.
                   xray_type = 9
                ELSE If (xrt_type(i) == 3) THEN
                   xray_type = 11
-               ELSE IF (xrt_type(i) == 4) THEN
-                  xray_type = 14
-               ELSE IF (xrt_type(i) == 5) THEN
-                  xray_type = 15
                ENDIF
                found = .TRUE.
                flux_x = flux_x + flux_swift(i,1)
@@ -2288,8 +2283,6 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
                xray_type=5
             else if (xrt_type(i) == 3 ) then
                xray_type=11
-            else if (xrt_type(i) == 4) then
-               xray_type=14
             else
                xray_type=9
             endif
@@ -2704,8 +2697,6 @@ c               if (xmm_type(i) == 2) min_dist_xmm=4./3600.
                      xray_type=5
                   else if (xrt_type(j) == 3) then
                      xray_type=11
-                  else if (xrt_type(j) == 4) then
-                     xray_type=14
                   else
                      xray_type=9
                   endif
@@ -2838,7 +2829,7 @@ c      write(17,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') sfound,"matched source",
 c     &         ra_center,dec_center,'source type',type_average
       do j=1,iradio
          call DIST_SKY(ra_center,dec_center,ra_radio(j),dec_radio(j),dist)
-c         write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.
+         !write(*,*) 'RADIO',ra_center,dec_center,ra_radio(j),dec_radio(j),dist*3600.,poserr_radio(j)
          if (dist*3600. .lt. max(poserr_radio(j),2.) ) then !18 arcsec for radio sources
             write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_radio(j),flux_radio(j),
      &      FluxU_radio(j),FluxL_radio(j),ra_radio(j),dec_radio(j),poserr_radio(j),mjdavg,mjdavg,radio_type(j)
@@ -2893,8 +2884,6 @@ c         write(*,*) 'SXPS',ra_center,dec_center,ra_swift(j),dec_swift(j),dist*3
                xray_type=5
             else if (xrt_type(j) == 3) THEN
                xray_type=11
-            else if (xrt_type(j) == 4) THEN
-               xray_type=14
             else
                xray_type=9
             endif
@@ -3005,6 +2994,8 @@ c      IF (ratio < 0.) RETURN
          radio_survey='FIRST'
       ELSE IF (radio_type == 3) THEN
          radio_survey='SUMSS'
+      Else IF (radio_type == 4) then
+         radio_survey='VLASSQL'
       ELSE
          radio_survey='UNKNOWN'
       ENDIF
@@ -3029,15 +3020,11 @@ c      IF (ratio < 0.) RETURN
       ELSE IF (xray_type == 10) THEN
          xmission='MAXIGSC'
       ELSE IF (xray_type == 11) THEN
-         xmission='OUSXB'
+         xmission='1OUSX'
       ELSE IF (xray_type == 12) THEN
          xmission='IPCSLEW'
       ELSE IF (xray_type == 13) THEN
          xmission='MAXISSC'
-      ELSE IF (xray_type == 14) THEN
-         xmission='OUSXG'
-      ELSE IF (xray_type == 15) THEN
-         xmission='OUSX'
       ELSE
          xmission='UNKNOWN'
       ENDIF
