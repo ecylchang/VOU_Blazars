@@ -214,6 +214,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_radio(iradio)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
+               if (catalog(1:7) == 'vlassql') ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_radio(iradio)
                if (catalog(1:4) == 'nvss') then
                   erraxis=0.
@@ -240,7 +241,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
                   posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
 c                  write(*,*) ra_radio(iradio),dec_radio(iradio),major,minor,erraxis
                   if (erraxis .ne. 0.) poserr_radio(iradio)=max(posxerr,posyerr)
-               else
+               else if (catalog(1:5) == 'sumss') then
                   is=ie
                   ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) major
@@ -1497,7 +1498,7 @@ c end PG
             CALL RXgraphic_code(flux_maxi(imaxi,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgldr2')
-     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '1bigb')
+     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '2bigb')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == '2agile')
      &           .or.  (catalog(1:5) == 'fmev') .or. (catalog(1:4) == 'fgrb')) then
             igam=igam+1
@@ -1509,10 +1510,18 @@ c end PG
             else
                ie=index(string(is+1:len(string)),',')+is
             endif
-            if (catalog(1:5) == '1bigb') then
+            if (catalog(1:5) == '2bigb') then
                ibigb=ibigb+1
-               bigbind(igam)=MOD(ibigb,9)
-               namegam(igam)(1:9)='1BIGB SED'
+               bigbind(igam)=MOD(ibigb,10)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
+               namegam(igam)(6:lenact(namegam(igam))+6)=namegam(igam)(1:lenact(name_other(igam)))
+               namegam(igam)(1:5)='2BIGB'
             else if (catalog(1:4) == 'fgrb') then
                igrb=igrb+1
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
@@ -1521,7 +1530,7 @@ c               namegam(igam)(1:4)='GRB '
             else
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
             endif
-            if ((bigbind(igam) .eq. 1) .or. (namegam(igam)(1:9) /= '1BIGB SED')) then
+            if ((bigbind(igam) .eq. 1) .or. (namegam(igam)(1:5) /= '2BIGB')) then
                if (namegam(igam)(1:3) /='GRB') then
                   write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
                   write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
@@ -1595,6 +1604,7 @@ c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for th
 c               min_dist = sqrt(min_dist_xmm**2+(5./3600.)**2)
 c            ELSE
             min_dist = sqrt(poserr_xmm(i)**2+poserr_radio(k)**2)/3600.
+            !write(*,*) dist*3600.,min_dist*3600.,radio_type(k)
 c            ENDIF
             IF (dist < max(min_dist,2./3600.)) THEN
                found = .TRUE.
@@ -1691,6 +1701,7 @@ c            ENDIF
             CALL DIST_SKY(ra_radio(k),dec_radio(k),abs(ra_swift(i)),dec_swift(i),dist)
 c            IF (radio_type(k) == 3) THEN ! 5 arcsec increase of min_dist for the case of SUMSS
             min_dist = sqrt(poserr_swift(i)**2+poserr_radio(k)**2)/3600.
+            !write(*,*) dist*3600.,min_dist*3600.,radio_type(k)
 c            ELSE
 c               min_dist = min_dist_swift
 c            ENDIF
@@ -2808,7 +2819,7 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
       if (igam-igrb .gt. 0) then
          write(*,*) 'Gamma-ray Counterparts'
          do i=1,igam
-            if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:9) /= '1BIGB SED')) then
+            if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:5) /= '2BIGB')) then
                if (namegam(i)(1:3) /= 'GRB') write(*,*) namegam(i),ra_gam(i),dec_gam(i)
             endif
          enddo

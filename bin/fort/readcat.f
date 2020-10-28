@@ -63,7 +63,7 @@ c gamma-ray catalog print name
                read(value(1:is-1),'(a)') catname
             endif
 c the catalog without source name
-            if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
+            if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == '2bigb')
      &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
@@ -229,7 +229,7 @@ c read other pos_err
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
             if ((catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'iraspsc')
-     &             .or. (catalog(1:it-1) == 'akaribsc'))  then
+     &             .or. (catalog(1:it-1) == 'akaribsc') .or. (catalog(1:it-1) == 'vlassql'))  then
                if (catalog(1:it-1) == 'iraspsc') then
                   is=index(value(1:len(value)),',')
                else
@@ -302,7 +302,8 @@ c write the data
      &         (catalog(1:5) == 'spire') .or. (catalog(1:it-1) == 'cma') .or.
      &         (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
      &         (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam') .or.
-     &    (catalog(1:it-1) == 'lotss') .or. (catalog(1:it-1) == 'akaribsc').or. (catalog(1:it-1) == 'iraspsc')) then
+     &         (catalog(1:it-1) == 'lotss') .or. (catalog(1:it-1) == 'akaribsc') .or.
+     &         (catalog(1:it-1) == 'iraspsc') .or. (catalog(1:it-1) == 'vlassql')) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.

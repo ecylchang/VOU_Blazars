@@ -132,13 +132,13 @@ do
          echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m -- ${ref}"
       elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND -- ${ref}"
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
       elif [ $cats == MAGIC -o $cats == VERITAS ]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND -- ${ref}"
+         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
       else
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m -- ${ref}"
+         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m "
          echo $_file >> voerror.txt
       fi
       unset PIDs[$PID]
