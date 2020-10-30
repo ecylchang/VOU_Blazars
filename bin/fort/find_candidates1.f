@@ -1512,7 +1512,7 @@ c end PG
             endif
             if (catalog(1:5) == '2bigb') then
                ibigb=ibigb+1
-               bigbind(igam)=MOD(ibigb,10)
+cc               bigbind(igam)=MOD(ibigb,10)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                is=ie
@@ -1522,6 +1522,17 @@ c end PG
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
                namegam(igam)(6:lenact(namegam(igam))+6)=namegam(igam)(1:lenact(name_other(igam)))
                namegam(igam)(1:5)='2BIGB'
+               if (ibigb .eq. 1) then
+                  bigbind(igam)=1
+               else
+                  !write(*,*) namegam(igam),namegam(igam-1)
+                  if (namegam(igam) == namegam(igam-1)) then
+                     bigbind(igam)=bigbind(igam-1)+1
+                  else
+                     bigbind(igam)=1
+                  endif
+               endif
+               !write(*,*) namegam(igam),ibigb,bigbind(igam)
             else if (catalog(1:4) == 'fgrb') then
                igrb=igrb+1
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)

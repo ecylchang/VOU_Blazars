@@ -81,7 +81,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(2000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),date_alma(1500)
+      CHARACTER*30 name_other(10000),date_alma(1500),namegam(100)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(1000,4)
@@ -2211,7 +2211,7 @@ c               xrtspind(ixray)=ixrtsp
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
          ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:7) == '4fgldr2') .or.
-     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '1bigb')
+     &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '2bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == '2agile')) then
             igam=igam+1
             If (igam > 100) stop 'Too many Gamma-ray points'
@@ -3128,9 +3128,9 @@ c                  FluxL_debl(idebl,1)=fdens
                endif
                gam_type(igam)='3FHL'
                if (zsource(ns)+zzinput .eq. 0) redshift=0
-            ELSE IF (catalog(1:5) =='1bigb') then
+            ELSE IF (catalog(1:5) =='2bigb') then
                ibigb=ibigb+1
-               bigbind(igam)=MOD(ibigb,9)
+c               bigbind(igam)=MOD(ibigb,10)
                poserr_gam(igam)=10. !!!set to 10 arcsec
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3139,13 +3139,13 @@ c                  FluxL_debl(idebl,1)=fdens
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,1)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,1)
                FluxU_gam(igam,1)=flux_gam(igam,1)+Ferr_gam(igam,1)
                FluxL_gam(igam,1)=flux_gam(igam,1)-Ferr_gam(igam,1)
-               if (FluxL_gam(igam,1) .lt. 0.) then
+               if ((FluxL_gam(igam,1) .lt. 0.) .or. (FluxL_gam(igam,1) .eq .flux_gam(igam,1))) then
+                  FluxU_gam(igam,1)=flux_gam(igam,1)
                   flux_gam(igam,1)=0.
-                  FluxU_gam(igam,1)=0.
                   FluxL_gam(igam,1)=0.
                endif
                gammatev=frequency_gam(igam,1)/(2.418e26)
@@ -3165,7 +3165,21 @@ c                  FluxL_debl(idebl,1)=fdens
                      FluxL_debl(idebl,1)=FluxL_gam(igam,1)*reduction_factor
                   endif
                endif
-               gam_type(igam)='1BIGB'
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
+               if (ibigb .eq. 1) then
+                  bigbind(igam)=1
+               else
+                  !write(*,*) namegam(igam),namegam(igam-1)
+                  if (namegam(igam) == namegam(igam-1)) then
+                     bigbind(igam)=bigbind(igam-1)+1
+                  else
+                     bigbind(igam)=1
+                  endif
+               endif
+               gam_type(igam)='2BIGB'
+               !write(*,*) namegam(igam),ibigb,bigbind(igam),poserr_gam(igam)
             ELSE IF (catalog(1:5) =='2agile') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3323,7 +3337,7 @@ c                  FluxL_debl(idebl,1)=fdens
                FluxL_gam(igam,2)=fdens
                gam_type(igam)='FermiMeV'
             ENDIF
-            poserr_gam=poserr_gam*1.1
+            poserr_gam(igam)=poserr_gam(igam)*1.1
             !write(*,*) catalog,FluxU_gam(igam,4),flux_gam(igam,4),FluxL_gam(igam,4)
          ELSE IF ((catalog(1:6) == 'fmonlc') .or. (catalog(1:7) == 'ftaptlc')) THEN
             iflcuv=iflcuv+1
@@ -4339,7 +4353,7 @@ c         debl=.false.
                gampart(i)=j
                igamfound=igamfound+1
                if (igamfound > 20) stop 'Too many Gamma-ray candidate'
-               if (gam_type(i) == '1BIGB') then
+               if (gam_type(i) == '2BIGB') then
                   if (bigbind(i) .eq. 1) then
                      write(*,'(a,"photon index: ",f5.3,",",2x,f7.3," arcmin away")') gam_type(i),slope_gam(i,1),dist*60
                   endif
@@ -4869,7 +4883,7 @@ c         enddo
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,s),flux_gam(i,s),
      &            FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
-            else if (gam_type(i) == '1BIGB') then
+            else if (gam_type(i) == '2BIGB') then
                if (bigbind(i) .eq. 1) call graphic_code(flux_gam(i,1),91,code)
                if ((flux_gam(i,1) .eq. FluxL_gam(i,1)) .and. (flux_gam(i,1) .eq. FluxU_gam(i,1))) then
                   gam_flag(i,1)=' UL '
@@ -4920,7 +4934,7 @@ c         enddo
      &              FluxU_gam(i,s),FluxL_gam(i,s),mjdavg,mjdavg,gam_flag(i,s),gam_type(i),refs(gam_ref(i))
                enddo
             endif
-            if (gam_type(i) == '1BIGB') then
+            if (gam_type(i) == '2BIGB') then
                if (bigbind(i) .eq. 1) write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
             else
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_gam(i),dec_gam(i),int(code),poserr_gam(i)
