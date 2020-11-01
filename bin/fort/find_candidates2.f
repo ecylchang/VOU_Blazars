@@ -616,7 +616,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,3)
                flux_4p8(i4p8,3)=flux_4p8(i4p8,3)*flux2nufnu_4p8*(0.365/4.8)
-               frequency_4p8(i4p8,3)=3.65E7
+               frequency_4p8(i4p8,3)=3.65e8
                poserr_4p8(i4p8)=160. !90 accuracy
                FluxU_4p8(i4p8,1)=0.
                FluxL_4p8(i4p8,1)=0.
@@ -3466,19 +3466,14 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   else
                      slope_flcuv(iflcuv)=2.0
                   endif
-                  if (catalog(1:7) == 'ftaptlc') then
-                     poserr_flcuv(iflcuv)=poserr_gamslp(s)
-                  else
-                     poserr_flcuv(iflcuv)=12.
-                  endif
                enddo
             else
                slope_flcuv(iflcuv)=2.
-               if (catalog(1:7) == 'ftaptlc') then
-                  poserr_flcuv(iflcuv)=120.
-               else
-                  poserr_flcuv(iflcuv)=12.
-               endif
+            endif
+            if (catalog(1:7) == 'ftaptlc') then
+               poserr_flcuv(iflcuv)=120.
+            else
+               poserr_flcuv(iflcuv)=12.
             endif
             !write(*,*) flux_flcuv(iflcuv,1:3),slope_flcuv(iflcuv)
             if (catalog(1:6) == 'fmonlc') then

@@ -60,7 +60,7 @@ c
       real*4 savemjy(200),zz(15000),zsource(500)
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
-      CHARACTER*30 name_other(15000),name_cat(200),namegam(200)
+      CHARACTER*30 name_other(15000),name_cat(200),namegam(200),vlasssrnm(10000)
       CHARACTER*200 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
       CHARACTER*15 catalog,classmq(15000)
       CHARACTER*800 string,repflux
@@ -214,7 +214,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_radio(iradio)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
-               if (catalog(1:7) == 'vlassql') ie=index(string(is+1:len(string)),' ')+is
+               !if (catalog(1:7) == 'vlassql') ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_radio(iradio)
                if (catalog(1:4) == 'nvss') then
                   erraxis=0.
@@ -254,6 +254,11 @@ c                  write(*,*) ra_radio(iradio),dec_radio(iradio),major,minor,err
                   posxerr=sqrt(((sin(posang)*major)**2)+((cos(posang)*minor)**2))
                   posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
 c                  poserr_radio(iradio)=max(posxerr,posyerr)
+               else if (catalog(1:7) == 'vlassql') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),' ')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) vlasssrnm(iradio)
+                  !write(*,*) iradio,catalog,vlasssrnm(iradio)(1:4)
                endif
             ELSE
                if (is .ne. ie-1) read(string(is+1:ie-1),*) ppss(iradio)
@@ -300,6 +305,7 @@ c PG
 c PG end
             flux_radio(iradio)=flux_radio(iradio)*const(iradio)
             if ((ppss(iradio) .gt. 0.15) .and. (radio_type(iradio) .eq. 1)) iradio=iradio-1
+            if ((vlasssrnm(iradio)(1:1) .ne. 'J') .and. (radio_type(iradio) .eq. 4)) iradio=iradio-1
             !write(*,*) catalog,flux_radio(iradio)/const(iradio),iradio
          ELSE IF ( (catalog(1:5) == 'xmmsl') .OR.
      &             (catalog(1:4) == '4xmm') )  THEN

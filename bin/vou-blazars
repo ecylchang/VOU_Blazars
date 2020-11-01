@@ -848,9 +848,6 @@ do
          ${BINF}/aladin_error_map ${pidnm}phase2 ${pidnm}error_map.txt ${HERE}/aladin_script.js ${pidnm}vou-aladin-error.html
 #         mv vou-aladin.html ~/
 #         open ${pidnm}vou-aladin-error.html
-         rm -f ${pidnm}PySED.png
-         python ${HERE}/VOU-plotSED.py --xaxis f --infile ${pidnm}Sed.csv --outfile ${pidnm}PySED.png --title 'Source nr. '$source' RA='$racand' Dec='$deccand --upperl 'yes'
-         open ${pidnm}PySED.png
       fi
       # ps2eps -B -q sed.ps -R +
       # rm -f error_map.ps
@@ -866,6 +863,11 @@ do
       decsed=`echo $deccand | sed 's/\./_/g' | sed 's/-/m/g'`
       ${BINF}/convert_sed ${pidnm}Sed.txt ${pidnm}Out4SedTool.txt ${pidnm}Sed.csv
       [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
+      if [ $runmode != l -a $plotsed != N ]; then
+         rm -f ${pidnm}PySED.png
+         python ${HERE}/VOU-plotSED.py --xaxis f --infile ${pidnm}Sed.csv --outfile ${pidnm}PySED.png --title 'Source nr. '$source' RA='$racand' Dec='$deccand --upperl 'yes'
+         open ${pidnm}PySED.png
+      fi
 ##############################################################
 
 #save the phase 2 results in the folder
