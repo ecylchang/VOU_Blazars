@@ -183,6 +183,7 @@ c         write(*,*) zzinput,aim
       lu_output = 11
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
+      !write(*,*) input_file
 
 c      INQUIRE (FILE=input_file,EXIST=there)
 c      IF (.NOT.there) THEN
@@ -225,7 +226,7 @@ c read the find_out.txt first
          ENDIF
       enddo
 100   continue
-c      write(*,*) icat,isource  !!!!!!the number of source
+      !write(*,*) icat,isource  !!!!!!the number of source
       close(13)
 c      do i=1,icat
 c         write(lu_output,*) ra_cat(i),dec_cat(i),type_cat(i)*10000.
@@ -5010,7 +5011,7 @@ c               endif
 c            endif
 c         enddo
          write(*,*) '        '
-         if (j .ne. isource ) write(14,*) "===================="
+         !if (j .ne. isource ) write(14,*) "===================="
       ENDDO
       close(lu_output)
       close(14)

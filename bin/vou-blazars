@@ -183,14 +183,14 @@ fi
 [ -z $runmode ] && runmode=`grep 'MODE' ${HERE}/config_vou.txt | awk '{print $2}'`
 if [ $runmode != f ]; then
    sfov=1.
-   r1=0
-   emaj1=0
-   emin1=0
-   posa1=0
-   r2=0
-   emaj2=0
-   emin2=0
-   posa2=0
+   r1=0.
+   emaj1=0.
+   emin1=0.
+   posa1=0.
+   r2=0.
+   emaj2=0.
+   emin2=0.
+   posa2=0.
 fi
 
 #set $ranh $decnh $sfov $nhval $r1 $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $runmode
@@ -359,6 +359,7 @@ rm -f ${pidnm}Intermediate_out.txt
 rm -f ${pidnm}output_int.csv
 if [ -s ${pidnm}no_matched_temp.txt ]; then
 #check the error circle
+   #echo checking intermediate $ra $emaj1
    if [ $r1 != 0. -a $emaj1 == 0. ]; then
       radint=$r1
    elif [ $r1 == 0. -a $emaj1 != 0. ]; then
@@ -529,7 +530,7 @@ do
            [ -f ${pidnm}Sed_temp.txt ] && `grep "matched source" ${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > ${pidnm}sources.list`
 #           cat sources.list
         elif [ $VOUB_AUTOSED == part -a ${runiter} -eq 0 ]; then
-           cat phase1 | tail -2 | head -1 |awk '{print $7 "\n" $8 "\n" $9 "\n" $10 "\n" $11}' > sources.list
+           cat phase1 | tail -2 | head -1 |awk '{print $7 "\n" $8 "\n" $9 "\n" $10 "\n" $11}' > ${pidnm}sources.list
         fi
         #cat sources.list
         #[ `wc -l ${pidnm}sources.list | cut -d' ' -f1` == 0 ] && { source='q'; continue; }
@@ -808,8 +809,9 @@ do
       rm -f ${pidnm}sed.txt
       rm -f ${pidnm}error_map.txt
       [ -z $zzinput ] && zzinput=0
+      #echo $source $zzinput
       ${BINF}/find_candidates2 ${pidnm}output2 ${pidnm}find_out_temp.txt ${pidnm}Sed_temp.txt ${pidnm}error_map.txt ${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $zzinput $source > ${pidnm}phase2
-      echo
+      #echo after running phase 2
       cat ${pidnm}phase2
       #open sed.txt
 

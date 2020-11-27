@@ -6,22 +6,22 @@ NHVAL:  5.e20
 ---------------
 
 ###error circle 1 
-RADIUS1: 0
+RADIUS1: 0.
 
 ###error elliptical 1
-MAJOR1:  0
-MINOR1:  0
-POSANG1:  0
+MAJOR1:  0.
+MINOR1:  0.
+POSANG1:  0.
 
 ---------------
 
 ###error circle 2
-RADIUS2:  0
+RADIUS2:  0.
 
 ###error elliptical2
-MAJOR2:  0
-MINOR2:  0
-POSANG2:  0
+MAJOR2:  0.
+MINOR2:  0.
+POSANG2:  0.
 
 ---------------
 
