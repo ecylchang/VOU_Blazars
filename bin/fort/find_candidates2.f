@@ -2045,6 +2045,10 @@ c               xrtspind(ixray)=ixrtsp
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,2)
                is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_xrt(ixray)
                mjded_xrt(ixray)=mjdst_xrt(ixray)
