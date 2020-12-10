@@ -1961,7 +1961,7 @@ c            write(*,*) 'number of matched',ifound
                do i = 1,ifound-1
                   call DIST_SKY(ra_radio(k),dec_radio(k),ra_radio(t(i)),dec_radio(t(i)),dist)
                   !if (dist*60 .lt. 0.8) then
-                  if (dist*3600. .lt. 6.) then
+                  if (dist*3600. .lt. 12.) then
                      rfound=rfound+1
                      IF ( ix.NE.0 ) THEN
                      flux_x = flux_x/float(ix)

@@ -139,7 +139,7 @@ do
       else
          nncc=$nncc+1
          1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m "
-         echo $_file >> voerror.txt
+         echo $_file >> tmp/voerror.txt
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]

@@ -28,3 +28,14 @@ POSANG2:  0.
 ###Running Mode (f=Normal Finding candidates mode, s=SED mode, l=LC mode, m=Map mode, age, multi-frequency things, valuable sources)
 MODE:  f
 TYPE: blazars
+
+
+
+---------------
+
+
+###Other settings
+VOUB_AUTOSED:
+PLOTSED: Y
+
+

@@ -22,6 +22,7 @@ c this program read the output from vo tool and make a input for find candidates
       out=index(string(in+1:length),' ')+in
       outputlist=string(in+1:out-1)
       iskip=index(outputlist(1:len(outputlist)),'_output')
+      if (iskip .eq. 0) iskip=index(outputlist(1:len(outputlist)),'/output')
 c      write(*,*) iskip iskip for online version PID 
       read(string(out+1:length),*) ra_center,dec_center,radius,nh,errrad,errmaj,errmin,errang
       !write(*,*) inputlist,outputlist
@@ -39,7 +40,7 @@ c      write(*,*) ra_center,dec_center,radius,nh
 c         is=index(string(1:len(string)),'_')
          it=index(string(iskip+1:len(string)),'.')+iskip
          read(string(iskip+1:it-1),'(a)') catalog
-c         write(*,*) catalog
+         !write(*,*) catalog
          if (inputlist(iskip+1:iskip+12) == "catlist2.txt") then
             is=it
             ie=index(string(is+1:len(string)),'.')+is

@@ -67,6 +67,9 @@ c      write(*,*) stringin,length
          iskip=index(filein(1:len(filein)),'_error')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_find_out')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'_RX')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/error')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/find_out')
+         if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/RX')
 c         write(*,*) iskip
          im=index(stringin(in+1:length),',')+in
          fileout=stringin(in+1:im-1)
