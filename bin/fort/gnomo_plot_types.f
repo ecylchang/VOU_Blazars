@@ -22,8 +22,8 @@ c
       REAL*4 ra(20000),dec(20000),ra1, ra2, dec1, dec2,epos(20000),color13(10000)
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
       REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(15000)
-      REAL*4 x_o, y_o, x_err2, y_err2,xx(1000),yy(1000)
-      REAL*4 ratrue(10),dectrue(10)
+      REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
+      REAL*4 ratrue(10),dectrue(10),raarr(3),decarr(3)
       REAL*4 racat(500),deccat(500)
       REAL*4 ra_center, dec_center, radius, radian, dec_start,ra_o,dec_o
       REAL*4 step_alpha,pos, symb_size(10),fmin,fmax,err_radius
@@ -163,8 +163,15 @@ c   draw the grid
       ddec=dec_center
       status=0
       cc = cos(dec_center/radian)
-      CALL gnom_projection(1,ra_center,dec_center,ra_o,dec_o,x_o,y_o)
-
+      raarr(1)=ra_center
+      decarr(1)=dec_center
+      raarr(2)=ra_o
+      decarr(2)=dec_o
+      raarr(3)=ra_err2
+      decarr(3)=dec_err2
+      CALL gnom_projection(1,ra_center,dec_center,raarr(2),decarr(2),x,y)
+      x_o=x(1)
+      y_o=y(1)
       CALL pgbegin(0,device,1,1)
       CALL pgscf(1)
       CALL pgvport(0.2,0.8,0.25,0.7)
@@ -277,7 +284,9 @@ c     colore linea
       call pgsci(14)
       call pgscr(14,0.1,0.6,0.3)
 
-      CALL gnom_projection(1,ra_center,dec_center,ra_err2,dec_err2,x_err2,y_err2)
+      CALL gnom_projection(1,ra_center,dec_center,raarr(3),decarr(3),x,y)
+      x_err2=x(1)
+      y_err2=y(1)
       IF(ra_center.NE.ra_err2.OR.dec_center.NE.dec_err2) THEN
       CALL gnom_ellipse (100,dec_center,ellipser1_2,ellipser2_2,ellipserot_2,x_err2,y_err2,x,y)
       CALL pgline(100,x,y)
@@ -290,7 +299,7 @@ c     colore linea
       call pgsci(10)
       CALL PGPOLY(100,x,y)
 
-      CALL gnom_projection(1,ra_center,dec_center,ra_center,dec_center,x,y)
+      CALL gnom_projection(1,ra_center,dec_center,raarr(1),decarr(1),x,y)
       call pgsci(2)
       call pgsch(1.5)
       call pgpoint(1,x,y,2)
@@ -301,20 +310,20 @@ c     now draw the grid
       CALL pgslw(3)
       step_alpha = (ra2-ra1)/float(no_of_isoalpha)
       DO n = 0, no_of_isoalpha
-      isoalpha = ra_center + (float(n)-no_of_isoalpha/2.)*step_alpha
-      pos=.9-float(n+1)/30.-.02
-      rra=isoalpha
-      if (rra.lt.0.) rra=rra+360.
-      string=' '
-      call schra(rra,string)
-      newstring='   '//string
-      DO m = 1, 100
-      run_dec(m) = dec_start + float(m-3)*radius/47.
-      run_alpha(m) = isoalpha
-      END DO
-      CALL gnom_projection(100,ra_center,dec_center,run_alpha,run_dec,
+         isoalpha = ra_center + (float(n)-no_of_isoalpha/2.)*step_alpha
+         pos=.9-float(n+1)/30.-.02
+         rra=isoalpha
+         if (rra.lt.0.) rra=rra+360.
+         string=' '
+         call schra(rra,string)
+         newstring='   '//string
+         DO m = 1, 100
+            run_dec(m) = dec_start + float(m-3)*radius/47.
+            run_alpha(m) = isoalpha
+         END DO
+         CALL gnom_projection(100,ra_center,dec_center,run_alpha,run_dec,
      &                       x_grid,y_grid)
-      CALL pgline(100,x_grid,y_grid)
+         CALL pgline(100,x_grid,y_grid)
       END DO
       step_delta = 2.*radius/float(no_of_isodelta)
       DO n = 0, no_of_isodelta
@@ -348,11 +357,11 @@ c      write(title,'(a,2f11.4)') 'Image centre: ',ra_center,dec_center
       yaxis_label = 'Dec. (degrees)'
       CALL pgsch(1.2)
       CALL pglabel (xaxis_label, yaxis_label,title)
-      CALL gnom_projection(1,ra_center,dec_center,ra_o,dec_o,x_o,y_o)
+      CALL gnom_projection(1,ra_center,dec_center,raarr(2),decarr(2),x,y)
 c     colore
       CALL pgsch(1.)
       CALL pgsci(2)
-      CALL pgpoint(1,x_o,y_o,5)
+      CALL pgpoint(1,x,y,5)
       fmax=afmax(1)
       fmin=afmin(1)
       call pgsci(1)
@@ -601,7 +610,7 @@ c           CALL PGSCR(8,R,G,B)
       IF (icol12.GT.0) THEN
          DO j = 1,icol12
             !write(*,*) ra_center,dec_center,abs(ra_col12(j)),dec_col12(j)
-            CALL gnom_projection(1,ra_center,dec_center,abs(ra_col12(j)),dec_col12(j),x,y)
+            CALL gnom_projection(1,ra_center,dec_center,ra_col12(j),dec_col12(j),x,y)
             IF (csx12(j) > 0. ) THEN
                CALL pgsch(csx12(j))
                CALL pgsci(4)
@@ -667,8 +676,10 @@ C- PG
            CALL pgpoint(1,x,y,21)
            !if (color13(i) .lt. 20) then
               !CALL pgsci(2)
-              CALL gnom_circle_off (100,dec_center,epos_col13(j)/60.,xx,yy,x,y)
-              CALL pgline(100,xx,yy)
+              xx=x(1)
+              yy=y(1)
+              CALL gnom_circle_off (100,dec_center,epos_col13(j)/60.,x,y,xx,yy)
+              CALL pgline(100,x,y)
            !endif
          enddo
       endif
@@ -746,6 +757,7 @@ c      COMMON /ecetype/pro_scale,radius_scale,axis_unit
       radian = 45.0/atan(1.0)
 
       DO i = 1, npoints
+        if (ra(i) .lt. 0) ra(i)=-ra(i)
         dd = dec(i)/radian
         a = cos(dd)*cos((ra_center-ra(i))/radian)
         f = scal*radian/(sin(dec_center/radian)*sin(dd)

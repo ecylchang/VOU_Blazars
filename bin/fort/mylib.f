@@ -451,7 +451,7 @@ c
       character(80) xdelta
       integer*4 status
       REAL*8 Dec
-      string = xdelta(Dec,String)
+      string = xdelta(Dec,status)
       status = 0
       if(status.ne.0)then
       string='*** ** *****'
@@ -925,6 +925,7 @@ c      integer*4 ifl, iifl, itype, nmax, ifear, n4, n7
       real*4 ggamma2, break_energy, bk, hys , aa4, aa8, ra48
       real*4 emin_flux, emax_flux, emin_area, emax_area, flxog, crate
       real*4 bbreak_energy
+      real*4 espec,eacma
       COMMON /esp   / nh, gamm, bk, ifl, t, itype, gamma1,
      &                gamma2, break_energy
       ifl = iifl
@@ -1395,6 +1396,7 @@ c     & 0.45, 0.5, 0.50, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95,
 c     &  1.,1.2,1.4,1.6,1.8,2./
       EXTERNAL especdebl
       EXTERNAL noabs
+      real*4 especdebl,noabs
       COMMON /espebl   / gamma1,gamma2,break_energy,redshift
       COMMON /bins  / binz,e,tau
       common webprograms

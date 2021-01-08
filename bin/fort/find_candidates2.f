@@ -5157,7 +5157,7 @@ ccccccc
       integer*8 intjd
       real*8 mjd,frac
       mjd=mjd+2400000.5
-      intjd=long(mjd)
+      intjd=int8(mjd)
       frac = mjd - intjd + 0.5          !Fractional part of calendar day
       if (frac .gt. 1.0) then
           frac=frac-1.
