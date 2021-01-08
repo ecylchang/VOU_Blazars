@@ -88,7 +88,7 @@ $ gfortran -o $XXX $XXX.f -ffixed-line-length-500 mylib.o -L${HOME}/pgplot -lpgp
 ```
 $ cd VOU_Blazars
 $ conda activate eada
-$ ./bin/vou-blazars --ra RA --dec DEC --area SEARCH_AREA
+$ ./bin/vou-blazars --ra RA --dec DEC --FOV SEARCH_AREA
 ```
 
 Usage: vou-blazars { --ra <degrees> --dec <degrees> --area <arcmin> }
@@ -96,7 +96,7 @@ Usage: vou-blazars { --ra <degrees> --dec <degrees> --area <arcmin> }
 ARGUMENTS: <br />
  --ra     : Right Ascension (in DEGREES) <br />
  --dec    : Declination (in DEGREES) <br />
- --area   : Searchin Radius (in ARC-MINUTES) around RA,DEC to search for observations <br />
+ --FOV   : Searchin Radius (in ARC-MINUTES) around RA,DEC to search for observations <br />
 
 OPTIONS: <br />
 --mode    : Running mode <br />
@@ -124,26 +124,26 @@ Second and smaller error region, circle (--radius2) or elliptical (--major2 --mi
 ## Examples
 
 ```bash
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30
 (Simplest input)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30 --nh 3.e21 --mode s
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30 --nh 3.e21 --mode s
 (Specify nh and running mode)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30 --radius 15 --radius2 7
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30 --radius 15 --radius2 7
 (Specify 2 error circles, one radius 15, the other radius is 7)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30. --mode s --radius 15
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30. --mode s --radius 15
 (Specify one error circle radius and running mode)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 -- area 30. --nh 3.e21 -- major 15 --minor 10 --angle 120
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30. --nh 3.e21 -- major 15 --minor 10 --angle 120
 (Specify the nh, and the error elliptical, major axis, minor axis, position angle)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30. -- radius 20 -- major2 15 --minor2 10 --angle2 120
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30. -- major 35 --minor 10 --angle 120 -- radius2 20 
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30. -- radius 20 -- major2 15 --minor2 10 --angle2 120
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30. -- major 35 --minor 10 --angle 120 -- radius2 20 
 (Specify one error cirle and one error elliptical)
 
-$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --area 30. --mode l --major 15 --minor 10 --angle 120 --major2 5 --minor2 2 --angle2 90
+$ ./bin/vou-blazars --ra 153.76 --dec 49.43 --FOV 30. --mode l --major 15 --minor 10 --angle 120 --major2 5 --minor2 2 --angle2 90
 (Specify two error ellipticals and running mode)
 ```
 
