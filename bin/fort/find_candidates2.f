@@ -1760,6 +1760,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) usnomag(iusno,1)
+               !write(*,*) 'TEST GAIA',poserr_usno(iusno),usnomag(iusno,1)
                CALL  mag2flux (nh,usnomag(iusno,1),'bbG',flux_usno(iusno,1),frequency_usno(iusno,1))
                FluxU_usno(iusno,1)=0.
                FluxL_usno(iusno,1)=0.
@@ -4708,7 +4709,7 @@ c         enddo
             ELSE if (optcand_type(i) == 'GAIA' ) then
                 if ((flux_usnocand(i,1) .eq. lflux_usnocand(i,1)) .and. (flux_usnocand(i,1) .eq. uflux_usnocand(i,1))) then
                    opt_flag(i,1)=' UL '
-                else if ((lflux_usnocand(i,s) .eq. 0.) .and. (uflux_usnocand(i,s) .ne. 0.) ) then
+                else if ((lflux_usnocand(i,1) .eq. 0.) .and. (uflux_usnocand(i,1) .ne. 0.) ) then
                    opt_flag(i,1)=' UL '
                 else
                    opt_flag(i,1)=' Det'
