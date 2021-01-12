@@ -23,17 +23,17 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output,in,im,rfound,ir100found,s,iverit,veritind(100)
-      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(100)
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(100),almaind(1500)
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(5000)
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,ra_index(5000),l,t(5000),xraypart(5000),ialma
-      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(5000),iflcuvfound
+      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output,in,im,rfound,ir100found,s,iverit,veritind(300)
+      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(300)
+      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(7000)
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,l,t(5000),xraypart(7000),ialma
+      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(7000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(200),r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
-      integer*4 uv_ref(300),xray_ref(5000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
+      integer*4 uv_ref(300),xray_ref(7000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
@@ -41,7 +41,7 @@ c
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
-      real*8 ra_xray(5000),dec_xray(5000),dec_uvcand(300),ra_xxcand(5000),dec_xxcand(5000),ra_flcuv(8000)
+      real*8 ra_xray(7000),dec_xray(7000),dec_uvcand(300),ra_flcuv(8000)
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),ra_alma,dec_alma,dec_flcuv(8000)
       real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5)
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
@@ -56,22 +56,22 @@ c
       real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
-      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(5000)
+      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(7000)
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
       real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
-      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(5000),snr_pccs100(1500,9)
+      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(7000),snr_pccs100(1500,9)
       real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
       real*4 FluxU_usno(1000,5),FluxL_usno(1000,5),poserr_usno(1000),usnomagerr(1000,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
-      real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(5000)
-      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(5000,5)
-      real*4 frequency_xray(5000,5),flux_xray(5000,5),FluxU_xray(5000,5),FluxL_xray(5000,5),Ferr_lowr(200)
+      real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(7000)
+      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(7000,5)
+      real*4 frequency_xray(7000,5),flux_xray(7000,5),FluxU_xray(7000,5),FluxL_xray(7000,5),Ferr_lowr(200)
       real*4 frequency_lowr(200),flux_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
 c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500),mjdst_xrt(5000),mjded_xrt(5000)
+      real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500),mjdst_xrt(7000),mjded_xrt(7000)
       real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor,fq1tev,sloperat
       real*4 flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5),zsource(400)
       real*4 frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),slope_flcuv(8000)
@@ -85,13 +85,13 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(1000,4)
-      character*4 uv_flag(300,6),xray_flag(5000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
+      character*4 uv_flag(300,6),xray_flag(7000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
       CHARACTER*15 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
-      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(5000)
+      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(7000)
       CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
       CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
-      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(5000),far_type(200)
+      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(7000),far_type(200)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,debl
       common webprograms
@@ -3989,7 +3989,7 @@ c        write(*,*) ir100found
 c         write(*,*) iirfound,ii1,ii2
          IF (iirfound == 0) then
             write(*,'('' NO IR object within '',f5.2,'' arcsec'')') max(epos(1,j)*1.3,2.)
-         else
+         else if (iirlc .gt. 0) then
             iircheck=iirfound
 c            write(*,*) iircheck,iirfound
             do i=1,iircheck
@@ -4002,26 +4002,26 @@ c            write(*,*) iircheck,iirfound
                write(*,'(a,"IR-X-ray slope: ",f6.3,",",2x,"radio-IR slope: ",f6.3,",",2x,f7.3," arcsec away")')
      &             ircand_type(i),airx,arir,irdist(i)*3600.
 cccccccc           check candidate has lc or not
-               do s=1,iir
-                  if (((ir_type(indirlc(s)) == 'WISEME') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
-     &                .and. (ircand_type(i) == 'WISE')) then
-                     call DIST_SKY(ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s)),dist)
+               do s=1,iirlc
+c                  if (((ir_type(indirlc(s)) == 'WISEME') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
+c     &                .and. (ircand_type(i) == 'WISE')) then
+                  call DIST_SKY(ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s)),dist)
                      !write(*,*) i,indirlc(s),ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s))
-                     if (dist*3600. .le. 2.) then
-                        iirfound=iirfound+1
-                        flux_ircand(iirfound,1:4)=flux_ir(indirlc(s),1:4)
-                        uflux_ircand(iirfound,1:4)=FluxU_ir(indirlc(s),1:4)
-                        lflux_ircand(iirfound,1:4)=FluxL_ir(indirlc(s),1:4)
-                        irmag_cand(iirfound,1:4)=irmag(indirlc(s),1:4)
-                        freq_ircand(iirfound,1:4)=frequency_ir(indirlc(s),1:4)
-                        ra_ircand(iirfound)=ra_ir(indirlc(s))
-                        dec_ircand(iirfound)=dec_ir(indirlc(s))
-                        ircand_type(iirfound)=ir_type(indirlc(s))
-                        mjdst_irlccand(iirfound)=mjdst_irlc(indirlc(s))
-                        mjded_irlccand(iirfound)=mjded_irlc(indirlc(s))
+                  if (dist*3600. .le. 2.) then
+                     iirfound=iirfound+1
+                     flux_ircand(iirfound,1:4)=flux_ir(indirlc(s),1:4)
+                     uflux_ircand(iirfound,1:4)=FluxU_ir(indirlc(s),1:4)
+                     lflux_ircand(iirfound,1:4)=FluxL_ir(indirlc(s),1:4)
+                     irmag_cand(iirfound,1:4)=irmag(indirlc(s),1:4)
+                     freq_ircand(iirfound,1:4)=frequency_ir(indirlc(s),1:4)
+                     ra_ircand(iirfound)=ra_ir(indirlc(s))
+                     dec_ircand(iirfound)=dec_ir(indirlc(s))
+                     ircand_type(iirfound)=ir_type(indirlc(s))
+                     mjdst_irlccand(iirfound)=mjdst_irlc(indirlc(s))
+                     mjded_irlccand(iirfound)=mjded_irlc(indirlc(s))
 c                        write(*,*)
-                     endif
-                 endif
+                  endif
+c                 endif
                enddo
             enddo
          endif

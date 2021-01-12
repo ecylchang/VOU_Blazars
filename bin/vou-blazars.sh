@@ -379,11 +379,11 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
    [ -z $radcrit ] && radcrit=1
    [ $radcrit -lt 1 ] && radcrit=1
    
-   echo 'radcrit' $radcrit
+#   echo 'radcrit' $radcrit
    process=y
    [ ${pid} ] && process=n
    [ ${VOUB_AUTOSED} ] && process=n
-   echo "Running Intermediate" $process $VOUB_AUTOSED
+#   echo "Running Intermediate" $process $VOUB_AUTOSED
 #   rcut=0
 #   declare -i radint
    if [ $radcrit -ge 20 ]; then
@@ -675,7 +675,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog PCNT --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o tmp/${pidnm}pcnt.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}alma.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-#            echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}2mass.$nn.2.csv >> tmp/${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}spire250.$nn.2.csv >> tmp/${pidnm}vosearch.txt
