@@ -34,7 +34,7 @@ See [EADA and conesearch pipline](https://github.com/chbrandt/eada) for more det
 ```bash
 $ conda create -n eada python=2 pip ipython
 $ conda activate eada
-$ pip install https://github.com/chbrandt/eada/archive/0.9.7.4.zip
+$ pip install https://github.com/chbrandt/eada/archive/0.9.7.5.zip
 ```
 Note that the Conessearch pipeline till now only support runing with Python 2.7. And, here is just an example to install eada tool version 0.9.7.4, in future, there might be new version of eada updated.
 
