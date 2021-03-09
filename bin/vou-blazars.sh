@@ -56,6 +56,8 @@ help() {
 }
 
 
+# If no arguments given, print Help and exit.
+[ "${#@}" -eq 0 ] && { help; exit 0; }
 
 ##############################################################
 # Initial set up, read the parameters input
