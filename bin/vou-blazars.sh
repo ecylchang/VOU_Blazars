@@ -65,6 +65,7 @@ help() {
 #check if docker and heasoft are installed
 #dockerthere=$(which docker 2> /dev/null)
 nhthere=`which nh`
+checkvo=fine
 
 #####checking the input parameter
 while [[ $# -gt 0 ]]
@@ -279,7 +280,7 @@ fi
 #check if the phase 1 data is already there
 ncat1=`cat tmp/${pidnm}vosearch.txt | wc -l`
 rm -f tmp/${pidnm}voerror.txt
-sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
+bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
 #see if there is an error when searching through VO
 declare -i irunvo=1
@@ -299,7 +300,7 @@ do
    irunvo=${irunvo}+1
    echo
    echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-   [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+   [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
    if [ -s tmp/${pidnm}voerror.txt ]; then
       voerror=yes
    else
@@ -308,6 +309,9 @@ do
 done
 echo
 echo finish conesearch phase 1
+if [ -s tmp/${pidnm}voerror.txt ]; then
+   checkvo=check
+fi
 rm -f tmp/${pidnm}vosearch.txt
 
 #read the data
@@ -419,7 +423,7 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
       echo Searching further data in intermediate phase for $cc source
       ncatint=`cat tmp/${pidnm}vosearch.txt | wc -l`
       rm -f voerror.txt
-      sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncatint #1> voerror 2>&1
+      bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncatint #1> voerror 2>&1
 #      cat voerror | grep 'ERROR'
 
 # check if there is error during the searching
@@ -440,7 +444,7 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
          irunvo=${irunvo}+1
          echo
          echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-         [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+         [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
          if [ -s tmp/${pidnm}voerror.txt ]; then
             voerror=yes
          else
@@ -449,6 +453,9 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
       done
       echo
       echo finish conesearch intermediate phase
+      if [ -s tmp/${pidnm}voerror.txt ]; then
+         checkvo=check
+      fi
       rm -f tmp/${pidnm}vosearch.txt
 
 #read the Intermediate phase data
@@ -675,8 +682,6 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog PCNT --ra $rar --dec $decr --radius 3 --runit arcmin --columns default -o tmp/${pidnm}pcnt.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog ALMA --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}alma.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog WISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-#            echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2MASS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}2mass.$nn.2.csv >> tmp/${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE250 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}spire250.$nn.2.csv >> tmp/${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog SPIRE350 --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}spire350.$nn.2.csv >> tmp/${pidnm}vosearch.txt
@@ -696,7 +701,6 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog UVOT --ra $rar  --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}uvot.$nn.2.csv >> tmp/${pidnm}vosearch.txt
 #            echo conesearch --db ${HERE}/cats2.ini --catalog CMA --ra $rar  --dec $decr --radius 30 --runit arcsec --columns default -o tmp/${pidnm}cma.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog XRTSPEC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}xrtspec.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog OULC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}oulc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats1.ini --catalog OUSXB --ra $rar --dec $decr --radius 15 --runit arcmin --columns default -o tmp/${pidnm}ousxb.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats1.ini --catalog OUSXG --ra $rar --dec $decr --radius 15 --runit arcmin --columns default -o tmp/${pidnm}ousxg.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog BEPPOSAX --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o tmp/${pidnm}bepposax.$nn.2.csv >> tmp/${pidnm}vosearch.txt
@@ -708,9 +712,15 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog 2BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}2bigb.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o tmp/${pidnm}2agile.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmev.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmonlc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}magictt.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}veritas.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            
+            if [ $source != sed ]; then
+               echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+#               echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+               echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmonlc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+               echo conesearch --db ${HERE}/cats2.ini --catalog OULC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}oulc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            fi
             echo $rar $decr $typer $nn
             racand=$rar
             deccand=$decr
@@ -750,7 +760,7 @@ do
          rm -f tmp/${pidnm}vosearch.txt
       else
          rm -f tmp/${pidnm}voerror.txt
-         sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
+         bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
          declare -i irunvo=1
          if [ -s tmp/${pidnm}voerror.txt ]; then
@@ -769,13 +779,16 @@ do
             irunvo=${irunvo}+1
             echo
             echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-            [ $runvo != n -a $runvo != N ] && sh ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+            [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
             if [ -s tmp/${pidnm}voerror.txt ]; then
                voerror=yes
             else
                voerror=no
             fi
          done
+         if [ -s tmp/${pidnm}voerror.txt ]; then
+            checkvo=check
+         fi
          rm -f tmp/${pidnm}vosearch.txt
          echo
       fi
@@ -875,7 +888,7 @@ do
       rased=`echo $racand | sed 's/\./_/g'`
       decsed=`echo $deccand | sed 's/\./_/g' | sed 's/-/m/g'`
       ${BINF}/convert_sed tmp/${pidnm}Sed.txt tmp/${pidnm}Out4SedTool.txt tmp/${pidnm}Sed.csv
-      [ -d Results/SEDtool -a -f Out4SedTool.txt ] && cp tmp/${pidnm}Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
+      [ -d Results/SEDtool -a -f tmp/${pidnm}Out4SedTool.txt ] && cp tmp/${pidnm}Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
       if [ $runmode != l -a $plotsed != N ]; then
          rm -f tmp/${pidnm}PySED.png
          python ${HERE}/VOU-plotSED.py --xaxis f --infile tmp/${pidnm}Sed.csv --outfile tmp/${pidnm}PySED.png --title 'Source nr. '$source' RA='$racand' Dec='$deccand --upperl 'yes'
