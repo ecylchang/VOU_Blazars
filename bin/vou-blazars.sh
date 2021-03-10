@@ -716,13 +716,12 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmev.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}magictt.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}veritas.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            
-            if [ $source != sed ]; then
+#            if [ $source != sed ]; then
                echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-#               echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+               echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
                echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmonlc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
                echo conesearch --db ${HERE}/cats2.ini --catalog OULC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}oulc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            fi
+#             fi
             echo $rar $decr $typer $nn
             racand=$rar
             deccand=$decr
