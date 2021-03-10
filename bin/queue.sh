@@ -129,7 +129,7 @@ do
 #      echo $cats $PSTS
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
-         echo "( $nncc / $NJOBS ) \033[32;1m $cats : SUCCESS\033[0m -- ${ref}"
+         echo -e "( $nncc / $NJOBS ) \033[1;32m $cats : SUCCESS \033[0m -- ${ref}"
       elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
          1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
@@ -138,7 +138,7 @@ do
          1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
       else
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) \033[31;1m  $cats : SEARCH FAILED\033[0m "
+         1>&2 echo -e "( $nncc / $NJOBS ) \033[1;31m  $cats : SEARCH FAILED \033[0m "
          echo $_file >> tmp/voerror.txt
       fi
       unset PIDs[$PID]
