@@ -37,5 +37,6 @@ TYPE: blazars
 ###Other settings
 VOUB_AUTOSED:
 PLOTSED: Y
+ALLCATS: N
 
 

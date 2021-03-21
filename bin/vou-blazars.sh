@@ -105,6 +105,8 @@ do
          VOUB_AUTOSED=$2; shift;;
       --plot)
          plotsed=$2; shift;;
+      --allcats)
+         allcatalog=$2; shift;;
       --*)
          echo "$0: error - unrecognized option $1" 1>&2
          help;exit 1;;
@@ -192,6 +194,7 @@ fi
 [ -z $posa2 ] && posa2=`grep 'POSANG2' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $runmode ] && runmode=`grep 'MODE' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $plotsed ] && plotsed=`grep 'PLOTSED' ${HERE}/config_vou.txt | awk '{print $2}'`
+[ -z $allcatalog ] && allcatalog=`grep 'ALLCATS' ${HERE}/config_vou.txt | awk '{print $2}'`
 if [ $runmode != f ]; then
    sfov=1.
    r1=0.
@@ -716,12 +719,12 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog FermiMeV --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmev.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service MAGIC --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}magictt.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo specsearch --db ${HERE}/cats2.ini --service VERITAS --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}veritas.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-#            if [ $source != sed ]; then
-               echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog WISEME --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}wiseme.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmonlc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog OULC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}oulc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            if [ $allcatalog == y -o $allcatalog == Y ]; then
                echo conesearch --db ${HERE}/cats2.ini --catalog NEOWISE --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}neowise.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-               echo conesearch --db ${HERE}/cats2.ini --catalog FMonLC --ra $rar  --dec $decr --radius 30 --runit arcmin --columns default -o tmp/${pidnm}fmonlc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-               echo conesearch --db ${HERE}/cats2.ini --catalog OULC --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}oulc.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-#             fi
+            fi
             echo $rar $decr $typer $nn
             racand=$rar
             deccand=$decr
@@ -852,10 +855,10 @@ do
       rm -f tmp/${pidnm}sed.*ps
       rm -f tmp/${pidnm}LC.*ps
       rm -f tmp/${pidnm}LC_fermi.*ps
-      if [ $runmode == f ]; then
+###      if [ $runmode == f ]; then
          ${BINF}/gnomo_plot_types tmp/${pidnm}error_map.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
             handle_ps tmp/${pidnm}error_map.ps
-      fi
+###      fi
       # ps2eps -B -q error_map.ps
       # open error_map.eps
 
@@ -971,4 +974,4 @@ rm -f vou-blazars.aux
 rm -f vou-blazars.log
 unset zoomin zzinput
 unset posra posdec sfov nhval r1 emaj1 emin1 posa1 r2 emaj2 emin2 posa2 runmode
-unset VOUB_AUTOSED plotsed
+unset VOUB_AUTOSED plotsed allcatalog
