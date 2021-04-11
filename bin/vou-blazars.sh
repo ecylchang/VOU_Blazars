@@ -8,7 +8,7 @@ BINF="${HERE}/fort"
 handle_ps () {
     [ `which ps2eps 2> /dev/null` ] || return 0
     FILE_PS=$1
-    if [ $FILE_PS == tmp/${pidnm}sed.ps -o $FILE_PS == tmp/${pidnm}LC.ps -o $FILE_PS == temp/${pidnm}LC_fermi.ps ]; then
+    if [ $FILE_PS == tmp/${pidnm}sed.ps -o $FILE_PS == tmp/${pidnm}LC.ps -o $FILE_PS == tmp/${pidnm}LC_fermi.ps ]; then
        ps2eps -B -q $FILE_PS -R +
     else
        ps2eps -B -q $FILE_PS

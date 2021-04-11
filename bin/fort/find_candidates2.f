@@ -31,14 +31,14 @@ c
       INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(7000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(1000),filen_o(1000),filen_l(200),r
+      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(2000),filen_o(1000),filen_l(200),r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(7000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
-      REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(1000),dec_ircand(1000)
+      REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
       real*8 ra_xray(7000),dec_xray(7000),dec_uvcand(300),ra_flcuv(8000)
@@ -84,12 +84,12 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*30 name_other(10000),date_alma(1500),namegam(100)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
-      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(1000,4)
+      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
       character*4 uv_flag(300,6),xray_flag(7000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4)
       CHARACTER*15 opt_type(1000),opt_type_cand(100),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(7000)
-      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(1000),name_o(1000),name_u(1000),name_g(100)
+      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(1000),name_u(1000),name_g(100)
       CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
       CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(7000),far_type(200)
       CHARACTER*800 string,repflux
@@ -1465,6 +1465,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   if (flag_ir(iir,1)(4:4) == 'C') flux_ir(iir,4)=-flux_ir(iir,4)
                 else
                   ir_type(iir)='WISEME'
+                  !!!if (irlcid == 'First') irlcid=''
                   iirlc=iirlc+1
                   indirlc(iirlc)=iir
                 endif
@@ -3941,6 +3942,8 @@ c        write(*,*) ir100found
          do i=1,iir
             call DIST_SKY(ra_source(j),dec_source(j),ra_ir(i),dec_ir(i),dist)
             min_dist=sqrt(epos(1,j)**2+poserr_ir(i)**2)
+c            if (ir_type(i) == 'NEOWISE') then
+c               if ()
             !write(*,*) matchradius,epos(1,j),poserr_ir(i),ir_type(i),dist*3600.
             IF (( dist*3600. < max(min_dist,2.) )  .and. (ir_type(i) == 'WISE')) THEN
                ii1=ii1+1
@@ -4018,6 +4021,8 @@ c            write(*,*) iircheck,iirfound
                write(*,'(a,"IR-X-ray slope: ",f6.3,",",2x,"radio-IR slope: ",f6.3,",",2x,f7.3," arcsec away")')
      &             ircand_type(i),airx,arir,irdist(i)*3600.
 cccccccc           check candidate has lc or not
+c               write(*,*) "IR pts number",iirlc
+               if (ircand_type(i) == 'WISE') then
                do s=1,iirlc
 c                  if (((ir_type(indirlc(s)) == 'WISEME') .or. (ir_type(indirlc(s)) == 'NEOWISE'))
 c     &                .and. (ircand_type(i) == 'WISE')) then
@@ -4039,9 +4044,10 @@ c                        write(*,*)
                   endif
 c                 endif
                enddo
+               endif
             enddo
          endif
-         write(*,*) iirfound
+c         write(*,*) iirfound
 
          write(*,*) '.......................Optical........................'
          ii1=0
