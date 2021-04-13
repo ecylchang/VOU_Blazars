@@ -58,8 +58,8 @@ c            write(*,*) is,ie
             is=index(value(1:len(value)),',')
             ie=index(value(is+1:len(value)),',')+is
 c gamma-ray catalog print name
-            if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl')
-     &          .or. (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'mst9y')
+            if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
+     &      (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'wiseme')
      &          .or. (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')) then
                read(value(1:is-1),'(a)') catname
             endif
@@ -69,7 +69,7 @@ c the catalog without source name
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
      &          .or. (catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'mquas')
-     &          .or. (catalog(1:it-1) == 'wiseme') .or. (catalog(1:it-1) == 'neowise')
+     &          .or. (catalog(1:it-1) == 'neowise')
      &          .or. (catalog(1:it-1) == 'bepposax') .or. (catalog(1:it-1) == 'vlssr')) then
                is=0
                ie=index(value(1:len(value)),',')
@@ -309,7 +309,7 @@ c write the data
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
      &               (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')
-     &               .or. (catalog(1:it-1) == '4fgldr2')) then
+     &               .or. (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'wiseme')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
             else if ((catalog(1:it-1) == 'crates') .and. (ns .ne. 0)) then

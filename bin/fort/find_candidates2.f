@@ -43,7 +43,7 @@ c
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
       real*8 ra_xray(7000),dec_xray(7000),dec_uvcand(300),ra_flcuv(8000)
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),ra_alma,dec_alma,dec_flcuv(8000)
-      real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5)
+      real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5),irdistval
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(1000,5),frequency_usno(1000,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
@@ -81,7 +81,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(2000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),date_alma(1500),namegam(100)
+      CHARACTER*30 name_other(10000),date_alma(1500),namegam(100),irlc_name(2000),irlcid(2)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
@@ -135,6 +135,8 @@ c 15 arcsecs
       min_dist_ir=8./3600.
       min_dist_gam=20./60. !10 arcmin
       mjdavg=55000.
+      irlcid(1)='First'
+      irlcid(2)='First'
 
       CALL rdforn(string,length)
       IF ( length.NE.0 ) THEN
@@ -1407,6 +1409,10 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_ir(iir)
                   poserr_ir(iir)=poserr_ir(iir)*2.
                else
+                  irlc_name(iir)='nan'
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) irlc_name(iir)
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
                   if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_irlc(iir)
                   mjded_irlc(iir)=mjdst_irlc(iir)
                endif
@@ -1465,7 +1471,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   if (flag_ir(iir,1)(4:4) == 'C') flux_ir(iir,4)=-flux_ir(iir,4)
                 else
                   ir_type(iir)='WISEME'
-                  !!!if (irlcid == 'First') irlcid=''
+                  if ((irlcid(1) == 'First')  .and. (irlc_name(iir) /= 'nan') ) irlcid(1)=irlc_name(iir)
                   iirlc=iirlc+1
                   indirlc(iirlc)=iir
                 endif
@@ -1490,9 +1496,14 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                call mag2flux (nh,irmag(iir,2)-irmagerr(iir,2),'ww2',FluxU_ir(iir,2),frequency_ir(iir,2))
                call mag2flux (nh,irmag(iir,2)+irmagerr(iir,2),'ww2',FluxL_ir(iir,2),frequency_ir(iir,2))
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_irlc(iir)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               irlc_name(iir)='nan'
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) irlc_name(iir)
                mjded_irlc(iir)=mjdst_irlc(iir)
+               if ((irlcid(2) == 'First')  .and. (irlc_name(iir) /= 'nan') ) irlcid(2)=irlc_name(iir)
                ir_type(iir)='NEOWISE'
                iirlc=iirlc+1
                indirlc(iirlc)=iir
@@ -3939,11 +3950,23 @@ c        write(*,*) ir100found
          iirfound = 0
          ii1=0
          ii2=0
+         irdistval=10.
+c         write(*,*) irlcid(1),irlcid(2)
          do i=1,iir
             call DIST_SKY(ra_source(j),dec_source(j),ra_ir(i),dec_ir(i),dist)
             min_dist=sqrt(epos(1,j)**2+poserr_ir(i)**2)
-c            if (ir_type(i) == 'NEOWISE') then
-c               if ()
+            if ((ir_type(i) == 'NEOWISE') .and. (irlc_name(i) /= 'nan')) then
+               if (dist*3600 .le. irdistval) then
+                  irdistval=dist*3600.
+                  if (irlc_name(i) /= irlcid(2)) irlcid(2)=irlc_name(i)
+               endif
+            endif
+            if ((ir_type(i) == 'WISEME') .and. (irlc_name(i) /= 'nan')) then
+               if (dist*3600 .le. irdistval) then
+                  irdistval=dist*3600.
+                  if (irlc_name(i) /= irlcid(1)) irlcid(1)=irlc_name(i)
+               endif
+            endif
             !write(*,*) matchradius,epos(1,j),poserr_ir(i),ir_type(i),dist*3600.
             IF (( dist*3600. < max(min_dist,2.) )  .and. (ir_type(i) == 'WISE')) THEN
                ii1=ii1+1
@@ -4028,7 +4051,9 @@ c                  if (((ir_type(indirlc(s)) == 'WISEME') .or. (ir_type(indirlc(
 c     &                .and. (ircand_type(i) == 'WISE')) then
                   call DIST_SKY(ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s)),dist)
                      !write(*,*) i,indirlc(s),ra_ircand(i),dec_ircand(i),ra_ir(indirlc(s)),dec_ir(indirlc(s))
-                  if (dist*3600. .le. 2.) then
+                  if (dist*3600. .lt. 2.) then
+c                     if ( ((irlc_name(s) == irlcid(1)).and.(ir_type(indirlc(s)) == 'WISEME')) .or.
+c     &                   ((irlc_name(s) == irlcid(2)).and.(ir_type(indirlc(s)) == 'NEOWISE'))) then
                      iirfound=iirfound+1
                      flux_ircand(iirfound,1:4)=flux_ir(indirlc(s),1:4)
                      uflux_ircand(iirfound,1:4)=FluxU_ir(indirlc(s),1:4)
@@ -4040,6 +4065,7 @@ c     &                .and. (ircand_type(i) == 'WISE')) then
                      ircand_type(iirfound)=ir_type(indirlc(s))
                      mjdst_irlccand(iirfound)=mjdst_irlc(indirlc(s))
                      mjded_irlccand(iirfound)=mjded_irlc(indirlc(s))
+c                  endif
 c                        write(*,*)
                   endif
 c                 endif
