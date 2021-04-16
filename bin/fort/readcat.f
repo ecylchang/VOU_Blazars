@@ -69,7 +69,7 @@ c the catalog without source name
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
      &          .or. (catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'mquas')
-     &          .or. (catalog(1:it-1) == 'neowise')
+     &          .or. (catalog(1:it-1) == 'neowise') .or. (catalog(1:it-1) == 'ounblz')
      &          .or. (catalog(1:it-1) == 'bepposax') .or. (catalog(1:it-1) == 'vlssr')) then
                is=0
                ie=index(value(1:len(value)),',')
@@ -158,6 +158,7 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             if (catalog(1:it-1) == 'north20') ie=is+30
             if (catalog(1:it-1) == 'mst9y') ie=is+30
             if (catalog(1:it-1) == 'fgrb') ie=is+30
+            if (catalog(1:it-1) == 'f357cat') ie=is+30
 !the source pos error in front of dec
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
      &      (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == 'uvot') .or.
@@ -201,8 +202,8 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
             endif
 c read other pos_err
             if ((catalog(1:it-1) == 'nvss') .or.(catalog(1:it-1) == 'hst') .or.
-     &            (catalog(1:it-1) == 'wise') .or. (catalog(1:5) == 'spire') .or.
-     &            (catalog(1:it-1) == 'panstarrs'))  then
+     &          (catalog(1:it-1) == 'wise') .or. (catalog(1:it-1) == 'spire') .or.
+     &          (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'f357det'))  then
                is=ie
                ie=index(value(is+1:len(value)),',')+is
                if ((catalog(1:it-1) == 'panstarrs')) then
@@ -217,6 +218,7 @@ c read other pos_err
                ie=index(value(is+1:len(value)),',')+is
                if (is .ne. ie-1) read(value(is+1:ie-1),*) posyerr
                poserr=sqrt((posxerr*posxerr)+(posyerr*posyerr))
+               if (catalog(1:it-1) == 'f357det') poserr=poserr*3600
                !write(*,*) catalog(1:it-1),poserr,posxerr,posyerr
             endif
             if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb6') .or.
@@ -267,7 +269,7 @@ c read the flux
      &      ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) .or.
      &       (catalog(1:it-1) == 'pulsar') .or. (catalog(1:it-1) == 'f2psr') .or.
      &       (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'fgrb')
-     &       .or. (catalog(1:it-1) == 'bros')) then
+     &       .or. (catalog(1:it-1) == 'bros') .or. (catalog(1:it-1) == 'f357cat')) then
                ie=index(value(1:len(value)),',')
                read(value(1:ie-1),'(a)') flux
             endif
@@ -304,7 +306,8 @@ c write the data
      &         (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
      &         (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam') .or.
      &         (catalog(1:it-1) == 'lotss') .or. (catalog(1:it-1) == 'akaribsc') .or.
-     &         (catalog(1:it-1) == 'iraspsc') .or. (catalog(1:it-1) == 'vlassql')) then
+     &         (catalog(1:it-1) == 'iraspsc') .or. (catalog(1:it-1) == 'vlassql')
+     &          .or. (catalog(1:it-1) == 'f357det')) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.

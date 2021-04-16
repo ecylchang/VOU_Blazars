@@ -377,8 +377,8 @@ c        write(*,*) zsource(ns),zzinput,redshift
          ie=index(string(is+1:len(string)),',')+is
          read(string(is+1:ie-1),*) dec
          IF ( (catalog(1:3) == 'pmn') .OR. (catalog(1:6) == 'crates') .OR.
-     &             (catalog(1:2) == 'at') .OR. (catalog(1:4) == 'gb87') .OR.
-     &             (catalog(1:3) == 'gb6') .or.(catalog(1:7) == 'north20'))  THEN
+     &   (catalog(1:2) == 'at') .OR. (catalog(1:4) == 'gb87') .OR. (catalog(1:7) == 'f357det')
+     &      .or. (catalog(1:3) == 'gb6') .or.(catalog(1:7) == 'north20'))  THEN
             i4p8=i4p8+1
             IF (i4p8 > 1000) Stop 'Too many PMN points'
             if (i4p8 .ne. 1) THEN
@@ -628,6 +628,62 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                FluxU_4p8(i4p8,3)=0.
                FluxL_4p8(i4p8,3)=0.
                f4p8_type(i4p8)='NORTH20'
+          else if (catalog(1:7) == 'f357det') then
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_4p8(i4p8)
+               poserr_4p8(i4p8)=2.*poserr_4p8(i4p8)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,2)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_4p8(i4p8,2)
+               FluxU_4p8(i4p8,2)=flux_4p8(i4p8,2)+Ferr_4p8(i4p8,2)
+               FluxL_4p8(i4p8,2)=flux_4p8(i4p8,2)-Ferr_4p8(i4p8,2)
+               flux_4p8(i4p8,2)=flux_4p8(i4p8,2)*flux2nufnu_4p8*(3./4.8)
+               FluxU_4p8(i4p8,2)=FluxU_4p8(i4p8,2)*flux2nufnu_4p8*(3./4.8)
+               FluxL_4p8(i4p8,2)=FluxL_4p8(i4p8,2)*flux2nufnu_4p8*(3./4.8)
+               frequency_4p8(i4p8,2)=3.E9
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,1)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_4p8(i4p8,1)
+               FluxU_4p8(i4p8,1)=flux_4p8(i4p8,1)+Ferr_4p8(i4p8,1)
+               FluxL_4p8(i4p8,1)=flux_4p8(i4p8,1)-Ferr_4p8(i4p8,1)
+               flux_4p8(i4p8,1)=flux_4p8(i4p8,1)*flux2nufnu_4p8*(5./4.8)
+               FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*flux2nufnu_4p8*(5./4.8)
+               FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*flux2nufnu_4p8*(5./4.8)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flag_4p8(i4p8,1)
+               if (flag_4p8(i4p8,1) == '1' ) then
+                  flux_4p8(i4p8,1)=0.
+                  FluxL_4p8(i4p8,1)=0.
+               endif
+               frequency_4p8(i4p8,1)=5.E9
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_4p8(i4p8,3)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*)Ferr_4p8(i4p8,3)
+               FluxU_4p8(i4p8,3)=flux_4p8(i4p8,3)+Ferr_4p8(i4p8,3)
+               FluxL_4p8(i4p8,3)=flux_4p8(i4p8,3)-Ferr_4p8(i4p8,3)
+               flux_4p8(i4p8,3)=flux_4p8(i4p8,3)*flux2nufnu_4p8*(7./4.8)
+               FluxU_4p8(i4p8,3)=FluxU_4p8(i4p8,3)*flux2nufnu_4p8*(7./4.8)
+               FluxL_4p8(i4p8,3)=FluxL_4p8(i4p8,3)*flux2nufnu_4p8*(7./4.8)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flag_4p8(i4p8,3)
+               if (flag_4p8(i4p8,3) == '1' ) then
+                  flux_4p8(i4p8,3)=0.
+                  FluxL_4p8(i4p8,3)=0.
+               endif
+               frequency_4p8(i4p8,3)=7.E9
+               f4p8_type(i4p8)='F357det'
             endif
                !write(*,*) catalog,FluxU_4p8(i4p8,1),flux_4p8(i4p8,1),FluxL_4p8(i4p8,1)
                !write(*,*) catalog,"Flag: ",flag_4p8(i4p8,1),flag_4p8(i4p8,2),flag_4p8(i4p8,3),flag_4p8(i4p8,4)
@@ -1977,9 +2033,9 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                !write(*,*) flux_uv(iuv,1),FluxL_uv(iuv,1)
             ENDIF
             !write(*,*) catalog,FluxU_uv(iuv,6),flux_uv(iuv,6),FluxL_uv(iuv,6),frequency_uv(iuv,6)
-         else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105')
-     &         .or. (catalog(1:4) == 'oulc') .or. (catalog(1:8) == 'bepposax')
-     &         .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == 'ousxb')) then
+         else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105') .or.
+     &    (catalog(1:4) == 'oulc') .or. (catalog(1:8) == 'bepposax') .or. (catalog(1:6) == 'ounblz')
+     &    .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == 'ousxb')) then
             ixray=ixray+1
             if (ixray .ne. 1) THEN
                do j=1,ixray-1
@@ -2002,9 +2058,11 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
             dec_xray(ixray)=dec
             name_x(ixray)=catalog
             filen_x(ixray)=filen
-            if (catalog(1:7) == 'xrtspec') then
-               ixrtsp=ixrtsp+1
-               xrtspind(ixray)=ixrtsp
+            if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'ounblz')) then
+               if (catalog(1:7) == 'xrtspec') then
+                  ixrtsp=ixrtsp+1
+                  xrtspind(ixray)=ixrtsp
+               endif
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_xray(ixray,1)
@@ -2017,12 +2075,15 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_xray(ixray,1)
-               is=ie
-               ie=index(string(is+1:len(string)),',')+is
-               if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_xrt(ixray)
+               if (catalog(1:7) == 'xrtspec') then
+                  is=ie
+                  ie=index(string(is+1:len(string)),',')+is
+                  if (is .ne. ie-1) read(string(is+1:ie-1),*) mjdst_xrt(ixray)
+               endif
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_xrt(ixray)
+               if (catalog(1:6) == 'ounblz') mjdst_xrt(ixray)=mjded_xrt(ixray)
                FluxU_xray(ixray,1)=flux_xray(ixray,1)+Ferr_xray(ixray,1)
                FluxL_xray(ixray,1)=flux_xray(ixray,1)-Ferr_xray(ixray,1)
                if ((flux_xray(ixray,1) .lt. 0.) .or. (FluxL_xray(ixray,1) .lt. 0.)) then
@@ -2030,8 +2091,13 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   FluxU_xray(ixray,1)=0.
                   FluxL_xray(ixray,1)=0.
                endif
-               poserr_xray(ixray)=5.
-               xray_type(ixray)='XRTSPEC'
+               if (catalog(1:7) == 'xrtspec') then
+                  poserr_xray(ixray)=5.
+                  xray_type(ixray)='XRTSPEC'
+               else
+                  poserr_xray(ixray)=15.
+                  xray_type(ixray)='OUNBLZ'
+               endif
             else if (catalog(1:8) == 'bepposax') then
 c               ixrtsp=ixrtsp+1
 c               xrtspind(ixray)=ixrtsp
@@ -4558,7 +4624,8 @@ c         enddo
                   write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_4p8(i,s),flux_4p8(i,s),FluxU_4p8(i,s),
      &              FluxL_4p8(i,s),mjdavg,mjdavg,f4p8_flag(i,s),f4p8_type(i),refs(f4p8_ref(i))
                enddo
-            else if ((f4p8_type(i) == 'AT20G') .or. (f4p8_type(i) == 'NORTH20')) then
+            else if ((f4p8_type(i) == 'AT20G') .or. (f4p8_type(i) == 'NORTH20')
+     &               .or. (f4p8_type(i) == 'F357det')) then
                do s=1,3
                   if ((flux_4p8(i,s) .eq. FluxL_4p8(i,s)) .and. (flux_4p8(i,s) .eq. FluxU_4p8(i,s))) then
                      f4p8_flag(i,s)=' UL '
@@ -4831,7 +4898,8 @@ c         enddo
                endif
             enddo
             if (xraypart(i) .eq. j) then
-               if ((xray_type(i) == 'XRTSPEC') .or. (xray_type(i) == 'BEPPOSAX')) then
+               if ((xray_type(i) == 'XRTSPEC') .or. (xray_type(i) == 'BEPPOSAX')
+     &           .or. (xray_type(i) == 'OUNBLZ')) then
                   if ((flux_xray(i,1) .eq. FluxL_xray(i,1)) .and. (flux_xray(i,1) .eq. FluxU_xray(i,1))) then
                      xray_flag(i,1)=' UL '
                   else if ((FluxL_xray(i,1) .eq. 0.) .and. (FluxU_xray(i,1) .ne. 0.) ) then

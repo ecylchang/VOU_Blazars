@@ -28,6 +28,7 @@ BROS Itoh et al., in prep!
 MST9Y Campana et al. 2018, A&A, 619, A23!
 PULSAR Manchester et al. 2005, AJ, 129, 1993!
 F2PSR The Fermi-LAT Collaboration, 2013!
+F357cat Bruzewski et al. 2021, arXiv:2102.07397!
 XRTDEEP Brandt et al. in preparation!
 WISH352 De Bruce et al. 2002, A&A, 394, 59!
 GLEAM Hurley-Walker et al. 2017, MNRAS, 464, 1164!
@@ -41,6 +42,8 @@ ATPMN McConnell et al. 2012, MNRAS, 422, 1527!
 AT20G Murphy et al. 2010, MNRAS, 402, 2403!
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 CRATES Healey et al. 2007, ApJS, 171, 61! 
+F357det Bruzewski et al. 2021, arXiv:2102.07397
+KUEHR Kuehr et al. 1981, A&AS, 45, 367!
 PCNT The Planck Collaboration 2018, A&A, 619, A94!
 PCCS44 The Planck Collaboration 2018, A&A, 619, A94!
 PCCS70 The Planck Collaboration 2018, A&A, 619, A94!
@@ -76,6 +79,7 @@ OUSXG Giommi et al. 2020, A&A submitted!
 OULC Giommi et al. in preparation!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 BEPPOSAX Giommi et al. 2002, Babs. conf.!
+OUNBLZ Middei et al. 2021 in preparation!
 3FHL The Fermi-LAT Collaboration 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!
