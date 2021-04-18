@@ -42,7 +42,7 @@ ATPMN McConnell et al. 2012, MNRAS, 422, 1527!
 AT20G Murphy et al. 2010, MNRAS, 402, 2403!
 NORTH20 White and Becker, 1992, ApJS, 79, 331!
 CRATES Healey et al. 2007, ApJS, 171, 61! 
-F357det Bruzewski et al. 2021, arXiv:2102.07397
+F357det Bruzewski et al. 2021, arXiv:2102.07397!
 KUEHR Kuehr et al. 1981, A&AS, 45, 367!
 PCNT The Planck Collaboration 2018, A&A, 619, A94!
 PCCS44 The Planck Collaboration 2018, A&A, 619, A94!

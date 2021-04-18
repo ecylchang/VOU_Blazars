@@ -500,7 +500,9 @@ c              cs = max(1.0,cradio*8./99.)
                   s14(icol14)=7 !for gamma-ray source
                else if (om .eq. -22) then ! for GRB
                   s14(icol14)=10
-               else if ((om .eq. -70) .or. (om .eq. -77)) then
+               else if (om .eq. -33) then ! for 4FGL-radio
+                  s14(icol14)=-3
+               else if ((om .eq. -70) .or. (om .eq. -77)) then !quasar
                   s14(icol14)=20
                else
                   s14(icol14)=-5 !for pulsar

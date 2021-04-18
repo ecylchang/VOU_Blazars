@@ -1525,15 +1525,15 @@ c end PG
             endif
             CALL RXgraphic_code(flux_maxi(imaxi,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
-         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgldr2')
-     &           .or. (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '2bigb')
+         ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:8) == '4fgldr2') .or.
+     &       (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '2bigb') .or. (catalog(1:7) == 'f357cat')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == '2agile')
      &           .or.  (catalog(1:5) == 'fmev') .or. (catalog(1:4) == 'fgrb')) then
             igam=igam+1
             ra_gam(igam)=ra
             dec_gam(igam)=dec
             is=ie
-            if ((catalog(1:5) == 'mst9y') .or. (catalog(1:4) == 'fgrb')) then
+            if ((catalog(1:5) == 'mst9y') .or. (catalog(1:4) == 'fgrb') .or. (catalog(1:7) == 'f357cat')) then
                ie=index(string(is+10:len(string)),' ')+is+9
             else
                ie=index(string(is+1:len(string)),',')+is
@@ -1570,11 +1570,16 @@ c               namegam(igam)(1:4)='GRB '
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') namegam(igam)
             endif
             if ((bigbind(igam) .eq. 1) .or. (namegam(igam)(1:5) /= '2BIGB')) then
-               if (namegam(igam)(1:3) /='GRB') then
+               if (namegam(igam)(1:3) =='GRB') then
+                  write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
+               else if (catalog(1:7) == 'f357cat') then
+                  namegam(igam)(7:lenact(namegam(igam))+7)=namegam(igam)(1:lenact(name_other(igam)))
+                  namegam(igam)(1:6)='Radio-'
+                  write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-3333)
+                  write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-3333)
+               else
                   write (13,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
                   write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-1111)
-               else
-                  write (11,'(f9.5,2x,f9.5,2x,i6)') ra_gam(igam),dec_gam(igam),int(-2222)
                endif
             endif
 c            write(*,*) namegam(igam)
@@ -2868,7 +2873,7 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
          write(*,*) 'Gamma-ray Counterparts'
          do i=1,igam
             if ((bigbind(i) .eq. 1) .or. (namegam(i)(1:5) /= '2BIGB')) then
-               if (namegam(i)(1:3) /= 'GRB') write(*,*) namegam(i),ra_gam(i),dec_gam(i)
+               if ((namegam(i)(1:3) /= 'GRB') .and. (namegam(i)(1:5) /= 'Radio')) write(*,*) namegam(i),ra_gam(i),dec_gam(i)
             endif
          enddo
       endif

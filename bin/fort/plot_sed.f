@@ -109,7 +109,7 @@ c      IER = PGBEG(0,"/xs",1,1)
       write(*,*) 'SED range upper limit',sedup,'SED range lower limit',sedlow
          sedup=alog10(sedup)+0.5
          sedlow=alog10(sedlow)-0.5
-      CALL PGENV(8.,27.,sedlow,sedup,0,1)
+      CALL PGENV(7.5,27.,sedlow,sedup,0,1)
       CALL PGLAB('Log \gn (Hz)', 'Log \gnf\d\gn\u (erg/s/cm\u2\d)',title)
 c      if (stype(i) .eq. 1) call pgsci(8)
 c      if (stype(i) .eq. 2) call pgsci(5)

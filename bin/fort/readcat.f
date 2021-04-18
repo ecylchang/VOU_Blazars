@@ -139,7 +139,7 @@ c the catalog without source name
                read(ra(7:ie-1),*)ras
                call chra(radeg,rah,ram,ras,0)
             else
-               read(ra(1:ie-1),*)radeg
+               read(ra(1:ie-is-1),*)radeg
             endif
             is=ie
             ie=index(value(is+1:len(value)),',')+is
@@ -194,7 +194,7 @@ c            if ((catalog(1:it-1) == 'crates') .and. (ns .eq. 0)) ie=is+30
                call chdec(decdeg,decd,decm,decs,0)
                if (sign == '-') decdeg=-abs(decdeg)
             else
-               read(dec(1:ie-1),*) decdeg
+               read(dec(1:ie-is-1),*) decdeg
             endif
             if ((catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'magic')) then
                radeg=ra_center

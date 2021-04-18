@@ -35,7 +35,7 @@ c
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(7000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
+      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl,kuehrind(1000),ikuehr
       REAL*8 ra_cat(100),dec_cat(100),ra_usno(1000),dec_usno(1000),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
@@ -109,6 +109,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       igam=0
       ixray=0
       ixrtsp=0
+      ikuehr=0
       ibigb=0
       imagic=0
       iverit=0
@@ -377,8 +378,9 @@ c        write(*,*) zsource(ns),zzinput,redshift
          ie=index(string(is+1:len(string)),',')+is
          read(string(is+1:ie-1),*) dec
          IF ( (catalog(1:3) == 'pmn') .OR. (catalog(1:6) == 'crates') .OR.
-     &   (catalog(1:2) == 'at') .OR. (catalog(1:4) == 'gb87') .OR. (catalog(1:7) == 'f357det')
-     &      .or. (catalog(1:3) == 'gb6') .or.(catalog(1:7) == 'north20'))  THEN
+     &       (catalog(1:2) == 'at') .OR. (catalog(1:4) == 'gb87') .or.
+     &       (catalog(1:3) == 'gb6') .or.(catalog(1:7) == 'north20') .or.
+     &       (catalog(1:7) == 'f357det') .or.(catalog(1:5) == 'kuehr'))  THEN
             i4p8=i4p8+1
             IF (i4p8 > 1000) Stop 'Too many PMN points'
             if (i4p8 .ne. 1) THEN
@@ -461,6 +463,26 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),'(a)') flag_4p8(i4p8,2)
                if (flag_4p8(i4p8,2) == 'W') flux_4p8(i4p8,1)=-flux_4p8(i4p8,1)
+            else if (catalog(1:5) == 'kuehr') then
+               ikuehr=ikuehr+1
+               kuehrind(i4p8)=ikuehr
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) frequency_4p8(i4p8,1)
+               frequency_4p8(i4p8,1)=frequency_4p8(i4p8,1)*1.e6
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_4p8(i4p8,1)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_4p8(i4p8,1)
+               FluxU_4p8(i4p8,1)=flux_4p8(i4p8,1)+Ferr_4p8(i4p8,1)
+               FluxL_4p8(i4p8,1)=flux_4p8(i4p8,1)-Ferr_4p8(i4p8,1)
+               flux_4p8(i4p8,1)=flux_4p8(i4p8,1)*1.e-26*frequency_4p8(i4p8,1)
+               FluxU_4p8(i4p8,1)=FluxU_4p8(i4p8,1)*1.e-26*frequency_4p8(i4p8,1)
+               FluxL_4p8(i4p8,1)=FluxL_4p8(i4p8,1)*1.e-26*frequency_4p8(i4p8,1)
+               poserr_4p8(i4p8)=30.
+               f4p8_type(i4p8)='KUEHR'
             else if (catalog(1:3) == 'pmn') THEN
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -3948,8 +3970,12 @@ c         write(*,*) '..................Low frequency Radio....................'
                else if (f4p8_type(i) == 'AT20G') then
                   write(*,'(a,"flux density (5 8 20 GHz)",3(2x,f9.3),",",2x,f7.3," arcsec away")')
      &               f4p8_type(i),flux_4p8(i,1:3)/(frequency_4p8(i,1:3)*1.E-26),dist*3600.
+               else if ((f4p8_type(i) == 'KUEHR') .and. (kuehrind(i) .eq. 1)) then
+                  write(*,'(a,"flux density (5 8 20 GHz)",3(2x,f9.3),",",2x,f7.3," arcsec away")')
+     &               f4p8_type(i),flux_4p8(i,1:3)/(frequency_4p8(i,1:3)*1.E-26),dist*3600.
+
                ENDIF
-               write(*,'(a,6x,''Radio alpha: '',f6.3)') f4p8_type(i),alphar
+               !!!!!write(*,'(a,6x,''Radio alpha: '',f6.3)') f4p8_type(i),alphar
             ENDIF
          ENDDO
          IF (ialphar .ne. 0) then
@@ -4446,7 +4472,7 @@ c         write(*,*) iuvfound,ii1,ii2,ii3
             if (dist*3600. < min_dist ) then !5 arcsec fixed value
                xraypart(i)=j
                ixxfound=ixxfound+1
-               if (xray_type(i) == 'BAT105m') write(*,'(a,2x,f5.3,2x,"acrmin away")') xray_type(i),dist*60.
+               if ((xray_type(i) == 'BAT105m')) write(*,'(a,2x,f5.3,2x,"acrmin away")') xray_type(i),dist*60.
                if ((xray_type(i) == 'XRTSPEC') .and. (xrtspind(i) .eq. 1))
      &           write(*,'(a,2x,f7.3,2x,"acrsec away")') xray_type(i),dist*3600.
             endif
@@ -4590,7 +4616,8 @@ c         enddo
                endif
             enddo
             if (f4p8part(i) .eq. j) then
-            if ((f4p8_type(i) == 'PMN') .or. (f4p8_type(i) == 'GB87') .or. (f4p8_type(i) == 'GB6')) THEN
+            if ((f4p8_type(i) == 'PMN') .or. (f4p8_type(i) == 'GB87') .or.
+     &           (f4p8_type(i) == 'KUEHR') .or. (f4p8_type(i) == 'GB6')) THEN
                if ((flux_4p8(i,1) .eq. FluxL_4p8(i,1)) .and. (flux_4p8(i,1) .eq. FluxU_4p8(i,1))) then
                   f4p8_flag(i,1)=' UL '
                else if ((FluxL_4p8(i,1) .eq. 0.) .and. (FluxU_4p8(i,1) .ne. 0.) ) then
