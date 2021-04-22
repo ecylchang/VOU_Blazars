@@ -67,8 +67,9 @@ NEOWISE TBD!
 USNO Monet et al. 2003, AJ, 125, 984!
 SDSS Abolfathi et al. 2018, ApJS, 235, 42!
 HSTGSC Lasker et al. 2008, AJ, 136, 735!
-PanSTARRS Chambers et al. 2016 arXiv:1612.05560!
+PanSTARRS Chambers et al. 2016, arXiv:1612.05560!
 GAIA The Gaia Collaboration 2016, A&A, 595, A2!
+SMARTS Bonning et al. 2012, ApJ 756, 13!
 UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!

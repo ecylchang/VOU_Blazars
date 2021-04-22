@@ -64,7 +64,8 @@ c gamma-ray catalog print name
                read(value(1:is-1),'(a)') catname
             endif
 c the catalog without source name
-            if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87') .or. (catalog(1:it-1) == '2bigb')
+            if ((catalog(1:it-1) == 'sumss') .or. (catalog(1:it-1) == 'gb87')
+     &          .or. (catalog(1:it-1) == '2bigb') .or. (catalog(1:it-1) == 'smarts')
      &          .or. (catalog(1:it-1) == '2mass') .or. (catalog(1:it-1) == 'xrtdeep')
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')

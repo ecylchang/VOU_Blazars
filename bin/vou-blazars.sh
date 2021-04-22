@@ -704,6 +704,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog HSTGSC --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}hst.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog PanSTARRS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}panstarrs.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GAIA --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}gaia.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog SMARTS --ra $rar --dec $decr --radius 10 --runit arcsec --columns default -o tmp/${pidnm}smarts.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog GALEX --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}galex.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog XMMOM --ra $rar --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}xmmom.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog UVOT --ra $rar  --dec $decr --radius 15 --runit arcsec --columns default -o tmp/${pidnm}uvot.$nn.2.csv >> tmp/${pidnm}vosearch.txt
