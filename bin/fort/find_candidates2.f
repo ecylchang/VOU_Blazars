@@ -27,17 +27,17 @@ c
       INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(300)
       INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(7000)
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,l,t(5000),xraypart(7000),ialma,optpart(3000)
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,l,t(5000),xraypart(7000),ialma,optpart(3500)
       INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(7000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(2000),filen_o(3000),filen_l(200),r
+      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(2000),filen_o(3500),filen_l(200),r
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(7000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
-      integer*4 kuehrind(1000),ikuehr,inustar,ibepp,indoptlc(3000),ioptlc,optlc_ref(3000)
-      REAL*8 ra_cat(100),dec_cat(100),ra_usno(3000),dec_usno(3000),ra_far(500),dec_far(500),ra_uvcand(300)
+      integer*4 kuehrind(1000),ikuehr,inustar,ibepp,indoptlc(3500),ioptlc,optlc_ref(3500)
+      REAL*8 ra_cat(100),dec_cat(100),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
@@ -46,11 +46,11 @@ c
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),ra_alma,dec_alma,dec_flcuv(8000)
       real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5),irdistval
       REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
-      REAL*4 flux_4p8(1000,3),alphar,flux_usno(3000,5),frequency_usno(3000,5),sigma
+      REAL*4 flux_4p8(1000,3),alphar,flux_usno(3500,5),frequency_usno(3500,5),sigma
       REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
       REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_cluster,min_dist_far
-      REAL*4 usnomag(3000,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
+      REAL*4 usnomag(3500,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
       REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
       real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
@@ -62,7 +62,7 @@ c
       real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
       real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(7000),snr_pccs100(1500,9)
       real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
-      real*4 FluxU_usno(3000,5),FluxL_usno(3000,5),poserr_usno(3000),usnomagerr(3000,5),freq_lowrcand(5)
+      real*4 FluxU_usno(3500,5),FluxL_usno(3500,5),poserr_usno(3500),usnomagerr(3500,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
       real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(7000)
@@ -79,7 +79,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       real*4 mjdst_flcuv(8000),mjded_flcuv(8000),Ferr_flcuv(8000,4),metst(8000),meted(8000),ts(8000),duration(8000)
       real*4 mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000),poserr_gamslp(5),gamslp(5)
       real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
-      real*4 mjdst_optlc(3000)
+      real*4 mjdst_optlc(3500)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(2000,2)
       character*6 aim
@@ -88,10 +88,10 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
       character*4 uv_flag(300,6),xray_flag(7000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
-      character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4),optlc_flag(3000)
-      CHARACTER*15 opt_type(3000),uv_type(1000),ir_type(2000),gam_type(100)
+      character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4),optlc_flag(3500)
+      CHARACTER*15 opt_type(3500),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(7000)
-      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(3000),name_u(1000),name_g(100)
+      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(3500),name_u(1000),name_g(100)
       CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
       CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(7000),far_type(200)
       CHARACTER*800 string,repflux
@@ -1630,7 +1630,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
      &           (catalog(1:4) == 'sdss') .or. (catalog(1:9) == 'panstarrs') .or.
      &           (catalog(1:4) == 'gaia') .or. (catalog(1:6) == 'smarts')) THEN
             iusno = iusno + 1
-            IF (iusno > 3000) Stop 'Too many USNO points'
+            IF (iusno > 3500) Stop 'Too many USNO points'
             if (iusno .ne. 1) THEN
                do j=1,iusno-1
                   if ((ra_usno(j) .eq. ra) .and. (dec_usno(j) .eq. dec)) THEN
@@ -1888,7 +1888,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
                FluxU_usno(iusno,1)=flux_usno(iusno,1)+usnomagerr(iusno,1)
                FluxL_usno(iusno,1)=flux_usno(iusno,1)-usnomagerr(iusno,1)
                if (FluxL_usno(iusno,1) .lt. 0) then
-                  flux(iusno,1)=0.
+                  flux_usno(iusno,1)=0.
                   FluxL_usno(iusno,1)=0.
                endif
                is=ie

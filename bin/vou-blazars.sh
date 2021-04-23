@@ -122,7 +122,7 @@ done
 
 
 #read the parameters input
-echo Running VOU-Blazars V1.93
+echo Running VOU-Blazars V1.94
 echo
 
 #read the XRT Deepsky name and create the file to store the results
