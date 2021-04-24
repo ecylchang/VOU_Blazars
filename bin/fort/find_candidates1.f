@@ -3066,7 +3066,7 @@ c      IF (ratio < 0.) RETURN
       IF (xray_type == 1) THEN
          xmission='XMMSLEW2'
       ELSE IF (xray_type == 2) THEN
-         xmission='4XMM-DR9'
+         xmission='4XMM-DR10'
       ELSE IF (xray_type == 3) THEN
          xmission='RASS'
       ELSE IF (xray_type == 4) THEN
