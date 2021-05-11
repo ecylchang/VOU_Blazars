@@ -7,21 +7,21 @@ c
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
       INTEGER*4 lu_out
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(15000),s14(8000)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(20000),s14(15000)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
-      integer*8 code(20000),icol12,icol13
+      integer*8 code(35000),icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
-      REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(8000)
-      REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(8000)
-      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(10000)
-      REAL*4 ra_col12(15000),dec_col12(15000),csx12(15000),ra_col13(10000),dec_col13(10000)
-      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(10000)
+      REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(15000)
+      REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(15000)
+      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(15000)
+      REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(15000),dec_col13(15000)
+      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(15000)
       REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
       REAL*4 afmax(max_sat),cc
-      REAL*4 ra(20000),dec(20000),ra1, ra2, dec1, dec2,epos(20000),color13(10000)
+      REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(15000)
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
-      REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(15000)
+      REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(20000)
       REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
       REAL*4 ratrue(10),dectrue(10),raarr(3),decarr(3)
       REAL*4 racat(500),deccat(500)
@@ -36,7 +36,7 @@ c
       CHARACTER*1 sign
       CHARACTER*80 string
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
-      CHARACTER*4 tcol14(8000),tcol12(15000)
+      CHARACTER*4 tcol14(15000),tcol12(20000)
       CHARACTER*15 newstring
       CHARACTER*80 device ,strzoom
       CHARACTER*60 title , filein,fileout
@@ -133,7 +133,7 @@ c      fileout='candidates_image_position.txt'
  100  CONTINUE
  700  continue
       n_points=i-1
-      IF ( n_points.GT.20000 ) THEN
+      IF ( n_points.GT.35000 ) THEN
          print *, ' //max no of points (20000) exceeded '
          print *, ' //plotting first 20000 only '
       END IF
@@ -377,7 +377,7 @@ c     colore
       call pgsci(1)
       CALL pgscr(10,.7,.2,.7)
       !write(*,*) n_points
-      if (n_points .gt. 20000) n_points=20000
+      if (n_points .gt. 35000) n_points=35000
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
 c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -60000)

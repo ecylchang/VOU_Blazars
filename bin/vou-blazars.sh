@@ -107,6 +107,8 @@ do
          plotsed=$2; shift;;
       --allcats)
          allcatalog=$2; shift;;
+      --legend)
+         plotlab=$2; shift;;
       --*)
          echo "$0: error - unrecognized option $1" 1>&2
          help;exit 1;;
@@ -195,6 +197,7 @@ fi
 [ -z $runmode ] && runmode=`grep 'MODE' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $plotsed ] && plotsed=`grep 'PLOTSED' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $allcatalog ] && allcatalog=`grep 'ALLCATS' ${HERE}/config_vou.txt | awk '{print $2}'`
+[ -z $plotlab ] && plotlab=`grep 'LEGENd' ${HERE}/config_vou.txt | awk '{print $2}'`
 if [ $runmode != f ]; then
    sfov=1.
    r1=0.
@@ -353,6 +356,9 @@ else
    ${BINF}/gnomo_plot_types tmp/${pidnm}find_out_temp.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}candidates.ps/vcps, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
    handle_ps tmp/${pidnm}RX_map.ps
    handle_ps tmp/${pidnm}candidates.ps
+   if [ $plotlab == Y -o $plotlab == y ]; then
+      open ${HERE}/../data/legend_cand.png
+   fi
 #   ps2eps -B -q RX_map.ps
 #   open RX_map.eps
 #   ps2eps -B -q candidates.ps

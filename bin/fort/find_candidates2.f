@@ -37,7 +37,7 @@ c
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
       integer*4 kuehrind(1000),ikuehr,inustar,ibepp,indoptlc(3500),ioptlc,optlc_ref(3500)
-      REAL*8 ra_cat(100),dec_cat(100),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
+      REAL*8 ra_cat(200),dec_cat(200),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
       REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
@@ -54,7 +54,7 @@ c
       REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
       real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
-      real*4 typefirst,type_cat(100),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
+      real*4 typefirst,type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
       real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(7000)
@@ -92,7 +92,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*15 opt_type(3500),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(7000)
       CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(3500),name_u(1000),name_g(100)
-      CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(100),name_a(8000),flcuv_type(8000)
+      CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(200),name_a(8000),flcuv_type(8000)
       CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(7000),far_type(200)
       CHARACTER*800 string,repflux
       LOGICAL there,ok,found,debl
