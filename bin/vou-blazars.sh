@@ -751,14 +751,14 @@ do
       echo SOURCE NUMBER NOT FOUND!
    elif [ $source == candlist ]; then
       echo
-      cat phase1
+      cat tmp/${pidnm}phase1
    elif [ $source == nocand ]; then
       echo Candidates NOT Found!!!
       source=q
    elif [ $source == q ]; then
       echo
    elif [ $source == n ]; then
-      cat Sed.txt | grep -v = > sed4nupeak.txt
+      cat tmp/${pidnm}Sed.txt | grep -v = > sed4nupeak.txt
       python ~/app/nu_peak.py --dec $decr  --sed_path sed4nupeak.txt
    elif [ $source == a ]; then
       rm -rf tmp/${pidnm}vou-aladin-cand.html
