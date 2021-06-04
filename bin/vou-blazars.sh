@@ -197,7 +197,7 @@ fi
 [ -z $runmode ] && runmode=`grep 'MODE' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $plotsed ] && plotsed=`grep 'PLOTSED' ${HERE}/config_vou.txt | awk '{print $2}'`
 [ -z $allcatalog ] && allcatalog=`grep 'ALLCATS' ${HERE}/config_vou.txt | awk '{print $2}'`
-[ -z $plotlab ] && plotlab=`grep 'LEGENd' ${HERE}/config_vou.txt | awk '{print $2}'`
+[ -z $plotlab ] && plotlab=`grep 'LEGEND' ${HERE}/config_vou.txt | awk '{print $2}'`
 if [ $runmode != f ]; then
    sfov=1.
    r1=0.
