@@ -23,7 +23,7 @@ SDSSWHL Wen et al. 2009, ApJS, 183, 197!
 SWXCS Liu et al. 2015, ApJS, 216, 2!
 3HSP Chang et al. 2019, A&A, 632, A77!
 FermiGRB Ajello et al. 2019, ApJ, 878, 52!
-MilliQuas Flesch et al. 2015, PASA, 32, e010!
+MilliQuas (v7.2) Flesch et al. 2015, PASA, 32, e010!
 BROS Itoh et al., in prep!
 MST9Y Campana et al. 2018, A&A, 619, A23!
 PULSAR Manchester et al. 2005, AJ, 129, 1993!

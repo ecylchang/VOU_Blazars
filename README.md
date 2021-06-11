@@ -39,9 +39,9 @@ $ pip install https://github.com/chbrandt/eada/archive/0.9.7.5.zip
 Note that the Conessearch pipeline till now only support runing with Python 2.7. And, here is just an example to install eada tool version 0.9.7.4, in future, there might be new version of eada updated.
 
 
-### Setup PGPlot - MACOS
+### Setup PGPlot 
 
-PGPlot are the main plotting tool in VOU-Blazars. MacOS users are advised to use [brew](https://brew.sh/)
+PGPlot are the main plotting tool in VOU-Blazars. MacOS users are advised to use [brew](https://brew.sh/), while Ubuntu sudo apt install pgplot5
  
 ```bash
 $ brew install pgplot
