@@ -252,7 +252,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog SDS82 --ra $ranh --dec $decnh -
 echo conesearch --db ${HERE}/cats1.ini --catalog 1OUSX --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}1ousx.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog RASS --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}rass.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog XMMSL2 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}xmmsl2.1.csv >> tmp/${pidnm}vosearch.txt
-echo conesearch --db ${HERE}/cats1.ini --catalog 4XMM-DR10 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}4xmmdr10.1.csv >> tmp/${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog 4XMM-DR11 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}4xmmdr11.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog BMW --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}bmw.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog WGACAT --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}wgacat.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPC2E --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}ipc.1.csv >> tmp/${pidnm}vosearch.txt

@@ -286,7 +286,7 @@ c         write(*,*) "redshift",zsource(1:isource)
          if ((spec_type(npt(sfound),sfound) .eq. 51) .or. (spec_type(npt(sfound),sfound) .eq. 1))
      &      rrxx_type(npt(sfound),sfound)='XMMSL2'
          if ((spec_type(npt(sfound),sfound) .eq. 52) .or. (spec_type(npt(sfound),sfound) .eq. 2))
-     &      rrxx_type(npt(sfound),sfound)='4XMM-DR10'
+     &      rrxx_type(npt(sfound),sfound)='4XMM-DR11'
          if ((spec_type(npt(sfound),sfound) .eq. 53) .or. (spec_type(npt(sfound),sfound) .eq. 3))
      &      rrxx_type(npt(sfound),sfound)='RASS'
          if ((spec_type(npt(sfound),sfound) .eq. 54) .or. (spec_type(npt(sfound),sfound) .eq. 4))

@@ -7,7 +7,7 @@ SDS82 Brandt and Giommi in preparation!
 1OUSX Giommi et al. in preparation!
 RASS Boller et al. 2016, A&A, 103, 1!
 XMMSL2 Saxton et al. 2008, A&A, 480, 611!
-4XMM-DR10 Webb et al. A&A, 641, A136!
+4XMM-DR11 Webb et al. A&A, 641, A136!
 BMW Panzera et al. 2003, A&A, 399, 351!
 WGACAT White et al. 2000, VizieR, IX/31/wgacat!
 IPC2E Harris et al. 1990, VizieR, IX/13/2e!
