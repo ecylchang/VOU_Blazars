@@ -109,6 +109,10 @@ do
          allcatalog=$2; shift;;
       --legend)
          plotlab=$2; shift;;
+      --PID)
+         pid=$2; shift;;
+      --IDPATH)
+         oupath=$2; shift;;
       --*)
          echo "$0: error - unrecognized option $1" 1>&2
          help;exit 1;;
@@ -146,9 +150,10 @@ if [ -z $pid ]; then
    test ! -d Results/$xrtnm && mkdir Results/$xrtnm
    test ! -d Results/SEDtool && mkdir Results/SEDtool
 else
-   pidnm=$pid"_"
+   pidnm=${oupath}/${pid}"_"
 fi
 test ! -d tmp && mkdir tmp
+test ! -d tmp/${oupath} && mkdir tmp/${oupath}
 
 #adjust the input ra dec from user
 nht1=`echo $posra | grep '\.'`
@@ -289,7 +294,7 @@ fi
 #check if the phase 1 data is already there
 ncat1=`cat tmp/${pidnm}vosearch.txt | wc -l`
 rm -f tmp/${pidnm}voerror.txt
-bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 #2> voerror #!2>&1
+bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
 #see if there is an error when searching through VO
 declare -i irunvo=1
@@ -309,7 +314,7 @@ do
    irunvo=${irunvo}+1
    echo
    echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-   [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+   [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
    if [ -s tmp/${pidnm}voerror.txt ]; then
       voerror=yes
    else
@@ -434,8 +439,8 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
       echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $ranh --dec $decnh --radius $radint --runit arcmin --columns default -o tmp/${pidnm}gb6.i.csv >> tmp/${pidnm}vosearch.txt
       echo Searching further data in intermediate phase for $cc source
       ncatint=`cat tmp/${pidnm}vosearch.txt | wc -l`
-      rm -f voerror.txt
-      bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncatint #1> voerror 2>&1
+      rm -f tmp/${pidnm}voerror.txt
+      bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncatint -p $pidnm #1> voerror 2>&1
 #      cat voerror | grep 'ERROR'
 
 # check if there is error during the searching
@@ -456,7 +461,7 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
          irunvo=${irunvo}+1
          echo
          echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-         [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+         [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
          if [ -s tmp/${pidnm}voerror.txt ]; then
             voerror=yes
          else
@@ -511,8 +516,8 @@ fi
 
 [ -d Results/$xrtnm ] && echo \\section{$ranh $decnh} > tmp/${pidnm}texcand.txt
 if [ $runmode == f -a -d Results/$xrtnm ]; then
-   echo \\begin{figure}[h!] >> tmp/texcand.txt
-   echo \\centering >> tmp/texcand.txt
+   echo \\begin{figure}[h!] >> tmp/${pidnm}texcand.txt
+   echo \\centering >> tmp/${pidnm}texcand.txt
    echo \\includegraphics[width=0.49\\linewidth]{Results/$xrtnm/candidates.eps} >> tmp/${pidnm}texcand.txt
    echo \\includegraphics[width=0.49\\linewidth]{Results/$xrtnm/RX_map.eps} >> tmp/${pidnm}texcand.txt
    echo \\caption{Left: Candidates Map. Right: Radio-X-ray map.} >> tmp/${pidnm}texcand.txt
@@ -775,7 +780,7 @@ do
          rm -f tmp/${pidnm}vosearch.txt
       else
          rm -f tmp/${pidnm}voerror.txt
-         bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat2 #1> voerror 2>&1
+         bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat2 -p $pidnm #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
          declare -i irunvo=1
          if [ -s tmp/${pidnm}voerror.txt ]; then
@@ -794,7 +799,7 @@ do
             irunvo=${irunvo}+1
             echo
             echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-            [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1
+            [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
             if [ -s tmp/${pidnm}voerror.txt ]; then
                voerror=yes
             else
@@ -952,14 +957,14 @@ do
 
 #PID number for online version
       if [ $pid ]; then
-         echo PID number = $pid
-         [ -f tmp/${pidnm}sed.eps ] && mv tmp/${pidnm}sed.eps $pid"_"$source"_"sed.eps
-         [ -f tmp/${pidnm}error_map.eps ] && mv tmp/${pidnm}error_map.eps $pid"_"$source"_"error_map.eps
-         [ -f tmp/${pidnm}LC.eps ] && mv tmp/${pidnm}LC.eps $pid"_"$source"_"LC.eps
-         [ -f tmp/${pidnm}LC_fermi.eps ] && mv tmp/${pidnm}LC_fermi.eps $pid"_"$source"_"LC_fermi.eps
-         [ -f tmp/${pidnm}error_map.txt ] && mv tmp/${pidnm}error_map.txt $pid"_"$source"_"error_map.txt
-         [ -f tmp/${pidnm}Sed.txt ] && mv tmp/${pidnm}Sed.txt $pid"_"$source"_"sed.txt
-         [ -f tmp/${pidnm}Out4SedTool.txt ] && mv tmp/${pidnm}Out4SedTool.txt $pid"_"$source"_"Out4SedTool.txt
+         ###echo PID number = $pid
+         [ -f tmp/${pidnm}sed.eps ] && mv tmp/${pidnm}sed.eps tmp/${pidnm}${source}"_"sed.eps
+         [ -f tmp/${pidnm}error_map.eps ] && mv tmp/${pidnm}error_map.eps tmp/${pidnm}${source}"_"error_map.eps
+         [ -f tmp/${pidnm}LC.eps ] && mv tmp/${pidnm}LC.eps tmp/${pidnm}${source}"_"LC.eps
+         [ -f tmp/${pidnm}LC_fermi.eps ] && mv tmp/${pidnm}LC_fermi.eps tmp/${pidnm}${source}"_"LC_fermi.eps
+         [ -f tmp/${pidnm}error_map.txt ] && mv tmp/${pidnm}error_map.txt tmp/${pidnm}${source}"_"error_map.txt
+         [ -f tmp/${pidnm}Sed.txt ] && mv tmp/${pidnm}Sed.txt tmp/${pidnm}${source}"_"sed.txt
+         [ -f tmp/${pidnm}Out4SedTool.txt ] && mv tmp/${pidnm}Out4SedTool.txt tmp/${pidnm}${source}"_"Out4SedTool.txt
       fi
    fi
 done

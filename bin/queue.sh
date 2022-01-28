@@ -32,13 +32,14 @@ LIST=''
 
 # GetOptions..
 #
-while getopts ":hqn:f:d:" opt
+while getopts ":hqn:p:f:d:" opt
 do
   case $opt in
     h) help; exit 0;;
     q) VERBOSE="0";;
     n) NPROCS="$OPTARG";;
     f) LIST="$OPTARG";;
+    p) PIDNM="$OPTARG";;
     \?) echo "ERROR: Wrong option $OPTARG ";;
     :) echo "ERROR: Missing value for $OPTARG ";;
   esac
@@ -139,7 +140,7 @@ do
       else
          nncc=$nncc+1
          1>&2 echo -e "( $nncc / $NJOBS ) \033[1;31m  $cats : SEARCH FAILED \033[0m "
-         echo $_file >> tmp/voerror.txt
+         echo $_file >> tmp/${PIDNM}voerror.txt
       fi
       unset PIDs[$PID]
       unset CNTs[$PID]

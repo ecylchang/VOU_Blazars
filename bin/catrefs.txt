@@ -11,7 +11,7 @@ XMMSL2 Saxton et al. 2008, A&A, 480, 611!
 BMW Panzera et al. 2003, A&A, 399, 351!
 WGACAT White et al. 2000, VizieR, IX/31/wgacat!
 IPC2E Harris et al. 1990, VizieR, IX/13/2e!
-IPCSL Munz et al. 1992, ApJS, 80, 257!
+IPCSL Elvis et al. 1992, ApJS, 80, 257!
 Chandra-CSC2 Evans et al. 2010, ApJS, 189, 37!
 MAXI TBD!
 ZWCLUSTERS Zwicky et al. 1968, VizieR, VII/190!

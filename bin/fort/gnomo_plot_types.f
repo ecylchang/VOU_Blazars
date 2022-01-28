@@ -18,7 +18,7 @@ c
       REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(15000),dec_col13(15000)
       REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(15000)
       REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
-      REAL*4 afmax(max_sat),cc
+      REAL*4 afmax(max_sat),cc,ratest12
       REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(15000)
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
       REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(20000)
@@ -611,8 +611,7 @@ c           CALL PGSCR(8,R,G,B)
 
       IF (icol12.GT.0) THEN
          DO j = 1,icol12
-            !write(*,*) ra_center,dec_center,abs(ra_col12(j)),dec_col12(j)
-            CALL gnom_projection(1,ra_center,dec_center,ra_col12(j),dec_col12(j),x,y)
+            CALL gnom_projection(1,ra_center,dec_center,abs(ra_col12(j:j)),dec_col12(j),x,y)
             IF (csx12(j) > 0. ) THEN
                CALL pgsch(csx12(j))
                CALL pgsci(4)
