@@ -29,6 +29,7 @@ TMPDIR="${PWD}/tmp"
 
 # Empty init variable
 LIST=''
+PIDNM=''
 
 # GetOptions..
 #
@@ -41,10 +42,13 @@ do
     f) LIST="$OPTARG";;
     p) PIDNM="$OPTARG";;
     \?) echo "ERROR: Wrong option $OPTARG ";;
-    :) echo "ERROR: Missing value for $OPTARG ";;
+    :)
+       case $OPTARG in
+          n) echo "ERROR: Missing value for $OPTARG ";;
+          f) echo "ERROR: Missing value for $OPTARG ";;
+       esac
   esac
 done
-
 
 if [ ! -f "$LIST" -o -z "$LIST" ]
 then

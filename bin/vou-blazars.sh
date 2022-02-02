@@ -508,6 +508,14 @@ if [ -s tmp/${pidnm}Intermediate_out.txt ]; then
 ######################################################################
 fi
 
+###############################  HTML table file  ###############################
+#if [ $runmode == f -a $PID ]; then
+
+#fi
+######################################################################
+
+
+
 #save the phase 1 and phase intermediate results in the folder
 [ $runmode == f -a -d Results/$xrtnm ] && cp tmp/${pidnm}candidates.*ps Results/$xrtnm/.
 [ $runmode == f -a -d Results/$xrtnm ] && cp tmp/${pidnm}RX_map.*ps Results/$xrtnm/.
