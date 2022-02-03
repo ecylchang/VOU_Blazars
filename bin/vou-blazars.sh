@@ -545,8 +545,8 @@ fi
 [ $runmode == f -a -d Results/$xrtnm ] && cp tmp/${pidnm}candidates.*ps Results/$xrtnm/.
 [ $runmode == f -a -d Results/$xrtnm ] && cp tmp/${pidnm}RX_map.*ps Results/$xrtnm/.
 [ -f tmp/${pidnm}output1.csv -a -d Results/$xrtnm ] && cp tmp/${pidnm}output1.csv Results/$xrtnm/output1.csv
-[ -f output_int.csv -a -d Results/$xrtnm ] && cp tmp/${pidnm}output_int.csv Results/$xrtnm/output_int.csv
-
+[ -f tmp/${pidnm}output_int.csv -a -d Results/$xrtnm ] && cp tmp/${pidnm}output_int.csv Results/$xrtnm/output_int.csv
+[ -f tmp/${pidnm}candidates.csv -a -d Results/$xrtnm ] && cp tmp/${pidnm}candidates.csv Results/$xrtnm/candidates.csv
 [ -d Results/$xrtnm ] && echo \\section{$ranh $decnh} > tmp/${pidnm}texcand.txt
 if [ $runmode == f -a -d Results/$xrtnm ]; then
    echo \\begin{figure}[h!] >> tmp/${pidnm}texcand.txt
