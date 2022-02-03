@@ -128,7 +128,7 @@ done
 
 
 #read the parameters input
-echo Running VOU-Blazars V1.94
+echo Running VOU-Blazars V1.95
 echo
 
 #read the XRT Deepsky name and create the file to store the results
@@ -509,9 +509,34 @@ if [ -s tmp/${pidnm}Intermediate_out.txt ]; then
 fi
 
 ###############################  HTML table file  ###############################
-#if [ $runmode == f -a $PID ]; then
-
-#fi
+if [ $runmode == f ]; then
+   echo "Number R.A. Dec. Type" > tmp/${pidnm}candidates.csv
+   cat tmp/${pidnm}find_out_temp.txt | awk ' $3>10000 {print $1, $2, int($3/10000)}  $3<-40000 {print $1, $2, int($3/10000)} $3==-9999 {print $1, $2, int($3/10000)} ' | awk '{print NR, $1, $2, "type"$3}' >> tmp/${pidnm}candidates.csv
+   cat tmp/${pidnm}candidates.csv | sed 's/type1/HSP/g' | sed 's/type2/ISP/g' | sed 's/type3/LSP/g' | sed 's/type4/jetted-AGN/g' | sed 's/type5/Unknown/g' | sed 's/type-5/3HSP/g' | sed 's/type-6/5BZCat/g' | sed 's/type-7/CRATES/g' | sed 's/type0/Pulsar/g' > tmp/${pidnm}candidates.csv
+   
+   if [ $pidnm ]; then
+      echo "<table>" > tmp/${pidnm}candidates.html
+      ln=`cat tmp/${pidnm}candidates.csv | wc -l`
+      for (( ii=1; ii<=${ln}; ii=ii+1 ))
+      do
+         echo "<tr>" >> tmp/${pidnm}candidates.html
+         for (( jj=1; jj<=4; jj=jj+1 ))
+         do
+            htmlpar=`head -$ii tmp/${pidnm}candidates.csv | tail -1 |  awk '{print $'$jj'}'`
+            if [ $ii == 1 ]; then
+               echo "<th> " $htmlpar " </th>" >> tmp/${pidnm}candidates.html
+            else
+               echo "<td> " $htmlpar " </td>" >> tmp/${pidnm}candidates.html
+            fi
+         done
+         echo "</tr>" >> tmp/${pidnm}candidates.html
+      done
+      echo "</table>" >> tmp/${pidnm}candidates.html
+   fi
+   
+   sed -i '' 's/\ /\,/g' tmp/${pidnm}candidates.csv
+   
+fi
 ######################################################################
 
 
