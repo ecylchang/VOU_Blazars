@@ -51,8 +51,8 @@ c
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
       REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_cluster,min_dist_far
       REAL*4 usnomag(3500,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
-      REAL*4 flux_gam(100,8),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
-      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,8)
+      REAL*4 flux_gam(100,9),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
+      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,9)
       REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
       real*4 typefirst,type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
@@ -64,7 +64,7 @@ c
       real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
       real*4 FluxU_usno(3500,5),FluxL_usno(3500,5),poserr_usno(3500),usnomagerr(3500,5),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
-      real*4 FluxU_gam(100,8),FluxL_gam(100,8),poserr_gam(100),Ferr_gam(100,8),Specerr_gam(100,2)
+      real*4 FluxU_gam(100,9),FluxL_gam(100,9),poserr_gam(100),Ferr_gam(100,9),Specerr_gam(100,2)
       real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(7000)
       real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(7000,5)
       real*4 frequency_xray(7000,5),flux_xray(7000,5),FluxU_xray(7000,5),FluxL_xray(7000,5),Ferr_lowr(200)
@@ -87,7 +87,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
-      character*4 uv_flag(300,6),xray_flag(7000,5),gam_flag(100,8),vhe_flag(500),lowr_flag(200)
+      character*4 uv_flag(300,6),xray_flag(7000,5),gam_flag(100,9),vhe_flag(500),lowr_flag(200)
       character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4),optlc_flag(3500)
       CHARACTER*15 opt_type(3500),uv_type(1000),ir_type(2000),gam_type(100)
       CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(7000)
@@ -2359,7 +2359,7 @@ c               xrtspind(ixray)=ixrtsp
                xray_type(ixray)='BAT105m'
                !write(*,*) 'BAT',flux_xray(ixray,1),FluxU_xray(ixray,1),FluxL_xray(ixray,1),poserr_xray(ixray)
             endif
-         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:7) == '4fgldr2') .or.
+         ELSE IF ((catalog(1:4) == '2fhl') .or. (catalog(1:7) == '4fgldr3') .or.
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '2bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == '2agile')) then
             igam=igam+1
@@ -2772,7 +2772,7 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                posyerr=sqrt(((cos(posang)*major)**2)+((sin(posang)*minor)**2))
                poserr_gam(igam)=max(posxerr,posyerr)*3600.
                gam_type(igam)='3FGL'
-            ELSE IF (catalog(1:7) == '4fgldr2') then
+            ELSE IF (catalog(1:7) == '4fgldr3') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                is=ie
@@ -2829,10 +2829,13 @@ c               write(*,*) FluxU_gam(igam,1),Flux_gam(igam,1),FluxL_gam(igam,1),
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,7)
-c               write(*,*) flux_gam(igam,7)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,8)
+c               write(*,*) flux_gam(igam,7)
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam,9)
                is=ie
                ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,2)
@@ -2968,7 +2971,7 @@ c               write(*,*) flux_gam(igam,7)
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,8)
                FluxL_gam(igam,8)=flux_gam(igam,8)+Ferr_gam(igam,8)
                is=ie
-               ie=index(string(is+1:len(string)),' ')+is
+               ie=index(string(is+1:len(string)),',')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,8)
                FluxU_gam(igam,8)=flux_gam(igam,8)+Ferr_gam(igam,8)
                if ((FluxL_gam(igam,8) .lt. 0.) .or. (FluxL_gam(igam,8) .eq. flux_gam(igam,8))) then
@@ -2976,17 +2979,17 @@ c               write(*,*) flux_gam(igam,7)
                  FluxL_gam(igam,8)=0.
                endif
                if  (redshift .gt. 0) then
-                  call ebl_flux(0.03,0.3,slope_gam(igam,1),redshift,reduction_factor)
+                  call ebl_flux(0.03,0.1,slope_gam(igam,1),redshift,reduction_factor)
                   flux_debl(idebl,2)=flux_gam(igam,8)*reduction_factor
                   FluxU_debl(idebl,2)=FluxU_gam(igam,8)*reduction_factor
                   FluxL_debl(idebl,2)=FluxL_gam(igam,8)*reduction_factor
                endif
-               call fluxtofdens(slope_gam(igam,1),30.,300.,flux_gam(igam,8),100.,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),30.,100.,flux_gam(igam,8),60.,fdens,nudens)
                flux_gam(igam,8)=fdens
                frequency_gam(igam,8)=nudens
-               call fluxtofdens(slope_gam(igam,1),30.,300.,FluxU_gam(igam,8),100.,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),30.,100.,FluxU_gam(igam,8),60.,fdens,nudens)
                FluxU_gam(igam,8)=fdens
-               call fluxtofdens(slope_gam(igam,1),30.,300.,FluxL_gam(igam,8),100.,fdens,nudens)
+               call fluxtofdens(slope_gam(igam,1),30.,100.,FluxL_gam(igam,8),60.,fdens,nudens)
                FluxL_gam(igam,8)=fdens
                if (redshift .gt. 0) then
                if ((FluxL_gam(igam,8) .eq. 0.) .and. (FluxU_gam(igam,8) .gt. 0.)) then
@@ -2994,21 +2997,62 @@ c               write(*,*) flux_gam(igam,7)
                   FluxU_debl(idebl,2)=0
                   FluxL_debl(idebl,2)=0
                else
-                  call fluxtofdens(slope_gam(igam,1),30.,300.,flux_debl(idebl,2),100.,fdens,nudens)
+                  call fluxtofdens(slope_gam(igam,1),30.,100.,flux_debl(idebl,2),60.,fdens,nudens)
                   flux_debl(idebl,2)=fdens
                   frequency_debl(idebl,2)=nudens
-                  call fluxtofdens(slope_gam(igam,1),30.,300.,FluxU_debl(idebl,2),100.,fdens,nudens)
+                  call fluxtofdens(slope_gam(igam,1),30.,100.,FluxU_debl(idebl,2),60.,fdens,nudens)
                   FluxU_debl(idebl,2)=fdens
-                  call fluxtofdens(slope_gam(igam,1),30.,300.,FluxL_debl(idebl,2),100.,fdens,nudens)
+                  call fluxtofdens(slope_gam(igam,1),30.,100.,FluxL_debl(idebl,2),60.,fdens,nudens)
                   FluxL_debl(idebl,2)=fdens
                endif
                endif
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,9)
+               FluxL_gam(igam,9)=flux_gam(igam,9)+Ferr_gam(igam,9)
+               is=ie
+               ie=index(string(is+1:len(string)),' ')+is
+               if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam,9)
+               FluxU_gam(igam,9)=flux_gam(igam,9)+Ferr_gam(igam,9)
+               if ((FluxL_gam(igam,9) .lt. 0.) .or. (FluxL_gam(igam,9) .eq. flux_gam(igam,9))) then
+                 FluxU_gam(igam,9)=Ferr_gam(igam,9)*3.
+                 FluxL_gam(igam,9)=0.
+               endif
+               if  (redshift .gt. 0) then
+                  call ebl_flux(0.1,1.,slope_gam(igam,1),redshift,reduction_factor)
+                  flux_debl(idebl,3)=flux_gam(igam,9)*reduction_factor
+                  FluxU_debl(idebl,3)=FluxU_gam(igam,9)*reduction_factor
+                  FluxL_debl(idebl,3)=FluxL_gam(igam,9)*reduction_factor
+               endif
+               call fluxtofdens(slope_gam(igam,1),100.,1000.,flux_gam(igam,9),600.,fdens,nudens)
+               flux_gam(igam,9)=fdens
+               frequency_gam(igam,9)=nudens
+               call fluxtofdens(slope_gam(igam,1),100.,1000.,FluxU_gam(igam,9),600.,fdens,nudens)
+               FluxU_gam(igam,9)=fdens
+               call fluxtofdens(slope_gam(igam,1),100.,1000.,FluxL_gam(igam,9),600.,fdens,nudens)
+               FluxL_gam(igam,9)=fdens
+               if (redshift .gt. 0) then
+               if ((FluxL_gam(igam,9) .eq. 0.) .and. (FluxU_gam(igam,9) .gt. 0.)) then
+                  flux_debl(idebl,3)=0
+                  FluxU_debl(idebl,3)=0
+                  FluxL_debl(idebl,3)=0
+               else
+                  call fluxtofdens(slope_gam(igam,1),100.,1000.,flux_debl(idebl,3),600.,fdens,nudens)
+                  flux_debl(idebl,3)=fdens
+                  frequency_debl(idebl,3)=nudens
+                  call fluxtofdens(slope_gam(igam,1),100.,1000.,FluxU_debl(idebl,3),600.,fdens,nudens)
+                  FluxU_debl(idebl,3)=fdens
+                  call fluxtofdens(slope_gam(igam,1),100.,1000.,FluxL_debl(idebl,3),600.,fdens,nudens)
+                  FluxL_debl(idebl,3)=fdens
+               endif
+               endif
+
                i4fgl=i4fgl+1
                ra_gamslp(i4fgl)=ra_gam(igam)
                dec_gamslp(i4fgl)=dec_gam(igam)
                poserr_gamslp(i4fgl)=poserr_gam(igam)
                gamslp(i4fgl)=slope_gam(igam,1)
-               gam_type(igam)='4FGL-DR2'
+               gam_type(igam)='4FGL-DR3'
             ELSE IF (catalog(1:4) == '3fhl') then
                is=ie
                ie=index(string(is+1:len(string)),',')+is
@@ -5096,9 +5140,9 @@ c         enddo
                endif
                write(14,'(4(es10.3,2x),2(f10.4,2x),a,2x,a,2x,a)') frequency_gam(i,1),flux_gam(i,1),
      &          FluxU_gam(i,1),FluxL_gam(i,1),mjdavg,mjdavg,gam_flag(i,1),gam_type(i),refs(gam_ref(i))
-            else if (gam_type(i) == '4FGL-DR2') then
+            else if (gam_type(i) == '4FGL-DR3') then
                call graphic_code(flux_gam(i,1),93,code)
-               do s=1,8
+               do s=1,9
                   if ((flux_gam(i,s) .eq. FluxL_gam(i,s)) .and. (flux_gam(i,s) .eq. FluxU_gam(i,s))) then
                      gam_flag(i,s)=' UL '
                   else if ((FluxL_gam(i,s) .eq. 0.) .and. (FluxU_gam(i,s) .ne. 0.) ) then

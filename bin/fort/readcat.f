@@ -59,7 +59,7 @@ c            write(*,*) is,ie
             ie=index(value(is+1:len(value)),',')+is
 c gamma-ray catalog print name
             if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
-     &      (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'wiseme')
+     &      (catalog(1:it-1) == '4fgldr3') .or. (catalog(1:it-1) == 'mst9y') .or. (catalog(1:it-1) == 'wiseme')
      &          .or. (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')) then
                read(value(1:is-1),'(a)') catname
             endif
@@ -313,7 +313,7 @@ c write the data
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.
      &               (catalog(1:it-1) == '2agile') .or. (catalog(1:it-1) == 'fmev')
-     &               .or. (catalog(1:it-1) == '4fgldr2') .or. (catalog(1:it-1) == 'wiseme')) then
+     &               .or. (catalog(1:it-1) == '4fgldr3') .or. (catalog(1:it-1) == 'wiseme')) then
                write(13,'(i4,",",a,",",2(f9.5,","),a,",",a)')
      &         ns,catalog(1:it-1),radeg,decdeg,catname(1:lenact(catname)),flux(1:ie-1)
             else if ((catalog(1:it-1) == 'crates') .and. (ns .ne. 0)) then

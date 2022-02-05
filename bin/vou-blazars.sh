@@ -278,7 +278,7 @@ if [ $runmode == f ]; then #skip the catalogs that we don't plot its data on SED
 #   echo conesearch --db ${HERE}/cats1.ini --catalog BROS --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}bros.1.csv >> tmp/${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog PULSAR --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}pulsar.1.csv >> tmp/${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats1.ini --catalog F2PSR --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}f2psr.1.csv >> tmp/${pidnm}vosearch.txt
-   echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL-DR2 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}4fgldr2.1.csv >> tmp/${pidnm}vosearch.txt
+   echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL-DR3 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}4fgldr3.1.csv >> tmp/${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $ranh  --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}3fhl.1.csv >> tmp/${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $ranh  --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}3fgl.1.csv >> tmp/${pidnm}vosearch.txt
    echo conesearch --db ${HERE}/cats2.ini --catalog 2BIGB --ra $ranh  --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}2bigb.1.csv >> tmp/${pidnm}vosearch.txt
@@ -761,7 +761,7 @@ do
             echo conesearch --db ${HERE}/cats2.ini --catalog OUNBLZ --ra $rar --dec $decr --radius 30 --runit arcsec --columns default -o tmp/${pidnm}ounblz.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FGL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o tmp/${pidnm}3fgl.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o tmp/${pidnm}2fhl.$nn.2.csv >> tmp/${pidnm}vosearch.txt
-            echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL-DR2 --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o tmp/${pidnm}4fgldr2.$nn.2.csv >> tmp/${pidnm}vosearch.txt
+            echo conesearch --db ${HERE}/cats2.ini --catalog 4FGL-DR3 --ra $rar --dec $decr --radius 20 --runit arcmin --columns default -o tmp/${pidnm}4fgldr3.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 3FHL --ra $rar  --dec $decr --radius 20 --runit arcmin --columns default -o tmp/${pidnm}3fhl.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2BIGB --ra $rar  --dec $decr --radius 10 --runit arcmin --columns default -o tmp/${pidnm}2bigb.$nn.2.csv >> tmp/${pidnm}vosearch.txt
             echo conesearch --db ${HERE}/cats2.ini --catalog 2AGILE --ra $rar  --dec $decr --radius 50 --runit arcmin --columns default -o tmp/${pidnm}2agile.$nn.2.csv >> tmp/${pidnm}vosearch.txt
