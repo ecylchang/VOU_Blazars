@@ -60,14 +60,14 @@ H-ATLAS-DR2NGP Maddox et al. 2018, ApJS, 236, 30
 H-ATLAS-DR2SGP Maddox et al. 2018, ApJS, 236, 30
 AKARIBSC Yamamura et al. 2010, VizieR, II, 298!
 IRAS-PSC IPAC, 1986, VizieR, II, 125!
-WISE Cutri et al. 2013, AllWISE Data Release Products!
-WISEME Cutri et al. 2013, AllWISE Data Release Products!
-NEOWISE TBD!
+WISE Wright et al. 2010, AJ, 140, 1868!
+WISEME Wright et al. 2010, AJ, 140, 1868!
+NEOWISE Mainzer et al. 2014, ApJ, 792, 30!
 2MASS Skrutskie et al. 2006, AJ, 131, 1163!
 USNO Monet et al. 2003, AJ, 125, 984!
 SDSS Abolfathi et al. 2018, ApJS, 235, 42!
 HSTGSC Lasker et al. 2008, AJ, 136, 735!
-PanSTARRS Chambers et al. 2016, arXiv:1612.05560!
+PanSTARRS Flewelling et al. 2020, ApJS, 251, 7!
 GAIA The Gaia Collaboration 2016, A&A, 595, A2!
 SMARTS Bonning et al. 2012, ApJ 756, 13!
 UVOT Yershov et al. 2014, Ap&SS, 354, 97!
@@ -85,7 +85,7 @@ OUNBLZ Middei et al. 2021 in preparation!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!
 2BIGB Arsioli et al. 2020, MNRAS, 493, 2438!
-4FGL-DR3 The Fermi-LAT Collaboration 2021, arXiv:2201.11184!
+4FGL-DR3 The Fermi-LAT Collaboration 2022, arXiv:2201.11184!
 2AGILE Bulgarelli et al. 2019, A&A, 627, A13!
 FermiMeV Principe et al. 2018, A&A, 618, A22! 
 FMonLC Fermi Monitored sources! 
