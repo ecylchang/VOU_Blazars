@@ -9,7 +9,7 @@ c
       INTEGER*4 lu_out
       INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(20000),s14(15000)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
-      integer*8 code(35000),icol12,icol13
+      integer*4 code(35000),icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
       REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(15000)
@@ -18,7 +18,7 @@ c
       REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(15000),dec_col13(15000)
       REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(15000)
       REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
-      REAL*4 afmax(max_sat),cc,ratest12
+      REAL*4 afmax(max_sat),cc
       REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(15000)
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
       REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(20000)
@@ -34,11 +34,10 @@ c
       REAL*4 cxray, cradio, cx
       REAL*8 rra, ddec
       CHARACTER*1 sign
-      CHARACTER*80 string
+      CHARACTER*80 string,device
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
       CHARACTER*4 tcol14(15000),tcol12(20000)
-      CHARACTER*15 newstring
-      CHARACTER*80 device ,strzoom
+      CHARACTER*85 newstring
       CHARACTER*60 title , filein,fileout
       CHARACTER*400 stringin
       CHARACTER*14 xaxis_label,yaxis_label
@@ -78,7 +77,7 @@ c         write(*,*) iskip
          device = stringin(in+1:im-1)
 c         write(*,*) device
          ip = index(stringin(im+1:length),',')+im
-         strzoom = stringin(im+1:ip-1)
+c         strzoom = stringin(im+1:ip-1)
 
          INQUIRE (FILE=filein,EXIST=there)
             IF (.NOT.there) THEN
@@ -97,6 +96,7 @@ c         write(*,*) device
          STOP
       ENDIF
 
+      write(*,*) ra_center,dec_center,ra_o,dec_o,ra_err2,dec_err2
 c      ra_err2=ra_err2-1.71 !6.56-4.41
 c      dec_err2
 c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15
@@ -737,6 +737,7 @@ c ------ Names part
       call pgsch(1.)
 c      CALL pgpoint(n_names,x1,y1,1)
 
+      close(lu_out)
       END
 
 **==GNOM_PROJECTION.FOR

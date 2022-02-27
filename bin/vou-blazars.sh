@@ -343,11 +343,11 @@ echo
 #running the PHASAE 1
 rm -f tmp/${pidnm}*temp.txt
 if [ $runmode == s -o $runmode == l ]; then
-   ${BINF}/find_candidates1 tmp/${pidnm}output1 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}RX_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}no_matched_temp.txt ${BINF} 0 > tmp/${pidnm}phase1
+   ${BINF}/find_candidates1 tmp/${pidnm}output1 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}RX_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}no_matched_temp.txt ${BINF} 0 | cat > tmp/${pidnm}phase1
    echo
    cat tmp/${pidnm}phase1
 else
-   ${BINF}/find_candidates1 tmp/${pidnm}output1 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}RX_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}no_matched_temp.txt ${BINF} 1 > tmp/${pidnm}phase1
+   ${BINF}/find_candidates1 tmp/${pidnm}output1 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}RX_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}no_matched_temp.txt ${BINF} 1 | cat > tmp/${pidnm}phase1
    echo
    cat tmp/${pidnm}phase1
 
@@ -888,7 +888,7 @@ do
       rm -f tmp/${pidnm}error_map.txt
       [ -z $zzinput ] && zzinput=0
       #echo $source $zzinput
-      ${BINF}/find_candidates2 tmp/${pidnm}output2 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}error_map.txt tmp/${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $zzinput $source > tmp/${pidnm}phase2
+      ${BINF}/find_candidates2 tmp/${pidnm}output2 tmp/${pidnm}find_out_temp.txt tmp/${pidnm}Sed_temp.txt tmp/${pidnm}error_map.txt tmp/${pidnm}Sed.txt ${HERE}/catrefs.txt ${BINF} $zzinput $source | cat > tmp/${pidnm}phase2
       #echo after running phase 2
       cat tmp/${pidnm}phase2
       #open sed.txt
