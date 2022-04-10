@@ -23,47 +23,49 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia,xray_type,lu_output, in,k, length,spec_type(3000,10000),im,imaxi
-      INTEGER*4 radio_type(10000),xmm_type(3000),rosat_type(1000),rtype_source(500),utype,iifound
+      INTEGER*4 ier, lu_in,xray_type, in,k, length,spec_type(3000,10000),im,imaxi
+      INTEGER*4 radio_type(10000),xmm_type(3000),rosat_type(1000),rtype_source(500)
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,spec_xpts(3000,10000),ibigb,bigbind(100)
       INTEGER*4 no_found,sfound,nrep(500),rfound,s,track(500),t(500),aim,xrt_type(3000),ncat
-      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,exits,iuv,isuv,iuvx,igam
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),ihighpeak,track2(200)
-      INTEGER*4 ipc_type(200),maxi_type(200),igrb,xxtt,bary(500),rank(500),priority(500)
+      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,igam
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),track2(200)
+      INTEGER*4 ipc_type(200),maxi_type(200),igrb,bary(500),rank(500),priority(500),ierosita
       REAL*8 ra_other(15000),dec_other(15000),ra, dec,dist,ra_center,dec_center,radius,dec_1kev(3000,10000)
       REAL*8 ra_radio(10000),dec_radio(10000),ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
       REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500),ra_1kev(3000,10000)
       real*8 ra_cat(200),dec_cat(200),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200),ra_bary,dec_bary
-      real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp
+      real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp,distrx(3000,10000),ra_erosita(200),dec_erosita(200)
       REAL*4 flux_radio(10000),flux_xmm(3000,6),flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
       REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx,totweight
       REAL*4 frequency_xmm(3000,6),frequency_bmw(500),frequency_rosat(1000),flux2nufnu_vlass
       REAL*4 frequency_chandra(1000,5),frequency_swift(3000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis,totxerr
-      REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,flux2nufnu_xmm,min_dist,reduce,poserr_source(500)
+      REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,min_dist,reduce,poserr_source(500)
       REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(500),rrconst(500)
-      REAL*4 flux2nufnu_bmw,flux2nufnu_rxs,ratio,const(10000),flux2nufnu_sumss
+      REAL*4 flux2nufnu_bmw,ratio,const(10000),flux2nufnu_sumss
       REAL*4 flux_1kev(3000,10000),frequency_radio(10000),uflux_1kev(3000,10000),lflux_1kev(3000,10000)
       REAL*4 xflux(500),rflux(500),flux_xpts(3000,10000),frequency_xpts(3000,10000),poserr_1kev(3000,10000)
-      real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(3000,10000),lflux_xpts(3000,10000),distrx(3000,10000)
+      real*4 major,minor,posang,posxerr,posyerr,uflux_xpts(3000,10000),lflux_xpts(3000,10000)
       real*4 Ferr_radio(10000),FluxU_radio(10000),FluxL_radio(10000),poserr_radio(10000)
       real*4 Ferr_xmm(3000,6),FluxU_xmm(3000,6),FluxL_xmm(3000,6),poserr_xmm(3000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(3000,5),FluxU_swift(3000,5),FluxL_swift(3000,5),poserr_swift(3000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200),mjdst_swift(3000),mjded_swift(3000)
       real*4 Ferr_bmw(500),FluxU_bmw(500),FluxL_bmw(500),poserr_bmw(500),frequency_maxi(200,4)
-      real*4 Ferr_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
+      real*4 FluxU_chandra(1000,5),FluxL_chandra(1000,5),poserr_chandra(1000)
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
       real*4 errrad,errmaj,errmin,errang,mjdstart(3000,10000),mjdend(3000,10000),mjdavg
       real*4 savemjy(15000),zz(15000),zsource(500)
+      real*4 flux_erosita(200,2),fluxL_erosita(200,2),fluxU_erosita(200,2),Ferr_erosita(200,2)
+      real*4 poserr_erosita(200),frequency_erosita(200,2)
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_other(15000),name_cat(200),namegam(200),vlasssrnm(10000)
       CHARACTER*200 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
       CHARACTER*15 catalog,classmq(15000)
-      CHARACTER*800 string,repflux
+      CHARACTER*800 string
       LOGICAL there,ok,found,catsrc
       common webprograms
       ok = .TRUE. 
@@ -87,6 +89,7 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       igam=0
       ibigb=0
       igrb=0
+      ierosita=0
       radian = 45.0/atan(1.0)
       flux2nufnu_nvss=1.4e9*1.e-26
       flux2nufnu_sumss=8.43e8*1.e-26 !assumed radio alpha=0.2 !f_0.8 to f_1.4
@@ -1525,6 +1528,47 @@ c end PG
             endif
             CALL RXgraphic_code(flux_maxi(imaxi,1),'X',code)
             write (13,'(f9.5,2x,f9.5,2x,i6)') abs(ra_maxi(imaxi)),dec_maxi(imaxi),int(code)
+         ELSE IF (catalog(1:7) == 'erosita') THEN
+            ierosita=ierosita+1
+            ra_erosita(ierosita)=ra
+            dec_erosita(ierosita)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_erosita(ierosita)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_erosita(ierosita,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)fluxL_erosita(ierosita,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)fluxU_erosita(ierosita,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)flux_erosita(ierosita,2)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)fluxL_erosita(ierosita,2)
+            is=ie
+            ie=index(string(is+1:len(string)),' ')+is
+            if (is .ne. ie-1) read(string(is+1:ie-1),*)fluxU_erosita(ierosita,2)
+            call fluxtofdens(0.9,0.5,2.,flux_erosita(ierosita,1),1.,fdens,nudens)
+            flux_erosita(ierosita,1)=fdens
+            frequency_erosita(ierosita,1)=nudens
+            call fluxtofdens(0.9,0.5,2.,fluxU_erosita(ierosita,1),1.,fdens,nudens)
+            fluxU_erosita(ierosita,1)=fdens
+            call fluxtofdens(0.9,0.5,2.,fluxL_erosita(ierosita,1),1.,fdens,nudens)
+            fluxL_erosita(ierosita,1)=fdens
+            call fluxtofdens(0.9,2.3,5.,flux_erosita(ierosita,2),3.6,fdens,nudens)
+            flux_erosita(ierosita,2)=fdens
+            frequency_erosita(ierosita,2)=nudens
+            call fluxtofdens(0.9,2.3,5.,fluxU_erosita(ierosita,2),3.6,fdens,nudens)
+            fluxU_erosita(ierosita,2)=fdens
+            call fluxtofdens(0.9,2.3,5.,fluxL_erosita(ierosita,2),3.6,fdens,nudens)
+            fluxL_erosita(ierosita,2)=fdens
+            CALL RXgraphic_code(flux_chandra(ichandra,1),'X',code)
+            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_chandra(ichandra),dec_chandra(ichandra),int(code)
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:7) == '4fgldr3') .or.
      &       (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '2bigb') .or. (catalog(1:7) == 'f357cat')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == '2agile')
@@ -1978,6 +2022,45 @@ c            ENDIF
             ENDIF
          ENDDO
          !write(*,*) const
+
+         DO i=1,ierosita
+            CALL DIST_SKY(ra_radio(k),dec_radio(k),ra_erosita(i),dec_erosita(i),dist)
+            min_dist = sqrt(poserr_erosita(i)**2+poserr_radio(k)**2)/3600.
+            IF (dist < max(min_dist,2./3600.)) THEN
+               found = .TRUE.
+               xray_type = 14
+               flux_x = flux_x + flux_erosita(i,1)
+               ix = ix +1
+               flux_1kev(ix,k)=flux_erosita(i,1)
+               uflux_1kev(ix,k)=fluxU_erosita(i,1)
+               lflux_1kev(ix,k)=fluxL_erosita(i,1)
+               ra_1kev(ix,k)=ra_erosita(i)
+               dec_1kev(ix,k)=dec_erosita(i)
+               poserr_1kev(ix,k)=poserr_erosita(i)
+               distrx(ix,k)=dist*3600.
+               spec_type(ix,k)=xray_type+50
+               mjdend(ix,k)=55000.
+               mjdstart(ix,k)=55000.
+               if (ix .eq. 1) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                xray_type,flux_erosita(i,1),const(k),ra_center,dec_center,source_type)
+               else if ((i .eq. 1) .or. (spec_type(ix,k) .ne. spec_type(ix-1,k))) then
+                  CALL print_results (ratio,ra_radio(k),dec_radio(k),flux_radio(k),radio_type(k),
+     &                xray_type,flux_erosita(i,1),const(k),ra_center,dec_center,source_type)
+               endif
+               IF (source_type .GE. 0) THEN
+                  types(source_type) = types(source_type) + 1
+               ENDIF
+               do l=2,2
+                  xpts=xpts+1
+                  flux_xpts(xpts,k)=flux_erosita(i,l)
+                  frequency_xpts(xpts,k)=frequency_erosita(i,l)
+                  uflux_xpts(xpts,k)=fluxU_erosita(i,l)
+                  lflux_xpts(xpts,k)=fluxL_erosita(i,l)
+                  spec_xpts(xpts,k)=xray_type
+               enddo
+            ENDIF
+         ENDDO
 
 cq      write(*,*) iradio
          IF (found) THEN 
@@ -2579,6 +2662,50 @@ c         if (xmm_type(i) == 1) min_dist_xmm=15./3600.
          endif
       enddo
 
+      Do i=1,ierosita
+         found=.false.
+         do j=1,iradio
+            call dist_sky(ra_radio(j),dec_radio(j),ra_erosita(i),dec_erosita(i),dist)
+            min_dist=sqrt(poserr_radio(j)**2+poserr_erosita(i)**2)/3600.
+            if (dist .lt. max(min_dist,2./3600.))  found=.true.
+         enddo
+         do j=1,iother
+            if ( ( (name_other(j)(1:3) == '5BZ') .OR. (name_other(j)(1:4) == '3HSP') .or.
+     &             (name_other(j)(1:6) == 'CRATES') .or. (name_other(j)(1:3) == 'PSR') .or.
+     &      (name_other(j)(1:5) == 'mquas') .or. (name_other(j)(1:4) == 'BROS')) .AND. (ra_other(j) .gt. 0.) ) THEN
+               CALL DIST_SKY(ra_other(j),dec_other(j),ra_erosita(i),dec_erosita(i),dist)
+               if (dist*3600. .lt. max(poserr_erosita(i),10.)) found=.true.
+            endif
+         enddo
+         if (.not. found) THEN
+            xray_type=14
+            CALL DIST_SKY(ra_center,dec_center,ra_erosita(i),dec_erosita(i),dist)
+            if ((errrad .ne. 0.) .and. (errmaj .eq. 0.)) then
+               if (dist .le. errrad/60.) then
+                  write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(i,1),
+     &            flux_erosita(i,1),FluxU_erosita(i,1),FluxL_erosita(i,1),ra_erosita(i),dec_erosita(i),
+     &            poserr_erosita(i),mjdavg,mjdavg,xray_type+50
+                  do s=2,2
+                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(i,s),
+     &               flux_erosita(i,s),FluxU_erosita(i,s),FluxL_erosita(i,s),ra_erosita(i),dec_erosita(i),
+     &               poserr_erosita(i),mjdavg,mjdavg,xray_type
+                  enddo
+               endif
+            else if ((errrad .eq. 0.) .and. (errmaj .ne. 0.)) then
+               if (dist .le. errmaj/60.) then
+                  write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(i,1),
+     &            flux_erosita(i,1),FluxU_erosita(i,1),FluxL_erosita(i,1),ra_erosita(i),dec_erosita(i),
+     &            poserr_erosita(i),mjdavg,mjdavg,xray_type+50
+                  do s=2,2
+                     write(14,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(i,s),
+     &               flux_erosita(i,s),FluxU_erosita(i,s),FluxL_erosita(i,s),ra_erosita(i),dec_erosita(i),
+     &               poserr_erosita(i),mjdavg,mjdavg,xray_type
+                  enddo
+               endif
+            endif
+         endif
+      enddo
+
       !write(*,*) sfound,rfound,ifound
       if (ifound .ne. sfound+rfound ) stop 'Warning, might have wrong matched number'
 c      write(*,*) 'RANK=',rank(1:sfound)
@@ -2842,6 +2969,19 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
                   endif
                endif
             enddo
+            do j=1,ierosita
+               call DIST_SKY(ra_other(l),dec_other(l),ra_erosita(j),dec_erosita(j),dist)
+               if (dist*3600. < max(poserr_erosita(j),10.)) THEN
+                  xray_type=14
+                  write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(j,1),
+     &                 flux_erosita(j,1),FluxU_erosita(j,1),FluxL_erosita(j,1),ra_erosita(j),dec_erosita(j),
+     &                   poserr_erosita(j),mjdavg,mjdavg,xray_type+50
+                  do s=2,2
+                     write(12,'(4(es10.3,2x),i2)') frequency_erosita(j,s),flux_erosita(j,s),FluxU_erosita(j,s),
+     &                     FluxL_erosita(j,s),xray_type
+                  enddo
+               endif
+            enddo
 100   continue
             if ((type_average .lt. -3) .and. (type_average .gt. -20)) then
 !for no X-ray blazars and CRATES sources
@@ -3029,6 +3169,19 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
             endif
          endif
       enddo
+      do j=1,ierosita
+         call DIST_SKY(ra_center,dec_center,ra_erosita(j),dec_erosita(j),dist)
+         if ( dist*3600. .lt. max(poserr_erosita(j),2.) ) then
+            xray_type=14
+            write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') frequency_erosita(j,1),
+     &                 flux_erosita(j,1),FluxU_erosita(j,1),FluxL_erosita(j,1),ra_erosita(j),dec_erosita(j),
+     &                   poserr_erosita(j),mjdavg,mjdavg,xray_type+50
+            do s=2,2
+               write(12,'(4(es10.3,2x),i2)') frequency_erosita(j,s),flux_erosita(j,s),FluxU_erosita(j,s),
+     &                     FluxL_erosita(j,s),xray_type
+            enddo
+         endif
+      enddo
 502   close(11)
       close(12)
       close(13)
@@ -3043,7 +3196,7 @@ c
       REAL*4 flux
       REAL*8 ra,dec,ra_center,dec_center,dist
       CHARACTER*1 sign
-      CHARACTER*10 xmission,radio_survey
+      CHARACTER*15 xmission,radio_survey
       CHARACTER*80 type
       ratio=flux/flux_radio
       call chra(ra,rah,ram,rasec,1)
@@ -3089,6 +3242,8 @@ c      IF (ratio < 0.) RETURN
          xmission='IPCSLEW'
       ELSE IF (xray_type == 13) THEN
          xmission='MAXISSC'
+      ELSE IF (xray_type == 14) THEN
+         xmission='eROSITA'
       ELSE
          xmission='UNKNOWN'
       ENDIF
@@ -3184,7 +3339,8 @@ ccc
       subroutine int_great_circle(lon1,lat1,lon2,lat2,f,d,lon,lat)
       implicit none
       real*8 lat1,lon1,lat2,lon2,lat,lon,d,radian
-      real*4 f,A,B,x,y,z
+      real*8 A,B,x,y,z
+      real*4 f
 
       radian=57.2957795
       lat1=(lat1)/radian
@@ -3249,7 +3405,7 @@ c PG
       IMPLICIT none
       REAL*4 flux,code,rfl_max,rfl_min
       REAL*4 xfl_min,xfl_max
-      INTEGER*4 radio_component,x_ray_component,source_type,temp
+      INTEGER*4 radio_component,x_ray_component
       CHARACTER*1 RX 
       code = 0.
       rfl_min=0.8 ! 0.8 mJy

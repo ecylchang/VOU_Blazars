@@ -96,7 +96,7 @@ c         strzoom = stringin(im+1:ip-1)
          STOP
       ENDIF
 
-      write(*,*) ra_center,dec_center,ra_o,dec_o,ra_err2,dec_err2
+c      write(*,*) ra_center,dec_center,ra_o,dec_o,ra_err2,dec_err2
 c      ra_err2=ra_err2-1.71 !6.56-4.41
 c      dec_err2
 c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15

@@ -532,7 +532,7 @@ c      write(*,*) pass2(1:ipass)
                write(12,'(i4,2x,a,2(2x,f10.5),2x,a,2x,i2)') i+isource,"matched source",
      &           abs(ra_xx(m)),dec_xx(m),'source type',int(code/10000)
                write(12,'(4(es10.3,2x),2(f10.5,2x),f7.3,2x,2(f10.4,2x),i2)') frequency_xx(m),flux_xx(m),
-     &         FluxU_xx(m),FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),mjdst_xx(m),mjded_xx(m),xx_type(m)
+     &         FluxU_xx(m),FluxL_xx(m),ra_xx(m),dec_xx(m),poserr_xx(m),mjdst_xx(m),mjded_xx(m),xx_type(m)+50
                do j=1,xpts(m)
                   write(12,'(4(es10.3,2x),i2)') frequency_xxot(j,m),flux_xxot(j,m),
      &             FluxU_xxot(j,m),FluxL_xxot(j,m),xxot_type(j,m)

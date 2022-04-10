@@ -1,18 +1,17 @@
       program readcat
 c this program read the output from vo tool and make a input for find candidates
       implicit none
-      integer*4 icat,i,is,ie,ia,it,in,ip,out,iskip
+      integer*4 icat,i,is,ie,ia,it,in,out,iskip
       integer*4 rah,ram,decd,decm,length,ns,lenact
       real*8 radeg,decdeg,ra_center,dec_center,errrad,errmaj,errmin,errang
-      real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh
-      real*4 ra1,ra2,dec1,dec2,crtflux
+      real*4 ras,decs,radius,posxerr,posyerr,poserr,posang,major,minor,nh,crtflux
       character*1 sign
       character*2 cratecheck
       character*200 inputlist,outputlist
       character*80  catalog,ra,dec,catname
       character*1000 head,value
       character*800 flux,string
-      logical ok,there
+      logical ok
 
       call rdforn(string,length)
       call rmvlbk(string)
@@ -34,6 +33,9 @@ c      write(*,*) ra_center,dec_center,radius,nh
      &      ra_center,dec_center,radius
       write(13,'("nH= ",es9.3,2x,"Error circle/elliptical= ",4(f6.2,2x))')nh,errrad,errmaj,errmin,errang
       ok=.true.
+
+
+
       do i=1,2000
          icat=0
          read(11,'(a)',end=100) string

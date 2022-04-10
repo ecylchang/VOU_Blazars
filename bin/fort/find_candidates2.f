@@ -309,6 +309,9 @@ c         write(*,*) "redshift",zsource(1:isource)
      &      rrxx_type(npt(sfound),sfound)='IPCSL'
          if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
      &      rrxx_type(npt(sfound),sfound)='MAXISSC'
+         if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
+     &      rrxx_type(npt(sfound),sfound)='eROSITA'
+
          else
             if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
             if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'

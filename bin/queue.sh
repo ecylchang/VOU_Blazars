@@ -18,7 +18,7 @@ VERBOSE="1"
 
 # Number of processes
 #
-NPROCS=1
+NPROCS=20
 
 # Amount of time to refresh the queue (in seconds)
 #
@@ -134,16 +134,16 @@ do
 #      echo $cats $PSTS
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
-         echo -e "( $nncc / $NJOBS ) \033[1;32m $cats : SUCCESS \033[0m -- ${ref}"
+         echo -e "( $nncc / $CNT ) \033[1;32m $cats : SUCCESS \033[0m -- ${ref}"
       elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
+         1>&2 echo "( $nncc / $CNT ) $cats : NO SOURCES FOUND"
       elif [ $cats == MAGIC -o $cats == VERITAS ]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $NJOBS ) $cats : NO SOURCES FOUND"
+         1>&2 echo "( $nncc / $CNT ) $cats : NO SOURCES FOUND"
       else
          nncc=$nncc+1
-         1>&2 echo -e "( $nncc / $NJOBS ) \033[1;31m  $cats : SEARCH FAILED \033[0m "
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;31m  $cats : SEARCH FAILED \033[0m "
          echo $_file >> tmp/${PIDNM}voerror.txt
       fi
       unset PIDs[$PID]

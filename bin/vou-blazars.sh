@@ -263,6 +263,7 @@ echo conesearch --db ${HERE}/cats1.ini --catalog WGACAT --ra $ranh --dec $decnh 
 echo conesearch --db ${HERE}/cats1.ini --catalog IPC2E --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}ipc.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog IPCSL --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}ipcsl.1.csv >> tmp/${pidnm}vosearch.txt
 echo conesearch --db ${HERE}/cats1.ini --catalog Chandra-CSC2 --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}chandracsc2.1.csv >> tmp/${pidnm}vosearch.txt
+echo conesearch --db ${HERE}/cats1.ini --catalog eROSITA --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}erosita.1.csv >> tmp/${pidnm}vosearch.txt
 #echo conesearch --db ${HERE}/cats1.ini --catalog MAXISSC --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}maxissc.1.csv >> tmp/${pidnm}vosearch.txt
 #echo conesearch --db ${HERE}/cats1.ini --catalog MAXIGSC --ra $ranh --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}maxigsc.1.csv >> tmp/${pidnm}vosearch.txt
 if [ $runmode == f ]; then #skip the catalogs that we don't plot its data on SED
@@ -291,10 +292,10 @@ if [ $runmode == f ]; then #skip the catalogs that we don't plot its data on SED
 #   echo conesearch --db ${HERE}/cats1.ini --catalog 4LAC --ra $ranh  --dec $decnh --radius $sfov --runit arcmin --columns default -o tmp/${pidnm}4lac.1.csv >> tmp/${pidnm}vosearch.txt
 fi
 
-#check if the phase 1 data is already there
-ncat1=`cat tmp/${pidnm}vosearch.txt | wc -l`
+
+#ncat1=`cat tmp/${pidnm}vosearch.txt | wc -l`
 rm -f tmp/${pidnm}voerror.txt
-bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm #2> voerror #!2>&1
+bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm #2> voerror #!2>&1
 #   cat voerror | grep 'ERROR'
 #see if there is an error when searching through VO
 declare -i irunvo=1
@@ -314,7 +315,7 @@ do
    irunvo=${irunvo}+1
    echo
    echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-   [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
+   [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm
    if [ -s tmp/${pidnm}voerror.txt ]; then
       voerror=yes
    else
@@ -438,9 +439,9 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
       echo conesearch --db ${HERE}/cats2.ini --catalog PMN --ra $ranh --dec $decnh --radius $radint --runit arcmin --columns default -o tmp/${pidnm}pmn.i.csv >> tmp/${pidnm}vosearch.txt
       echo conesearch --db ${HERE}/cats2.ini --catalog GB6 --ra $ranh --dec $decnh --radius $radint --runit arcmin --columns default -o tmp/${pidnm}gb6.i.csv >> tmp/${pidnm}vosearch.txt
       echo Searching further data in intermediate phase for $cc source
-      ncatint=`cat tmp/${pidnm}vosearch.txt | wc -l`
+#      ncatint=`cat tmp/${pidnm}vosearch.txt | wc -l`
       rm -f tmp/${pidnm}voerror.txt
-      bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncatint -p $pidnm #1> voerror 2>&1
+      bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm #1> voerror 2>&1
 #      cat voerror | grep 'ERROR'
 
 # check if there is error during the searching
@@ -461,7 +462,7 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
          irunvo=${irunvo}+1
          echo
          echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-         [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
+         [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm
          if [ -s tmp/${pidnm}voerror.txt ]; then
             voerror=yes
          else
@@ -805,7 +806,7 @@ do
 #      open tmp/${pidnm}vou-aladin-cand.html
 #check if the phase 2 data are already there, if no, retrieving PHASE 2 data
    else
-      ncat2=`cat tmp/${pidnm}vosearch.txt | wc -l`
+#      ncat2=`cat tmp/${pidnm}vosearch.txt | wc -l`
       catthere=`ls tmp/${pidnm}*.$source.2.csv 2>/dev/null | wc -l`
       if [ $catthere != 0 ]; then
          echo
@@ -813,7 +814,7 @@ do
          rm -f tmp/${pidnm}vosearch.txt
       else
          rm -f tmp/${pidnm}voerror.txt
-         bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat2 -p $pidnm #1> voerror 2>&1
+         bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm #1> voerror 2>&1
 #         cat voerror | grep 'ERROR'
          declare -i irunvo=1
          if [ -s tmp/${pidnm}voerror.txt ]; then
@@ -832,7 +833,7 @@ do
             irunvo=${irunvo}+1
             echo
             echo VO search returned errors for one or more catalogues. Run conesearch again $irunvo
-            [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -n $ncat1 -p $pidnm
+            [ $runvo != n -a $runvo != N ] && bash ${HERE}/queue.sh -f tmp/${pidnm}vosearch.txt -p $pidnm
             if [ -s tmp/${pidnm}voerror.txt ]; then
                voerror=yes
             else
