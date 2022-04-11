@@ -57,7 +57,7 @@ c
       real*4 typefirst,type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
-      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor,xraylike(7000)
+      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
       real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
       real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(7000),snr_pccs100(1500,9)
@@ -310,7 +310,7 @@ c         write(*,*) "redshift",zsource(1:isource)
          if ((spec_type(npt(sfound),sfound) .eq. 63) .or. (spec_type(npt(sfound),sfound) .eq. 13))
      &      rrxx_type(npt(sfound),sfound)='MAXISSC'
          if ((spec_type(npt(sfound),sfound) .eq. 64) .or. (spec_type(npt(sfound),sfound) .eq. 14))
-     &      rrxx_type(npt(sfound),sfound)='eROSITA'
+     &      rrxx_type(npt(sfound),sfound)='eROSITA-EDR'
 
          else
             if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
@@ -2086,7 +2086,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
             ENDIF
             !write(*,*) catalog,FluxU_uv(iuv,6),flux_uv(iuv,6),FluxL_uv(iuv,6),frequency_uv(iuv,6)
          else if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'bat105') .or.
-     &    (catalog(1:4) == 'oulc') .or. (catalog(1:8) == 'bepposax') .or. (catalog(1:6) == 'ounblz')
+     &    (catalog(1:4) == 'oulc') .or. (catalog(1:8) == 'bepposax') .or. (catalog(1:8) == 'nublazar')
      &    .or. (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == 'ousxb')) then
             ixray=ixray+1
             if (ixray .ne. 1) THEN
@@ -2110,7 +2110,7 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
             dec_xray(ixray)=dec
             name_x(ixray)=catalog
             filen_x(ixray)=filen
-            if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:6) == 'ounblz')) then
+            if ((catalog(1:7) == 'xrtspec') .or. (catalog(1:8) == 'nublazar')) then
                if (catalog(1:7) == 'xrtspec') then
                   ixrtsp=ixrtsp+1
                   xrtspind(ixray)=ixrtsp
@@ -2135,7 +2135,7 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                is=ie
                ie=index(string(is+1:len(string)),' ')+is
                if (is .ne. ie-1) read(string(is+1:ie-1),*) mjded_xrt(ixray)
-               if (catalog(1:6) == 'ounblz') mjdst_xrt(ixray)=mjded_xrt(ixray)
+               if (catalog(1:8) == 'nublazar') mjdst_xrt(ixray)=mjded_xrt(ixray)
                FluxU_xray(ixray,1)=flux_xray(ixray,1)+Ferr_xray(ixray,1)
                FluxL_xray(ixray,1)=flux_xray(ixray,1)-Ferr_xray(ixray,1)
                if ((flux_xray(ixray,1) .lt. 0.) .or. (FluxL_xray(ixray,1) .lt. 0.)) then
@@ -2148,7 +2148,7 @@ c     &                         filen,catalog,ra,dec,repflux(1:lenact(repflux))
                   xray_type(ixray)='XRTSPEC'
                else
                   poserr_xray(ixray)=15.
-                  xray_type(ixray)='OUNBLZ'
+                  xray_type(ixray)='NuBlazar'
                endif
             else if (catalog(1:8) == 'bepposax') then
 c               ixrtsp=ixrtsp+1
@@ -5031,7 +5031,7 @@ c         enddo
             enddo
             if (xraypart(i) .eq. j) then
                if ((xray_type(i) == 'XRTSPEC') .or. (xray_type(i) == 'BEPPOSAX')
-     &           .or. (xray_type(i) == 'OUNBLZ')) then
+     &           .or. (xray_type(i) == 'NuBlazar')) then
                   if ((flux_xray(i,1) .eq. FluxL_xray(i,1)) .and. (flux_xray(i,1) .eq. FluxU_xray(i,1))) then
                      xray_flag(i,1)=' UL '
                   else if ((FluxL_xray(i,1) .eq. 0.) .and. (FluxU_xray(i,1) .ne. 0.) ) then

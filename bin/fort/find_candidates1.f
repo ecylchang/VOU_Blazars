@@ -3243,7 +3243,7 @@ c      IF (ratio < 0.) RETURN
       ELSE IF (xray_type == 13) THEN
          xmission='MAXISSC'
       ELSE IF (xray_type == 14) THEN
-         xmission='eROSITA'
+         xmission='eROSITA-EDR'
       ELSE
          xmission='UNKNOWN'
       ENDIF

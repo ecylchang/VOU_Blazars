@@ -72,7 +72,7 @@ c the catalog without source name
      &          .or. (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia')
      &          .or. (catalog(1:it-1) == 'xrtspec') .or. (catalog(1:it-1) == 'magic')
      &          .or. (catalog(1:it-1) == 'veritas') .or. (catalog(1:it-1) == 'mquas')
-     &          .or. (catalog(1:it-1) == 'neowise') .or. (catalog(1:it-1) == 'ounblz')
+     &          .or. (catalog(1:it-1) == 'neowise') .or. (catalog(1:it-1) == 'nublazar')
      &          .or. (catalog(1:it-1) == 'bepposax') .or. (catalog(1:it-1) == 'vlssr')) then
                is=0
                ie=index(value(1:len(value)),',')

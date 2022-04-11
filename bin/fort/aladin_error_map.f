@@ -12,13 +12,10 @@ c
       LOGICAL there,ok
 
       CALL rdforn(stringin,length)
-c      IF ( length.NE.0 ) THEN
       CALL rmvlbk(stringin)
-c         write(*,*) string,length
       in=index(stringin(1:length),' ')
       input_file_ra=stringin(1:in-1)
       im=index(stringin(in+1:length),' ')+in
-c         write(*,*) in,im
       input_file=stringin(in+1:im-1)
       in=im
       im=index(stringin(in+1:length),' ')+in
@@ -63,13 +60,12 @@ c      output_file='vou-aladin.html'
       open(lu_out,file=output_file,status='unknown',iostat=ier)
       write(lu_out,'(''<HTML>'')')
       write(lu_out,'(''<HEAD>'')')
-      write(lu_out,'(3x,''<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.1.min.js"></script>'')')
+      write(lu_out,'(3x,''<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>'')')
       write(lu_out,'(3x,''<link rel="stylesheet" href="https://aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.css" >'')')
       write(lu_out,'(3x,''<script type="text/javascript">var jqMenu = jQuery.noConflict();</script>'')')
       write(lu_out,'(3x,''<script type="text/javascript">'')')
       write(lu_out,'(3x,''var hipsDir=null;</script>'')')
       write(lu_out,'(''</HEAD>'')')
-c      write(lu_out,'(''<img src=http://openuniverse.asi.it/images_ou/VOUBlazars_icon.png height="45" width="240"> '')')
       write(lu_out,'(''<img src=http://openuniverse.asi.it/images_ou/OU-logo.png height="40" width="213"> '')')
 c      write(lu_out,'(''<H1>VOU-Blazars/Error circles map - Aladin interface</H1>'')')
 c      write(lu_out,'(''<script type="text/javascript">'')')
@@ -80,12 +76,19 @@ c      write(lu_out,'(''document.getElementById("hipsBase").innerHTML=hipsDir;''
 c      write(lu_out,'(''</script>'')')
       write(lu_out,'(''<script type="text/javascript" src="https://aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js"''
      &               '' charset="utf-8"></script>'')')
-       write(lu_out,'(''<fieldset style="margin:15px 15px 30px; padding-bottom:30px; '',
-     &                ''padding-top:15px; padding-left:15px; width:auto; margin-bottom:10px;">'')')
+       write(lu_out,'(''<fieldset style="margin:50px 100px 30px; padding-bottom:30px; '',
+     &                ''padding-top:15px; padding-left:15px; width:82vw; margin-bottom:10px;">'')')
        write(lu_out,'(''<legend class='',a,''title'',a,''><b>VOU-Blazars - SED error circles map</b>&emsp;'',
      &                ''&emsp;-- Based on "Aladin Lite" developed at CDS, Strasbourg Observatory, France<br></legend>'')')
      &                 a1,a1
-      write(lu_out,'(''<div id="aladin-lite-div" style="margin-left:120px; width:80vw; height:80vh;"></div>'')')
+      write(lu_out,'(''<div id="aladin-lite-div" style="margin-left:20px; width:80vw; height:70vh;"></div>'')')
+      write(lu_out,'(''&nbsp; &nbsp; <input id="allwise" type="radio" name="survey" value="P/allWISE/color"><label for="allwise">AllWISE<label>'')')
+      write(lu_out,'(''<input id="DSS" type="radio" name="survey" value="P/DSS2/color"><label for="DSS">DSS color<label>'')')
+      write(lu_out,'(''<input id="PANSTARRS" type="radio" name="survey" value="P/PanSTARRS/DR1/color-z-zg-g"><label for="P/PanSTARRS/DR1/color">PanSTARRS DR1 color<label>'')')
+      write(lu_out,'(''<input id="SDSS9" type="radio" name="survey" value="P/SDSS9/color"><label for="SDSS9">SDSS9 color<label>'')')
+      write(lu_out,'(''<input id="GALEX" type="radio" name="survey" value="P/GALEXGR6/AIS/color"><label for="GALEX">GALEXGR6 color<label>'')')
+      write(lu_out,'(''<input id="XMM-PN" type="radio" name="survey" value="P/XMM/PN/color"><label for="XMM-ON">XMM-PN color<label>'')')
+
       write(lu_out,'(''</fieldset>'')')
       write(lu_out,'(''<script type="text/javascript">'')')
       i = 0
@@ -140,6 +143,7 @@ c     &                    ,a,''color: '',a,''aqua'',a,a,'' ));'')') ra,dec,radi
      &                    ,a,''color: '',a,''BlueViolet'',a,a,'' ));'')') ra,dec,radius,a0,a1,a1,a2
          ENDIF
       ENDDO 
+
  98   CONTINUE
       DO WHILE(ok)
          READ(lu_in2,*,end=99) ra2,dec2,dummy,dummy,source_number
@@ -147,6 +151,11 @@ c     &                    ,a,''color: '',a,''aqua'',a,a,'' ));'')') ra,dec,radi
      &         a,''name: '',a,'' Nr. '',i3,a,a,'')]);'')') ra2,dec2,a0,a1,source_number,a1,a2
       ENDDO
  99   CONTINUE
+
+      write(lu_out,'(''$("input[name=survey]").change(function() {'')')
+      write(lu_out,'(''   aladin.setImageSurvey($(this).val());'')')
+      write(lu_out,'(''});'')')
+
       write(lu_out,'(''</script>'')')
       write(lu_out,'(''<script type="text/javascript">'')')
       write(lu_out,'(''document.getElementById("hipsBase").innerHTML=hips'')')
