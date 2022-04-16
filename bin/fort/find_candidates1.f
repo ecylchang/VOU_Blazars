@@ -1567,8 +1567,8 @@ c end PG
             fluxU_erosita(ierosita,2)=fdens
             call fluxtofdens(0.9,2.3,5.,fluxL_erosita(ierosita,2),3.6,fdens,nudens)
             fluxL_erosita(ierosita,2)=fdens
-            CALL RXgraphic_code(flux_chandra(ichandra,1),'X',code)
-            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_chandra(ichandra),dec_chandra(ichandra),int(code)
+            CALL RXgraphic_code(flux_erosita(ierosita,1),'X',code)
+            write (13,'(f9.5,2x,f9.5,2x,i6)') ra_erosita(ierosita),dec_erosita(ierosita),int(code)
          ELSE IF ((catalog(1:4) == '3fhl') .or. (catalog(1:7) == '4fgldr3') .or.
      &       (catalog(1:4) == '3fgl') .or. (catalog(1:5) == '2bigb') .or. (catalog(1:7) == 'f357cat')
      &           .or.  (catalog(1:5) == 'mst9y') .or. (catalog(1:5) == '2agile')

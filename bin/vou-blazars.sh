@@ -880,8 +880,8 @@ do
       echo
       [ -s tmp/${pidnm}catlist2.txt ] && ${BINF}/readcat tmp/${pidnm}catlist2.txt tmp/${pidnm}output2.csv $racand $deccand $sfov $nhval 0. 0. 0. 0.
       if [ ! -s tmp/${pidnm}output2.csv ]; then
-         echo RA= $rar Dec= $decr radius= $sfov > output2.csv
-         echo nH= 0.0 Error circle/elliptical= 0.  0.  0.  0.  0. >> output2.csv
+         echo RA= $rar Dec= $decr radius= $sfov > tmp/${pidnm}output2.csv
+         echo nH= 0.0 Error circle/elliptical= 0.  0.  0.  0.  0. >> tmp/${pidnm}output2.csv
       fi
 
 #running the PHASAE 2
