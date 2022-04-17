@@ -75,10 +75,10 @@ UVOT Yershov et al. 2014, Ap&SS, 354, 97!
 GALEX Morrissey et al. 2007, ApJS, 173, 682!
 XMMOM Page et al. 2012, MNRAS, 426, 903!
 CMA TBD!
-XRTSPEC Giommi, P. 2015, JHEAp, 7, 173!
+XRTSPEC Giommi et al. 2021, MNRAS, 507, 5690!
 OUSXB Giommi et al. 2019, A&A, 631, A116!
 OUSXG Giommi et al. 2020, A&A submitted!
-OULC Giommi et al. in preparation!
+OULC Giommi et al. 2021, MNRAS, 507, 5690!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 BEPPOSAX Giommi et al. 2002, Babs. conf.!
 NuBlazar Middei et al. 2022 submitted!
