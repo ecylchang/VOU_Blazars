@@ -4,17 +4,17 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
-      integer*4 i,sfound,npt(15000),rtype,stype(15000)
-      real*4 frequency(15000,1000),flux(15000,1000),uflux(15000,1000),lflux(15000,1000),sedup,sedlow
-      real*4 rasec,decsec,testflux,mjdstart(15000,1000),mjdend(15000,1000)
+      integer*4 i,sfound,npt(80000),rtype,stype(80000)
+      real*4 frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),sedup,sedlow
+      real*4 rasec,decsec,testflux,mjdstart(80000,1000),mjdend(80000,1000)
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
-      character*200 input_file,output_file,refs(15000,1000)
+      character*200 input_file,output_file,refs(80000,1000)
       character*14 stringin
-      character*15 spectype(15000,1000)
+      character*15 spectype(80000,1000)
       character*6 number
-      character*2 flag(15000,1000)
+      character*2 flag(80000,1000)
       character*1 sign
       logical ok,there
       ok = .true.

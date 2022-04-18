@@ -327,9 +327,9 @@ c write the data
          enddo
 200      continue
          if (inputlist(iskip+1:iskip+12) == 'catlist2.txt') then
-            write(*,'("Candidate nr.",i4,",",2x,a,i4,2x,"point(s)")') ns,catalog(1:it-1),icat
+            write(*,'("Candidate nr.",i4,",",2x,a,i5,2x,"point(s)")') ns,catalog(1:it-1),icat
          else
-            write(*,'(a,i4,2x,"point(s)")') catalog(1:it-1),icat
+            write(*,'(a,i5,2x,"point(s)")') catalog(1:it-1),icat
          endif
          close(12)
       enddo

@@ -954,7 +954,7 @@ do
       [ -d Results/$xrtnm -a -f tmp/${pidnm}sed.*ps ] && cp tmp/${pidnm}sed.*ps Results/$xrtnm/$source"_"sed.eps
       [ -d Results/$xrtnm -a -f tmp/${pidnm}error_map.*ps ] && cp tmp/${pidnm}error_map.*ps Results/$xrtnm/$source"_"error_map.eps
       [ -d Results/$xrtnm -a -f tmp/${pidnm}LC.*ps ] && cp tmp/${pidnm}LC.*ps Results/$xrtnm/$source"_"LC.eps
-      [ -d Results/$xrtnm -a -f tmp/${pidnm}LC_fermi.*ps ] && tmp/${pidnm}cp LC_fermi.*ps Results/$xrtnm/$source"_"LC_fermi.eps
+      [ -d Results/$xrtnm -a -f tmp/${pidnm}LC_fermi.*ps ] && cp tmp/${pidnm}LC_fermi.*ps Results/$xrtnm/$source"_"LC_fermi.eps
       [ -d Results/$xrtnm -a -f tmp/${pidnm}Sed.txt ] && cp tmp/${pidnm}Sed.txt Results/$xrtnm/$source"_"Sed.txt
       [ -d Results/$xrtnm -a -f tmp/${pidnm}output2.csv ] && cp tmp/${pidnm}output2.csv Results/$xrtnm/$source"_"output2.csv
 

@@ -14,12 +14,12 @@ c
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
       REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(15000)
       REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(15000)
-      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(15000)
-      REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(15000),dec_col13(15000)
-      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(15000)
+      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(80000)
+      REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(80000),dec_col13(80000)
+      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(80000)
       REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
       REAL*4 afmax(max_sat),cc
-      REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(15000)
+      REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(80000)
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
       REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(20000)
       REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
