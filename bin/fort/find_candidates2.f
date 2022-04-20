@@ -23,11 +23,11 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, ia, radio_type(5000),lu_output,in,im,rfound,ir100found,s,iverit,veritind(300)
-      INTEGER*4 no_found,sfound,nrep(5000),lenact,source_type,type_average,ns,ivhe,imagic,magicind(300)
-      INTEGER*4 iradio,icat,k,ix,ir,types(0:5),i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
+      INTEGER*4 ier, lu_in, lu_output,in,im,ir100found,s,iverit,veritind(300)
+      INTEGER*4 sfound,nrep(5000),lenact,type_average,ns,ivhe,imagic,magicind(300)
+      INTEGER*4 iradio,icat,ix,ir,i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
       INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(80000)
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ibmw,ifound,l,t(5000),xraypart(80000),ialma,optpart(3500)
+      INTEGER*4 is,ie, i, j,xraypart(80000),ialma,optpart(3500)
       INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(80000),iflcuvfound
       integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
@@ -35,26 +35,26 @@ c
       integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
       integer*4 uv_ref(300),xray_ref(80000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600),maxebl
-      integer*4 kuehrind(1000),ikuehr,inustar,ibepp,indoptlc(3500),ioptlc,optlc_ref(3500)
+      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600)
+      integer*4 kuehrind(1000),ikuehr,indoptlc(3500),ioptlc,optlc_ref(3500)
       REAL*8 ra_cat(200),dec_cat(200),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
       REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
-      REAL*8 ra_ipc(200),dec_ipc(200),dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
+      REAL*8 dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
       real*8 ra_xray(80000),dec_xray(80000),dec_uvcand(300),ra_flcuv(8000)
-      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),ra_alma,dec_alma,dec_flcuv(8000)
+      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),dec_flcuv(8000)
       real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5),irdistval
-      REAL*4 flux_radio(5000),radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r,matchradius
+      REAL*4 radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
       REAL*4 flux_4p8(1000,3),alphar,flux_usno(3500,5),frequency_usno(3500,5),sigma
-      REAL*4 rasec,decsec,min_dist_ipc,min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
-      REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,flux2nufnu_rxs,ratio,min_dist_other
-      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_cluster,min_dist_far
+      REAL*4 min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
+      REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,min_dist_other
+      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_far
       REAL*4 usnomag(3500,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
       REAL*4 flux_gam(100,9),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
-      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),flux2nufnu_far,farirx,frequency_gam(100,9)
-      REAL*4 auvx,aruv,airx,arir,aswift,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
-      real*4 typefirst,type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
+      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),farirx,frequency_gam(100,9)
+      REAL*4 auvx,aruv,airx,arir,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
+      real*4 type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
       real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor
@@ -73,17 +73,17 @@ c
       real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
 c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
       real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500),mjdst_xrt(80000),mjded_xrt(80000)
-      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor,fq1tev,sloperat
+      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor
       real*4 flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5),zsource(400)
       real*4 frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),slope_flcuv(8000)
-      real*4 mjdst_flcuv(8000),mjded_flcuv(8000),Ferr_flcuv(8000,4),metst(8000),meted(8000),ts(8000),duration(8000)
+      real*4 mjdst_flcuv(8000),mjded_flcuv(8000),Ferr_flcuv(8000,4),ts(8000),duration(8000)
       real*4 mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000),poserr_gamslp(5),gamslp(5)
       real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
       real*4 mjdst_optlc(3500)
       CHARACTER*1 sign,flag_4p8(1000,4)
       character*4 flag_ir(2000,2)
       character*6 aim
-      CHARACTER*30 name_other(10000),date_alma(1500),namegam(100),irlc_name(2000),irlcid(2)
+      CHARACTER*30 date_alma(1500),namegam(100),irlc_name(2000),irlcid(2)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
       character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
@@ -95,7 +95,7 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(200),name_a(8000),flcuv_type(8000)
       CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(80000),far_type(200)
       CHARACTER*800 string,repflux
-      LOGICAL there,ok,found,debl
+      LOGICAL ok,found,debl
       common webprograms
       ok = .TRUE.
       found = .FALSE.
@@ -5288,7 +5288,7 @@ c
       IMPLICIT none 
       REAL*4 intensity,code,rfl_max,rfl_min,xfl_min,xfl_max,irfl_min,irfl_max
       REAL*4 uvfl_max,uvfl_min,gfl_min,gfl_max,optfl_max,optfl_min
-      INTEGER*4 component,band_type,temp
+      INTEGER*4 component,band_type
       rfl_min=0.8*1.4e9*1E-26 ! 0.8 mJy
       rfl_max=8000.*1.4e9*1E-26 ! 8 Jy
       xfl_min = 1.e-16 ! 1.e-16 erg/cm2/s, nufnu
@@ -5362,7 +5362,7 @@ cccc
       end
 c
       SUBROUTINE fluxtofdens(gamma,bandl,bandu,flux,gev,fdens,nudens)
-      real*4 alpha,bandu,bandl,flux,nudens,fdens,conval,kev,nuu,nul
+      real*4 bandu,bandl,flux,nudens,fdens,conval
 c      write(*,*) gamma,flux,gev,bandu,bandl
 c      if (gamma .ne. 2.d0 ) then
       conval=(1./(-gamma+1.))*((bandu)**(-gamma+1.)-(bandl)**(-gamma+1.))
@@ -5435,8 +5435,8 @@ c  in units of erg/cm2/s for nufnu vs nu plots
 c
         IMPLICIT none
         REAL*4 nh, flux , av , m_band, a_band, Rv 
-        REAL*4 c, lambda, const, frequency, a
-        REAL*8 x,aa,bb,c1,c2,dx,px,ebv,y
+        REAL*4 c, lambda, frequency, a
+        REAL*8 x,aa,bb,c1,c2,dx,px,ebv,y,const
         CHARACTER*3 filter
 c        print *,' nh, m_band, filter ', nh, m_band,filter
 c        call upc(filter)
