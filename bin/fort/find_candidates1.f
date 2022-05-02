@@ -205,10 +205,10 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
             dec_radio(iradio)=dec
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            IF (catalog(1:4) == 'nvss') radio_type(iradio) = 2
-            IF (catalog(1:5) == 'first') radio_type(iradio) = 1
-            IF (catalog(1:5) == 'sumss') radio_type(iradio) = 3
-            IF (catalog(1:7) == 'vlassql') radio_type(iradio) = 4
+            IF (catalog(1:4) == 'nvss') radio_type(iradio) = 3
+            IF (catalog(1:5) == 'first') radio_type(iradio) = 2
+            IF (catalog(1:5) == 'sumss') radio_type(iradio) = 4
+            IF (catalog(1:7) == 'vlassql') radio_type(iradio) = 1
             IF ((catalog(1:5) == 'sumss') .or. (catalog(1:4) == 'nvss')
      &               .or. (catalog(1:7) == 'vlassql')) THEN
                if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_radio(iradio)
@@ -310,9 +310,9 @@ c PG
 c PG end
             flux_radio(iradio)=flux_radio(iradio)*const(iradio)
             !write(*,*) iradio,radio_type(iradio)
-            if (radio_type(iradio) .eq. 1) then
+            if (radio_type(iradio) .eq. 2) then
                if (ppss(iradio) .gt. 0.15) iradio=iradio-1
-            else if (radio_type(iradio) .eq. 4) then
+            else if (radio_type(iradio) .eq. 1) then
                if (vlasssrnm(iradio)(1:1) .ne. 'J') iradio=iradio-1
             endif
 c            if (iradio .ge. 1) then
@@ -2171,7 +2171,7 @@ cccccccccccc check radio repeted!!!!!!!!!!!!!!!!!!!!
                   poserr_source(sfound)=poserr_radio(k)
                   rrconst(sfound)=const(k)
                endif
-               goto 98
+               goto 98  !skip
                !write(*,*) "Final radio",ra_source(sfound),dec_source(sfound),flux_source(sfound)
             endif
             write(*,*) '................Cataloged sources.................'
@@ -3018,8 +3018,8 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
          enddo
       endif
       WRITE (*,*) '      '
-      write(*,*) 'Suggest Priority Order of Source nr.:',priority(1:ifound-rfound)
-      WRITE (*,*) '      '
+      !write(*,*) 'Suggest Priority Order of Source nr.:',priority(1:ifound-rfound)
+      !WRITE (*,*) '      '
       goto 502
 
 cccccc for skip the phase 1
@@ -3205,13 +3205,13 @@ c
       if (dec < 0.0) sign(1:1)='-'
       type = ' (type unknown) '
 c      IF (ratio < 0.) RETURN 
-      IF (radio_type == 2) THEN
+      IF (radio_type == 3) THEN
          radio_survey='NVSS'
-      ELSE IF (radio_type == 1) THEN
+      ELSE IF (radio_type == 2) THEN
          radio_survey='FIRST'
-      ELSE IF (radio_type == 3) THEN
+      ELSE IF (radio_type == 4) THEN
          radio_survey='SUMSS'
-      Else IF (radio_type == 4) then
+      Else IF (radio_type == 1) then
          radio_survey='VLASSQL'
       ELSE
          radio_survey='UNKNOWN'

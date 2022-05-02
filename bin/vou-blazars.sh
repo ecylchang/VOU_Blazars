@@ -945,7 +945,7 @@ do
       [ -d Results/SEDtool -a -f tmp/${pidnm}Out4SedTool.txt ] && cp tmp/${pidnm}Out4SedTool.txt Results/SEDtool/$rased"_"$decsed"_"sedtool.txt
       if [ $runmode != l -a $plotsed != N ]; then
          rm -f tmp/${pidnm}PySED.png
-         python ${HERE}/VOU-plotSED.py --xaxis f --infile tmp/${pidnm}Sed.csv --outfile tmp/${pidnm}PySED.png --title 'Source nr. '$source' RA='$racand' Dec='$deccand --upperl 'yes'
+         python ${HERE}/VOU-plotSED.py --xaxis f --infile tmp/${pidnm}Sed.csv --outfile tmp/${pidnm}PySED.png --title 'Source nr. '$source' RA='$racand' Dec='$deccand --upperlimits 'yes'
          open tmp/${pidnm}PySED.png
       fi
 ##############################################################

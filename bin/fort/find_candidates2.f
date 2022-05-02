@@ -313,10 +313,10 @@ c         write(*,*) "redshift",zsource(1:isource)
      &      rrxx_type(npt(sfound),sfound)='eROSITA-EDR'
 
          else
-            if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='FIRST'
-            if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='NVSS'
-            if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='SUMSS'
-            if (spec_type(npt(sfound),sfound) .eq. 4) rrxx_type(npt(sfound),sfound)='VLASSQL'
+            if (spec_type(npt(sfound),sfound) .eq. 2) rrxx_type(npt(sfound),sfound)='FIRST'
+            if (spec_type(npt(sfound),sfound) .eq. 3) rrxx_type(npt(sfound),sfound)='NVSS'
+            if (spec_type(npt(sfound),sfound) .eq. 4) rrxx_type(npt(sfound),sfound)='SUMSS'
+            if (spec_type(npt(sfound),sfound) .eq. 1) rrxx_type(npt(sfound),sfound)='VLASSQL'
          endif
       endif
       enddo
