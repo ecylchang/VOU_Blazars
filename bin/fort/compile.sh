@@ -2,7 +2,7 @@
 comp_libs () {
     [ -f status.codes ] || { echo "Error: file 'status.codes' not found. Exiting."; return 1; }
     echo "-> Compiling 'mylib'"
-    gfortran -c mylib.f -ffixed-line-length-1000
+    gfortran -c mylib.f -ffixed-line-length-1000 -mcmodel=medium
 #    echo "-> Compiling 'nhdeabsorb'"
 #    gfortran -c nhdeabsorb.f -ffixed-line-length-132
 }
@@ -10,7 +10,7 @@ comp_libs () {
 comp_bins () {
     echo "-> Compiling '$1'.."
 
-    gfortran -o ${1} ${1}.f -ffixed-line-length-1000 mylib.o -L${PGPLOT_DIR} -lpgplot \
+    gfortran -o ${1} ${1}.f -ffixed-line-length-1000 -mcmodel=medium mylib.o -L${PGPLOT_DIR} -lpgplot \
       || { echo "Error: apparently '$1' was not compiled properly. Exiting."; return 1; }
 
     echo "..done."
