@@ -511,8 +511,8 @@ fi
 
 ###############################  HTML table file  ###############################
 if [ $runmode == f ]; then
-   echo "Number R.A. Dec. Type" > tmp/${pidnm}candidates.csv
-   cat tmp/${pidnm}find_out_temp.txt | awk ' $3>10000 {print $1, $2, int($3/10000)}  $3<-40000 {print $1, $2, int($3/10000)} $3==-9999 {print $1, $2, int($3/10000)} ' | awk '{print NR, $1, $2, "type"$3}' >> tmp/${pidnm}candidates.csv
+   echo "Number R.A. Dec. Type Name" > tmp/${pidnm}candidates.csv
+   cat tmp/${pidnm}find_out_temp.txt | awk ' $3>10000 {print $1, $2, int($3/10000), $4 $5}  $3<-40000 {print $1, $2, int($3/10000), $4 $5} $3==-9999 {print $1, $2, int($3/10000), $4 $5} ' | awk '{print NR, $1, $2, "type"$3, $4 $5}' >> tmp/${pidnm}candidates.csv
    cat tmp/${pidnm}candidates.csv | sed 's/type1/HSP/g' | sed 's/type2/ISP/g' | sed 's/type3/LSP/g' | sed 's/type4/jetted-AGN/g' | sed 's/type5/Unknown/g' | sed 's/type-5/3HSP/g' | sed 's/type-6/5BZCat/g' | sed 's/type-7/CRATES/g' | sed 's/type0/Pulsar/g' > tmp/${pidnm}candidates.csv
    
    if [ $pidnm ]; then
@@ -595,10 +595,12 @@ do
            [ -f tmp/${pidnm}Sed_temp.txt ] && `grep "matched source" tmp/${pidnm}Sed_temp.txt | awk '{print $1}' | uniq > tmp/${pidnm}sources.list`
            declare -i sourcenb
            sourcenb=`cat tmp/${pidnm}sources.list | wc -l`
-           sourcenb=${sourcenb}-1
+           #sourcenb=${sourcenb}-1
 #               cat sources.list
-           if [ $VOUB_AUTOSED == part -a ${sourcenb} -ge 5 ]; then
-              cat tmp/${pidnm}phase1 | tail -2 | head -1 |awk '{print $7 "\n" $8 "\n" $9 "\n" $10 "\n" $11}' > tmp/${pidnm}sources.list
+#           echo number of candidate ${sourcenb}
+           if [ $VOUB_AUTOSED == part -a ${sourcenb} -gt 5 ]; then
+######              cat tmp/${pidnm}phase1 | tail -2 | head -1 |awk '{print $7 "\n" $8 "\n" $9 "\n" $10 "\n" $11}' > tmp/${pidnm}sources.list
+             python ${HERE}/select_cand.py --RA_cent $ranh --Dec_cent $decnh --quiet --input_list "tmp/"{$pidnm}"find_out_temp.txt" --input_file "tmp/"{$pidnm}"Sed_temp.txt" --output_list "tmp/"$pidnm"sources.list"
            fi
         fi
         #cat sources.list
@@ -606,10 +608,10 @@ do
         declare -i sourcenb
         sourcenb=`cat tmp/${pidnm}sources.list | wc -l`
         sourcenb=${sourcenb}-1
-        echo ${sourcenm}
         if [ $sourcenb -ge 0 ]; then
            source=`head -1 tmp/${pidnm}sources.list`
         #echo $sourcenb
+        #   echo ${sourcenb}
            cat tmp/${pidnm}sources.list | tail -${sourcenb} > tmp/${pidnm}sources.tmp
            mv tmp/${pidnm}sources.tmp tmp/${pidnm}sources.list
         else
@@ -956,6 +958,7 @@ do
       [ -d Results/$xrtnm -a -f tmp/${pidnm}LC.*ps ] && cp tmp/${pidnm}LC.*ps Results/$xrtnm/$source"_"LC.eps
       [ -d Results/$xrtnm -a -f tmp/${pidnm}LC_fermi.*ps ] && cp tmp/${pidnm}LC_fermi.*ps Results/$xrtnm/$source"_"LC_fermi.eps
       [ -d Results/$xrtnm -a -f tmp/${pidnm}Sed.txt ] && cp tmp/${pidnm}Sed.txt Results/$xrtnm/$source"_"Sed.txt
+      [ -d Results/$xrtnm -a -f tmp/${pidnm}Sed.csv ] && cp tmp/${pidnm}Sed.csv Results/$xrtnm/$source"_"Sed.csv
       [ -d Results/$xrtnm -a -f tmp/${pidnm}output2.csv ] && cp tmp/${pidnm}output2.csv Results/$xrtnm/$source"_"output2.csv
 
 #save the results as a tex pdf
