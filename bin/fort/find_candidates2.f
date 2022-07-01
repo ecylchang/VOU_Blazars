@@ -26,57 +26,54 @@ c
       INTEGER*4 ier, lu_in, lu_output,in,im,ir100found,s,iverit,veritind(300)
       INTEGER*4 sfound,nrep(5000),lenact,type_average,ns,ivhe,imagic,magicind(300)
       INTEGER*4 iradio,icat,ix,ir,i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp,xrtspind(80000)
-      INTEGER*4 is,ie, i, j,xraypart(80000),ialma,optpart(3500)
-      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,filen_x(80000),iflcuvfound
-      integer*4 isource,npt(1000),spec_type(2000,1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp
+      INTEGER*4 is,ie, i, j,ialma,optpart(3500)
+      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,iflcuvfound
+      integer*4 isource,npt(1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
       integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
       integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(2000),filen_o(3500),filen_l(200),r
-      integer*4 rrxx_ref(2000,1000),f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
-      integer*4 uv_ref(300),xray_ref(80000),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
+      integer*4 f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
+      integer*4 uv_ref(300),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
       integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
       integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600)
       integer*4 kuehrind(1000),ikuehr,indoptlc(3500),ioptlc,optlc_ref(3500)
       REAL*8 ra_cat(200),dec_cat(200),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
-      REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam,ra_rrxx(2000,1000),dec_rrxx(2000,1000)
+      REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam
       REAL*8 dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
       REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
       REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
-      real*8 ra_xray(80000),dec_xray(80000),dec_uvcand(300),ra_flcuv(8000)
+      real*8 dec_uvcand(300),ra_flcuv(8000)
       real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),dec_flcuv(8000)
       real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5),irdistval
       REAL*4 radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
-      REAL*4 flux_4p8(1000,3),alphar,flux_usno(3500,5),frequency_usno(3500,5),sigma
+      REAL*4 flux_4p8(1000,3),alphar,sigma
       REAL*4 min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,min_dist_other
       REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_far
-      REAL*4 usnomag(3500,5),flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
+      REAL*4 flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
       REAL*4 flux_gam(100,9),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
       real*4 flux_far(500,5),frequency_far(500,5),farlike(500),farirx,frequency_gam(100,9)
-      REAL*4 auvx,aruv,airx,arir,alphauv,frequency_4p8(1000,3),fdens,nudens,epos(2000,1000)
-      real*4 type_cat(200),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000)
+      REAL*4 auvx,aruv,airx,arir,alphauv,frequency_4p8(1000,3),fdens,nudens
+      real*4 type_cat(200)
       real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
       real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
       real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor
       real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
       real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
-      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),slope_xray(80000),snr_pccs100(1500,9)
+      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),snr_pccs100(1500,9)
       real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
-      real*4 FluxU_usno(3500,5),FluxL_usno(3500,5),poserr_usno(3500),usnomagerr(3500,5),freq_lowrcand(5)
+      real*4 poserr_usno(3500),freq_lowrcand(5)
       real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
       real*4 FluxU_gam(100,9),FluxL_gam(100,9),poserr_gam(100),Ferr_gam(100,9),Specerr_gam(100,2)
-      real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5),poserr_xray(80000)
-      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_xray(80000,5)
-      real*4 frequency_xray(80000,5),flux_xray(80000,5),FluxU_xray(80000,5),FluxL_xray(80000,5),Ferr_lowr(200)
+      real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5)
+      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_lowr(200)
       real*4 frequency_lowr(200),flux_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200)
       real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
       real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
-c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lflux_lc(2000,1000)
-      real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500),mjdst_xrt(80000),mjded_xrt(80000)
-      real*4 mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),mjdavg,redshift,reduction_factor
+      real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500)
+      real*4 mjdavg,redshift,reduction_factor
       real*4 flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5),zsource(400)
-      real*4 frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),slope_flcuv(8000)
-      real*4 mjdst_flcuv(8000),mjded_flcuv(8000),Ferr_flcuv(8000,4),ts(8000),duration(8000)
+      real*4 mjdst_flcuv(8000),mjded_flcuv(8000),ts(8000),duration(8000),slope_flcuv(8000)
       real*4 mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000),poserr_gamslp(5),gamslp(5)
       real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
       real*4 mjdst_optlc(3500)
@@ -86,16 +83,33 @@ c      real*4 frequency_lc(2000,1000),flux_lc(2000,1000),uflux_lc(2000,1000),lfl
       CHARACTER*30 date_alma(1500),namegam(100),irlc_name(2000),irlcid(2)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
       character*200 webprograms,refsfile,refs(100)
-      character*4 rrxx_flag(2000,1000),f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
-      character*4 uv_flag(300,6),xray_flag(80000,5),gam_flag(100,9),vhe_flag(500),lowr_flag(200)
-      character*4 debl_flag(300,5),opt_flag(5,5),flcuv_flag(8000,4),optlc_flag(3500)
+      character*4 f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
+      character*4 uv_flag(300,6),gam_flag(100,9),vhe_flag(500),lowr_flag(200)
+      character*4 debl_flag(300,5),opt_flag(5,5),optlc_flag(3500)
       CHARACTER*15 opt_type(3500),uv_type(1000),ir_type(2000),gam_type(100)
-      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300),name_x(80000)
+      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300)
       CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(3500),name_u(1000),name_g(100)
-      CHARACTER*15 rrxx_type(2000,1000),name_l(200),lowr_type(200),name_cat(200),name_a(8000),flcuv_type(8000)
-      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),xray_type(80000),far_type(200)
+      CHARACTER*15 name_l(200),lowr_type(200),name_cat(200)
+      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),far_type(200)
       CHARACTER*800 string,repflux
       LOGICAL ok,found,debl
+
+      integer*4,dimension(:,:),allocatable :: spec_type,rrxx_ref
+      real*4,dimension(:,:),allocatable :: mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos
+      real*8,dimension(:,:),allocatable :: ra_rrxx,dec_rrxx
+      character*15,dimension(:,:),allocatable :: rrxx_type
+      character*4,dimension(:,:),allocatable :: rrxx_flag
+      integer*4,dimension(:),allocatable :: xrtspind,xraypart,xray_ref,filen_x
+      real*8,dimension(:),allocatable :: ra_xray,dec_xray
+      real*4,dimension(:),allocatable :: slope_xray,poserr_xray,mjdst_xrt,mjded_xrt
+      real*4,dimension(:,:),allocatable :: frequency_xray,flux_xray,FluxU_xray,FluxL_xray,Ferr_xray
+      character*4,dimension(:,:),allocatable :: xray_flag
+      character*15,dimension(:),allocatable :: name_x,xray_type
+      real*4,dimension(:,:),allocatable :: frequency_flcuv,flux_flcuv,FluxU_flcuv,FluxL_flcuv,Ferr_flcuv
+      character*4,dimension(:,:),allocatable :: flcuv_flag
+      character*15,dimension(:),allocatable :: name_a,flcuv_type
+      real*4,dimension(:,:),allocatable :: flux_usno,frequency_usno,FluxU_usno,FluxL_usno,usnomagerr,usnomag
+
       common webprograms
       ok = .TRUE.
       found = .FALSE.
@@ -241,6 +255,10 @@ c      enddo
 c read the sed.txt first
       npt(1:1000)=0
 202   continue
+
+      allocate(mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000),epos(2000,1000))
+      allocate(spec_type(2000,1000),ra_rrxx(2000,1000),dec_rrxx(2000,1000),rrxx_type(2000,1000))
+
       read(12,'(i4,a)',end=200,err=200) sfound,string
 c      write(*,*) sfound,string
       do while(ok)
@@ -341,6 +359,14 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
       enddo
 400   continue
       close(15)
+
+      allocate(ra_xray(80000),dec_xray(80000),xrtspind(80000),xraypart(80000))
+      allocate(slope_xray(80000),poserr_xray(80000),mjdst_xrt(80000),mjded_xrt(80000))
+      allocate(frequency_xray(80000,5),flux_xray(80000,5),FluxU_xray(80000,5),FluxL_xray(80000,5),Ferr_xray(80000,5))
+      allocate(name_x(80000),xray_type(80000),filen_x(80000))
+      allocate(frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),Ferr_flcuv(8000,4))
+      allocate(flcuv_type(8000),name_a(8000))
+      allocate(flux_usno(3500,5),frequency_usno(3500,5),FluxU_usno(3500,5),FluxL_usno(3500,5),usnomagerr(3500,5),usnomag(3500,5))
 
 c read the data file
       READ(lu_in,'(a)') string
@@ -500,7 +526,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
                posyerr=(1100./flux_4p8(i4p8,1))**2+(4**2)
                if (Ferr_4p8(i4p8,1) .eq. 99.) then
                   if ((dec_4p8(i4p8) .ge. -87.5) .and. (dec_4p8(i4p8) .lt. -37.)) then
-                     Ferr_4p8(i4p8,1)=sqrt((12.3+0.085*dec_4p8(i4p8))**2+(0.052*flux_4p8(i4p8,1))**2)
+                     Ferr_4p8(i4p8,1)=sqrt((12.3+0.085*real(dec_4p8(i4p8)))**2+(0.052*flux_4p8(i4p8,1))**2)
                   else if ((dec_4p8(i4p8) .ge. 37.) .and. (dec_4p8(i4p8) .lt. -29.)) then
                      Ferr_4p8(i4p8,1)=sqrt((11.**2)+(0.052*flux_4p8(i4p8,1))**2)
                   else if ((dec_4p8(i4p8) .ge. -29.) .and. (dec_4p8(i4p8) .lt. -9.5)) then
@@ -1117,8 +1143,8 @@ c               ie=index(string(is+1:len(string)),' ')+is
 c               if (is .ne. ie-1) read(string(is+1:ie-1),*)mjdst_alma(ipccs100)
 c               mjdst_alma(ipccs100)=mjdst_alma(ipccs100)-2400000.5
 c               mjded_alma(ipccs100)=mjdst_alma(ipccs100)
-               mjded_alma(ipccs100)=mjdtest
-               mjdst_alma(ipccs100)=mjdtest
+               mjded_alma(ipccs100)=real(mjdtest)
+               mjdst_alma(ipccs100)=real(mjdtest)
 c               call mjd_to_date(mjdtest,year,month,date,hour)
                FluxU_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)+Ferr_pccs100(ipccs100,1)
                FluxL_pccs100(ipccs100,1)=flux_pccs100(ipccs100,1)-Ferr_pccs100(ipccs100,1)
@@ -4013,7 +4039,7 @@ c         write(*,*) '..................Low frequency Radio....................'
                ra_lowrcand(ilowrfound)=ra_lowr(i)
                dec_lowrcand(ilowrfound)=dec_lowr(i)
                epos_lowrcand(ilowrfound)=poserr_lowr(i)
-               lowrdist(ilowrfound)=dist
+               lowrdist(ilowrfound)=real(dist)
                lowrcand_type(ilowrfound)=lowr_type(i)
             endif
          enddo
@@ -4146,7 +4172,7 @@ c         write(*,*) irlcid(1),irlcid(2)
                   ra_ircand(iirfound)=ra_ir(i)
                   dec_ircand(iirfound)=dec_ir(i)
                   epos_ircand(iirfound)=poserr_ir(i)
-                  irdist(iirfound)=dist
+                  irdist(iirfound)=real(dist)
                   ircand_type(iirfound)=ir_type(i)
                else
                   iirfound=iirfound-1
@@ -4159,7 +4185,7 @@ c         write(*,*) irlcid(1),irlcid(2)
                      ra_ircand(iirfound)=ra_ir(i)
                      dec_ircand(iirfound)=dec_ir(i)
                      epos_ircand(iirfound)=poserr_ir(i)
-                     irdist(iirfound)=dist
+                     irdist(iirfound)=real(dist)
                      ircand_type(iirfound)=ir_type(i)
                   endif
                endif
@@ -4175,7 +4201,7 @@ c         write(*,*) irlcid(1),irlcid(2)
                   ra_ircand(iirfound)=ra_ir(i)
                   dec_ircand(iirfound)=dec_ir(i)
                   epos_ircand(iirfound)=poserr_ir(i)
-                  irdist(iirfound)=dist
+                  irdist(iirfound)=real(dist)
                   ircand_type(iirfound)=ir_type(i)
                else
                   iirfound=iirfound-1
@@ -4188,7 +4214,7 @@ c         write(*,*) irlcid(1),irlcid(2)
                      ra_ircand(iirfound)=ra_ir(i)
                      dec_ircand(iirfound)=dec_ir(i)
                      epos_ircand(iirfound)=poserr_ir(i)
-                     irdist(iirfound)=dist
+                     irdist(iirfound)=real(dist)
                      ircand_type(iirfound)=ir_type(i)
                   endif
                endif
@@ -4262,7 +4288,7 @@ c         write(*,*) iirfound
                   ra_usnocand(iofound)=ra_usno(i)
                   dec_usnocand(iofound)=dec_usno(i)
                   epos_usnocand(iofound)=poserr_usno(i)
-                  optdist(iofound)=dist
+                  optdist(iofound)=real(dist)
                   optcand_type(iofound)=opt_type(i)
                else
                   iofound=iofound-1
@@ -4275,7 +4301,7 @@ c         write(*,*) iirfound
                      ra_usnocand(iofound)=ra_usno(i)
                      dec_usnocand(iofound)=dec_usno(i)
                      epos_usnocand(iofound)=poserr_usno(i)
-                     optdist(iofound)=dist
+                     optdist(iofound)=real(dist)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
@@ -4291,7 +4317,7 @@ c         write(*,*) iirfound
                   ra_usnocand(iofound)=ra_usno(i)
                   dec_usnocand(iofound)=dec_usno(i)
                   epos_usnocand(iofound)=poserr_usno(i)
-                  optdist(iofound)=dist
+                  optdist(iofound)=real(dist)
                   optcand_type(iofound)=opt_type(i)
                else
                   iofound=iofound-1
@@ -4304,7 +4330,7 @@ c         write(*,*) iirfound
                      ra_usnocand(iofound)=ra_usno(i)
                      dec_usnocand(iofound)=dec_usno(i)
                      epos_usnocand(iofound)=poserr_usno(i)
-                     optdist(iofound)=dist
+                     optdist(iofound)=real(dist)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
@@ -4320,7 +4346,7 @@ c         write(*,*) iirfound
                   ra_usnocand(iofound)=ra_usno(i)
                   dec_usnocand(iofound)=dec_usno(i)
                   epos_usnocand(iofound)=poserr_usno(i)
-                  optdist(iofound)=dist
+                  optdist(iofound)=real(dist)
                   optcand_type(iofound)=opt_type(i)
                else
                   iofound=iofound-1
@@ -4333,7 +4359,7 @@ c         write(*,*) iirfound
                      ra_usnocand(iofound)=ra_usno(i)
                      dec_usnocand(iofound)=dec_usno(i)
                      epos_usnocand(iofound)=poserr_usno(i)
-                     optdist(iofound)=dist
+                     optdist(iofound)=real(dist)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
@@ -4349,7 +4375,7 @@ c         write(*,*) iirfound
                   ra_usnocand(iofound)=ra_usno(i)
                   dec_usnocand(iofound)=dec_usno(i)
                   epos_usnocand(iofound)=poserr_usno(i)
-                  optdist(iofound)=dist
+                  optdist(iofound)=real(dist)
                   optcand_type(iofound)=opt_type(i)
                else
                   iofound=iofound-1
@@ -4362,7 +4388,7 @@ c         write(*,*) iirfound
                      ra_usnocand(iofound)=ra_usno(i)
                      dec_usnocand(iofound)=dec_usno(i)
                      epos_usnocand(iofound)=poserr_usno(i)
-                     optdist(iofound)=dist
+                     optdist(iofound)=real(dist)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
@@ -4378,7 +4404,7 @@ c         write(*,*) iirfound
                   ra_usnocand(iofound)=ra_usno(i)
                   dec_usnocand(iofound)=dec_usno(i)
                   epos_usnocand(iofound)=poserr_usno(i)
-                  optdist(iofound)=dist
+                  optdist(iofound)=real(dist)
                   optcand_type(iofound)=opt_type(i)
                else
                   iofound=iofound-1
@@ -4391,7 +4417,7 @@ c         write(*,*) iirfound
                      ra_usnocand(iofound)=ra_usno(i)
                      dec_usnocand(iofound)=dec_usno(i)
                      epos_usnocand(iofound)=poserr_usno(i)
-                     optdist(iofound)=dist
+                     optdist(iofound)=real(dist)
                      optcand_type(iofound)=opt_type(i)
                   endif
                endif
@@ -4455,7 +4481,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                   ra_uvcand(iuvfound)=ra_uv(i)
                   dec_uvcand(iuvfound)=dec_uv(i)
                   epos_uvcand(iuvfound)=poserr_uv(i)
-                  uvdist(iuvfound)=dist
+                  uvdist(iuvfound)=real(dist)
                   uvcand_type(iuvfound)=uv_type(i)
                else
                   iuvfound=iuvfound-1
@@ -4468,7 +4494,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      ra_uvcand(iuvfound)=ra_uv(i)
                      dec_uvcand(iuvfound)=dec_uv(i)
                      epos_uvcand(iuvfound)=poserr_uv(i)
-                     uvdist(iuvfound)=dist
+                     uvdist(iuvfound)=real(dist)
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
@@ -4484,7 +4510,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                   ra_uvcand(iuvfound)=ra_uv(i)
                   dec_uvcand(iuvfound)=dec_uv(i)
                   epos_uvcand(iuvfound)=poserr_uv(i)
-                  uvdist(iuvfound)=dist
+                  uvdist(iuvfound)=real(dist)
                   uvcand_type(iuvfound)=uv_type(i)
                else
                   iuvfound=iuvfound-1
@@ -4497,7 +4523,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                      ra_uvcand(iuvfound)=ra_uv(i)
                      dec_uvcand(iuvfound)=dec_uv(i)
                      epos_uvcand(iuvfound)=poserr_uv(i)
-                     uvdist(iuvfound)=dist
+                     uvdist(iuvfound)=real(dist)
                      uvcand_type(iuvfound)=uv_type(i)
                   endif
                endif
@@ -4512,7 +4538,7 @@ c         write(*,*) iofound,ii1,ii2,ii3,ii4,ii5
                ra_uvcand(iuvfound)=ra_uv(i)
                dec_uvcand(iuvfound)=dec_uv(i)
                epos_uvcand(iuvfound)=poserr_uv(i)
-               uvdist(iuvfound)=dist
+               uvdist(iuvfound)=real(dist)
                uvcand_type(iuvfound)=uv_type(i)
                !write(*,*) iuvfound,dec_uvcand(iuvfound),epos_uvcand(iuvfound)
             endif
@@ -4635,6 +4661,10 @@ c      no_found=types(i)
 c      type_average = i
 c   ENDIF
 cENDDO
+         allocate(rrxx_flag(2000,1000),rrxx_ref(2000,1000))
+         allocate(xray_ref(80000),xray_flag(80000,5))
+         allocate(flcuv_flag(8000,4))
+
          write(*,*) 'TEST number',eblnn(1:igam)
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
          !write(lu_output,*) ra_source(k),dec_source(k),code
@@ -4669,6 +4699,11 @@ c the refs file
                write(lu_output,'(f9.5,2x,f9.5,2x,i6,2x,f8.3)') ra_rrxx(i,j),dec_rrxx(i,j),int(code),epos(i,j)
             endif
          enddo
+
+         deallocate(flcuv_type,name_a)
+         deallocate(mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos)
+         deallocate(spec_type,ra_rrxx,dec_rrxx,rrxx_type)
+         deallocate(rrxx_flag,rrxx_ref)
 c         write(17,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
 c         do i=1,nptlc(j)
 c            write(17,'(4(es10.3,2x),2(f10.4,2x),i2)') frequency_lc(i,j),flux_lc(i,j),
@@ -5266,6 +5301,16 @@ c         enddo
          write(*,*) '        '
          !if (j .ne. isource ) write(14,*) "===================="
       ENDDO
+
+      deallocate(ra_xray,dec_xray,xrtspind,xraypart)
+      deallocate(slope_xray,poserr_xray,mjdst_xrt,mjded_xrt)
+      deallocate(frequency_xray,flux_xray,FluxU_xray,FluxL_xray,Ferr_xray)
+      deallocate(name_x,xray_type,filen_x)
+      deallocate(xray_ref,xray_flag)
+      deallocate(frequency_flcuv,flux_flcuv,FluxU_flcuv,FluxL_flcuv,Ferr_flcuv)
+      deallocate(flcuv_flag)
+      deallocate(flux_usno,frequency_usno,FluxU_usno,FluxL_usno,usnomagerr,usnomag)
+
       close(lu_output)
       close(14)
       END
@@ -5355,7 +5400,7 @@ cccc
          density=10**(4.6326-2.0377*log10(mjy))
       endif
       sigma=sqrt((poserr1*poserr1)+(poserr2*poserr2))
-      ratio=2.*(dist*3600./sigma)**drop
+      ratio=2.*(real(dist)*3600./sigma)**drop
       like=exp(-ratio/2.)/(2.*pi*density*(sigma/3600.)**2)
       !write(*,*) 'LIKE',dist*3600.,sigma,drop,density,ratio,exp(-ratio/2.),(2.*pi*density*(sigma/3600.)**2)
       !write(*,*) "the likily hood",like
@@ -5412,8 +5457,8 @@ ccccccc
           frac=frac-1.
           intjd=intjd+1
       endif
-      hour = frac*24.0
-      l = intjd + 68569
+      hour = int(real(frac))*24.0
+      l = int(intjd) + 68569
       n = 4*l / 146097
       l = l - (146097*n + 3) / 4
       year = 4000*(l+1) / 1461001
@@ -5435,8 +5480,8 @@ c  in units of erg/cm2/s for nufnu vs nu plots
 c
         IMPLICIT none
         REAL*4 nh, flux , av , m_band, a_band, Rv 
-        REAL*4 c, lambda, frequency, a
-        REAL*8 x,aa,bb,c1,c2,dx,px,ebv,y,const
+        REAL*4 c, frequency, a
+        REAL*8 x,aa,bb,c1,c2,dx,px,ebv,y,const,lambda
         CHARACTER*3 filter
 c        print *,' nh, m_band, filter ', nh, m_band,filter
 c        call upc(filter)
@@ -5586,7 +5631,7 @@ c lambda from Amstrongs to microns
         !write(*,*) filter(1:3),m_band,a_band,const
         x=(10000.d0/lambda)
         if ((x .lt. 1.1d0) .and. (x .ge. 0.3d0)) then
-        a_band=(0.574*(x**1.61)-0.527*(x**1.61)/Rv)*av ! the a_lambda
+        a_band=(0.574*(real(x)**1.61)-0.527*(real(x)**1.61)/Rv)*av ! the a_lambda
         else if ((x .lt. 3.3d0) .and. (x .ge. 1.1d0)) then
         y=x-1.82d0
         aa=1+(0.17699d0*y)-(0.50447d0*y**2d0)-(0.02427d0*y**3d0)+(0.72085d0*y**4d0)
@@ -5594,7 +5639,7 @@ c lambda from Amstrongs to microns
         bb=1.41338d0*y+(2.28305d0*y**2d0)+(1.07233d0*y**3d0)-(5.38434d0*y**4d0)
      &  -(0.62251d0*y**5d0)+(5.30260d0*y**6d0)-(2.09002d0*y**7d0)
 c        write(*,*) aa,bb,av,Rv
-        a_band=(aa+(bb/Rv))*av
+        a_band=(real(aa)+(real(bb)/Rv))*av
         else if ((x .le. 10.d0) .and. (x .ge. 3.3d0)) then
         c2=-0.824+(4.717/Rv)
         c1=2.03-(3.007*c2)
@@ -5602,14 +5647,14 @@ c        write(*,*) aa,bb,av,Rv
         px=(0.5392*((x-5.9)**2))+(0.05644*((x-5.9)**3))
         if (x .le. 5.9d0) px=0.
         !write(*,*) (c1+c2*x+3.23*dx+0.41*px),c1,c2,dx,px
-        a_band=(c1+c2*x+3.23*dx+0.41*px)*ebv+av
+        a_band=real((c1+c2*x+3.23*dx+0.41*px))*real(ebv)+av
         else
         a_band=0.
         endif
         c=2.9979e10
         a=1.0
-        frequency=c/(lambda*1.e-8)
-        flux = 10.**(-0.4*(m_band -a_band)+const)*frequency
+        frequency=c/(real(lambda)*1.e-8)
+        flux = 10.**(-0.4*(m_band -a_band)+real(const))*frequency
         !if (filter(1:3)=='xw1') write(*,*) 'W1',m_band,a_band,flux
         if (m_band .eq. 0.) flux=0.
         !m_band=0.

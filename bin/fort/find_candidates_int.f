@@ -2,27 +2,33 @@
 
       IMPLICIT none
       integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,icand,filen,is,ie,xpts(2000)
-      integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000),xxot_type(10,2000)
-      integer nrepxx(2000),backxx(2000,2000),ixxss,ixxrep,trackxx(2000),repnumberxx(2000),posindxx(2000)
-      integer nreprr(2000),backrr(2000,2000),irrss,irrrep,trackrr(2000),repnumberrr(2000),posindrr(2000)
+      integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000)
+      integer nrepxx(2000),ixxss,ixxrep,trackxx(2000),repnumberxx(2000),posindxx(2000)
+      integer nreprr(2000),irrss,irrrep,trackrr(2000),repnumberrr(2000),posindrr(2000)
       integer nnuvx,nnruv,nnralpha,xxss_type(2000),rrss_type(2000),code
-      real*8 ra,dec,dist,ra_uv(10000),dec_uv(10000),ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
+      real*8 ra,dec,dist,ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
       real*8 ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000),ra_center,dec_center
       real*8 ra_xxss(2000),dec_xxss(2000),ra_rrss(2000),dec_rrss(200)
       real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,fdens,nudens
       real*4 frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000)
       real*4 frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000)
-      real*4 frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000)
       real*4 mjdst_rr(2000),mjded_rr(2000),mjdst_xx(2000),mjded_xx(2000)
       real*4 frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500)
       real*4 poserr_4p8(500),Ferr_4p8(500),poserr_uv(10000),poserr_xxss(2000),flux_rrss(2000)
-      real*4 frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2)
-      real*4 uvmag(10000,2),uvmagerr(10000,2),slope_gam(50),specerr_gam(50)
+      real*4 slope_gam(50),specerr_gam(50)
       real*4 frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),poserr_gam(50),Ferr_gam(50)
       real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
       character*200 input_file,input_file2,input_file3,output_file
       character*10 catalog,type_4p8(500)
       character*800 string
+
+
+      integer*4,dimension(:,:),allocatable :: backxx,backrr
+      real*8,dimension(:),allocatable :: ra_uv,dec_uv
+      real*4,dimension(:,:),allocatable :: frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr
+      integer*4,dimension(:,:),allocatable :: xxot_type
+      real*4,dimension(:,:),allocatable :: frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot
+
       LOGICAL there,ok,found
       ok = .TRUE.
       found = .FALSE.
@@ -57,6 +63,9 @@ c      min_dist_4p8=30./3600.
       IF (ier.NE.0) THEN
          write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF
+
+      allocate(xxot_type(10,2000))
+      allocate(frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000))
 
       icand=0
       ixx=0
@@ -111,6 +120,9 @@ c      write(*,*) icand,irr,ixx
       enddo
 98    continue
 c      write(*,*) isource
+
+      allocate(ra_uv(10000),dec_uv(10000))
+      allocate(frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2),uvmag(10000,2),uvmagerr(10000,2))
 
       igam=0
       iuv=0
@@ -261,6 +273,9 @@ c xrt 1sxps chandra
 c bmw xmm xmmsl
 c rass wga ipc
 c      write(*,*) '========================'
+
+      allocate(backxx(2000,2000),backrr(2000,2000))
+
       do i=1,ixxss
          do j=1,ixx
             if (trackxx(j) .eq. i) then
@@ -504,6 +519,9 @@ c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
          endif
       enddo
 
+      deallocate(ra_uv,dec_uv)
+      deallocate(frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr)
+
       if ((ipass .eq. 0) .and. (isource .ne. 0)) then
          print *,achar(27),'[35;1m No Candidates Found in Intermediate Phase',achar(27),'[0m'
          stop
@@ -541,6 +559,10 @@ c      write(*,*) pass2(1:ipass)
          endif
       enddo
       write(12,*) ipass
+
+      deallocate(backxx,backrr)
+      deallocate(xxot_type)
+      deallocate(frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot)
 
       close(12)
       end

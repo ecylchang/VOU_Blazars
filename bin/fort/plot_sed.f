@@ -4,19 +4,23 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
-      integer*4 i,sfound,npt(80000),rtype,stype(80000)
-      real*4 frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),sedup,sedlow
-      real*4 rasec,decsec,testflux,mjdstart(80000,1000),mjdend(80000,1000)
+      integer*4 i,sfound,rtype
+      real*4 sedup,sedlow,rasec,decsec,testflux
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
       character*100 title
-      character*200 input_file,output_file,refs(80000,1000)
+      character*200 input_file,output_file
       character*14 stringin
-      character*15 spectype(80000,1000)
       character*6 number
-      character*2 flag(80000,1000)
       character*1 sign
       logical ok,there
+
+      integer*4,dimension(:),allocatable :: npt,stype
+      real*4,dimension(:,:),allocatable :: frequency,flux,uflux,lflux,mjdend,mjdstart
+      character*200,dimension(:,:),allocatable :: refs
+      character*15,dimension(:,:),allocatable :: spectype
+      character*2,dimension(:,:),allocatable :: flag
+
       ok = .true.
 
       call rdforn(string,length)
@@ -42,6 +46,8 @@ c      write(*,*) output_file
          STOP
       ENDIF
 
+      allocate(stype(80000),npt(80000))
+
       npt(1:1000)=0
       open(10,file=input_file,status='old')
       !if (ns .ne. 1) .and. read(10,'(a)') stringin
@@ -53,6 +59,10 @@ c      write(*,*) output_file
       read(10,*) string
       read(10,*) string
       read(10,*) string
+
+      allocate(frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),mjdend(80000,1000),mjdstart(80000,1000))
+      allocate(refs(80000,1000),spectype(80000,1000),flag(80000,1000))
+
       do while (ok)
          npt(sfound)=npt(sfound)+1
          read(10,*,end=99,err=99) frequency(npt(sfound),sfound),flux(npt(sfound),sfound),
@@ -158,6 +168,10 @@ c         endif
       enddo
       call pgsci(1)
       CALL PGEND
+
+      deallocate(npt,stype)
+      deallocate(frequency,flux,uflux,lflux,mjdend,mjdstart)
+      deallocate(refs,spectype,flag)
 
       close (10)
       END

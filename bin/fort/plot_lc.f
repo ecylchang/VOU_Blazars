@@ -3,22 +3,25 @@
 c This program plot the SED for candidate
 
       implicit none
-      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,pttest,iflcuv,iir,IERGAM
-      integer*4 i,sfound,npt(15000),rtype,stype(1000),ivhe,ixray,iilc,ialma,lctype(15000)
-      real*4 frequency(15000,1000),flux(15000,1000),uflux(15000,1000),lflux(15000,1000)
-      real*4 rasec,decsec,testflux,mjdstart(15000,1000),mjdend(15000,1000),mjdavg(15000)
-      real*4 mjdlow,mjdup,lcup(5),lclow(5),flux_lc(15000),uflux_lc(15000),lflux_lc(15000)
-      real*4 mjdst_lc(15000),mjded_lc(15000),freq_lc(15000),fq1tev,sloperat,mjdstgam,mjdedgam
+      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,iflcuv,iir,IERGAM
+      integer*4 i,sfound,rtype,stype(1000),ivhe,ixray,iilc,ialma
+      real*4 rasec,decsec,testflux,mjdlow,mjdup,lcup(5),lclow(5)
+      real*4 fq1tev,sloperat,mjdstgam,mjdedgam
       real*8 rra,rdec,ra(1000),dec(1000)
       character*160 string
-      character*100 title
-      character*200 input_file,output_file,output_file2,refs(15000,1000),output_file3
+      character*200 input_file,output_file,output_file2,output_file3
       character*14 stringin
-      character*15 spectype(15000,1000)
       character*6 number,xtitle
-      character*4 flag(15000,1000)
       character*1 sign
       logical ok,there
+
+      integer*4,dimension(:),allocatable :: npt,lctype
+      real*4,dimension(:,:),allocatable :: frequency,flux,uflux,lflux,mjdstart,mjdend
+      real*4,dimension(:),allocatable :: mjdavg,flux_lc,uflux_lc,lflux_lc,mjdst_lc,mjded_lc,freq_lc
+      character*200,dimension(:,:),allocatable :: refs
+      character*15,dimension(:,:),allocatable :: spectype
+      character*2,dimension(:,:),allocatable :: flag
+
       ok = .true.
 
       call rdforn(string,length)
@@ -49,6 +52,11 @@ c This program plot the SED for candidate
          write (*,'('' file Sed.txt not found '')')
          STOP
       ENDIF
+
+      allocate(npt(15000),lctype(15000))
+      allocate(frequency(15000,1000),flux(15000,1000),uflux(15000,1000),lflux(15000,1000),mjdstart(15000,1000),mjdend(15000,1000))
+      allocate(mjdavg(15000),flux_lc(15000),uflux_lc(15000),lflux_lc(15000),mjdst_lc(15000),mjded_lc(15000),freq_lc(15000))
+      allocate(refs(15000,1000),spectype(15000,1000),flag(15000,1000))
 
       npt(1:1000)=0
       open(10,file=input_file,status='old')
@@ -702,6 +710,11 @@ c TeV panel for LC
       CALL PGEND
       endif
  
+      deallocate(npt,lctype)
+      deallocate(frequency,flux,uflux,lflux,mjdstart,mjdend)
+      deallocate(mjdavg,flux_lc,uflux_lc,lflux_lc,mjdst_lc,mjded_lc,freq_lc)
+      deallocate(refs,spectype,flag)
+
       close (10)
       END
 

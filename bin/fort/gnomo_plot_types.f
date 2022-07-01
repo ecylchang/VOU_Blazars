@@ -7,21 +7,20 @@ c
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
       INTEGER*4 lu_out
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s12(20000),s14(15000)
+      INTEGER*4 s11(200),isource,rah,irm,id,idm,s14(15000)
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
-      integer*4 code(35000),icol12,icol13
+      integer*4 icol12,icol13
       REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
       REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(15000)
       REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(15000)
-      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200),csr13(80000)
-      REAL*4 ra_col12(20000),dec_col12(20000),csx12(20000),ra_col13(80000),dec_col13(80000)
-      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4),epos_col13(80000)
+      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200)
+      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4)
       REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
       REAL*4 afmax(max_sat),cc
-      REAL*4 ra(35000),dec(35000),ra1, ra2, dec1, dec2,epos(35000),color13(80000)
+      REAL*4 ra1, ra2, dec1, dec2
       REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
-      REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200),csr12(20000)
+      REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200)
       REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
       REAL*4 ratrue(10),dectrue(10),raarr(3),decarr(3)
       REAL*4 racat(500),deccat(500)
@@ -36,7 +35,7 @@ c
       CHARACTER*1 sign
       CHARACTER*80 string,device
       CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
-      CHARACTER*4 tcol14(15000),tcol12(20000)
+      CHARACTER*4 tcol14(15000)
       CHARACTER*85 newstring
       CHARACTER*60 title , filein,fileout
       CHARACTER*400 stringin
@@ -45,6 +44,14 @@ c
       REAL*4 pro_scale
       LOGICAL ok,there
       integer*4 status
+
+      integer*4,dimension(:),allocatable :: code
+      real*4,dimension(:),allocatable :: ra,dec,epos
+      real*4,dimension(:),allocatable :: ra_col13,dec_col13,epos_col13,color13,csr13
+      integer*4,dimension(:),allocatable :: s12
+      real*4,dimension(:),allocatable :: ra_col12,dec_col12,csx12,csr12
+      character*4,dimension(:),allocatable :: tcol12
+
 * External references :
       data symb_size /9.,7.,6.,5.,3.5,2.5,1.6,1.0,0.8,0.4/
 c      COMMON /ecetype/pro_scale,radius_scale,axis_unit
@@ -114,6 +121,8 @@ c      fileout='candidates_image_position.txt'
       open(lu_infile,file=filein,status='old')
       open(lu_out,file=fileout,status='unknown')
 
+      allocate(code(80000),epos(80000),ra(80000),dec(80000))
+
       if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
       DO WHILE (ok)
@@ -134,8 +143,8 @@ c      fileout='candidates_image_position.txt'
  700  continue
       n_points=i-1
       IF ( n_points.GT.35000 ) THEN
-         print *, ' //max no of points (20000) exceeded '
-         print *, ' //plotting first 20000 only '
+         print *, ' //max no of points (35000) exceeded '
+         print *, ' //plotting first 35000 only '
       END IF
       CLOSE (lu_infile)
       symbol = 17
@@ -378,6 +387,11 @@ c     colore
       CALL pgscr(10,.7,.2,.7)
       !write(*,*) n_points
       if (n_points .gt. 35000) n_points=35000
+
+      allocate(ra_col13(80000),dec_col13(80000),epos_col13(80000),color13(80000),csr13(80000))
+      allocate(ra_col12(20000),dec_col12(20000),csx12(20000),csr12(20000))
+      allocate(tcol12(20000),s12(20000))
+
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
 c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -60000)
@@ -520,6 +534,8 @@ c              cs = max(1.0,cradio*8./99.)
 c      write(*,*) icol1,icol2,icol3,icol4,icol5,icol11,icol12,icol13,icol14
 c      icol14=0
       !write(*,*) 'CENTER',ra_center,dec_center
+
+      deallocate(ra,dec,code,epos)
 
       IF (icol1.GT.0) THEN 
         DO j = 1,icol1
@@ -717,6 +733,10 @@ c            write(*,*) j,s14(j),tcol14(j)
          enddo
       endif
 c      CALL pgscf(1)
+
+      deallocate(ra_col13,dec_col13,epos_col13,color13,csr13)
+      deallocate(ra_col12,dec_col12,csx12,csr12)
+      deallocate(tcol12,s12)
 
 c ------ DC2Truth part
       CALL gnom_projection(n_true,ra_center,dec_center,ratrue,dectrue,x1,y1)
