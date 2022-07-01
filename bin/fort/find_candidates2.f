@@ -252,13 +252,12 @@ c      do i=1,icat
 c         write(lu_output,*) ra_cat(i),dec_cat(i),type_cat(i)*10000.
 c      enddo
 
-c read the sed.txt first
-      npt(1:1000)=0
-202   continue
-
       allocate(mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000),epos(2000,1000))
       allocate(spec_type(2000,1000),ra_rrxx(2000,1000),dec_rrxx(2000,1000),rrxx_type(2000,1000))
 
+c read the sed.txt first
+      npt(1:1000)=0
+202   continue
       read(12,'(i4,a)',end=200,err=200) sfound,string
 c      write(*,*) sfound,string
       do while(ok)
@@ -360,11 +359,13 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
 400   continue
       close(15)
 
+      allocate(xray_ref(80000),xray_flag(80000,5))
       allocate(ra_xray(80000),dec_xray(80000),xrtspind(80000),xraypart(80000))
       allocate(slope_xray(80000),poserr_xray(80000),mjdst_xrt(80000),mjded_xrt(80000))
       allocate(frequency_xray(80000,5),flux_xray(80000,5),FluxU_xray(80000,5),FluxL_xray(80000,5),Ferr_xray(80000,5))
       allocate(name_x(80000),xray_type(80000),filen_x(80000))
       allocate(frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),Ferr_flcuv(8000,4))
+      allocate(flcuv_flag(8000,4))
       allocate(flcuv_type(8000),name_a(8000))
       allocate(flux_usno(3500,5),frequency_usno(3500,5),FluxU_usno(3500,5),FluxL_usno(3500,5),usnomagerr(3500,5),usnomag(3500,5))
 
@@ -4662,8 +4663,6 @@ c      type_average = i
 c   ENDIF
 cENDDO
          allocate(rrxx_flag(2000,1000),rrxx_ref(2000,1000))
-         allocate(xray_ref(80000),xray_flag(80000,5))
-         allocate(flcuv_flag(8000,4))
 
          write(*,*) 'TEST number',eblnn(1:igam)
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
@@ -4700,9 +4699,6 @@ c the refs file
             endif
          enddo
 
-         deallocate(flcuv_type,name_a)
-         deallocate(mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos)
-         deallocate(spec_type,ra_rrxx,dec_rrxx,rrxx_type)
          deallocate(rrxx_flag,rrxx_ref)
 c         write(17,'(i4,2x,a,2(2x,f9.5),2x,i2)') j,"matched source",ra_source(j),dec_source(j),typer(j)
 c         do i=1,nptlc(j)
@@ -5310,6 +5306,9 @@ c         enddo
       deallocate(frequency_flcuv,flux_flcuv,FluxU_flcuv,FluxL_flcuv,Ferr_flcuv)
       deallocate(flcuv_flag)
       deallocate(flux_usno,frequency_usno,FluxU_usno,FluxL_usno,usnomagerr,usnomag)
+      deallocate(mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos)
+      deallocate(spec_type,ra_rrxx,dec_rrxx,rrxx_type)
+      deallocate(flcuv_type,name_a)
 
       close(lu_output)
       close(14)
