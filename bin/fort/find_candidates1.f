@@ -35,7 +35,7 @@ c
       REAL*8 ra_swift(3000),dec_swift(3000),ra_bmw(500),dec_bmw(500),ra_ipc(200),dec_ipc(200)
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500)
       real*8 ra_cat(200),dec_cat(200),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200),ra_bary,dec_bary
-      real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp,ra_erosita(200),dec_erosita(200)
+      real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp,ra_erosita(2000),dec_erosita(2000)
       REAL*4 flux_radio(10000),flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
       REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx,totweight
       REAL*4 frequency_bmw(500),frequency_rosat(1000),flux2nufnu_vlass
@@ -57,8 +57,8 @@ c
       real*4 Ferr_maxi(200,4),FluxU_maxi(200,4),FluxL_maxi(200,4),poserr_maxi(200),flux_maxi(200,4)
       real*4 errrad,errmaj,errmin,errang,mjdavg
       real*4 savemjy(15000),zz(15000),zsource(500)
-      real*4 flux_erosita(200,2),fluxL_erosita(200,2),fluxU_erosita(200,2),Ferr_erosita(200,2)
-      real*4 poserr_erosita(200),frequency_erosita(200,2)
+      real*4 flux_erosita(2000,2),fluxL_erosita(2000,2),fluxU_erosita(2000,2),Ferr_erosita(2000,2)
+      real*4 poserr_erosita(2000),frequency_erosita(2000,2)
 c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       CHARACTER*1 sign
       CHARACTER*30 name_cat(200),namegam(200),nnsource(500)
