@@ -24,11 +24,11 @@ c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
       INTEGER*4 ier, lu_in,xray_type, in,k, length,im,imaxi
-      INTEGER*4 radio_type(10000),xmm_type(3000),rosat_type(1000),rtype_source(500)
+      INTEGER*4 xmm_type(3000),rosat_type(1000),rtype_source(500)
       INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,ibigb,bigbind(100)
       INTEGER*4 no_found,sfound,nrep(500),rfound,s,track(500),t(500),aim,xrt_type(3000),ncat
       INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,igam
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,ra_index(10000),l,filen,ttsource(5000),track2(200)
+      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,l,filen,ttsource(5000),track2(200)
       INTEGER*4 ipc_type(200),maxi_type(200),igrb,bary(500),rank(500),priority(500),ierosita
       REAL*8 ra, dec,dist,ra_center,dec_center,radius
       REAL*8 ra_xmm(3000),dec_xmm(3000),ra_rosat(1000),dec_rosat(1000)
@@ -36,19 +36,17 @@ c
       REAL*8 ra_chandra(1000),dec_chandra(1000),ra_source(500),dec_source(500)
       real*8 ra_cat(200),dec_cat(200),ra_gam(200),dec_gam(200),ra_maxi(200),dec_maxi(200),ra_bary,dec_bary
       real*8 ra_xx(500),dec_xx(500),ra_cattemp,dec_cattemp,ra_erosita(2000),dec_erosita(2000)
-      REAL*4 flux_radio(10000),flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
-      REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,ppss(10000),errfrx,totweight
+      REAL*4 flux_rosat(1000),flux_chandra(1000,5),radian,xxerr(500)
+      REAL*4 flux_swift(3000,5),flux_ipc(200),flux_bmw(500),flux_x,nh,errfrx,totweight
       REAL*4 frequency_bmw(500),frequency_rosat(1000),flux2nufnu_vlass
       REAL*4 frequency_chandra(1000,5),frequency_swift(3000,5),frequency_ipc(200)
       REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
       REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis,totxerr
       REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,min_dist,reduce,poserr_source(500)
       REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens,flux_source(500),rrconst(500)
-      REAL*4 flux2nufnu_bmw,ratio,const(10000),flux2nufnu_sumss
-      REAL*4 frequency_radio(10000)
+      REAL*4 flux2nufnu_bmw,ratio,flux2nufnu_sumss
       REAL*4 xflux(500),rflux(500)
       real*4 major,minor,posang,posxerr,posyerr
-      real*4 Ferr_radio(10000),FluxU_radio(10000),FluxL_radio(10000),poserr_radio(10000)
       real*4 Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),poserr_rosat(1000)
       real*4 Ferr_swift(3000,5),FluxU_swift(3000,5),FluxL_swift(3000,5),poserr_swift(3000)
       real*4 Ferr_ipc(200),FluxU_ipc(200),FluxL_ipc(200),poserr_ipc(200),mjdst_swift(3000),mjded_swift(3000)
@@ -74,6 +72,9 @@ c      real*4 mjdst_xmm(5000),mjden_xmm(5000),mjdst_rosat(5000)
       real*8,dimension(:),allocatable :: ra_other,dec_other
       CHARACTER*30,dimension(:),allocatable :: name_other,vlasssrnm
       real*8,dimension(:),allocatable :: ra_radio,dec_radio
+      integer*4,dimension(:),allocatable :: radio_type,ra_index
+      real*4,dimension(:),allocatable :: ppss,const,Ferr_radio,FluxU_radio,FluxL_radio,poserr_radio,flux_radio,frequency_radio
+      
 
       LOGICAL there,ok,found,catsrc
       common webprograms
@@ -196,8 +197,9 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
 
       allocate(Ferr_xmm(3000,6),FluxU_xmm(3000,6),FluxL_xmm(3000,6),flux_xmm(3000,6),frequency_xmm(3000,6))
       allocate(ra_other(15000),dec_other(15000))
-      allocate(name_other(15000),vlasssrnm(10000))
-      allocate(ra_radio(10000),dec_radio(10000))
+      allocate(name_other(15000),vlasssrnm(20000))
+      allocate(ra_radio(20000),dec_radio(20000),radio_type(20000),ra_index(20000))
+      allocate(ppss(20000),const(20000),Ferr_radio(20000),FluxU_radio(20000),FluxL_radio(20000),poserr_radio(20000),flux_radio(20000),frequency_radio(20000))
 
       DO WHILE(ok)
          READ(lu_in,'(a)',end=99) string
@@ -216,7 +218,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
      &        (catalog(1:7) == 'vlassql') .OR. (catalog(1:5) == 'sumss') ) THEN
             iradio=iradio+1
             !write(*,*) "Nr. radio",iradio
-            IF (iradio > 10000) Stop 'Too many NVSS/SUMSS points'
+            IF (iradio > 20000) Stop 'Too many NVSS/SUMSS points'
             ra_radio(iradio)=ra
             dec_radio(iradio)=dec
             is=ie
@@ -1688,10 +1690,10 @@ c               ra_other(iother) = -ra_other(iother)
       if (aim .eq. 0) goto 501
 
       deallocate(vlasssrnm)
-      allocate(spec_type(3000,10000),spec_xpts(3000,10000))
-      allocate(ra_1kev(3000,10000),dec_1kev(3000,10000),distrx(3000,10000))
-      allocate(flux_1kev(3000,10000),uflux_1kev(3000,10000),lflux_1kev(3000,10000),uflux_xpts(3000,10000),lflux_xpts(3000,10000),flux_xpts(3000,10000),frequency_xpts(3000,10000))
-      allocate(poserr_1kev(3000,10000),mjdstart(3000,10000),mjdend(3000,10000))
+      allocate(spec_type(3000,20000),spec_xpts(3000,20000))
+      allocate(ra_1kev(3000,20000),dec_1kev(3000,20000),distrx(3000,20000))
+      allocate(flux_1kev(3000,20000),uflux_1kev(3000,20000),lflux_1kev(3000,20000),uflux_xpts(3000,20000),lflux_xpts(3000,20000),flux_xpts(3000,20000),frequency_xpts(3000,20000))
+      allocate(poserr_1kev(3000,20000),mjdstart(3000,20000),mjdend(3000,20000))
 
       CALL indexx (iradio,ra_radio,ra_index)
       !write(*,*) ra_radio(ra_index(1:iradio))
@@ -3234,7 +3236,8 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
       close(14)
 
       deallocate(flux_xmm,Ferr_xmm,FluxU_xmm,FluxL_xmm,frequency_xmm)
-      deallocate(ra_radio,dec_radio)
+      deallocate(ra_radio,dec_radio,radio_type,ra_index)
+      deallocate(ppss,const,Ferr_radio,FluxU_radio,FluxL_radio,poserr_radio,flux_radio,frequency_radio)
 
       END
 c
