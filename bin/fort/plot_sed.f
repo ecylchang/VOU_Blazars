@@ -6,7 +6,7 @@ c This program plot the SED for candidate
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
       integer*4 i,sfound,rtype
       real*4 sedup,sedlow,rasec,decsec,testflux
-      real*8 rra,rdec,ra(1000),dec(1000)
+      real*8 rra,rdec
       character*160 string
       character*100 title
       character*200 input_file,output_file
@@ -20,6 +20,7 @@ c This program plot the SED for candidate
       character*200,dimension(:,:),allocatable :: refs
       character*15,dimension(:,:),allocatable :: spectype
       character*2,dimension(:,:),allocatable :: flag
+      real*8,dimension(:),allocatable :: ra,dec
 
       ok = .true.
 
@@ -47,6 +48,9 @@ c      write(*,*) output_file
       ENDIF
 
       allocate(stype(80000),npt(80000))
+      allocate(ra(1000),dec(1000))
+      allocate(frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),mjdend(80000,1000),mjdstart(80000,1000))
+      allocate(refs(80000,1000),spectype(80000,1000),flag(80000,1000))
 
       npt(1:1000)=0
       open(10,file=input_file,status='old')
@@ -59,9 +63,6 @@ c      write(*,*) output_file
       read(10,*) string
       read(10,*) string
       read(10,*) string
-
-      allocate(frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),mjdend(80000,1000),mjdstart(80000,1000))
-      allocate(refs(80000,1000),spectype(80000,1000),flag(80000,1000))
 
       do while (ok)
          npt(sfound)=npt(sfound)+1
@@ -172,6 +173,7 @@ c         endif
       deallocate(npt,stype)
       deallocate(frequency,flux,uflux,lflux,mjdend,mjdstart)
       deallocate(refs,spectype,flag)
+      deallocate(ra,dec)
 
       close (10)
       END

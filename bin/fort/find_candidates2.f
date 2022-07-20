@@ -23,96 +23,171 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, lu_output,in,im,ir100found,s,iverit,veritind(300)
-      INTEGER*4 sfound,nrep(5000),lenact,type_average,ns,ivhe,imagic,magicind(300)
-      INTEGER*4 iradio,icat,ix,ir,i4p8,drop,ixxfound,ilowrfound,filen_v(500),almaind(1500)
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,typer(5000),ilowr,ixrtsp
-      INTEGER*4 is,ie, i, j,ialma,optpart(3500)
+      INTEGER*4 ier, lu_in, lu_output,in,im,ir100found,s,iverit
+      INTEGER*4 sfound,lenact,type_average,ns,ivhe,imagic
+      INTEGER*4 iradio,icat,ix,ir,i4p8,drop,ixxfound,ilowrfound,ifar
+      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,ilowr,ixrtsp
+      INTEGER*4 is,ie, i, j,ialma
       INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,iflcuvfound
-      integer*4 isource,npt(1000),filen,sourceu,sourcel,filen_u(1000),filen_g(100)
-      integer*4 ii1,ii2,ii3,ii4,ii5,gampart(100),pccspart(1500),f4p8part(1000),ifar,farpart(500),bigbind(100)
-      integer*4 filen_r(1000),filen_p(1500),filen_f(500),filen_i(2000),filen_o(3500),filen_l(200),r
-      integer*4 f4p8_ref(1000),pccs100_ref(1500),far_ref(500),ir_ref(2000),opt_ref(5),ibigb
-      integer*4 uv_ref(300),gam_ref(100),vhe_ref(500),lowr_ref(200),iflcuv,flcuvpart(8000)
-      integer*4 iousxb,iswort,iiswort,recordmjd(3,2000),year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,indirlc(2000),iirlc,i4fgl,filen_a(8000),eblnn(600)
-      integer*4 kuehrind(1000),ikuehr,indoptlc(3500),ioptlc,optlc_ref(3500)
-      REAL*8 ra_cat(200),dec_cat(200),ra_usno(3500),dec_usno(3500),ra_far(500),dec_far(500),ra_uvcand(300)
-      REAL*8 ra_source(5000),dec_source(5000),ra, dec,min_dist_gam
-      REAL*8 dist,ra_center, dec_center,radius,ra_ircand(2000),dec_ircand(2000)
-      REAL*8 ra_pccs100(1500),dec_pccs100(1500),ra_gam(100),dec_gam(100),ra_usnocand(5),dec_usnocand(5)
-      REAL*8 ra_4p8(1000),dec_4p8(1000),ra_ir(2000),dec_ir(2000),ra_uv(1000),dec_uv(1000),ra_lowr(200)
-      real*8 dec_uvcand(300),ra_flcuv(8000)
-      real*8 ra_lowrcand(5),dec_lowrcand(5),ra_vhe(500),dec_vhe(500),dec_flcuv(8000)
-      real*8 dec_lowr(200),mjdtest,ra_gamslp(5),dec_gamslp(5),irdistval
+      integer*4 isource,filen,sourceu,sourcel
+      integer*4 ii1,ii2,ii3,ii4,ii5
+      integer*4 r,ibigb
+      integer*4 iflcuv
+      integer*4 iousxb,iswort,iiswort,year,month,date,hour,minute,second,idebl,iref
+      integer*4 iircheck,iirlc,i4fgl
+      integer*4 ikuehr,ioptlc
+      REAL*8 ra, dec,min_dist_gam
+      REAL*8 dist,ra_center, dec_center,radius
+      real*8 mjdtest,irdistval
       REAL*4 radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
-      REAL*4 flux_4p8(1000,3),alphar,sigma
+      REAL*4 alphar,sigma
       REAL*4 min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
       REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,min_dist_other
-      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,flux_pccs100(1500,9),min_dist_far
-      REAL*4 flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),uvmag(1000,6),flux_uv(1000,6)
-      REAL*4 flux_gam(100,9),slope_gam(100,2),frequency_uv(1000,6),frequency_pccs100(1500,9)
-      real*4 flux_far(500,5),frequency_far(500,5),farlike(500),farirx,frequency_gam(100,9)
-      REAL*4 auvx,aruv,airx,arir,alphauv,frequency_4p8(1000,3),fdens,nudens
-      real*4 type_cat(200)
-      real*4 flux_ircand(2000,4),irmag_cand(2000,4),irdist(2000),freq_ircand(2000,4),flux_usnocand(5,5),usnomag_cand(5,5)
-      real*4 optdist(5),freq_usnocand(5,5),flux_uvcand(300,6),uvmag_cand(300,6),uvdist(300),freq_uvcand(300,6)
-      real*4 gamlike(100),pccslike(1500),f4p8like(1000),posxerr,posyerr,posang,major,minor
-      real*4 Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3),poserr_4p8(1000),flux2_pccs100(1500,9)
-      real*4 Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),poserr_pccs100(1500),Ferr2_pccs100(1500,9)
-      real*4 Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5),poserr_far(500),snr_pccs100(1500,9)
-      real*4 FluxU_ir(2000,4),FluxL_ir(2000,4),poserr_ir(2000),irmagerr(2000,4),intensity
-      real*4 poserr_usno(3500),freq_lowrcand(5)
-      real*4 FluxU_uv(1000,6),FluxL_uv(1000,6),poserr_uv(1000),uvmagerr(1000,6),epos_uvcand(300)
-      real*4 FluxU_gam(100,9),FluxL_gam(100,9),poserr_gam(100),Ferr_gam(100,9),Specerr_gam(100,2)
-      real*4 uflux_ircand(2000,4),lflux_ircand(2000,4),uflux_usnocand(5,5),lflux_usnocand(5,5)
-      real*4 uflux_uvcand(300,6),lflux_uvcand(300,6),like,epos_ircand(2000),epos_usnocand(5),Ferr_lowr(200)
-      real*4 frequency_lowr(200),flux_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200)
-      real*4 flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5),lowrdist(5)
-      real*4 frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500),poserr_vhe(500),Ferr_vhe(500)
-      real*4 mjdstart(500),mjdend(500),mjdst_alma(1500),mjded_alma(1500)
+      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,min_dist_far
+      real*4 farirx
+      REAL*4 auvx,aruv,airx,arir,alphauv,fdens,nudens
+      real*4 posxerr,posyerr,posang,major,minor
+      real*4 intensity
+      real*4 like
       real*4 mjdavg,redshift,reduction_factor
-      real*4 flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5),zsource(400)
-      real*4 mjdst_flcuv(8000),mjded_flcuv(8000),ts(8000),duration(8000),slope_flcuv(8000)
-      real*4 mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000),poserr_gamslp(5),gamslp(5)
-      real*4 engmax,engmin,poserr_flcuv(8000),fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
-      real*4 mjdst_optlc(3500)
-      CHARACTER*1 sign,flag_4p8(1000,4)
-      character*4 flag_ir(2000,2)
+      real*4 engmax,engmin,fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
+      CHARACTER*1 sign
       character*6 aim
-      CHARACTER*30 date_alma(1500),namegam(100),irlc_name(2000),irlcid(2)
+      CHARACTER*30 irlcid(2)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
-      character*200 webprograms,refsfile,refs(100)
-      character*4 f4p8_flag(1000,3),pccs100_flag(1500,9),far_flag(500,5),ir_flag(2000,4)
-      character*4 uv_flag(300,6),gam_flag(100,9),vhe_flag(500),lowr_flag(200)
-      character*4 debl_flag(300,5),opt_flag(5,5),optlc_flag(3500)
-      CHARACTER*15 opt_type(3500),uv_type(1000),ir_type(2000),gam_type(100)
-      CHARACTER*15 catalog,f4p8_type(1000),ircand_type(2000),optcand_type(5),uvcand_type(300)
-      CHARACTER*15 name_r(1000),name_f(500),name_p(1500),name_i(2000),name_o(3500),name_u(1000),name_g(100)
-      CHARACTER*15 name_l(200),lowr_type(200),name_cat(200)
-      CHARACTER*15 lowrcand_type(5),vhe_type(500),pccs100_type(1500),far_type(200)
+      character*200 webprograms,refsfile
+      CHARACTER*15 catalog
       CHARACTER*800 string,repflux
       LOGICAL ok,found,debl
 
-      integer*4,dimension(:,:),allocatable :: spec_type,rrxx_ref
+      integer*4,dimension(:),allocatable :: nrep,typer
+      real*8,dimension(:),allocatable :: ra_source,dec_source
+      real*8,dimension(:),allocatable :: ra_cat,dec_cat
+      real*4,dimension(:),allocatable :: type_cat
+      character*15,dimension(:),allocatable :: name_cat
+      character*200,dimension(:),allocatable :: refs
+
+      integer*4,dimension(:),allocatable :: npt
+      real*4,dimension(:),allocatable :: zsource
+      integer*4,dimension(:,:),allocatable :: spec_type,rrxx_ref,recordmjd
       real*4,dimension(:,:),allocatable :: mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos
       real*8,dimension(:,:),allocatable :: ra_rrxx,dec_rrxx
       character*15,dimension(:,:),allocatable :: rrxx_type
       character*4,dimension(:,:),allocatable :: rrxx_flag
+
+      integer*4,dimension(:),allocatable :: filen_v,vhe_ref
+      real*8,dimension(:),allocatable :: ra_vhe,dec_vhe
+      real*4,dimension(:),allocatable :: frequency_vhe,flux_vhe,FluxU_vhe,FluxL_vhe
+      real*4,dimension(:),allocatable :: poserr_vhe,Ferr_vhe,mjdstart,mjdend
+      character*4,dimension(:),allocatable :: vhe_flag
+      character*15,dimension(:),allocatable :: vhe_type
+
+      integer*4,dimension(:),allocatable :: veritind,magicind,eblnn
+      real*4,dimension(:,:),allocatable :: flux_debl,FluxU_debl,FluxL_debl,frequency_debl
+      character*4,dimension(:,:),allocatable :: debl_flag
+
+      integer*4,dimension(:),allocatable :: filen_g,gampart,gam_ref,bigbind
+      real*8,dimension(:),allocatable :: ra_gam,dec_gam
+      real*4,dimension(:),allocatable :: gamlike,poserr_gam
+      real*4,dimension(:,:),allocatable :: frequency_gam,slope_gam,specerr_gam
+      real*4,dimension(:,:),allocatable :: flux_gam,FluxL_gam,FluxU_gam,Ferr_gam
+      character*4,dimension(:,:),allocatable :: gam_flag
+      character*30,dimension(:),allocatable :: namegam
+      character*15,dimension(:),allocatable :: name_g,gam_type
+
       integer*4,dimension(:),allocatable :: xrtspind,xraypart,xray_ref,filen_x
       real*8,dimension(:),allocatable :: ra_xray,dec_xray
       real*4,dimension(:),allocatable :: slope_xray,poserr_xray,mjdst_xrt,mjded_xrt
       real*4,dimension(:,:),allocatable :: frequency_xray,flux_xray,FluxU_xray,FluxL_xray,Ferr_xray
       character*4,dimension(:,:),allocatable :: xray_flag
       character*15,dimension(:),allocatable :: name_x,xray_type
+
+      integer*4,dimension(:),allocatable :: filen_u
+      real*8,dimension(:),allocatable :: ra_uv,dec_uv
+      real*4,dimension(:),allocatable :: poserr_uv
+      real*4,dimension(:,:),allocatable :: uvmag,flux_uv,frequency_uv,FluxU_uv,FluxL_uv,uvmagerr
+      character*15,dimension(:),allocatable :: uv_type,name_u
+
+      integer*4,dimension(:),allocatable :: uv_ref
+      real*8,dimension(:),allocatable :: ra_uvcand,dec_uvcand
+      real*4,dimension(:),allocatable :: uvdist,epos_uvcand
+      real*4,dimension(:,:),allocatable :: flux_uvcand,uvmag_cand,freq_uvcand,uflux_uvcand,lflux_uvcand
+      character*4,dimension(:,:),allocatable :: uv_flag
+      character*15,dimension(:),allocatable :: uvcand_type
+
+      integer*4,dimension(:),allocatable :: flcuvpart,filen_a
+      real*8,dimension(:),allocatable :: ra_flcuv,dec_flcuv
+      real*4,dimension(:),allocatable :: mjdst_flcuv,mjded_flcuv,ts,duration,slope_flcuv,poserr_flcuv
       real*4,dimension(:,:),allocatable :: frequency_flcuv,flux_flcuv,FluxU_flcuv,FluxL_flcuv,Ferr_flcuv
       character*4,dimension(:,:),allocatable :: flcuv_flag
       character*15,dimension(:),allocatable :: name_a,flcuv_type
+
+      integer*4,dimension(:),allocatable :: optpart,filen_o,indoptlc,optlc_ref
+      real*8,dimension(:),allocatable :: ra_usno,dec_usno
+      real*4,dimension(:),allocatable :: poserr_usno,mjdst_optlc
       real*4,dimension(:,:),allocatable :: flux_usno,frequency_usno,FluxU_usno,FluxL_usno,usnomagerr,usnomag
+      character*4,dimension(:),allocatable :: optlc_flag
+      character*15,dimension(:),allocatable :: opt_type,name_o
+
+      integer*4,dimension(:),allocatable :: filen_i,ir_ref,indirlc
+      real*8,dimension(:),allocatable :: ra_ir,dec_ir,ra_ircand,dec_ircand
+      real*4,dimension(:),allocatable :: irdist,poserr_ir,epos_ircand
+      real*4,dimension(:),allocatable :: mjdst_irlc,mjded_irlc,mjdst_irlccand,mjded_irlccand
+      real*4,dimension(:,:),allocatable :: flux_ir,irmag,frequency_ir,FluxU_ir,FluxL_ir,irmagerr
+      real*4,dimension(:,:),allocatable :: flux_ircand,irmag_cand,freq_ircand,uflux_ircand,lflux_ircand
+      character*4,dimension(:,:),allocatable :: flag_ir,ir_flag
+      character*15,dimension(:),allocatable :: ir_type,ircand_type,name_i
+      character*30,dimension(:),allocatable :: irlc_name
+
+      integer*4,dimension(:),allocatable :: filen_f,far_ref,farpart
+      real*8,dimension(:),allocatable :: ra_far,dec_far
+      real*4,dimension(:),allocatable :: farlike,poserr_far
+      real*4,dimension(:,:),allocatable :: frequency_far,flux_far,Ferr_far,FluxU_far,FluxL_far
+      character*4,dimension(:,:),allocatable :: far_flag
+      character*15,dimension(:),allocatable :: name_f,far_type
+
+      integer*4,dimension(:),allocatable :: filen_p,pccspart,pccs100_ref,almaind
+      real*8,dimension(:),allocatable :: ra_pccs100,dec_pccs100
+      real*4,dimension(:),allocatable :: mjdst_alma,mjded_alma,poserr_pccs100,pccslike
+      real*4,dimension(:,:),allocatable :: flux_pccs100,frequency_pccs100,flux2_pccs100,snr_pccs100
+      real*4,dimension(:,:),allocatable :: Ferr_pccs100,FluxU_pccs100,FluxL_pccs100,Ferr2_pccs100
+      character*4,dimension(:,:),allocatable :: pccs100_flag
+      character*15,dimension(:),allocatable :: name_p,pccs100_type
+      character*30,dimension(:),allocatable :: date_alma
+
+      integer*4,dimension(:),allocatable :: filen_r,f4p8part,f4p8_ref,kuehrind
+      real*8,dimension(:),allocatable :: ra_4p8,dec_4p8
+      real*4,dimension(:),allocatable :: f4p8like,poserr_4p8
+      real*4,dimension(:,:),allocatable :: flux_4p8,frequency_4p8,Ferr_4p8,FluxU_4p8,FluxL_4p8
+      character*1,dimension(:,:),allocatable :: flag_4p8
+      character*4,dimension(:,:),allocatable :: f4p8_flag
+      character*15,dimension(:),allocatable :: f4p8_type,name_r
+
+      integer*4,dimension(:),allocatable :: filen_l,lowr_ref
+      real*8,dimension(:),allocatable :: ra_lowr,dec_lowr
+      real*4,dimension(:),allocatable :: frequency_lowr,flux_lowr,Ferr_lowr,FluxU_lowr,FluxL_lowr,poserr_lowr
+      character*4,dimension(:),allocatable :: lowr_flag
+      character*15,dimension(:),allocatable :: name_l,lowr_type
+      
+      integer*4,dimension(:),allocatable :: opt_ref
+      real*8,dimension(:),allocatable :: ra_lowrcand,ra_usnocand,ra_gamslp
+      real*8,dimension(:),allocatable :: dec_lowrcand,dec_usnocand,dec_gamslp
+      real*4,dimension(:),allocatable :: optdist,epos_usnocand,lowrdist,gamslp,poserr_gamslp
+      real*4,dimension(:),allocatable :: freq_lowrcand,flux_lowrcand,uflux_lowrcand,lflux_lowrcand,epos_lowrcand
+      real*4,dimension(:,:),allocatable :: freq_usnocand,flux_usnocand,uflux_usnocand,lflux_usnocand,usnomag_cand
+      character*4,dimension(:,:),allocatable :: opt_flag
+      character*15,dimension(:),allocatable :: optcand_type,lowrcand_type
+
 
       common webprograms
       ok = .TRUE.
       found = .FALSE.
+
+      allocate(nrep(5000),typer(5000))
+      allocate(ra_source(5000),dec_source(5000))
+      allocate(ra_cat(200),dec_cat(200))
+      allocate(type_cat(200),name_cat(200),refs(200))
+
       nrep(1:5000)=1
       sfound = 0
       iradio=0
@@ -225,6 +300,7 @@ c      open(16,file=input_file4,status='old',iostat=ier)
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
 
+
 c read the find_out.txt first
       isource=0
       icat=0
@@ -254,6 +330,7 @@ c      enddo
 
       allocate(mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000),epos(2000,1000))
       allocate(spec_type(2000,1000),ra_rrxx(2000,1000),dec_rrxx(2000,1000),rrxx_type(2000,1000))
+      allocate(recordmjd(3,2000),npt(1000),zsource(1000))
 
 c read the sed.txt first
       npt(1:1000)=0
@@ -359,15 +436,89 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
 400   continue
       close(15)
 
+      allocate(filen_v(500),vhe_ref(500),eblnn(600))
+      allocate(ra_vhe(500),dec_vhe(500))
+      allocate(frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500))
+      allocate(poserr_vhe(500),Ferr_vhe(500),mjdstart(500),mjdend(500))
+      allocate(vhe_flag(500),vhe_type(500))
+
+      allocate(veritind(300),magicind(300))
+      allocate(flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5))
+      allocate(debl_flag(300,5))
+
+      allocate(filen_g(100),gampart(100),gam_ref(100),bigbind(100))
+      allocate(ra_gam(100),dec_gam(100),gamlike(100),poserr_gam(100))
+      allocate(frequency_gam(100,9),slope_gam(100,2),specerr_gam(100,2))
+      allocate(flux_gam(100,9),FluxL_gam(100,9),FluxU_gam(100,9),Ferr_gam(100,9))
+      allocate(gam_flag(100,9))
+      allocate(namegam(100),name_g(100),gam_type(100))
+
       allocate(xray_ref(80000),xray_flag(80000,5))
       allocate(ra_xray(80000),dec_xray(80000),xrtspind(80000),xraypart(80000))
       allocate(slope_xray(80000),poserr_xray(80000),mjdst_xrt(80000),mjded_xrt(80000))
       allocate(frequency_xray(80000,5),flux_xray(80000,5),FluxU_xray(80000,5),FluxL_xray(80000,5),Ferr_xray(80000,5))
       allocate(name_x(80000),xray_type(80000),filen_x(80000))
+
+      allocate(filen_u(1000),uv_type(1000),name_u(1000))
+      allocate(ra_uv(1000),dec_uv(1000),poserr_uv(1000))
+      allocate(uvmag(1000,6),flux_uv(1000,6),frequency_uv(1000,6),FluxU_uv(1000,6),FluxL_uv(1000,6),uvmagerr(1000,6))
+
+      allocate(uv_ref(300))
+      allocate(ra_uvcand(300),dec_uvcand(300),uvdist(300),epos_uvcand(300))
+      allocate(flux_uvcand(300,6),uvmag_cand(300,6),freq_uvcand(300,6),uflux_uvcand(300,6),lflux_uvcand(300,6))
+      allocate(uv_flag(300,6),uvcand_type(300))
+
+      allocate(ra_flcuv(8000),dec_flcuv(8000))
+      allocate(mjdst_flcuv(8000),mjded_flcuv(8000),ts(8000),duration(8000),slope_flcuv(8000),poserr_flcuv(8000))
       allocate(frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),Ferr_flcuv(8000,4))
       allocate(flcuv_flag(8000,4))
-      allocate(flcuv_type(8000),name_a(8000))
+      allocate(flcuv_type(8000),name_a(8000),flcuvpart(8000),filen_a(8000))
+
+      allocate(optpart(3500),filen_o(3500),indoptlc(3500),optlc_ref(3500))
+      allocate(optlc_flag(3500),opt_type(3500),name_o(3500))
+      allocate(ra_usno(3500),dec_usno(3500),poserr_usno(3500),mjdst_optlc(3500))
       allocate(flux_usno(3500,5),frequency_usno(3500,5),FluxU_usno(3500,5),FluxL_usno(3500,5),usnomagerr(3500,5),usnomag(3500,5))
+
+      allocate(filen_i(2000),ir_ref(2000),indirlc(2000))
+      allocate(ra_ir(2000),dec_ir(2000),ra_ircand(2000),dec_ircand(2000))
+      allocate(irdist(2000),poserr_ir(2000),epos_ircand(2000))
+      allocate(mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000))
+      allocate(flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),FluxU_ir(2000,4),FluxL_ir(2000,4),irmagerr(2000,4))
+      allocate(flux_ircand(2000,4),irmag_cand(2000,4),freq_ircand(2000,4),uflux_ircand(2000,4),lflux_ircand(2000,4))
+      allocate(flag_ir(2000,4),ir_flag(2000,4))
+      allocate(ir_type(2000),ircand_type(2000),name_i(2000),irlc_name(2000))
+
+      allocate(filen_f(500),far_ref(500),farpart(500))
+      allocate(ra_far(500),dec_far(500),farlike(500),poserr_far(500))
+      allocate(frequency_far(500,5),flux_far(500,5),Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5))
+      allocate(far_flag(500,5),name_f(500),far_type(500))
+
+      allocate(filen_p(1500),pccspart(1500),pccs100_ref(1500),almaind(1500))
+      allocate(ra_pccs100(1500),dec_pccs100(1500))
+      allocate(mjdst_alma(1500),mjded_alma(1500),poserr_pccs100(1500),pccslike(1500))
+      allocate(flux_pccs100(1500,9),frequency_pccs100(1500,9),flux2_pccs100(1500,9),snr_pccs100(1500,9))
+      allocate(Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),Ferr2_pccs100(1500,9))
+      allocate(pccs100_flag(1500,9))
+      allocate(name_p(1500),pccs100_type(1500),date_alma(1500))
+
+      allocate(filen_r(1000),f4p8part(1000),f4p8_ref(1000),kuehrind(1000))
+      allocate(ra_4p8(1000),dec_4p8(1000),f4p8like(1000),poserr_4p8(1000))
+      allocate(flux_4p8(1000,3),frequency_4p8(1000,3),Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3))
+      allocate(flag_4p8(1000,4),f4p8_flag(1000,3))
+      allocate(f4p8_type(1000),name_r(1000))
+
+      allocate(filen_l(200),lowr_ref(200))
+      allocate(ra_lowr(200),dec_lowr(200))
+      allocate(frequency_lowr(200),flux_lowr(200),Ferr_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200))
+      allocate(lowr_flag(200),name_l(200),lowr_type(200))
+
+      allocate(opt_ref(5))
+      allocate(ra_lowrcand(5),ra_usnocand(5),ra_gamslp(5))
+      allocate(dec_lowrcand(5),dec_usnocand(5),dec_gamslp(5))
+      allocate(optdist(5),epos_usnocand(5),lowrdist(5),gamslp(5),poserr_gamslp(5))
+      allocate(freq_lowrcand(5),flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5))
+      allocate(freq_usnocand(5,5),flux_usnocand(5,5),uflux_usnocand(5,5),lflux_usnocand(5,5),usnomag_cand(5,5))
+      allocate(opt_flag(5,5),optcand_type(5),lowrcand_type(5) )
 
 c read the data file
       READ(lu_in,'(a)') string
@@ -5298,17 +5449,69 @@ c         enddo
          !if (j .ne. isource ) write(14,*) "===================="
       ENDDO
 
+      deallocate(nrep,typer)
+      deallocate(ra_source,dec_source)
+      deallocate(ra_cat,dec_cat)
+      deallocate(type_cat,name_cat,refs)
+      deallocate(filen_v,vhe_ref,ra_vhe,dec_vhe)
+      deallocate(frequency_vhe,flux_vhe,FluxU_vhe,FluxL_vhe)
+      deallocate(poserr_vhe,Ferr_vhe,mjdstart,mjdend)
+      deallocate(vhe_flag,vhe_type)
+      deallocate(veritind,magicind,eblnn,debl_flag)
+      deallocate(flux_debl,FluxU_debl,FluxL_debl,frequency_debl)
+      deallocate(filen_g,gampart,gam_ref,bigbind)
+      deallocate(ra_gam,dec_gam,gamlike,poserr_gam)
+      deallocate(frequency_gam,slope_gam,specerr_gam)
+      deallocate(flux_gam,FluxL_gam,FluxU_gam,Ferr_gam)
+      deallocate(gam_flag,namegam,name_g,gam_type)
       deallocate(ra_xray,dec_xray,xrtspind,xraypart)
       deallocate(slope_xray,poserr_xray,mjdst_xrt,mjded_xrt)
       deallocate(frequency_xray,flux_xray,FluxU_xray,FluxL_xray,Ferr_xray)
       deallocate(name_x,xray_type,filen_x)
       deallocate(xray_ref,xray_flag)
+      deallocate(filen_u,uv_type,name_u)
+      deallocate(ra_uv,dec_uv,poserr_uv)
+      deallocate(uvmag,flux_uv,frequency_uv,FluxU_uv,FluxL_uv,uvmagerr)
+      deallocate(uv_ref,uv_flag,uvcand_type)
+      deallocate(ra_uvcand,dec_uvcand,uvdist,epos_uvcand)
+      deallocate(flux_uvcand,uvmag_cand,freq_uvcand,uflux_uvcand,lflux_uvcand)
+      deallocate(ra_flcuv,dec_flcuv,flcuvpart,filen_a)
+      deallocate(mjdst_flcuv,mjded_flcuv,ts,duration,slope_flcuv,poserr_flcuv)
       deallocate(frequency_flcuv,flux_flcuv,FluxU_flcuv,FluxL_flcuv,Ferr_flcuv)
-      deallocate(flcuv_flag)
+      deallocate(flcuv_flag,flcuv_type,name_a)
+      deallocate(optpart,filen_o,indoptlc,optlc_ref,optlc_flag,opt_type,name_o)
+      deallocate(ra_usno,dec_usno,poserr_usno,mjdst_optlc)
       deallocate(flux_usno,frequency_usno,FluxU_usno,FluxL_usno,usnomagerr,usnomag)
+      deallocate(filen_i,ir_ref,indirlc,ra_ir,dec_ir,ra_ircand,dec_ircand)
+      deallocate(irdist,poserr_ir,epos_ircand)
+      deallocate(mjdst_irlc,mjded_irlc,mjdst_irlccand,mjded_irlccand)
+      deallocate(flux_ir,irmag,frequency_ir,FluxU_ir,FluxL_ir,irmagerr)
+      deallocate(flux_ircand,irmag_cand,freq_ircand,uflux_ircand,lflux_ircand)
+      deallocate(flag_ir,ir_flag,ir_type,ircand_type,name_i,irlc_name)
+      deallocate(filen_f,far_ref,farpart)
+      deallocate(ra_far,dec_far,farlike,poserr_far)
+      deallocate(frequency_far,flux_far,Ferr_far,FluxU_far,FluxL_far)
+      deallocate(far_flag,name_f,far_type)
+      deallocate(filen_p,pccspart,pccs100_ref,almaind,ra_pccs100,dec_pccs100)
+      deallocate(mjdst_alma,mjded_alma,poserr_pccs100,pccslike)
+      deallocate(flux_pccs100,frequency_pccs100,flux2_pccs100,snr_pccs100)
+      deallocate(Ferr_pccs100,FluxU_pccs100,FluxL_pccs100,Ferr2_pccs100)
+      deallocate(pccs100_flag,name_p,pccs100_type,date_alma)
+      deallocate(filen_r,f4p8part,f4p8_ref,kuehrind)
+      deallocate(ra_4p8,dec_4p8,f4p8like,poserr_4p8)
+      deallocate(flux_4p8,frequency_4p8,Ferr_4p8,FluxU_4p8,FluxL_4p8)
+      deallocate(flag_4p8,f4p8_flag,f4p8_type,name_r)
+      deallocate(filen_l,lowr_ref,ra_lowr,dec_lowr)
+      deallocate(frequency_lowr,flux_lowr,Ferr_lowr,FluxU_lowr,FluxL_lowr,poserr_lowr)
+      deallocate(lowr_flag,name_l,lowr_type)
+      deallocate(ra_lowrcand,ra_usnocand,ra_gamslp)
+      deallocate(dec_lowrcand,dec_usnocand,dec_gamslp)
+      deallocate(optdist,epos_usnocand,lowrdist,gamslp,poserr_gamslp)
+      deallocate(freq_lowrcand,flux_lowrcand,uflux_lowrcand,lflux_lowrcand,epos_lowrcand)
+      deallocate(freq_usnocand,flux_usnocand,uflux_usnocand,lflux_usnocand,usnomag_cand)
+      deallocate(opt_ref,opt_flag,optcand_type,lowrcand_type)
       deallocate(mjdst_rrxx,mjded_rrxx,frequency,flux,uflux,lflux,epos)
-      deallocate(spec_type,ra_rrxx,dec_rrxx,rrxx_type)
-      deallocate(flcuv_type,name_a)
+      deallocate(spec_type,ra_rrxx,dec_rrxx,rrxx_type,recordmjd,npt,zsource)
 
       close(lu_output)
       close(14)

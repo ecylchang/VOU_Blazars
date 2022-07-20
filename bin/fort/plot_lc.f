@@ -4,10 +4,10 @@ c This program plot the SED for candidate
 
       implicit none
       integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,iflcuv,iir,IERGAM
-      integer*4 i,sfound,rtype,stype(1000),ivhe,ixray,iilc,ialma
+      integer*4 i,sfound,rtype,ivhe,ixray,iilc,ialma
       real*4 rasec,decsec,testflux,mjdlow,mjdup,lcup(5),lclow(5)
       real*4 fq1tev,sloperat,mjdstgam,mjdedgam
-      real*8 rra,rdec,ra(1000),dec(1000)
+      real*8 rra,rdec
       character*160 string
       character*200 input_file,output_file,output_file2,output_file3
       character*14 stringin
@@ -21,6 +21,8 @@ c This program plot the SED for candidate
       character*200,dimension(:,:),allocatable :: refs
       character*15,dimension(:,:),allocatable :: spectype
       character*2,dimension(:,:),allocatable :: flag
+      integer*4,dimension(:),allocatable :: stype
+      real*8,dimension(:),allocatable :: ra,dec
 
       ok = .true.
 
@@ -57,6 +59,7 @@ c This program plot the SED for candidate
       allocate(frequency(15000,1000),flux(15000,1000),uflux(15000,1000),lflux(15000,1000),mjdstart(15000,1000),mjdend(15000,1000))
       allocate(mjdavg(15000),flux_lc(15000),uflux_lc(15000),lflux_lc(15000),mjdst_lc(15000),mjded_lc(15000),freq_lc(15000))
       allocate(refs(15000,1000),spectype(15000,1000),flag(15000,1000))
+      allocate(ra(1000),dec(1000),stype(1000))
 
       npt(1:1000)=0
       open(10,file=input_file,status='old')
@@ -714,6 +717,7 @@ c TeV panel for LC
       deallocate(frequency,flux,uflux,lflux,mjdstart,mjdend)
       deallocate(mjdavg,flux_lc,uflux_lc,lflux_lc,mjdst_lc,mjded_lc,freq_lc)
       deallocate(refs,spectype,flag)
+      deallocate(ra,dec,stype)
 
       close (10)
       END

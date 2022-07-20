@@ -1,32 +1,22 @@
       PROGRAM gnomo_plot_types
 c
       IMPLICIT NONE
-      INTEGER*4  max_sat,max_en
-      PARAMETER (max_sat=100,max_en=1e5)
       INTEGER*4 symbol, i,n,m,in,j,iskip
       INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
       INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
       INTEGER*4 lu_out
-      INTEGER*4 s11(200),isource,rah,irm,id,idm,s14(15000)
+      INTEGER*4 isource,rah,irm,id,idm
       INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
       integer*4 icol12,icol13
-      REAL*4 x(1000), y(1000), run_alpha(100),run_dec(100),x1(500),y1(500)
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
-      REAL*4 ra_col1(200),dec_col1(200),ra_col2(200),dec_col2(200),ra_col14(15000)
-      REAL*4 ra_col3(200),dec_col3(200),ra_col4(200),dec_col4(200),dec_col14(15000)
-      REAL*4 ra_col5(200),dec_col5(200),ra_col11(200),dec_col11(200)
-      REAL*4 x_grid(100), y_grid(100),xpoly(4),ypoly(4)
-      REAL*4 afmin(max_sat),R,G,B,rasec,decsec,step
-      REAL*4 afmax(max_sat),cc
+      REAL*4 xpoly(4),ypoly(4)
+      REAL*4 R,G,B,rasec,decsec,step
+      REAL*4 cc
       REAL*4 ra1, ra2, dec1, dec2
-      REAL*4 csr1(200),csr2(200),csr3(200),csr4(200),csr5(200),csr11(200)
-      REAL*4 csx1(200),csx2(200),csx3(200),csx4(200),csx5(200),csx11(200)
       REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
       REAL*4 ratrue(10),dectrue(10),raarr(3),decarr(3)
-      REAL*4 racat(500),deccat(500)
       REAL*4 ra_center, dec_center, radius, radian, dec_start,ra_o,dec_o
-      REAL*4 step_alpha,pos, symb_size(10),fmin,fmax,err_radius
-      REAL*4 names_ra(1000), names_dec(1000)
+      REAL*4 step_alpha,pos,fmin,fmax,err_radius
       REAL*4 ellipser1, ellipser2, ellipserot,ellipser1_2, ellipser2_2
       REAL*4 ellipserot_2, err_radius_2,ra_err2,dec_err2
       INTEGER*4 n_names,om
@@ -34,8 +24,6 @@ c
       REAL*8 rra, ddec
       CHARACTER*1 sign
       CHARACTER*80 string,device
-      CHARACTER*4 tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200)
-      CHARACTER*4 tcol14(15000)
       CHARACTER*85 newstring
       CHARACTER*60 title , filein,fileout
       CHARACTER*400 stringin
@@ -47,13 +35,29 @@ c
 
       integer*4,dimension(:),allocatable :: code
       real*4,dimension(:),allocatable :: ra,dec,epos
+      real*4,dimension(:),allocatable :: x1,y1,racat,deccat
+      real*4,dimension(:),allocatable :: x,y,names_ra,names_dec
+      real*4,dimension(:),allocatable :: run_alpha,run_dec,x_grid,y_grid,afmin,afmax
+
+      integer*4,dimension(:),allocatable :: s11
+      character*4,dimension(:),allocatable :: tcol1,tcol2,tcol3,tcol4,tcol5,tcol11
+      real*4,dimension(:),allocatable :: ra_col1,dec_col1,csx1,csr1
+      real*4,dimension(:),allocatable :: ra_col2,dec_col2,csx2,csr2
+      real*4,dimension(:),allocatable :: ra_col3,dec_col3,csx3,csr3
+      real*4,dimension(:),allocatable :: ra_col4,dec_col4,csx4,csr4
+      real*4,dimension(:),allocatable :: ra_col5,dec_col5,csx5,csr5
+      real*4,dimension(:),allocatable :: ra_col11,dec_col11,csx11,csr11
+
       real*4,dimension(:),allocatable :: ra_col13,dec_col13,epos_col13,color13,csr13
       integer*4,dimension(:),allocatable :: s12
       real*4,dimension(:),allocatable :: ra_col12,dec_col12,csx12,csr12
       character*4,dimension(:),allocatable :: tcol12
+      integer*4,dimension(:),allocatable :: s14
+      real*4,dimension(:),allocatable :: ra_col14,dec_col14
+      character*4,dimension(:),allocatable :: tcol14
 
 * External references :
-      data symb_size /9.,7.,6.,5.,3.5,2.5,1.6,1.0,0.8,0.4/
+      !data symb_size /9.,7.,6.,5.,3.5,2.5,1.6,1.0,0.8,0.4/
 c      COMMON /ecetype/pro_scale,radius_scale,axis_unit
       COMMON /ecetype/pro_scale,radius_scale
 
@@ -122,6 +126,9 @@ c      fileout='candidates_image_position.txt'
       open(lu_out,file=fileout,status='unknown')
 
       allocate(code(80000),epos(80000),ra(80000),dec(80000))
+      allocate(x1(500),y1(500),racat(500),deccat(500))
+      allocate(x(1000),y(1000),names_ra(1000),names_dec(1000))
+      allocate(run_alpha(100),run_dec(100),x_grid(100),y_grid(100),afmin(100),afmax(100))
 
       if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
@@ -388,9 +395,21 @@ c     colore
       !write(*,*) n_points
       if (n_points .gt. 35000) n_points=35000
 
+      deallocate(run_alpha,run_dec,x_grid,y_grid,afmin,afmax)
+
       allocate(ra_col13(80000),dec_col13(80000),epos_col13(80000),color13(80000),csr13(80000))
       allocate(ra_col12(20000),dec_col12(20000),csx12(20000),csr12(20000))
       allocate(tcol12(20000),s12(20000))
+      allocate(ra_col14(15000),dec_col14(15000))
+      allocate(tcol14(15000),s14(15000))
+
+      allocate(tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200))
+      allocate(ra_col1(200),dec_col1(200),csx1(200),csr1(200))
+      allocate(ra_col2(200),dec_col2(200),csx2(200),csr2(200))
+      allocate(ra_col3(200),dec_col3(200),csx3(200),csr3(200))
+      allocate(ra_col4(200),dec_col4(200),csx4(200),csr4(200))
+      allocate(ra_col5(200),dec_col5(200),csx5(200),csr5(200))
+      allocate(ra_col11(200),dec_col11(200),csx11(200),csr11(200),s11(200))
 
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
@@ -737,6 +756,16 @@ c      CALL pgscf(1)
       deallocate(ra_col13,dec_col13,epos_col13,color13,csr13)
       deallocate(ra_col12,dec_col12,csx12,csr12)
       deallocate(tcol12,s12)
+      deallocate(ra_col14,dec_col14)
+      deallocate(tcol14,s14)
+
+      deallocate(tcol1,tcol2,tcol3,tcol4,tcol5,tcol11)
+      deallocate(ra_col1,dec_col1,csx1,csr1)
+      deallocate(ra_col2,dec_col2,csx2,csr2)
+      deallocate(ra_col3,dec_col3,csx3,csr3)
+      deallocate(ra_col4,dec_col4,csx4,csr4)
+      deallocate(ra_col5,dec_col5,csx5,csr5)
+      deallocate(ra_col11,dec_col11,csx11,csr11,s11)
 
 c ------ DC2Truth part
       CALL gnom_projection(n_true,ra_center,dec_center,ratrue,dectrue,x1,y1)
@@ -756,6 +785,9 @@ c ------ Names part
       call pgsci(0)
       call pgsch(1.)
 c      CALL pgpoint(n_names,x1,y1,1)
+
+      deallocate(x1,y1,racat,deccat)
+      deallocate(x,y,names_ra,names_dec)
 
       close(lu_out)
       END

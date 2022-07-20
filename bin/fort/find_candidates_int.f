@@ -1,31 +1,40 @@
       PROGRAM find_candidates_int
 
       IMPLICIT none
-      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,icand,filen,is,ie,xpts(2000)
-      integer ii1,ii2,ipass,isource,pass2(4000),rr_type(2000),xx_type(2000)
-      integer nrepxx(2000),ixxss,ixxrep,trackxx(2000),repnumberxx(2000),posindxx(2000)
-      integer nreprr(2000),irrss,irrrep,trackrr(2000),repnumberrr(2000),posindrr(2000)
-      integer nnuvx,nnruv,nnralpha,xxss_type(2000),rrss_type(2000),code
-      real*8 ra,dec,dist,ra_gam(50),dec_gam(50),ra_4p8(500),dec_4p8(500)
-      real*8 ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000),ra_center,dec_center
-      real*8 ra_xxss(2000),dec_xxss(2000),ra_rrss(2000),dec_rrss(200)
+      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,icand,filen,is,ie
+      integer ii1,ii2,ipass,isource
+      integer nnuvx,nnruv,nnralpha,code,irrrep,ixxrep,irrss,ixxss
+      real*8 ra,dec,dist
+      real*8 ra_center,dec_center
       real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,fdens,nudens
-      real*4 frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000)
-      real*4 frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000)
-      real*4 mjdst_rr(2000),mjded_rr(2000),mjdst_xx(2000),mjded_xx(2000)
-      real*4 frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500)
-      real*4 poserr_4p8(500),Ferr_4p8(500),poserr_uv(10000),poserr_xxss(2000),flux_rrss(2000)
-      real*4 slope_gam(50),specerr_gam(50)
-      real*4 frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),poserr_gam(50),Ferr_gam(50)
       real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
       character*200 input_file,input_file2,input_file3,output_file
-      character*10 catalog,type_4p8(500)
+      character*10 catalog
       character*800 string
 
+      real*8,dimension(:),allocatable :: ra_uv,dec_uv
+      real*4,dimension(:),allocatable :: poserr_uv
+      real*4,dimension(:,:),allocatable :: frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr
+
+      real*8,dimension(:),allocatable :: ra_4p8,dec_4p8
+      real*4,dimension(:),allocatable :: frequency_4p8,flux_4p8,FluxL_4p8,FluxU_4p8,poserr_4p8,Ferr_4p8
+      character*10,dimension(:),allocatable :: type_4p8
+
+      real*8,dimension(:),allocatable :: ra_gam,dec_gam
+      real*4,dimension(:),allocatable :: slope_gam,specerr_gam,poserr_gam
+      real*4,dimension(:),allocatable :: frequency_gam,flux_gam,FluxL_gam,FluxU_gam,Ferr_gam
+
+      integer*4,dimension(:),allocatable :: xpts,pass2,rr_type,xx_type,xxss_type,rrss_type
+      integer*4,dimension(:),allocatable :: nreprr,trackrr,repnumberrr,posindrr
+      integer*4,dimension(:),allocatable :: nrepxx,trackxx,repnumberxx,posindxx
+      real*8,dimension(:),allocatable :: ra_rr,dec_rr,ra_rrss,dec_rrss
+      real*8,dimension(:),allocatable :: ra_xx,dec_xx,ra_xxss,dec_xxss
+
+      real*4,dimension(:),allocatable :: frequency_rr,flux_rr,FluxL_rr,FluxU_rr,poserr_rr
+      real*4,dimension(:),allocatable :: frequency_xx,flux_xx,FluxL_xx,FluxU_xx,poserr_xx
+      real*4,dimension(:),allocatable :: mjdst_rr,mjded_rr,mjdst_xx,mjded_xx,poserr_xxss,flux_rrss
 
       integer*4,dimension(:,:),allocatable :: backxx,backrr
-      real*8,dimension(:),allocatable :: ra_uv,dec_uv
-      real*4,dimension(:,:),allocatable :: frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr
       integer*4,dimension(:,:),allocatable :: xxot_type
       real*4,dimension(:,:),allocatable :: frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot
 
@@ -66,6 +75,11 @@ c      min_dist_4p8=30./3600.
 
       allocate(xxot_type(10,2000))
       allocate(frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000))
+      allocate(ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000))
+      allocate(rr_type(2000),xx_type(2000),xpts(2000))
+      allocate(frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000))
+      allocate(frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000))
+      allocate(mjdst_rr(2000),mjded_rr(2000),mjdst_xx(2000),mjded_xx(2000))
 
       icand=0
       ixx=0
@@ -121,8 +135,16 @@ c      write(*,*) icand,irr,ixx
 98    continue
 c      write(*,*) isource
 
-      allocate(ra_uv(10000),dec_uv(10000))
+      allocate(ra_uv(10000),dec_uv(10000),poserr_uv(10000))
       allocate(frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2),uvmag(10000,2),uvmagerr(10000,2))
+
+      allocate(ra_4p8(500),dec_4p8(500))
+      allocate(frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500),poserr_4p8(500),Ferr_4p8(500))
+      allocate(type_4p8(500))
+
+      allocate(ra_gam(50),dec_gam(50))
+      allocate(slope_gam(50),specerr_gam(50),poserr_gam(50))
+      allocate(frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),Ferr_gam(50))
 
       igam=0
       iuv=0
@@ -241,6 +263,14 @@ c      write(*,*) isource
       close(11)
 c      write(*,*) i4p8,iuv,igam
 
+
+      allocate(xxss_type(2000),rrss_type(2000),pass2(2000))
+      allocate(nreprr(2000),trackrr(2000),repnumberrr(2000),posindrr(2000))
+      allocate(nrepxx(2000),trackxx(2000),repnumberxx(2000),posindxx(2000))
+      allocate(ra_rrss(2000),dec_rrss(2000),flux_rrss(2000))
+      allocate(ra_xxss(2000),dec_xxss(2000),poserr_xxss(2000))
+      allocate(backxx(2000,2000),backrr(2000,2000))
+
       nrepxx(1:ixx)=0
       ixxss=0
       ixxrep=0
@@ -273,8 +303,6 @@ c xrt 1sxps chandra
 c bmw xmm xmmsl
 c rass wga ipc
 c      write(*,*) '========================'
-
-      allocate(backxx(2000,2000),backrr(2000,2000))
 
       do i=1,ixxss
          do j=1,ixx
@@ -519,8 +547,16 @@ c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
          endif
       enddo
 
-      deallocate(ra_uv,dec_uv)
+      deallocate(ra_uv,dec_uv,poserr_uv)
       deallocate(frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr)
+
+      deallocate(ra_4p8,dec_4p8)
+      deallocate(frequency_4p8,flux_4p8,FluxL_4p8,FluxU_4p8,poserr_4p8,Ferr_4p8)
+      deallocate(type_4p8)
+
+      deallocate(ra_gam,dec_gam)
+      deallocate(slope_gam,specerr_gam,poserr_gam)
+      deallocate(frequency_gam,flux_gam,FluxL_gam,FluxU_gam,Ferr_gam)
 
       if ((ipass .eq. 0) .and. (isource .ne. 0)) then
          print *,achar(27),'[35;1m No Candidates Found in Intermediate Phase',achar(27),'[0m'
@@ -560,9 +596,21 @@ c      write(*,*) pass2(1:ipass)
       enddo
       write(12,*) ipass
 
+      deallocate(ra_rr,dec_rr,ra_xx,dec_xx)
+      deallocate(rr_type,xx_type,xpts)
+      deallocate(frequency_rr,flux_rr,FluxL_rr,FluxU_rr,poserr_rr)
+      deallocate(frequency_xx,flux_xx,FluxL_xx,FluxU_xx,poserr_xx)
+      deallocate(mjdst_rr,mjded_rr,mjdst_xx,mjded_xx)
+
       deallocate(backxx,backrr)
       deallocate(xxot_type)
       deallocate(frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot)
+
+      deallocate(xxss_type,rrss_type)
+      deallocate(nreprr,trackrr,repnumberrr,posindrr)
+      deallocate(nrepxx,trackxx,repnumberxx,posindxx)
+      deallocate(ra_rrss,dec_rrss,flux_rrss)
+      deallocate(ra_xxss,dec_xxss,poserr_xxss)
 
       close(12)
       end
