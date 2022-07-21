@@ -2,7 +2,7 @@
 Number_of_candidate: 500
 Counterpart_of_candidate: 3000
 Radio_source: 20000
-X_ray_source: 3000
+X_ray_source: 5000
 Points_to_be_plotted (SED and Error map): 80000
 ------------------ PHASE 1 -------------------------
 Cataloged_source: 15000
@@ -16,7 +16,7 @@ BMW: 500
 IPC: 200
 MAXI: 200
 ----------------- PHASE 2 --------------------------
-All_catalogued_and_candidate_source: 5000
+All_catalogued_and_candidate_source: 2000
 Cataloged_source_from_phase1: 200
 Very_high_energy: 500
 De_EBL: 300
@@ -49,7 +49,3 @@ Cataloged_AGN_candidate: 200
 Pulsar_GRB_Gamma_ray_source: 15000
 Circle_project_point: 1000
 Grid_point: 100
------------------- Plot_SED_LC ----------------------
-Point_SED: 80000
-Source_SED: 1000
-Point_LC: 15000
