@@ -1,32 +1,23 @@
       PROGRAM gnomo_plot_types
 c
       IMPLICIT NONE
-      INTEGER*4 symbol, i,n,m,in,j,iskip
-      INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact
-      INTEGER*4 lu_infile, length, im, ip, n_true,n_cat
-      INTEGER*4 lu_out
-      INTEGER*4 isource,rah,irm,id,idm
-      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14
-      integer*4 icol12,icol13
+      INTEGER*4 symbol, i,n,m,in,is,j,iskip,isource,om,iconfig,iarr
+      INTEGER*4 no_of_isoalpha, no_of_isodelta, n_points,lenact,arrsize(30)
+      INTEGER*4 lu_infile, length, im, ip,lu_out,rah,irm,id,idm
+      INTEGER*4 icol1,icol2,icol3,icol4,icol5,icol11,icol14,icol12,icol13
       REAL*4 isoalpha, isodelta, step_delta,cs,xtick,ytick
-      REAL*4 xpoly(4),ypoly(4)
-      REAL*4 R,G,B,rasec,decsec,step
-      REAL*4 cc
-      REAL*4 ra1, ra2, dec1, dec2
-      REAL*4 x_o, y_o, x_err2, y_err2,xx,yy
-      REAL*4 ratrue(10),dectrue(10),raarr(3),decarr(3)
-      REAL*4 ra_center, dec_center, radius, radian, dec_start,ra_o,dec_o
-      REAL*4 step_alpha,pos,fmin,fmax,err_radius
+      REAL*4 xpoly(4),ypoly(4),R,G,B,rasec,decsec,step,cc
+      REAL*4 ra1, ra2, dec1, dec2,x_o, y_o, x_err2, y_err2,xx,yy
+      REAL*4 raarr(3),decarr(3),ra_center,dec_center,dec_start,ra_o,dec_o
+      REAL*4 step_alpha,pos,fmin,fmax,err_radius, radius, radian
       REAL*4 ellipser1, ellipser2, ellipserot,ellipser1_2, ellipser2_2
       REAL*4 ellipserot_2, err_radius_2,ra_err2,dec_err2
-      INTEGER*4 n_names,om
       REAL*4 cxray, cradio, cx
       REAL*8 rra, ddec
       CHARACTER*1 sign
-      CHARACTER*80 string,device
-      CHARACTER*85 newstring
-      CHARACTER*60 title , filein,fileout
-      CHARACTER*400 stringin
+      CHARACTER*85 string, newstring,title
+      CHARACTER*200 filein,fileout,device,webprograms,array_size
+      CHARACTER*800 stringin
       CHARACTER*14 xaxis_label,yaxis_label
       REAL*4 radius_scale
       REAL*4 pro_scale
@@ -35,8 +26,8 @@ c
 
       integer*4,dimension(:),allocatable :: code
       real*4,dimension(:),allocatable :: ra,dec,epos
-      real*4,dimension(:),allocatable :: x1,y1,racat,deccat
-      real*4,dimension(:),allocatable :: x,y,names_ra,names_dec
+c      real*4,dimension(:),allocatable :: x1,y1,racat,deccat
+      real*4,dimension(:),allocatable :: x,y!,names_ra,names_dec
       real*4,dimension(:),allocatable :: run_alpha,run_dec,x_grid,y_grid,afmin,afmax
 
       integer*4,dimension(:),allocatable :: s11
@@ -86,7 +77,10 @@ c         write(*,*) iskip
          in=im
          im = index(stringin(in+1:length),',')+in
          device = stringin(in+1:im-1)
-c         write(*,*) device
+         in=im
+         im = index(stringin(in+1:length),',')+in
+         webprograms=stringin(in+1:im-1)
+         !write(*,*) filein,fileout,device,webprograms
          ip = index(stringin(im+1:length),',')+im
 c         strzoom = stringin(im+1:ip-1)
 
@@ -114,6 +108,9 @@ c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15
 c      dec_o=dec_o+0.1 !0.4 +0.5-0.3
 c      write(*,*) ra_o,dec_o
 
+      iarr=0
+      iconfig=0
+      arrsize(1:30)=0
       i = 0
       radius= radius/60.
       ellipserot=-ellipserot
@@ -122,13 +119,39 @@ c      write(*,*) ra_o,dec_o
       lu_infile = 12
 c      call getlun(lu_infile)
 c      fileout='candidates_image_position.txt'
+      array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
       open(lu_infile,file=filein,status='old')
       open(lu_out,file=fileout,status='unknown')
+      open(18,file=array_size,status='old')
 
-      allocate(code(80000),epos(80000),ra(80000),dec(80000))
-      allocate(x1(500),y1(500),racat(500),deccat(500))
-      allocate(x(1000),y(1000),names_ra(1000),names_dec(1000))
-      allocate(run_alpha(100),run_dec(100),x_grid(100),y_grid(100),afmin(100),afmax(100))
+      do while(ok)
+      read(18,'(a)',end=700) stringin
+      !write(*,*) stringin
+      if (stringin(1:3) == '---' ) then
+         iconfig=iconfig+1
+      else
+         if (iconfig .eq. 1) then
+            iarr=iarr+1
+            if (iarr .ge. 3) then
+               is=index(stringin(1:len(stringin)),':')
+               !write(*,*) 'CHECK',iconfig,iarr,is
+               read(stringin(is+1:lenact(stringin)),*) arrsize(iarr-2)
+            endif
+         else if (iconfig .eq. 5) then
+            iarr=iarr+1
+            is=index(stringin(1:len(stringin)),':')
+            read(stringin(is+1:lenact(stringin)),*) arrsize(iarr-2)
+         endif
+      endif
+      enddo
+700   continue
+      close(18)
+      !write(*,*) arrsize
+
+      allocate(code(arrsize(3)),epos(arrsize(3)),ra(arrsize(3)),dec(arrsize(3)))
+c      allocate(x1(500),y1(500),racat(500),deccat(500))
+      allocate(x(arrsize(11)),y(arrsize(11)))
+      allocate(run_alpha(arrsize(12)),run_dec(arrsize(12)),x_grid(arrsize(12)),y_grid(arrsize(12)),afmin(arrsize(12)),afmax(arrsize(12)))
 
       if (filein(iskip+1:iskip+13) == 'error_map.txt') then
       radius=radius/60.
@@ -141,13 +164,13 @@ c      fileout='candidates_image_position.txt'
       else
       DO WHILE (ok)
          i = i + 1
-         READ (lu_infile,'(a)',END=700) stringin
+         READ (lu_infile,'(a)',END=500) stringin
          READ (stringin(1:lenact(stringin)),*,END=700,ERR=700)
      &            ra(i),dec(i),code(i)
       ENDDO
       endif
  100  CONTINUE
- 700  continue
+ 500  continue
       n_points=i-1
       IF ( n_points.GT.35000 ) THEN
          print *, ' //max no of points (35000) exceeded '
@@ -332,7 +355,7 @@ c     now draw the grid
          if (rra.lt.0.) rra=rra+360.
          string=' '
          call schra(rra,string)
-         newstring='   '//string
+         newstring='   '//string(1:lenact(string))
          DO m = 1, 100
             run_dec(m) = dec_start + float(m-3)*radius/47.
             run_alpha(m) = isoalpha
@@ -348,7 +371,7 @@ c     now draw the grid
       pos=.6-float(n+1)/30.-.02
       ddec=isodelta
       call schdec(ddec,string)
-      newstring='  '//string
+      newstring='  '//string(1:lenact(string))
       DO m = 1, 100
       run_alpha(m) = ra1 + float(m-3)*(ra2-ra1)/95.
       run_dec(m) = isodelta
@@ -397,19 +420,19 @@ c     colore
 
       deallocate(run_alpha,run_dec,x_grid,y_grid,afmin,afmax)
 
-      allocate(ra_col13(80000),dec_col13(80000),epos_col13(80000),color13(80000),csr13(80000))
-      allocate(ra_col12(20000),dec_col12(20000),csx12(20000),csr12(20000))
-      allocate(tcol12(20000),s12(20000))
-      allocate(ra_col14(15000),dec_col14(15000))
-      allocate(tcol14(15000),s14(15000))
+      allocate(ra_col13(arrsize(3)),dec_col13(arrsize(3)),epos_col13(arrsize(3)),color13(arrsize(3)),csr13(arrsize(3)))
+      allocate(ra_col12(arrsize(1)+arrsize(2)),dec_col12(arrsize(1)+arrsize(2)),csx12(arrsize(1)+arrsize(2)),csr12(arrsize(1)+arrsize(2)))
+      allocate(tcol12(arrsize(1)+arrsize(2)),s12(arrsize(1)+arrsize(2)))
+      allocate(ra_col14(arrsize(10)),dec_col14(arrsize(10)))
+      allocate(tcol14(arrsize(10)),s14(arrsize(10)))
 
-      allocate(tcol1(200),tcol2(200),tcol3(200),tcol4(200),tcol5(200),tcol11(200))
-      allocate(ra_col1(200),dec_col1(200),csx1(200),csr1(200))
-      allocate(ra_col2(200),dec_col2(200),csx2(200),csr2(200))
-      allocate(ra_col3(200),dec_col3(200),csx3(200),csr3(200))
-      allocate(ra_col4(200),dec_col4(200),csx4(200),csr4(200))
-      allocate(ra_col5(200),dec_col5(200),csx5(200),csr5(200))
-      allocate(ra_col11(200),dec_col11(200),csx11(200),csr11(200),s11(200))
+      allocate(tcol1(arrsize(4)),tcol2(arrsize(5)),tcol3(arrsize(6)),tcol4(arrsize(7)),tcol5(arrsize(8)),tcol11(arrsize(9)))
+      allocate(ra_col1(arrsize(4)),dec_col1(arrsize(4)),csx1(arrsize(4)),csr1(arrsize(4)))
+      allocate(ra_col2(arrsize(5)),dec_col2(arrsize(5)),csx2(arrsize(5)),csr2(arrsize(5)))
+      allocate(ra_col3(arrsize(6)),dec_col3(arrsize(6)),csx3(arrsize(6)),csr3(arrsize(6)))
+      allocate(ra_col4(arrsize(7)),dec_col4(arrsize(7)),csx4(arrsize(7)),csr4(arrsize(7)))
+      allocate(ra_col5(arrsize(8)),dec_col5(arrsize(8)),csx5(arrsize(8)),csr5(arrsize(8)))
+      allocate(ra_col11(arrsize(9)),dec_col11(arrsize(9)),csx11(arrsize(9)),csr11(arrsize(9)),s11(arrsize(9)))
 
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
@@ -766,28 +789,28 @@ c      CALL pgscf(1)
       deallocate(ra_col4,dec_col4,csx4,csr4)
       deallocate(ra_col5,dec_col5,csx5,csr5)
       deallocate(ra_col11,dec_col11,csx11,csr11,s11)
+      deallocate(x,y)
 
 c ------ DC2Truth part
-      CALL gnom_projection(n_true,ra_center,dec_center,ratrue,dectrue,x1,y1)
-      call pgsci(2)
-      call pgsch(2.)
+cccc      CALL gnom_projection(n_true,ra_center,dec_center,ratrue,dectrue,x1,y1)
+cccc      call pgsci(2)
+cccc      call pgsch(2.)
 c      CALL pgpoint(n_true,x1,y1,18)
 c
 c  ----  Catalogues sources part 
 c
-      CALL gnom_projection(n_cat,ra_center,dec_center,racat,deccat,x1,y1)
-      call pgsci(1)
-      call pgsch(2.)
+cccc      CALL gnom_projection(n_cat,ra_center,dec_center,racat,deccat,x1,y1)
+cccc      call pgsci(1)
+cccc      call pgsch(2.)
 c      CALL pgpoint(n_cat,x1,y1,4)
 
 c ------ Names part
-      CALL gnom_projection(n_names,ra_center,dec_center,names_ra,names_dec,x1,y1)
-      call pgsci(0)
-      call pgsch(1.)
+cccc      CALL gnom_projection(n_names,ra_center,dec_center,names_ra,names_dec,x1,y1)
+cccc      call pgsci(0)
+cccc      call pgsch(1.)
 c      CALL pgpoint(n_names,x1,y1,1)
 
-      deallocate(x1,y1,racat,deccat)
-      deallocate(x,y,names_ra,names_dec)
+c      deallocate(x1,y1,racat,deccat)
 
       close(lu_out)
       END

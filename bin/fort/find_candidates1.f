@@ -23,27 +23,25 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in,xray_type, in,k, length,im,imaxi
-      INTEGER*4 lenact,source_type,type_average,ix,types(0:5),xpts,ibigb,bigbind(100)
-      INTEGER*4 no_found,sfound,rfound,s,aim,ncat
-      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw,ifound,igam
-      INTEGER*4 rah, ram, id, dm ,is,ie, i, j,l,filen
-      INTEGER*4 igrb,ierosita
+      INTEGER*4 ier, lu_in, in,k, length,im,is,ie, i, j,l
+      INTEGER*4 lenact,source_type,type_average,types(0:5)
+      INTEGER*4 no_found,sfound,rfound,s,aim,xray_type,ncat,ifound
+      INTEGER*4 iradio,ixmm,irosat,iswift,iipc,iother,ichandra,ibmw
+      INTEGER*4 rah, ram, id, dm ,filen,ix,xpts,iarr,iconfig
+      INTEGER*4 igrb,ierosita,imaxi,ibigb,igam,arrsize(30)
       REAL*8 ra, dec,dist,ra_center,dec_center,radius
-      real*8 ra_bary,dec_bary
-      real*8 ra_cattemp,dec_cattemp
-      REAL*4 radian
-      REAL*4 flux_x,nh,errfrx,totweight
-      REAL*4 flux2nufnu_vlass
-      REAL*4 min_dist_rosat,min_dist_xmm,rasec,decsec,min_dist_ipc,min_dist_cluster
-      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra,erraxis,totxerr
-      REAL*4 flux2nufnu_nvss,flux2nufnu_rosat,min_dist,reduce
-      REAL*4 flux2nufnu_swift,flux2nufnu_ipc,code,fdens,nudens
-      REAL*4 flux2nufnu_bmw,ratio,flux2nufnu_sumss
+      real*8 ra_bary,dec_bary,ra_cattemp,dec_cattemp
+      REAL*4 min_dist_rosat,min_dist_xmm,min_dist_ipc,min_dist_cluster
+      REAL*4 min_dist_other,min_dist_swift,min_dist_bmw,min_dist_chandra
+      REAL*4 flux2nufnu_vlass,flux2nufnu_nvss,flux2nufnu_rosat
+      REAL*4 flux2nufnu_swift,flux2nufnu_ipc,flux2nufnu_bmw,flux2nufnu_sumss
+      REAL*4 radian,rasec,decsec,code,fdens,nudens,ratio,reduce
+      REAL*4 flux_x,nh,errfrx,totweight,erraxis,totxerr,min_dist
       real*4 major,minor,posang,posxerr,posyerr
       real*4 errrad,errmaj,errmin,errang,mjdavg
       CHARACTER*1 sign
-      CHARACTER*200 input_file,output_file,output_file2,output_file3,output_file4,webprograms!,output_file5
+      CHARACTER*200 input_file,output_file,output_file2,output_file3
+      character*200 output_file4,webprograms,array_size!,output_file5
       CHARACTER*15 catalog
       CHARACTER*800 string
 
@@ -82,7 +80,7 @@ c
       real*4,dimension(:),allocatable :: xxerr,poserr_source,flux_source,xflux,rflux,rrconst,zsource
       character*30,dimension(:),allocatable :: nnsource
 
-      integer*4,dimension(:),allocatable :: track2
+      integer*4,dimension(:),allocatable :: track2,bigbind
       real*8,dimension(:),allocatable :: ra_gam,dec_gam,ra_cat,dec_cat
       character*30,dimension(:),allocatable :: name_cat,namegam
       real*8,dimension(:),allocatable :: ra_other,dec_other
@@ -94,11 +92,10 @@ c
       ok = .TRUE. 
       found = .FALSE.
       catsrc=.false.
-      allocate(nrep(500),zsource(500),nnsource(500))
 
-      nrep(1:500)=1
-      zsource(1:500)=0.
-      nnsource(1:500)='NONAME'
+      iconfig=0
+      iarr=0
+      arrsize(1:30)=0
       ifound = 0
       sfound = 0
       rfound = 0
@@ -180,18 +177,71 @@ c         write(*,*) 'the aim',aim
      &     input_file(1:lenact(input_file))
          STOP
       ENDIF
+
+      array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=output_file,status='unknown',iostat=ier)
       open(13,file=output_file2,status='unknown',iostat=ier)
       open(14,file=output_file4,status='unknown',iostat=ier)
-c      open(17,file=output_file5,status='unknown',iostat=ier)
-      !write(*,*) ier
-      open(12,file=output_file3,status='unknown')
+      open(12,file=output_file3,status='unknown',iostat=ier)
+      open(18,file=array_size,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF
 
-      READ(lu_in,'(a)') string 
+      do while(ok)
+      read(18,'(a)',end=700) string
+      if (string(1:3) == '---' ) then
+         iconfig=iconfig+1
+      else
+         if (iconfig .eq. 1) then
+            iarr=iarr+1
+            if (iarr .le. 3) then
+               is=index(string(1:len(string)),':')
+               read(string(is+1:lenact(string)),*) arrsize(iarr)
+            else
+               iarr=iarr-1
+            endif
+         else if (iconfig .eq. 2) then
+            iarr=iarr+1
+            is=index(string(1:len(string)),':')
+            read(string(is+1:lenact(string)),*) arrsize(iarr)
+         endif
+      endif
+      enddo
+700   continue
+      close(18)
+c      write(*,*) arrsize
+
+      allocate(nrep(arrsize(1)),zsource(arrsize(1)),nnsource(arrsize(1)))
+      allocate(ra_xmm(arrsize(6)),dec_xmm(arrsize(6)),xmm_type(arrsize(6)),poserr_xmm(arrsize(6)))
+      allocate(ra_swift(arrsize(7)),dec_swift(arrsize(7)),xrt_type(arrsize(7)),poserr_swift(arrsize(7)),mjdst_swift(arrsize(7)),mjded_swift(arrsize(7)))
+      allocate(Ferr_swift(arrsize(7),5),FluxU_swift(arrsize(7),5),FluxL_swift(arrsize(7),5),flux_swift(arrsize(7),5),frequency_swift(arrsize(7),5))
+      allocate(Ferr_xmm(arrsize(6),6),FluxU_xmm(arrsize(6),6),FluxL_xmm(arrsize(6),6),flux_xmm(arrsize(6),6),frequency_xmm(arrsize(6),6))
+      allocate(ra_rosat(arrsize(8)),dec_rosat(arrsize(8)),poserr_rosat(arrsize(8)),rosat_type(arrsize(8)))
+      allocate(poserr_chandra(arrsize(9)),ra_chandra(arrsize(9)),dec_chandra(arrsize(9)))
+      allocate(flux_rosat(arrsize(8)),Ferr_rosat(arrsize(8)),FluxU_rosat(arrsize(8)),FluxL_rosat(arrsize(8)),frequency_rosat(arrsize(8)))
+      allocate(flux_chandra(arrsize(9),5),FluxU_chandra(arrsize(9),5),FluxL_chandra(arrsize(9),5),frequency_chandra(arrsize(9),5))
+      allocate(poserr_erosita(arrsize(10)),ra_erosita(arrsize(10)),dec_erosita(arrsize(10)))
+      allocate(poserr_bmw(arrsize(11)),ra_bmw(arrsize(11)),dec_bmw(arrsize(11)))
+      allocate(flux_erosita(arrsize(10),2),fluxL_erosita(arrsize(10),2),fluxU_erosita(arrsize(10),2),Ferr_erosita(arrsize(10),2),frequency_erosita(arrsize(10),2))
+      allocate(flux_bmw(arrsize(11)),fluxL_bmw(arrsize(11)),fluxU_bmw(arrsize(11)),Ferr_bmw(arrsize(11)),frequency_bmw(arrsize(11)))
+      allocate(ipc_type(arrsize(12)),poserr_ipc(arrsize(12)),ra_ipc(arrsize(12)),dec_ipc(arrsize(12)))
+      allocate(poserr_maxi(arrsize(13)),ra_maxi(arrsize(13)),dec_maxi(arrsize(13)),maxi_type(arrsize(13)))
+      allocate(flux_ipc(arrsize(12)),Ferr_ipc(arrsize(12)),fluxL_ipc(arrsize(12)),fluxU_ipc(arrsize(12)),frequency_ipc(arrsize(12)))
+      allocate(flux_maxi(arrsize(13),4),Ferr_maxi(arrsize(13),4),FluxL_maxi(arrsize(13),4),FluxU_maxi(arrsize(13),4),frequency_maxi(arrsize(13),4))
+      allocate(ra_gam(arrsize(5)),dec_gam(arrsize(5)),ra_cat(arrsize(5)),dec_cat(arrsize(5)))
+      allocate(name_cat(arrsize(5)),namegam(arrsize(5)),track2(arrsize(5)),bigbind(arrsize(5)))
+      allocate(ra_other(arrsize(4)),dec_other(arrsize(4)),zz(arrsize(4)))
+      allocate(name_other(arrsize(4)),vlasssrnm(arrsize(3)))
+      allocate(ra_radio(arrsize(3)),dec_radio(arrsize(3)),radio_type(arrsize(3)),ra_index(arrsize(3)))
+      allocate(ppss(arrsize(3)),const(arrsize(3)),Ferr_radio(arrsize(3)),FluxU_radio(arrsize(3)),FluxL_radio(arrsize(3)),poserr_radio(arrsize(3)),flux_radio(arrsize(3)),frequency_radio(arrsize(3)))
+
+      nrep(1:arrsize(1))=1
+      zsource(1:arrsize(1))=0.
+      nnsource(1:arrsize(1))='NONAME'
+
+      READ(lu_in,'(a)') string
       is = index(string(1:len(string)),'=')
       ie = index(string(is+5:len(string)),' ') +is+4
       read(string(is+1:ie-1),*) ra_center
@@ -202,35 +252,12 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
       ie = index(string(is+5:len(string)),' ') +is+4
       read(string(is+1:ie-1),*) radius
       READ(lu_in,'(a)') string !begin reading nh
-      is = index(string(1:len(string)),'=') 
+      is = index(string(1:len(string)),'=')
       ie = index(string(is+5:len(string)),' ') +is+4
       read(string(is+1:ie-1),*) nh
       is = index(string(ie+1:len(string)),'=') +ie
       read(string(is+1:len(string)),*) errrad,errmaj,errmin,errang
       !write(*,*) nh,errrad,errmaj,errmin,errang
-
-      allocate(ra_xmm(3000),dec_xmm(3000),xmm_type(3000),poserr_xmm(3000))
-      allocate(ra_swift(3000),dec_swift(3000),xrt_type(3000),poserr_swift(3000),mjdst_swift(3000),mjded_swift(3000))
-      allocate(Ferr_swift(3000,5),FluxU_swift(3000,5),FluxL_swift(3000,5),flux_swift(3000,5),frequency_swift(3000,5))
-      allocate(Ferr_xmm(3000,6),FluxU_xmm(3000,6),FluxL_xmm(3000,6),flux_xmm(3000,6),frequency_xmm(3000,6))
-      allocate(ra_rosat(1000),dec_rosat(1000),poserr_rosat(1000),rosat_type(1000))
-      allocate(poserr_chandra(1000),ra_chandra(1000),dec_chandra(1000))
-      allocate(flux_rosat(1000),Ferr_rosat(1000),FluxU_rosat(1000),FluxL_rosat(1000),frequency_rosat(1000))
-      allocate(flux_chandra(1000,5),FluxU_chandra(1000,5),FluxL_chandra(1000,5),frequency_chandra(1000,5))
-      allocate(poserr_erosita(2000),ra_erosita(2000),dec_erosita(2000))
-      allocate(poserr_bmw(500),ra_bmw(500),dec_bmw(500))
-      allocate(flux_erosita(2000,2),fluxL_erosita(2000,2),fluxU_erosita(2000,2),Ferr_erosita(2000,2),frequency_erosita(2000,2))
-      allocate(flux_bmw(500),fluxL_bmw(500),fluxU_bmw(500),Ferr_bmw(500),frequency_bmw(500))
-      allocate(ipc_type(200),poserr_ipc(200),ra_ipc(200),dec_ipc(200))
-      allocate(poserr_maxi(200),ra_maxi(200),dec_maxi(200),maxi_type(200))
-      allocate(flux_ipc(200),Ferr_ipc(200),fluxL_ipc(200),fluxU_ipc(200),frequency_ipc(200))
-      allocate(flux_maxi(200,4),Ferr_maxi(200,4),FluxL_maxi(200,4),FluxU_maxi(200,4),frequency_maxi(200,4))
-      allocate(ra_gam(200),dec_gam(200),ra_cat(200),dec_cat(200))
-      allocate(name_cat(200),namegam(200),track2(200))
-      allocate(ra_other(15000),dec_other(15000),zz(15000))
-      allocate(name_other(15000),vlasssrnm(20000))
-      allocate(ra_radio(20000),dec_radio(20000),radio_type(20000),ra_index(20000))
-      allocate(ppss(20000),const(20000),Ferr_radio(20000),FluxU_radio(20000),FluxL_radio(20000),poserr_radio(20000),flux_radio(20000),frequency_radio(20000))
 
       DO WHILE(ok)
          READ(lu_in,'(a)',end=99) string
@@ -249,7 +276,7 @@ c      open(17,file=output_file5,status='unknown',iostat=ier)
      &        (catalog(1:7) == 'vlassql') .OR. (catalog(1:5) == 'sumss') ) THEN
             iradio=iradio+1
             !write(*,*) "Nr. radio",iradio
-            IF (iradio > 20000) Stop 'Too many NVSS/SUMSS points'
+            IF (iradio > arrsize(3)) Stop 'Too many NVSS/SUMSS points'
             ra_radio(iradio)=ra
             dec_radio(iradio)=dec
             is=ie
@@ -375,7 +402,7 @@ c            endif
             ie=index(string(is+1:len(string)),',')+is
             ra_xmm(ixmm)=ra
             dec_xmm(ixmm)=dec
-            IF (ixmm > 3000) Stop 'Too many XMM points'
+            IF (ixmm > arrsize(6)) Stop 'Too many XMM points'
             !write(*,*) FluxU_xmm(ixmm,1),flux_xmm(ixmm,1),FluxL_xmm(ixmm,1)
             IF (catalog(1:5) == 'xmmsl') THEN
                xmm_type(ixmm)=1
@@ -729,7 +756,7 @@ c end PG
             irosat=irosat+1
             ra_rosat(irosat)=ra
             dec_rosat(irosat)=dec
-            IF (irosat > 1000) Stop 'Too many RASS points'
+            IF (irosat > arrsize(8)) Stop 'Too many RASS points'
             is=ie
             ie=index(string(is+1:len(string)),',')+is
             if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_rosat(irosat)
@@ -787,7 +814,7 @@ c end PG
      &           .or. (catalog(1:5) == 'sds82') .or. (catalog(1:5) == 'ousxb')
      &           .or.  (catalog(1:5) == 'ousxg') .or. (catalog(1:5) == '1ousx'))THEN
             iswift=iswift+1
-            IF (iswift > 3000) Stop 'Too many swift points'
+            IF (iswift > arrsize(7)) Stop 'Too many swift points'
             ra_swift(iswift)=ra
             dec_swift(iswift)=dec
             frequency_swift(iswift,5)=999
@@ -1199,7 +1226,7 @@ c            write(*,*) frequency_swift(iswift,5)
 c end PG
          ELSE IF (catalog(1:3) == 'ipc') THEN
             iipc=iipc+1
-            IF (iipc > 200) Stop 'Too many Einstein IPC points'
+            IF (iipc > arrsize(12)) Stop 'Too many Einstein IPC points'
             ra_ipc(iipc)=ra
             dec_ipc(iipc)=dec
             is=ie
@@ -1240,7 +1267,7 @@ c PG
 c end PG
          ELSE IF (catalog(1:3) == 'bmw') THEN
             ibmw=ibmw+1
-            IF (ibmw > 500) Stop 'Too many ROSAT-BMW points'
+            IF (ibmw > arrsize(11)) Stop 'Too many ROSAT-BMW points'
             ra_bmw(ibmw)=ra
             dec_bmw(ibmw)=dec
             is=ie
@@ -1272,7 +1299,7 @@ c PG
 c end PG
          ELSE IF (catalog(1:11) == 'chandracsc2') THEN
             ichandra=ichandra+1
-            IF (ichandra > 1000) Stop 'Too many Chandra points'
+            IF (ichandra > arrsize(9)) Stop 'Too many Chandra points'
             ra_chandra(ichandra)=ra
             dec_chandra(ichandra)=dec
             is=ie
@@ -1678,7 +1705,7 @@ c               namegam(igam)(1:4)='GRB '
 c            write(*,*) namegam(igam)
          ELSE
             iother=iother+1
-            IF (iother > 15000) Stop 'Too many catalogued sources'
+            IF (iother > arrsize(4)) Stop 'Too many catalogued sources'
             ra_other(iother)=ra
             dec_other(iother)=dec
             is=ie
@@ -1721,14 +1748,14 @@ c               ra_other(iother) = -ra_other(iother)
       if (aim .eq. 0) goto 501
 
       deallocate(vlasssrnm)
-      allocate(rtype_source(500),t(500),track(500),ttsource(500),bary(500),rank(500),priority(500))
-      allocate(ra_source(500),dec_source(500),ra_xx(500),dec_xx(500))
-      allocate(xxerr(500),poserr_source(500),flux_source(500),xflux(500),rflux(500),rrconst(500))
-      allocate(savemjy(15000))
-      allocate(spec_type(3000,20000),spec_xpts(3000,20000))
-      allocate(ra_1kev(3000,20000),dec_1kev(3000,20000),distrx(3000,20000))
-      allocate(flux_1kev(3000,20000),uflux_1kev(3000,20000),lflux_1kev(3000,20000),uflux_xpts(3000,20000),lflux_xpts(3000,20000),flux_xpts(3000,20000),frequency_xpts(3000,20000))
-      allocate(poserr_1kev(3000,20000),mjdstart(3000,20000),mjdend(3000,20000))
+      allocate(rtype_source(arrsize(1)),t(arrsize(1)),track(arrsize(1)),ttsource(arrsize(1)),bary(arrsize(1)),rank(arrsize(1)),priority(arrsize(1)))
+      allocate(ra_source(arrsize(1)),dec_source(arrsize(1)),ra_xx(arrsize(1)),dec_xx(arrsize(1)))
+      allocate(xxerr(arrsize(1)),poserr_source(arrsize(1)),flux_source(arrsize(1)),xflux(arrsize(1)),rflux(arrsize(1)),rrconst(arrsize(1)))
+      allocate(savemjy(arrsize(4)))
+      allocate(spec_type(arrsize(2),arrsize(3)),spec_xpts(arrsize(2),arrsize(3)))
+      allocate(ra_1kev(arrsize(2),arrsize(3)),dec_1kev(arrsize(2),arrsize(3)),distrx(arrsize(2),arrsize(3)))
+      allocate(flux_1kev(arrsize(2),arrsize(3)),uflux_1kev(arrsize(2),arrsize(3)),lflux_1kev(arrsize(2),arrsize(3)),uflux_xpts(arrsize(2),arrsize(3)),lflux_xpts(arrsize(2),arrsize(3)),flux_xpts(arrsize(2),arrsize(3)),frequency_xpts(arrsize(2),arrsize(3)))
+      allocate(poserr_1kev(arrsize(2),arrsize(3)),mjdstart(arrsize(2),arrsize(3)),mjdend(arrsize(2),arrsize(3)))
 
       CALL indexx (iradio,ra_radio,ra_index)
       !write(*,*) ra_radio(ra_index(1:iradio))
@@ -3104,7 +3131,7 @@ c     &            flux_swift(j,1),FluxU_swift(j,1),FluxL_swift(j,1),mjdst_swift
       deallocate(name_other)
       deallocate(savemjy,zz)
       deallocate(ra_gam,dec_gam,ra_cat,dec_cat)
-      deallocate(name_cat,namegam,track2)
+      deallocate(name_cat,namegam,track2,bigbind)
       deallocate(rtype_source,nrep,t,track,ttsource,bary,rank,priority)
       deallocate(ra_source,dec_source,ra_xx,dec_xx)
       deallocate(xxerr,poserr_source,flux_source,xflux,rflux,rrconst,zsource)

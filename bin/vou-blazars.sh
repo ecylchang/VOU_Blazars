@@ -358,8 +358,8 @@ else
    rm -f tmp/${pidnm}RX_map.*ps
    sort -n -k 3 tmp/${pidnm}RX_temp.txt > tmp/${pidnm}RX_sorted.txt
    rm -f tmp/${pidnm}RX_temp.txt
-   ${BINF}/gnomo_plot_types tmp/${pidnm}RX_sorted.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}RX_map.ps/vcps, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
-   ${BINF}/gnomo_plot_types tmp/${pidnm}find_out_temp.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}candidates.ps/vcps, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
+   ${BINF}/gnomo_plot_types tmp/${pidnm}RX_sorted.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}RX_map.ps/vcps,${BINF}, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
+   ${BINF}/gnomo_plot_types tmp/${pidnm}find_out_temp.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}candidates.ps/vcps,${BINF}, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
    handle_ps tmp/${pidnm}RX_map.ps
    handle_ps tmp/${pidnm}candidates.ps
    if [ $plotlab == Y -o $plotlab == y ]; then
@@ -484,7 +484,7 @@ if [ -s tmp/${pidnm}no_matched_temp.txt ]; then
 
 #run the Intermediate phase
       echo
-      ${BINF}/find_candidates_int tmp/${pidnm}output_int tmp/${pidnm}no_matched_temp.txt tmp/${pidnm}find_out_temp.txt tmp/${pidnm}Intermediate_out.txt
+      ${BINF}/find_candidates_int tmp/${pidnm}output_int tmp/${pidnm}no_matched_temp.txt tmp/${pidnm}find_out_temp.txt tmp/${pidnm}Intermediate_out.txt ${BINF}
    fi
 fi
 
@@ -501,7 +501,7 @@ if [ -s tmp/${pidnm}Intermediate_out.txt ]; then
 ###############################PLOTTING###############################
 #plot the candidates again with Intermediate phase finish ???
    rm -f tmp/${pidnm}candidates.*ps
-   ${BINF}/gnomo_plot_types tmp/${pidnm}find_out_temp.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}candidates.ps/vcps, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
+   ${BINF}/gnomo_plot_types tmp/${pidnm}find_out_temp.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}candidates.ps/vcps,${BINF}, $ranh $decnh $r1 $sfov $ranh $decnh $emaj1 $emin1 $posa1 $r2 $emaj2 $emin2 $posa2 $ranh $decnh
    handle_ps tmp/${pidnm}candidates.ps
 #    ps2eps -B -q candidates.ps
 #    open candidates.eps
@@ -908,7 +908,7 @@ do
       rm -f tmp/${pidnm}LC.*ps
       rm -f tmp/${pidnm}LC_fermi.*ps
 ###      if [ $runmode == f ]; then
-         ${BINF}/gnomo_plot_types tmp/${pidnm}error_map.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}error_map.ps/vcps, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
+         ${BINF}/gnomo_plot_types tmp/${pidnm}error_map.txt,tmp/${pidnm}candidates_posix.txt,tmp/${pidnm}error_map.ps/vcps,${BINF}, $racand $deccand 0. $zoomin $racand $deccand 0 0 0 0 0 0 0 $racand $deccand
             handle_ps tmp/${pidnm}error_map.ps
 ###      fi
       # ps2eps -B -q error_map.ps
@@ -917,12 +917,12 @@ do
 #plot the SED
       echo
       if [ $runmode != l ]; then
-         ${BINF}/plot_sed tmp/${pidnm}Sed.txt tmp/${pidnm}sed.ps/cps $source
+         ${BINF}/plot_sed tmp/${pidnm}Sed.txt tmp/${pidnm}sed.ps/cps ${BINF} $source
             handle_ps tmp/${pidnm}sed.ps
       fi
       echo
       if [ $runmode != s ]; then
-         ${BINF}/plot_lc tmp/${pidnm}Sed.txt tmp/${pidnm}Lc.ps/cps tmp/${pidnm}LC.txt tmp/${pidnm}LC_fermi.ps/cps $source
+         ${BINF}/plot_lc tmp/${pidnm}Sed.txt tmp/${pidnm}Lc.ps/cps tmp/${pidnm}LC.txt tmp/${pidnm}LC_fermi.ps/cps ${BINF} $source
          [ -f tmp/${pidnm}LC.ps ] && handle_ps tmp/${pidnm}LC.ps
          [ -f tmp/${pidnm}LC_fermi.ps ] && handle_ps tmp/${pidnm}LC_fermi.ps
       fi

@@ -3,13 +3,13 @@
 c This program plot the SED for candidate
 
       implicit none
-      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im
-      integer*4 i,sfound,rtype
+      integer*4 ier,pgbeg,length,ns,j,rah, ram, id, dm,in,im,is
+      integer*4 i,sfound,rtype,iconfig,iarr,arrsize(30),lenact
       real*4 sedup,sedlow,rasec,decsec,testflux
       real*8 rra,rdec
-      character*160 string
+      character*400 string
       character*100 title
-      character*200 input_file,output_file
+      character*200 input_file,output_file,webprograms,array_size
       character*14 stringin
       character*6 number
       character*1 sign
@@ -30,6 +30,9 @@ c This program plot the SED for candidate
       input_file=string(1:in-1)
       im=index(string(in+1:length),' ')+in
       output_file=string(in+1:im-1)
+      in=im
+      im=index(string(in+1:length),' ')+in
+      webprograms=string(in+1:im-1)
       number=string(im+1:length)
       !write(*,*) number
       if (number == 'finish') then
@@ -39,18 +42,39 @@ c This program plot the SED for candidate
       else
          read(number,*) ns
       endif
-
 c      write(*,*) output_file
       INQUIRE (FILE=input_file,EXIST=there)
       IF (.NOT.there) THEN
          write (*,'('' file Sed.txt not found '')')
          STOP
       ENDIF
+      
+      iarr=0
+      iconfig=0
+      arrsize(1:30)=0
+      array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
+      open(18,file=array_size,status='old',iostat=ier)
+      do while(ok)
+      read(18,'(a)',end=700) string
+      if (string(1:3) == '---' ) then
+         iconfig=iconfig+1
+      else
+         if (iconfig .eq. 1) then
+            iarr=iarr+1
+            is=index(string(1:len(string)),':')
+            !write(*,*) iconfig,iarr,is,lenact(string)
+            read(string(is+1:lenact(string)),*) arrsize(iarr)
+         endif
+      endif
+      enddo
+700   continue
+      close(18)
+      !write(*,*) arrsize
 
-      allocate(stype(80000),npt(80000))
-      allocate(ra(1000),dec(1000))
-      allocate(frequency(80000,1000),flux(80000,1000),uflux(80000,1000),lflux(80000,1000),mjdend(80000,1000),mjdstart(80000,1000))
-      allocate(refs(80000,1000),spectype(80000,1000),flag(80000,1000))
+      allocate(stype(arrsize(5)),npt(arrsize(5)))
+      allocate(ra(arrsize(1)),dec(arrsize(1)))
+      allocate(frequency(arrsize(5),arrsize(1)),flux(arrsize(5),arrsize(1)),uflux(arrsize(5),arrsize(1)),lflux(arrsize(5),arrsize(1)),mjdend(arrsize(5),arrsize(1)),mjdstart(arrsize(5),arrsize(1)))
+      allocate(refs(arrsize(5),arrsize(1)),spectype(arrsize(5),arrsize(1)),flag(arrsize(5),arrsize(1)))
 
       npt(1:1000)=0
       open(10,file=input_file,status='old')

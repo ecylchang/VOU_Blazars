@@ -1,0 +1,55 @@
+--------------- Common Array -----------------------
+Number_of_candidate: 500
+Counterpart_of_candidate: 3000
+Radio_source: 20000
+X_ray_source: 3000
+Points_to_be_plotted (SED and Error map): 80000
+------------------ PHASE 1 -------------------------
+Cataloged_source: 15000
+Gamma_and_repeated_cataloged_source: 200
+XMM: 3000
+Swift: 3000
+ROSAT: 1000
+Chandra: 1000
+eROSITA: 2000
+BMW: 500
+IPC: 200
+MAXI: 200
+----------------- PHASE 2 --------------------------
+All_catalogued_and_candidate_source: 5000
+Cataloged_source_from_phase1: 200
+Very_high_energy: 500
+De_EBL: 300
+Gamma_ray: 100
+Fermi_light_curve: 8000
+X_ray: 80000
+UV: 1000
+UV_candidate: 300
+Optical: 3500
+Infrared: 2000
+Far_IR: 500
+Millimeter: 1500
+Radio4p8: 1000
+Low_frequency: 200
+Opt_lowE_Candidate: 5
+------------------ PHASE Intermediate ---------------
+X_ray_single: 2000
+Radio_single: 2000
+Multiple_X_ray: 10
+Gamma_int: 50
+Radio4p8_int: 500
+UV_int: 10000
+------------------ Gnomo_project --------------------
+HSP_candidate: 200
+ISP_candidate: 200
+LSP_candidate: 200
+Non_jet_candidate: 200
+Unknown: 200
+Cataloged_AGN_candidate: 200
+Pulsar_GRB_Gamma_ray_source: 15000
+Circle_project_point: 1000
+Grid_point: 100
+------------------ Plot_SED_LC ----------------------
+Point_SED: 80000
+Source_SED: 1000
+Point_LC: 15000

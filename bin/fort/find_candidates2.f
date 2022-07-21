@@ -23,44 +23,36 @@ c within a knwon cluster of galaxy. This is to warn that the X-ray could be
 c extended and due to the cluster rather than from the radio source.
 c
       IMPLICIT none
-      INTEGER*4 ier, lu_in, lu_output,in,im,ir100found,s,iverit
-      INTEGER*4 sfound,lenact,type_average,ns,ivhe,imagic
-      INTEGER*4 iradio,icat,ix,ir,i4p8,drop,ixxfound,ilowrfound,ifar
-      INTEGER*4 iir,iuv,ixray,igam,iuvfound,iirfound,igamfound,ilowr,ixrtsp
-      INTEGER*4 is,ie, i, j,ialma
-      INTEGER*4 iusno, iofound, length,ialphar,ipccs100,ifarfound,iflcuvfound
-      integer*4 isource,filen,sourceu,sourcel
-      integer*4 ii1,ii2,ii3,ii4,ii5
-      integer*4 r,ibigb
-      integer*4 iflcuv
-      integer*4 iousxb,iswort,iiswort,year,month,date,hour,minute,second,idebl,iref
-      integer*4 iircheck,iirlc,i4fgl
-      integer*4 ikuehr,ioptlc
-      REAL*8 ra, dec,min_dist_gam
-      REAL*8 dist,ra_center, dec_center,radius
-      real*8 mjdtest,irdistval
-      REAL*4 radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
-      REAL*4 alphar,sigma
+      INTEGER*4 ier, lu_in, lu_output,in,im,s,is,ie, i, j,iarr,iconfig
+      INTEGER*4 sfound,lenact,type_average,ns,iradio,icat,ix,ir
+      INTEGER*4 i4p8,ifar,ilowr,ixrtsp,ipccs100,iusno,iousxb,iswort
+      INTEGER*4 iir,iuv,ixray,igam,iiswort,i4fgl,idebl,iref
+      INTEGER*4 ialma,ir100found,iverit,ivhe,imagic,ibigb
+      INTEGER*4 iofound, length,ialphar,ifarfound,iflcuvfound
+      integer*4 isource,filen,sourceu,sourcel,ikuehr,ioptlc
+      integer*4 ii1,ii2,ii3,ii4,ii5,iircheck,iirlc,iflcuv,igamfound
+      integer*4 r,drop,ixxfound,ilowrfound,iuvfound,iirfound
+      integer*4 year,month,date,hour,minute,second,arrsize(30)
+      REAL*8 ra, dec,ra_center, dec_center,radius
+      REAL*8 dist,min_dist_gam,mjdtest,irdistval
       REAL*4 min_dist2opt,min_dist_at,min_dist_4p8,min_dist_uv,min_dist_ir
-      REAL*4 min_dist,code,flux2nufnu_4p8,aalphar,pccconv,min_dist_other
-      REAL*4 min_dist_pccs100,flux2nufnu_pccs100,min_dist_far
-      real*4 farirx
-      REAL*4 auvx,aruv,airx,arir,alphauv,fdens,nudens
-      real*4 posxerr,posyerr,posang,major,minor
-      real*4 intensity
-      real*4 like
-      real*4 mjdavg,redshift,reduction_factor
-      real*4 engmax,engmin,fluxind,Ufluxind,Lfluxind,zzinput,zzfermi,gammatev,rms_lowr
+      REAL*4 min_dist,min_dist_other,min_dist_pccs100,min_dist_far
+      REAL*4 radian,aox,a100x,flux_x,nh,aro,arx,alpho,flux_r
+      REAL*4 alphar,sigma,flux2nufnu_pccs100,farirx,code,flux2nufnu_4p8
+      REAL*4 auvx,aruv,airx,arir,alphauv,fdens,nudens,aalphar,pccconv
+      real*4 posxerr,posyerr,posang,major,minor,intensity,like
+      real*4 mjdavg,redshift,reduction_factor,zzfermi,gammatev,rms_lowr
+      real*4 engmax,engmin,fluxind,Ufluxind,Lfluxind,zzinput
       CHARACTER*1 sign
       character*6 aim
       CHARACTER*30 irlcid(2)
       character*200 input_file,output_file,input_file2,input_file3,output_file2
-      character*200 webprograms,refsfile
+      character*200 webprograms,refsfile,array_size
       CHARACTER*15 catalog
       CHARACTER*800 string,repflux
       LOGICAL ok,found,debl
 
-      integer*4,dimension(:),allocatable :: nrep,typer
+      integer*4,dimension(:),allocatable :: typer
       real*8,dimension(:),allocatable :: ra_source,dec_source
       real*8,dimension(:),allocatable :: ra_cat,dec_cat
       real*4,dimension(:),allocatable :: type_cat
@@ -178,17 +170,17 @@ c
       character*4,dimension(:,:),allocatable :: opt_flag
       character*15,dimension(:),allocatable :: optcand_type,lowrcand_type
 
-
       common webprograms
       ok = .TRUE.
       found = .FALSE.
 
-      allocate(nrep(5000),typer(5000))
-      allocate(ra_source(5000),dec_source(5000))
-      allocate(ra_cat(200),dec_cat(200))
-      allocate(type_cat(200),name_cat(200),refs(200))
-
-      nrep(1:5000)=1
+      arrsize(1:30)=0
+      iconfig=0
+      iarr=0
+      isource=0
+      icat=0
+      iswort=0
+      iousxb=0
       sfound = 0
       iradio=0
       ilowr=0
@@ -274,12 +266,13 @@ c         write(*,*) zzinput,aim
          WRITE (*,'('' Enter query results file '',$)')
          READ (*,'(a)') input_file
       ENDIF
+
       lu_in = 10
       lu_output = 11
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
+      array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
       !write(*,*) input_file
-
 c      INQUIRE (FILE=input_file,EXIST=there)
 c      IF (.NOT.there) THEN
 c         write (*,'('' file '',a,'' not found. No data found in phase 2.'')')
@@ -295,17 +288,42 @@ c      ENDIF
       open(13,file=input_file2,status='old',iostat=ier)
       open(12,file=input_file3,status='old',iostat=ier)
       open(15,file=refsfile,status='old',iostat=ier)
+      open(18,file=array_size,status='old',iostat=ier)
 c      open(16,file=input_file4,status='old',iostat=ier)
       IF (ier.NE.0) THEN
         write (*,*) ' Error ',ier,' opening file '
       ENDIF
 
+      do while(ok)
+      read(18,'(a)',end=700) string
+      if (string(1:3) == '---' ) then
+         iconfig=iconfig+1
+      else
+         if (iconfig .eq. 1) then
+            iarr=iarr+1
+            if (iarr .le. 2) then
+               is=index(string(1:len(string)),':')
+               read(string(is+1:lenact(string)),*) arrsize(iarr)
+            else
+               iarr=iarr-1
+            endif
+         else if (iconfig .eq. 3) then
+            iarr=iarr+1
+            is=index(string(1:len(string)),':')
+            read(string(is+1:lenact(string)),*) arrsize(iarr)
+         endif
+      endif
+      enddo
+700   continue
+      close(18)
+      !write(*,*) arrsize
+
+      allocate(typer(arrsize(3)))
+      allocate(ra_source(arrsize(3)),dec_source(arrsize(3)))
+      allocate(ra_cat(arrsize(4)),dec_cat(arrsize(4)))
+      allocate(type_cat(arrsize(4)),name_cat(arrsize(4)),refs(arrsize(4)))
 
 c read the find_out.txt first
-      isource=0
-      icat=0
-      iswort=0
-      iousxb=0
       Do WHILE(ok)
          read(13,*,end=100) ra,dec,code
          if ((code .ge. 0.) .or. (code .lt. -40000.) .or. (code .eq. -9999)) then
@@ -328,12 +346,12 @@ c      do i=1,icat
 c         write(lu_output,*) ra_cat(i),dec_cat(i),type_cat(i)*10000.
 c      enddo
 
-      allocate(mjdst_rrxx(2000,1000),mjded_rrxx(2000,1000),frequency(2000,1000),flux(2000,1000),uflux(2000,1000),lflux(2000,1000),epos(2000,1000))
-      allocate(spec_type(2000,1000),ra_rrxx(2000,1000),dec_rrxx(2000,1000),rrxx_type(2000,1000))
-      allocate(recordmjd(3,2000),npt(1000),zsource(1000))
+      allocate(mjdst_rrxx(arrsize(2),arrsize(1)),mjded_rrxx(arrsize(2),arrsize(1)),frequency(arrsize(2),arrsize(1)),flux(arrsize(2),arrsize(1)),uflux(arrsize(2),arrsize(1)),lflux(arrsize(2),arrsize(1)),epos(arrsize(2),arrsize(1)))
+      allocate(spec_type(arrsize(2),arrsize(1)),ra_rrxx(arrsize(2),arrsize(1)),dec_rrxx(arrsize(2),arrsize(1)),rrxx_type(arrsize(2),arrsize(1)))
+      allocate(recordmjd(3,arrsize(2)),npt(arrsize(1)),zsource(arrsize(1)))
 
 c read the sed.txt first
-      npt(1:1000)=0
+      npt(1:arrsize(1))=0
 202   continue
       read(12,'(i4,a)',end=200,err=200) sfound,string
 c      write(*,*) sfound,string
@@ -436,89 +454,89 @@ c         write(*,*) name_cat(iref),refs(iref)(1:lenact(refs(iref)))
 400   continue
       close(15)
 
-      allocate(filen_v(500),vhe_ref(500),eblnn(600))
-      allocate(ra_vhe(500),dec_vhe(500))
-      allocate(frequency_vhe(500),flux_vhe(500),FluxU_vhe(500),FluxL_vhe(500))
-      allocate(poserr_vhe(500),Ferr_vhe(500),mjdstart(500),mjdend(500))
-      allocate(vhe_flag(500),vhe_type(500))
+      allocate(filen_v(arrsize(5)),vhe_ref(arrsize(5)),eblnn(arrsize(5)+arrsize(7)))
+      allocate(ra_vhe(arrsize(5)),dec_vhe(arrsize(5)))
+      allocate(frequency_vhe(arrsize(5)),flux_vhe(arrsize(5)),FluxU_vhe(arrsize(5)),FluxL_vhe(arrsize(5)))
+      allocate(poserr_vhe(arrsize(5)),Ferr_vhe(arrsize(5)),mjdstart(arrsize(5)),mjdend(arrsize(5)))
+      allocate(vhe_flag(arrsize(5)),vhe_type(arrsize(5)))
 
-      allocate(veritind(300),magicind(300))
-      allocate(flux_debl(300,5),FluxU_debl(300,5),FluxL_debl(300,5),frequency_debl(300,5))
-      allocate(debl_flag(300,5))
+      allocate(veritind(arrsize(6)),magicind(arrsize(6)))
+      allocate(flux_debl(arrsize(6),5),FluxU_debl(arrsize(6),5),FluxL_debl(arrsize(6),5),frequency_debl(arrsize(6),5))
+      allocate(debl_flag(arrsize(6),5))
 
-      allocate(filen_g(100),gampart(100),gam_ref(100),bigbind(100))
-      allocate(ra_gam(100),dec_gam(100),gamlike(100),poserr_gam(100))
-      allocate(frequency_gam(100,9),slope_gam(100,2),specerr_gam(100,2))
-      allocate(flux_gam(100,9),FluxL_gam(100,9),FluxU_gam(100,9),Ferr_gam(100,9))
-      allocate(gam_flag(100,9))
-      allocate(namegam(100),name_g(100),gam_type(100))
+      allocate(filen_g(arrsize(7)),gampart(arrsize(7)),gam_ref(arrsize(7)),bigbind(arrsize(7)))
+      allocate(ra_gam(arrsize(7)),dec_gam(arrsize(7)),gamlike(arrsize(7)),poserr_gam(arrsize(7)))
+      allocate(frequency_gam(arrsize(7),9),slope_gam(arrsize(7),2),specerr_gam(arrsize(7),2))
+      allocate(flux_gam(arrsize(7),9),FluxL_gam(arrsize(7),9),FluxU_gam(arrsize(7),9),Ferr_gam(arrsize(7),9))
+      allocate(gam_flag(arrsize(7),9))
+      allocate(namegam(arrsize(7)),name_g(arrsize(7)),gam_type(arrsize(7)))
 
-      allocate(xray_ref(80000),xray_flag(80000,5))
-      allocate(ra_xray(80000),dec_xray(80000),xrtspind(80000),xraypart(80000))
-      allocate(slope_xray(80000),poserr_xray(80000),mjdst_xrt(80000),mjded_xrt(80000))
-      allocate(frequency_xray(80000,5),flux_xray(80000,5),FluxU_xray(80000,5),FluxL_xray(80000,5),Ferr_xray(80000,5))
-      allocate(name_x(80000),xray_type(80000),filen_x(80000))
+      allocate(xray_ref(arrsize(9)),xray_flag(arrsize(9),5))
+      allocate(ra_xray(arrsize(9)),dec_xray(arrsize(9)),xrtspind(arrsize(9)),xraypart(arrsize(9)))
+      allocate(slope_xray(arrsize(9)),poserr_xray(arrsize(9)),mjdst_xrt(arrsize(9)),mjded_xrt(arrsize(9)))
+      allocate(frequency_xray(arrsize(9),5),flux_xray(arrsize(9),5),FluxU_xray(arrsize(9),5),FluxL_xray(arrsize(9),5),Ferr_xray(arrsize(9),5))
+      allocate(name_x(arrsize(9)),xray_type(arrsize(9)),filen_x(arrsize(9)))
 
-      allocate(filen_u(1000),uv_type(1000),name_u(1000))
-      allocate(ra_uv(1000),dec_uv(1000),poserr_uv(1000))
-      allocate(uvmag(1000,6),flux_uv(1000,6),frequency_uv(1000,6),FluxU_uv(1000,6),FluxL_uv(1000,6),uvmagerr(1000,6))
+      allocate(filen_u(arrsize(10)),uv_type(arrsize(10)),name_u(arrsize(10)))
+      allocate(ra_uv(arrsize(10)),dec_uv(arrsize(10)),poserr_uv(arrsize(10)))
+      allocate(uvmag(arrsize(10),6),flux_uv(arrsize(10),6),frequency_uv(arrsize(10),6),FluxU_uv(arrsize(10),6),FluxL_uv(arrsize(10),6),uvmagerr(arrsize(10),6))
 
-      allocate(uv_ref(300))
-      allocate(ra_uvcand(300),dec_uvcand(300),uvdist(300),epos_uvcand(300))
-      allocate(flux_uvcand(300,6),uvmag_cand(300,6),freq_uvcand(300,6),uflux_uvcand(300,6),lflux_uvcand(300,6))
-      allocate(uv_flag(300,6),uvcand_type(300))
+      allocate(uv_ref(arrsize(11)))
+      allocate(ra_uvcand(arrsize(11)),dec_uvcand(arrsize(11)),uvdist(arrsize(11)),epos_uvcand(arrsize(11)))
+      allocate(flux_uvcand(arrsize(11),6),uvmag_cand(arrsize(11),6),freq_uvcand(arrsize(11),6),uflux_uvcand(arrsize(11),6),lflux_uvcand(arrsize(11),6))
+      allocate(uv_flag(arrsize(11),6),uvcand_type(arrsize(11)))
 
-      allocate(ra_flcuv(8000),dec_flcuv(8000))
-      allocate(mjdst_flcuv(8000),mjded_flcuv(8000),ts(8000),duration(8000),slope_flcuv(8000),poserr_flcuv(8000))
-      allocate(frequency_flcuv(8000,4),flux_flcuv(8000,4),FluxU_flcuv(8000,4),FluxL_flcuv(8000,4),Ferr_flcuv(8000,4))
-      allocate(flcuv_flag(8000,4))
-      allocate(flcuv_type(8000),name_a(8000),flcuvpart(8000),filen_a(8000))
+      allocate(ra_flcuv(arrsize(8)),dec_flcuv(arrsize(8)))
+      allocate(mjdst_flcuv(arrsize(8)),mjded_flcuv(arrsize(8)),ts(arrsize(8)),duration(arrsize(8)),slope_flcuv(arrsize(8)),poserr_flcuv(arrsize(8)))
+      allocate(frequency_flcuv(arrsize(8),4),flux_flcuv(arrsize(8),4),FluxU_flcuv(arrsize(8),4),FluxL_flcuv(arrsize(8),4),Ferr_flcuv(arrsize(8),4))
+      allocate(flcuv_flag(arrsize(8),4))
+      allocate(flcuv_type(arrsize(8)),name_a(arrsize(8)),flcuvpart(arrsize(8)),filen_a(arrsize(8)))
 
-      allocate(optpart(3500),filen_o(3500),indoptlc(3500),optlc_ref(3500))
-      allocate(optlc_flag(3500),opt_type(3500),name_o(3500))
-      allocate(ra_usno(3500),dec_usno(3500),poserr_usno(3500),mjdst_optlc(3500))
-      allocate(flux_usno(3500,5),frequency_usno(3500,5),FluxU_usno(3500,5),FluxL_usno(3500,5),usnomagerr(3500,5),usnomag(3500,5))
+      allocate(optpart(arrsize(12)),filen_o(arrsize(12)),indoptlc(arrsize(12)),optlc_ref(arrsize(12)))
+      allocate(optlc_flag(arrsize(12)),opt_type(arrsize(12)),name_o(arrsize(12)))
+      allocate(ra_usno(arrsize(12)),dec_usno(arrsize(12)),poserr_usno(arrsize(12)),mjdst_optlc(arrsize(12)))
+      allocate(flux_usno(arrsize(12),5),frequency_usno(arrsize(12),5),FluxU_usno(arrsize(12),5),FluxL_usno(arrsize(12),5),usnomagerr(arrsize(12),5),usnomag(arrsize(12),5))
 
-      allocate(filen_i(2000),ir_ref(2000),indirlc(2000))
-      allocate(ra_ir(2000),dec_ir(2000),ra_ircand(2000),dec_ircand(2000))
-      allocate(irdist(2000),poserr_ir(2000),epos_ircand(2000))
-      allocate(mjdst_irlc(2000),mjded_irlc(2000),mjdst_irlccand(2000),mjded_irlccand(2000))
-      allocate(flux_ir(2000,4),irmag(2000,4),frequency_ir(2000,4),FluxU_ir(2000,4),FluxL_ir(2000,4),irmagerr(2000,4))
-      allocate(flux_ircand(2000,4),irmag_cand(2000,4),freq_ircand(2000,4),uflux_ircand(2000,4),lflux_ircand(2000,4))
-      allocate(flag_ir(2000,4),ir_flag(2000,4))
-      allocate(ir_type(2000),ircand_type(2000),name_i(2000),irlc_name(2000))
+      allocate(filen_i(arrsize(13)),ir_ref(arrsize(13)),indirlc(arrsize(13)))
+      allocate(ra_ir(arrsize(13)),dec_ir(arrsize(13)),ra_ircand(arrsize(13)),dec_ircand(arrsize(13)))
+      allocate(irdist(arrsize(13)),poserr_ir(arrsize(13)),epos_ircand(arrsize(13)))
+      allocate(mjdst_irlc(arrsize(13)),mjded_irlc(arrsize(13)),mjdst_irlccand(arrsize(13)),mjded_irlccand(arrsize(13)))
+      allocate(flux_ir(arrsize(13),4),irmag(arrsize(13),4),frequency_ir(arrsize(13),4),FluxU_ir(arrsize(13),4),FluxL_ir(arrsize(13),4),irmagerr(arrsize(13),4))
+      allocate(flux_ircand(arrsize(13),4),irmag_cand(arrsize(13),4),freq_ircand(arrsize(13),4),uflux_ircand(arrsize(13),4),lflux_ircand(arrsize(13),4))
+      allocate(flag_ir(arrsize(13),4),ir_flag(arrsize(13),4))
+      allocate(ir_type(arrsize(13)),ircand_type(arrsize(13)),name_i(arrsize(13)),irlc_name(arrsize(13)))
 
-      allocate(filen_f(500),far_ref(500),farpart(500))
-      allocate(ra_far(500),dec_far(500),farlike(500),poserr_far(500))
-      allocate(frequency_far(500,5),flux_far(500,5),Ferr_far(500,5),FluxU_far(500,5),FluxL_far(500,5))
-      allocate(far_flag(500,5),name_f(500),far_type(500))
+      allocate(filen_f(arrsize(14)),far_ref(arrsize(14)),farpart(arrsize(14)))
+      allocate(ra_far(arrsize(14)),dec_far(arrsize(14)),farlike(arrsize(14)),poserr_far(arrsize(14)))
+      allocate(frequency_far(arrsize(14),5),flux_far(arrsize(14),5),Ferr_far(arrsize(14),5),FluxU_far(arrsize(14),5),FluxL_far(arrsize(14),5))
+      allocate(far_flag(arrsize(14),5),name_f(arrsize(14)),far_type(arrsize(14)))
 
-      allocate(filen_p(1500),pccspart(1500),pccs100_ref(1500),almaind(1500))
-      allocate(ra_pccs100(1500),dec_pccs100(1500))
-      allocate(mjdst_alma(1500),mjded_alma(1500),poserr_pccs100(1500),pccslike(1500))
-      allocate(flux_pccs100(1500,9),frequency_pccs100(1500,9),flux2_pccs100(1500,9),snr_pccs100(1500,9))
-      allocate(Ferr_pccs100(1500,9),FluxU_pccs100(1500,9),FluxL_pccs100(1500,9),Ferr2_pccs100(1500,9))
-      allocate(pccs100_flag(1500,9))
-      allocate(name_p(1500),pccs100_type(1500),date_alma(1500))
+      allocate(filen_p(arrsize(15)),pccspart(arrsize(15)),pccs100_ref(arrsize(15)),almaind(arrsize(15)))
+      allocate(ra_pccs100(arrsize(15)),dec_pccs100(arrsize(15)))
+      allocate(mjdst_alma(arrsize(15)),mjded_alma(arrsize(15)),poserr_pccs100(arrsize(15)),pccslike(arrsize(15)))
+      allocate(flux_pccs100(arrsize(15),9),frequency_pccs100(arrsize(15),9),flux2_pccs100(arrsize(15),9),snr_pccs100(arrsize(15),9))
+      allocate(Ferr_pccs100(arrsize(15),9),FluxU_pccs100(arrsize(15),9),FluxL_pccs100(arrsize(15),9),Ferr2_pccs100(arrsize(15),9))
+      allocate(pccs100_flag(arrsize(15),9))
+      allocate(name_p(arrsize(15)),pccs100_type(arrsize(15)),date_alma(arrsize(15)))
 
-      allocate(filen_r(1000),f4p8part(1000),f4p8_ref(1000),kuehrind(1000))
-      allocate(ra_4p8(1000),dec_4p8(1000),f4p8like(1000),poserr_4p8(1000))
-      allocate(flux_4p8(1000,3),frequency_4p8(1000,3),Ferr_4p8(1000,3),FluxU_4p8(1000,3),FluxL_4p8(1000,3))
-      allocate(flag_4p8(1000,4),f4p8_flag(1000,3))
-      allocate(f4p8_type(1000),name_r(1000))
+      allocate(filen_r(arrsize(16)),f4p8part(arrsize(16)),f4p8_ref(arrsize(16)),kuehrind(arrsize(16)))
+      allocate(ra_4p8(arrsize(16)),dec_4p8(arrsize(16)),f4p8like(arrsize(16)),poserr_4p8(arrsize(16)))
+      allocate(flux_4p8(arrsize(16),3),frequency_4p8(arrsize(16),3),Ferr_4p8(arrsize(16),3),FluxU_4p8(arrsize(16),3),FluxL_4p8(arrsize(16),3))
+      allocate(flag_4p8(arrsize(16),4),f4p8_flag(arrsize(16),3))
+      allocate(f4p8_type(arrsize(16)),name_r(arrsize(16)))
 
-      allocate(filen_l(200),lowr_ref(200))
-      allocate(ra_lowr(200),dec_lowr(200))
-      allocate(frequency_lowr(200),flux_lowr(200),Ferr_lowr(200),FluxU_lowr(200),FluxL_lowr(200),poserr_lowr(200))
-      allocate(lowr_flag(200),name_l(200),lowr_type(200))
+      allocate(filen_l(arrsize(17)),lowr_ref(arrsize(17)))
+      allocate(ra_lowr(arrsize(17)),dec_lowr(arrsize(17)))
+      allocate(frequency_lowr(arrsize(17)),flux_lowr(arrsize(17)),Ferr_lowr(arrsize(17)),FluxU_lowr(arrsize(17)),FluxL_lowr(arrsize(17)),poserr_lowr(arrsize(17)))
+      allocate(lowr_flag(arrsize(17)),name_l(arrsize(17)),lowr_type(arrsize(17)))
 
-      allocate(opt_ref(5))
-      allocate(ra_lowrcand(5),ra_usnocand(5),ra_gamslp(5))
-      allocate(dec_lowrcand(5),dec_usnocand(5),dec_gamslp(5))
-      allocate(optdist(5),epos_usnocand(5),lowrdist(5),gamslp(5),poserr_gamslp(5))
-      allocate(freq_lowrcand(5),flux_lowrcand(5),uflux_lowrcand(5),lflux_lowrcand(5),epos_lowrcand(5))
-      allocate(freq_usnocand(5,5),flux_usnocand(5,5),uflux_usnocand(5,5),lflux_usnocand(5,5),usnomag_cand(5,5))
-      allocate(opt_flag(5,5),optcand_type(5),lowrcand_type(5) )
+      allocate(opt_ref(arrsize(18)))
+      allocate(ra_lowrcand(arrsize(18)),ra_usnocand(arrsize(18)),ra_gamslp(arrsize(18)))
+      allocate(dec_lowrcand(arrsize(18)),dec_usnocand(arrsize(18)),dec_gamslp(arrsize(18)))
+      allocate(optdist(arrsize(18)),epos_usnocand(arrsize(18)),lowrdist(arrsize(18)),gamslp(arrsize(18)),poserr_gamslp(arrsize(18)))
+      allocate(freq_lowrcand(arrsize(18)),flux_lowrcand(arrsize(18)),uflux_lowrcand(arrsize(18)),lflux_lowrcand(arrsize(18)),epos_lowrcand(arrsize(18)))
+      allocate(freq_usnocand(arrsize(18),arrsize(18)),flux_usnocand(arrsize(18),arrsize(18)),uflux_usnocand(arrsize(18),5),lflux_usnocand(arrsize(18),5),usnomag_cand(arrsize(18),5))
+      allocate(opt_flag(arrsize(18),5),optcand_type(arrsize(18)),lowrcand_type(arrsize(18)) )
 
 c read the data file
       READ(lu_in,'(a)') string
@@ -566,7 +584,7 @@ c        write(*,*) zsource(ns),zzinput,redshift
      &       (catalog(1:3) == 'gb6') .or.(catalog(1:7) == 'north20') .or.
      &       (catalog(1:7) == 'f357det') .or.(catalog(1:5) == 'kuehr'))  THEN
             i4p8=i4p8+1
-            IF (i4p8 > 1000) Stop 'Too many PMN points'
+            IF (i4p8 > arrsize(16)) Stop 'Too many PMN points'
             if (i4p8 .ne. 1) THEN
                do j=1,i4p8-1
                   if ((ra_4p8(j) .eq. ra) .and. (dec_4p8(j) .eq. dec)) THEN
@@ -1015,7 +1033,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
      &             (catalog(1:7) == 'pccs217') .or. (catalog(1:7) == 'pccs353') .or.
      &             (catalog(1:4) == 'pcnt') .or. (catalog(1:4) == 'alma'))  THEN
             ipccs100=ipccs100+1
-            IF (ipccs100 > 1500) Stop 'Too many PCCS points'
+            IF (ipccs100 > arrsize(15)) Stop 'Too many PCCS points'
             ra_pccs100(ipccs100)=ra
             dec_pccs100(ipccs100)=dec
             name_p(ipccs100)=catalog
@@ -1385,7 +1403,7 @@ c               dec_alma=dec_pccs100(ipccs100)
          ELSE IF ((catalog(1:5) == 'spire') .OR. (catalog(1:6) == 'hatlas') .OR.
      &             (catalog(1:8) == 'akaribsc') .OR. (catalog(1:7) == 'iraspsc')) THEN
             ifar=ifar+1
-            IF (ifar > 500) Stop 'Too many Hershel SPIRE points'
+            IF (ifar > arrsize(14)) Stop 'Too many Hershel SPIRE points'
             ra_far(ifar)=ra
             dec_far(ifar)=dec
             name_f(ifar)=catalog
@@ -1642,7 +1660,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
          ELSE IF ((catalog(1:4) == 'wise') .OR. (catalog(1:7) == 'neowise')
      &            .or.  (catalog(1:5) == '2mass') ) THEN
             iir=iir+1
-            IF (iir > 2000) Stop 'Too many Infrared points'
+            IF (iir > arrsize(13)) Stop 'Too many Infrared points'
             if (iir .ne. 1) THEN
                do j=1,iir-1
                   if ((ra_ir(j) .eq. ra) .and. (dec_ir(j) .eq. dec)) THEN
@@ -1811,7 +1829,7 @@ c     &                   filen,catalog,ra,dec,repflux(1:lenact(repflux))
      &           (catalog(1:4) == 'sdss') .or. (catalog(1:9) == 'panstarrs') .or.
      &           (catalog(1:4) == 'gaia') .or. (catalog(1:6) == 'smarts')) THEN
             iusno = iusno + 1
-            IF (iusno > 3500) Stop 'Too many USNO points'
+            IF (iusno > arrsize(12)) Stop 'Too many USNO points'
             if (iusno .ne. 1) THEN
                do j=1,iusno-1
                   if ((ra_usno(j) .eq. ra) .and. (dec_usno(j) .eq. dec)) THEN
@@ -2090,7 +2108,7 @@ c checked photometric quality for SDSS ! no upper limit for SDSS
          ELSE IF  ( (catalog(1:5) == 'galex') .OR. (catalog(1:5) == 'xmmom') .or.
      &              (catalog(1:4) == 'uvot') )  THEN
             iuv=iuv+1
-            if (iuv > 1000) Stop 'Too many UV points'
+            if (iuv > arrsize(10)) Stop 'Too many UV points'
             if (iuv .ne. 1) THEN
                do j=1,iuv-1
                   if ((ra_uv(j) .eq. ra) .and. (dec_uv(j) .eq. dec)) THEN
@@ -2544,7 +2562,7 @@ c               xrtspind(ixray)=ixrtsp
      &      (catalog(1:4) == '3fgl') .or. (catalog(1:4) == '3fhl') .or. (catalog(1:5) == '2bigb')
      &      .or. (catalog(1:4) == 'fmev') .or. (catalog(1:5) == '2agile')) then
             igam=igam+1
-            If (igam > 100) stop 'Too many Gamma-ray points'
+            If (igam > arrsize(7)) stop 'Too many Gamma-ray points'
             if (igam .ne. 1) THEN
                do j=1,igam-1
                   if ((ra_gam(j) .eq. ra) .and. (dec_gam(j) .eq. dec)) THEN
@@ -4813,7 +4831,7 @@ c      no_found=types(i)
 c      type_average = i
 c   ENDIF
 cENDDO
-         allocate(rrxx_flag(2000,1000),rrxx_ref(2000,1000))
+         allocate(rrxx_flag(arrsize(2),arrsize(1)),rrxx_ref(arrsize(2),arrsize(1)))
 
          write(*,*) 'TEST number',eblnn(1:igam)
          !CALL graphic_code (flux_x,flux_radio(k)/const(k),type_average,code)
@@ -5449,8 +5467,7 @@ c         enddo
          !if (j .ne. isource ) write(14,*) "===================="
       ENDDO
 
-      deallocate(nrep,typer)
-      deallocate(ra_source,dec_source)
+      deallocate(typer,ra_source,dec_source)
       deallocate(ra_cat,dec_cat)
       deallocate(type_cat,name_cat,refs)
       deallocate(filen_v,vhe_ref,ra_vhe,dec_vhe)

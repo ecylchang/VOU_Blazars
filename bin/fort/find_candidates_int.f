@@ -1,14 +1,14 @@
       PROGRAM find_candidates_int
 
       IMPLICIT none
-      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,icand,filen,is,ie
-      integer ii1,ii2,ipass,isource
+      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,is,ie
+      integer ii1,ii2,ipass,isource,icand,filen,iconfig,iarr,arrsize(30)
       integer nnuvx,nnruv,nnralpha,code,irrrep,ixxrep,irrss,ixxss
-      real*8 ra,dec,dist
-      real*8 ra_center,dec_center
+      real*8 ra,dec,dist,ra_center,dec_center
       real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,fdens,nudens
       real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
       character*200 input_file,input_file2,input_file3,output_file
+      character*200 webprograms,array_size
       character*10 catalog
       character*800 string
 
@@ -39,6 +39,7 @@
       real*4,dimension(:,:),allocatable :: frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot
 
       LOGICAL there,ok,found
+      common webprograms
       ok = .TRUE.
       found = .FALSE.
 c      min_dist_uv=8./3600.
@@ -55,7 +56,10 @@ c      min_dist_4p8=30./3600.
       in=im
       im=index(string(in+1:length),' ')+in
       input_file3=string(in+1:im-1)
-      output_file=string(im+1:length)
+      in=im
+      im=index(string(in+1:length),' ')+in
+      output_file=string(in+1:im-1)
+      webprograms=string(im+1:length)
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
       INQUIRE (FILE=input_file,EXIST=there)
@@ -66,20 +70,41 @@ c      min_dist_4p8=30./3600.
       ENDIF
 
       lu_in = 10
+      array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=input_file2,status='old',iostat=ier)
       open(13,file=input_file3,status='old',iostat=ier)
+      open(18,file=array_size,status='old',iostat=ier)
       IF (ier.NE.0) THEN
          write (*,*) ' Error ',ier,' opening file ', input_file
       ENDIF
 
-      allocate(xxot_type(10,2000))
-      allocate(frequency_xxot(10,2000),flux_xxot(10,2000),FluxL_xxot(10,2000),FluxU_xxot(10,2000))
-      allocate(ra_rr(2000),dec_rr(2000),ra_xx(2000),dec_xx(2000))
-      allocate(rr_type(2000),xx_type(2000),xpts(2000))
-      allocate(frequency_rr(2000),flux_rr(2000),FluxL_rr(2000),FluxU_rr(2000),poserr_rr(2000))
-      allocate(frequency_xx(2000),flux_xx(2000),FluxL_xx(2000),FluxU_xx(2000),poserr_xx(2000))
-      allocate(mjdst_rr(2000),mjded_rr(2000),mjdst_xx(2000),mjded_xx(2000))
+      iarr=0
+      iconfig=0
+      arrsize(1:30)=0
+      do while(ok)
+      read(18,'(a)',end=700) string
+      if (string(1:3) == '---' ) then
+         iconfig=iconfig+1
+      else
+         if (iconfig .eq. 4) then
+            iarr=iarr+1
+            is=index(string(1:lenact(string)),':')
+            read(string(is+1:lenact(string)),*) arrsize(iarr)
+         endif
+      endif
+      enddo
+700   continue
+      close(18)
+!      write(*,*) arrsize
+
+      allocate(xxot_type(arrsize(3),arrsize(1)))
+      allocate(frequency_xxot(arrsize(3),arrsize(1)),flux_xxot(arrsize(3),arrsize(1)),FluxL_xxot(arrsize(3),arrsize(1)),FluxU_xxot(arrsize(3),arrsize(1)))
+      allocate(ra_rr(arrsize(2)),dec_rr(arrsize(2)),ra_xx(arrsize(1)),dec_xx(arrsize(1)))
+      allocate(rr_type(arrsize(2)),xx_type(arrsize(1)),xpts(arrsize(1)))
+      allocate(frequency_rr(arrsize(2)),flux_rr(arrsize(2)),FluxL_rr(arrsize(2)),FluxU_rr(arrsize(2)),poserr_rr(arrsize(2)))
+      allocate(frequency_xx(arrsize(1)),flux_xx(arrsize(1)),FluxL_xx(arrsize(1)),FluxU_xx(arrsize(1)),poserr_xx(arrsize(1)))
+      allocate(mjdst_rr(arrsize(2)),mjded_rr(arrsize(2)),mjdst_xx(arrsize(1)),mjded_xx(arrsize(1)))
 
       icand=0
       ixx=0
@@ -135,16 +160,16 @@ c      write(*,*) icand,irr,ixx
 98    continue
 c      write(*,*) isource
 
-      allocate(ra_uv(10000),dec_uv(10000),poserr_uv(10000))
-      allocate(frequency_uv(10000,2),flux_uv(10000,2),FluxL_uv(10000,2),FluxU_uv(10000,2),uvmag(10000,2),uvmagerr(10000,2))
+      allocate(ra_uv(arrsize(6)),dec_uv(arrsize(6)),poserr_uv(arrsize(6)))
+      allocate(frequency_uv(arrsize(6),2),flux_uv(arrsize(6),2),FluxL_uv(arrsize(6),2),FluxU_uv(arrsize(6),2),uvmag(arrsize(6),2),uvmagerr(arrsize(6),2))
 
-      allocate(ra_4p8(500),dec_4p8(500))
-      allocate(frequency_4p8(500),flux_4p8(500),FluxL_4p8(500),FluxU_4p8(500),poserr_4p8(500),Ferr_4p8(500))
-      allocate(type_4p8(500))
+      allocate(ra_4p8(arrsize(5)),dec_4p8(arrsize(5)))
+      allocate(frequency_4p8(arrsize(5)),flux_4p8(arrsize(5)),FluxL_4p8(arrsize(5)),FluxU_4p8(arrsize(5)),poserr_4p8(arrsize(5)),Ferr_4p8(arrsize(5)))
+      allocate(type_4p8(arrsize(5)))
 
-      allocate(ra_gam(50),dec_gam(50))
-      allocate(slope_gam(50),specerr_gam(50),poserr_gam(50))
-      allocate(frequency_gam(50),flux_gam(50),FluxL_gam(50),FluxU_gam(50),Ferr_gam(50))
+      allocate(ra_gam(arrsize(4)),dec_gam(arrsize(4)))
+      allocate(slope_gam(arrsize(4)),specerr_gam(arrsize(4)),poserr_gam(arrsize(4)))
+      allocate(frequency_gam(arrsize(4)),flux_gam(arrsize(4)),FluxL_gam(arrsize(4)),FluxU_gam(arrsize(4)),Ferr_gam(arrsize(4)))
 
       igam=0
       iuv=0
@@ -264,12 +289,12 @@ c      write(*,*) isource
 c      write(*,*) i4p8,iuv,igam
 
 
-      allocate(xxss_type(2000),rrss_type(2000),pass2(2000))
-      allocate(nreprr(2000),trackrr(2000),repnumberrr(2000),posindrr(2000))
-      allocate(nrepxx(2000),trackxx(2000),repnumberxx(2000),posindxx(2000))
-      allocate(ra_rrss(2000),dec_rrss(2000),flux_rrss(2000))
-      allocate(ra_xxss(2000),dec_xxss(2000),poserr_xxss(2000))
-      allocate(backxx(2000,2000),backrr(2000,2000))
+      allocate(xxss_type(arrsize(1)),rrss_type(arrsize(2)),pass2(arrsize(1)+arrsize(2)))
+      allocate(nreprr(arrsize(2)),trackrr(arrsize(2)),repnumberrr(arrsize(2)),posindrr(arrsize(2)))
+      allocate(nrepxx(arrsize(1)),trackxx(arrsize(1)),repnumberxx(arrsize(1)),posindxx(arrsize(1)))
+      allocate(ra_rrss(arrsize(2)),dec_rrss(arrsize(2)),flux_rrss(arrsize(2)))
+      allocate(ra_xxss(arrsize(1)),dec_xxss(arrsize(1)),poserr_xxss(arrsize(1)))
+      allocate(backxx(arrsize(1),arrsize(1)),backrr(arrsize(2),arrsize(2)))
 
       nrepxx(1:ixx)=0
       ixxss=0
