@@ -37,3 +37,13 @@ FILE_EFF_AREA /count_rate/xrt_PC_0-12_September2018.dat
 SOFT_ENERGY_BAND  0.3 1.0
 MEDIUM_ENERGY_BAND 1.0 2.0
 HARD_ENERGY_BAND  2.0 10.0
+----------------------------------------------------------------
+SATELLITE   eROSITA
+INSTRUMENT  eROSITA
+FILTER      -
+FLUX_ENERGY_RANGE 0.2 2.3
+COUNTS_ENERGY_RANGE 0.2 2.3
+FILE_EFF_AREA /count_rate/erosita.dat
+SOFT_ENERGY_BAND  0.2 0.6
+MEDIUM_ENERGY_BAND 0.6 2.3
+HARD_ENERGY_BAND  2.3 5.0

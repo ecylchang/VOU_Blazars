@@ -134,6 +134,11 @@ c the catalog without source name
                is=ie
                ie=index(value(is+1:len(value)),',')+is
             endif
+c            if (catalog(1:it-1) == 'erosita') then
+C               read(value(is+1:ie-1),*) poserr
+C               is=ie
+c               ie=index(value(is+1:len(value)),',')+is
+c            endif
             read(value(is+1:ie-1),'(a)') ra
             ia=index(value(is+1:ie-1),' ')
             if (ia .ne. 0) then
@@ -309,8 +314,8 @@ c write the data
      &         (catalog(1:it-1) == 'panstarrs') .or. (catalog(1:it-1) == 'gaia') .or.
      &         (catalog(1:it-1) == 'tgss150') .or. (catalog(1:it-1) == 'gleam') .or.
      &         (catalog(1:it-1) == 'lotss') .or. (catalog(1:it-1) == 'akaribsc') .or.
-     &         (catalog(1:it-1) == 'iraspsc') .or. (catalog(1:it-1) == 'vlassql')
-     &          .or. (catalog(1:it-1) == 'f357det')) then
+     &         (catalog(1:it-1) == 'iraspsc') .or. (catalog(1:it-1) == 'vlassql') .or.
+     &         (catalog(1:it-1) == 'f357det')) then
                write(13,'(i4,",",a,",",2(f9.5,","),f7.3,",",a)')
      &             ns,catalog(1:it-1),radeg,decdeg,poserr,flux(1:ie-1)
             else if ((catalog(1:it-1) == '3fhl') .or. (catalog(1:it-1) == '3fgl') .or.

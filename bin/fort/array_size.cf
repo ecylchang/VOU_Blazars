@@ -46,6 +46,6 @@ LSP_candidate: 200
 Non_jet_candidate: 200
 Unknown: 200
 Cataloged_AGN_candidate: 200
-Pulsar_GRB_Gamma_ray_source: 15000
+Quasar_pulsar_GRB_Gamma_ray_source: 15000
 Circle_project_point: 1000
 Grid_point: 100

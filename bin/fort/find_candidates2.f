@@ -367,14 +367,14 @@ c         write(*,*) "redshift",zsource(1:isource)
             read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),lflux(npt(
      &      sfound),sfound),ra_rrxx(npt(sfound),sfound),dec_rrxx(npt(sfound),sfound),epos(npt(sfound),sfound),
      &      mjdst_rrxx(npt(sfound),sfound),mjded_rrxx(npt(sfound),sfound),spec_type(npt(sfound),sfound)
-            if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 64)) then
+            if ((spec_type(npt(sfound),sfound) .eq. 61) .or. (spec_type(npt(sfound),sfound) .eq. 66)) then
                iousxb=iousxb+1
                recordmjd(1:3,iousxb)=[iousxb,npt(sfound),sfound]
             endif
          else
             read(string(1:lenact(string)),*) flux(npt(sfound),sfound),uflux(npt(sfound),sfound),
      &          lflux(npt(sfound),sfound),spec_type(npt(sfound),sfound)
-            if ((spec_type(npt(sfound),sfound) .eq. 11) .or. (spec_type(npt(sfound),sfound) .eq. 14)) then
+            if ((spec_type(npt(sfound),sfound) .eq. 11) .or. (spec_type(npt(sfound),sfound) .eq. 16)) then
                iswort=iswort+1
                iiswort=iswort/4
                if (MOD(iswort,4) .ne. 0) iiswort=iiswort+1
