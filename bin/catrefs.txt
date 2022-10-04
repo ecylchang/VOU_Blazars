@@ -81,7 +81,7 @@ OUSXG Giommi et al. 2020, A&A submitted!
 OULC Giommi et al. 2021, MNRAS, 507, 5690!
 BAT105m Oh et al. 2018, ApJS, 235, 4!
 BEPPOSAX Giommi et al. 2002, Babs. conf.!
-NuBlazar Middei et al. 2022 submitted!
+NuBlazar Middei et al. 2022, MNRAS, 514, 3179!
 3FHL The Fermi-LAT Collaboration 2017, ApJS, 323, 18!
 2FHL Ackermann et al. 2016, ApJS, 222, 1!
 3FGL Acero et al. 2015, ApJS, 218, 23!

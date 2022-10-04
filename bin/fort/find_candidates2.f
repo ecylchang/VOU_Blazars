@@ -175,6 +175,7 @@ c
       found = .FALSE.
 
       arrsize(1:30)=0
+      ifar=0
       iconfig=0
       iarr=0
       isource=0

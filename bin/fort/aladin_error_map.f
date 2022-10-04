@@ -3,9 +3,12 @@ c
 c
       IMPLICIT none
       INTEGER*4 ier, lu_in, lu_in_ra, lu_script, lenact,i,ia,ii
-      INTEGER*4 lu_in2, lu_out,source_number,im,in,length
-      REAL*4 dummy, radius
-      REAL*8 ra, dec,ra_center,dec_center,ra2,dec2
+c      INTEGER*4 lu_in2, lu_out,source_number,im,in,length
+      INTEGER*4 lu_in2, lu_out,im,in,length
+c      REAL*4 dummy, radius
+      REAL*4 radius
+c      REAL*8 ra, dec,ra_center,dec_center,ra2,dec2
+      REAL*8 ra, dec,ra_center,dec_center
       CHARACTER*1 a0,a1,a2
       CHARACTER*200 input_file,input_file2,input_file_ra,output_file,string,script_file
       character*800 stringin
@@ -392,12 +395,12 @@ c     &                    ,a,''color: '',a,''aqua'',a,a,'' ));'')') ra,dec,radi
       ENDDO 
 
  98   CONTINUE
-      DO WHILE(ok)
-         READ(lu_in2,*,end=99) ra2,dec2,dummy,dummy,source_number
-         write(lu_out,'(''cat.addSources([A.source('',f9.4,1x,'','',f9.4,'','',
-     &         a,''name: '',a,'' Nr. '',i3,a,a,'')]);'')') ra2,dec2,a0,a1,source_number,a1,a2
-      ENDDO
- 99   CONTINUE
+c      DO WHILE(ok)
+c         READ(lu_in2,*,end=99) ra2,dec2,dummy,dummy
+c         write(lu_out,'(''cat.addSources([A.source('',f9.4,1x,'','',f9.4,'','',
+c     &         a,''name: '',a,'' Nr. '',i3,a,a,'')]);'')') ra2,dec2,a0,a1,source_number,a1,a2
+c      ENDDO
+c 99   CONTINUE
 
       write(lu_out,'(''$("input[name=survey]").change(function() {'')')
       write(lu_out,'(''   aladin.setImageSurvey($(this).val());'')')
