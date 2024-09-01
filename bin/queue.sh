@@ -88,7 +88,7 @@ done < $LIST
 echo
 #if $CNT
 [ "$VERBOSE" = "1" ] && echo "Searching $CNT catalogs"
-
+echo " "
 # Check if any halo was found. If not, finish the run..
 #
 [ "$CNT" -eq "0" ] && { echo "Empty list of observation?"; exit; }
@@ -128,19 +128,36 @@ do
       # get the result status of PID and then remove from queue
       wait $PID
       PSTS=$?
-      cats=`echo $_file | awk '{print $5}'`
+      checkConesearch2=`echo $_file | awk '{print $1}'`
+      if [[ ($checkConesearch2 == "conesearch") || ($checkConesearch2 == "specsearch") ]]; then
+         cats=`echo $_file | awk '{print $5}'`
+      else
+         cats=`echo $_file | awk '{print $6}'`
+      fi
       ref=`grep ^${cats}[^BGMNW] ${CURDIR}/catrefs.txt | cut -d'!' -f1 | cut -d' ' -f2- `
-      
-#      echo $cats $PSTS
+#      echo ' catalog PSTS '$cats $PSTS
       if [[ $PSTS -eq 0 ]]; then
          nncc=$nncc+1
          echo -e "( $nncc / $CNT ) \033[1;32m $cats : SUCCESS \033[0m -- ${ref}"
       elif [[ $PSTS -eq 10 ]]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $CNT ) $cats : NO SOURCES FOUND"
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;37m $cats : NO SOURCES FOUND \033[0m "
       elif [ $cats == MAGIC -o $cats == VERITAS ]; then
          nncc=$nncc+1
-         1>&2 echo "( $nncc / $CNT ) $cats : NO SOURCES FOUND"
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;37m $cats : NO SOURCES FOUND \033[0m "
+      elif [[ $PSTS -eq 20 ]]; then
+         nncc=$nncc+1
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;33m $cats : SEARCH TIMED OUT \033[0m "
+         echo $_file >> tmp/${PIDNM}voerror.txt
+      elif [[ $PSTS -eq 2 ]]; then
+         nncc=$nncc+1
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;35m $cats : Remote system overloaded \033[0m "
+         echo $_file >> tmp/${PIDNM}voerror.txt
+      elif [[ $PSTS -eq 3 ]]; then
+         nncc=$nncc+1
+         1>&2 echo -e "( $nncc / $CNT ) \033[1;35m $cats : Remote system error \033[0m "
+         echo $_file >> tmp/${PIDNM}voerror.txt
+         echo $_file >> tmp/${PIDNM}voaltenativesite.txt
       else
          nncc=$nncc+1
          1>&2 echo -e "( $nncc / $CNT ) \033[1;31m  $cats : SEARCH FAILED \033[0m "

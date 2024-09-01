@@ -1,23 +1,23 @@
 --------------- Common Array -----------------------
-Number_of_candidate: 500
+Number_of_candidate: 3000
 Counterpart_of_candidate: 3000
-Radio_source: 20000
-X_ray_source: 5000
+Radio_source: 30000
+X_ray_source: 10000
 Points_to_be_plotted (SED and Error map): 80000
 ------------------ PHASE 1 -------------------------
-Cataloged_source: 15000
-Gamma_and_repeated_cataloged_source: 200
-XMM: 3000
+Cataloged_source: 25000
+Gamma_and_repeated_cataloged_source: 400
+XMM: 5000
 Swift: 3000
-ROSAT: 1000
+ROSAT: 2000
 Chandra: 1000
-eROSITA: 2000
+eROSITA: 5000
 BMW: 500
-IPC: 200
-MAXI: 200
+IPC: 300
+MAXI: 300
 ----------------- PHASE 2 --------------------------
 All_catalogued_and_candidate_source: 2000
-Cataloged_source_from_phase1: 200
+Cataloged_source_from_phase1: 500
 Very_high_energy: 500
 De_EBL: 300
 Gamma_ray: 100
@@ -26,7 +26,7 @@ X_ray: 80000
 UV: 1000
 UV_candidate: 300
 Optical: 3500
-Infrared: 3000
+Infrared: 8000
 Far_IR: 500
 Millimeter: 1500
 Radio4p8: 1000

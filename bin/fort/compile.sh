@@ -2,7 +2,8 @@
 comp_libs () {
     [ -f status.codes ] || { echo "Error: file 'status.codes' not found. Exiting."; return 1; }
     echo "-> Compiling 'mylib'"
-    gfortran -c mylib.f -ffixed-line-length-1000 -mcmodel=medium
+    gfortran -c mylib.f -ffixed-line-length-1000 
+#    gfortran -c mylib.f -ffixed-line-length-1000 -mcmodel=medium
 #    echo "-> Compiling 'nhdeabsorb'"
 #    gfortran -c nhdeabsorb.f -ffixed-line-length-132
 }

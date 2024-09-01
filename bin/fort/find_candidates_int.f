@@ -1,20 +1,27 @@
       PROGRAM find_candidates_int
 
       IMPLICIT none
-      integer i,j,k,m,s,iuv,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,is,ie
-      integer ii1,ii2,ipass,isource,icand,filen,iconfig,iarr,arrsize(30)
-      integer nnuvx,nnruv,nnralpha,code,irrrep,ixxrep,irrss,ixxss
-      real*8 ra,dec,dist,ra_center,dec_center
-      real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,fdens,nudens
-      real*4 aruv,auvx,min_dist,alphar,mjdstart,mjdend
-      character*200 input_file,input_file2,input_file3,output_file
+      integer i,j,k,m,s,iuv,ihst,igaia,iunwise,igam,i4p8,irr,ixx,in,im,lenact,length,lu_in,ier,is,ie
+      integer ii1,ii2,ipass,isource,icand,filen,iconfig,iarr,arrsize(30),offset,l,ipanstarrs,iradio
+      integer nnuvx,nnox,nnruv,nnralpha,code,irrrep,ixxrep,irrss,ixxss,iaox,file_size
+      real*8 ra,dec,dist,ra_center,dec_center,ragood,decgood
+      real*4 nh,flux,uflux,lflux,epos,freq,radius,flux2nufnu_4p8,airo,p_err,arx,arg,aro
+      real*4 aruv,auvx,aox,max_dist,alphar,mjdstart,mjdend,airx,hstbmag,aw1w2
+      character*200 input_file,input_file2,input_file3,output_file,output_file2
       character*200 webprograms,array_size
       character*10 catalog
       character*800 string
 
-      real*8,dimension(:),allocatable :: ra_uv,dec_uv
-      real*4,dimension(:),allocatable :: poserr_uv
-      real*4,dimension(:,:),allocatable :: frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr
+      real*8,dimension(:),allocatable :: ra_uv,dec_uv,ra_hst,dec_hst,ra_unwise,dec_unwise,ra_gaia,dec_gaia
+      real*8,dimension(:),allocatable :: ra_panstarrs,dec_panstarrs,ra_radio,dec_radio
+      real*4,dimension(:),allocatable :: poserr_uv,poserr_hst,poserr_unwise,slopegaia 
+      real*4,dimension(:),allocatable :: frequency_gaiag,flux_gaiag,frequency_gaiab,flux_gaiab
+      real*4,dimension(:),allocatable :: frequency_gaiar,flux_gaiar
+      real*4,dimension(:),allocatable :: frequency_panstarrsr,flux_panstarrsr,frequency_radio,flux_radio
+      real*4,dimension(:),allocatable :: frequency_panstarrsg,flux_panstarrsg
+      real*4,dimension(:),allocatable :: gaiagmag,gaiabmag,gaiarmag,panstarrsgmag,panstarrsrmag
+      real*4,dimension(:,:),allocatable :: frequency_uv,flux_uv,FluxL_uv,FluxU_uv,uvmag,uvmagerr,flux_ir,irmag,frequency_ir
+      real*4,dimension(:,:),allocatable :: frequency_hst,flux_hst,hstvmag
 
       real*8,dimension(:),allocatable :: ra_4p8,dec_4p8
       real*4,dimension(:),allocatable :: frequency_4p8,flux_4p8,FluxL_4p8,FluxU_4p8,poserr_4p8,Ferr_4p8
@@ -38,15 +45,11 @@
       integer*4,dimension(:,:),allocatable :: xxot_type
       real*4,dimension(:,:),allocatable :: frequency_xxot,flux_xxot,FluxL_xxot,FluxU_xxot
 
-      LOGICAL there,ok,found
+      LOGICAL there,ok,found,written
       common webprograms
       ok = .TRUE.
       found = .FALSE.
-c      min_dist_uv=8./3600.
-c      min_dist_gam=5./60.
-c      min_dist_4p8=30./3600.
       flux2nufnu_4p8=4.85E9*1.E-26
-
       CALL rdforn(string,length)
       CALL rmvlbk(string)
       in=index(string(1:length),' ')
@@ -62,18 +65,34 @@ c      min_dist_4p8=30./3600.
       webprograms=string(im+1:length)
       in = index(input_file(1:lenact(input_file)),'.')
       IF (in == 0) input_file(lenact(input_file)+1:lenact(input_file)+4) = '.csv'
+      open(13,file=input_file3,status='old',iostat=ier)
+      inquire(13, size=file_size)
       INQUIRE (FILE=input_file,EXIST=there)
-      IF (.NOT.there) THEN
-         write (*,'('' file '',a,'' not found. No data found in Intermediate phase '')')
-     &     input_file(1:lenact(input_file))
+      IF (.NOT.there .OR. file_size .EQ. 0) THEN
+         !print *,'Here !'
+         if (.NOT.there) write (*,'(''No data found in Intermediate phase '')')
+         INQUIRE (FILE=input_file2,EXIST=there)
+         if (there) then
+            output_file='tmp/Sed_temp.txt'
+            open(12,file=output_file,status='old',iostat=ier)
+            open(11,file=input_file2,status='old',iostat=ier)
+            i = 0
+            do while(ok)
+                i = i +1
+                read(11,*,end=801) freq,flux,uflux,lflux,ra,dec,epos,mjdstart,mjdend,code
+                if (i .EQ. 1) write(12,'("   1  matched source  ",f10.5,2x,f10.5,"  source type   2")')ra,dec
+                write(12,'(4(es10.3,2x),2(f10.5,2x),f8.3,2(2x,f10.4),2x,i2)') freq,flux,uflux,lflux,ra,dec,
+     &                     epos,mjdstart,mjdend,abs(code)
+            enddo
+         endif
+801      continue
          STOP
       ENDIF
-
-      lu_in = 10
+      output_file2='tmp/candidates_int.txt'
       array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
+      lu_in = 10
       open(lu_in,file=input_file,status='old',iostat=ier)
       open(11,file=input_file2,status='old',iostat=ier)
-      open(13,file=input_file3,status='old',iostat=ier)
       open(18,file=array_size,status='old',iostat=ier)
       IF (ier.NE.0) THEN
          write (*,*) ' Error ',ier,' opening file ', input_file
@@ -96,7 +115,6 @@ c      min_dist_4p8=30./3600.
       enddo
 700   continue
       close(18)
-!      write(*,*) arrsize
 
       allocate(xxot_type(arrsize(3),arrsize(1)))
       allocate(frequency_xxot(arrsize(3),arrsize(1)),flux_xxot(arrsize(3),arrsize(1)),FluxL_xxot(arrsize(3),arrsize(1)),FluxU_xxot(arrsize(3),arrsize(1)))
@@ -106,11 +124,13 @@ c      min_dist_4p8=30./3600.
       allocate(frequency_xx(arrsize(1)),flux_xx(arrsize(1)),FluxL_xx(arrsize(1)),FluxU_xx(arrsize(1)),poserr_xx(arrsize(1)))
       allocate(mjdst_rr(arrsize(2)),mjded_rr(arrsize(2)),mjdst_xx(arrsize(1)),mjded_xx(arrsize(1)))
 
+
       icand=0
       ixx=0
       irr=0
       Do WHILE(ok)
          read(11,*,end=100) freq,flux,uflux,lflux,ra,dec,epos,mjdstart,mjdend,code
+         !print *,'-->',freq,flux,uflux,lflux,ra,dec,epos,mjdstart,mjdend,code
          if (code .lt. 0) THEN
             icand=icand+1
             irr=irr+1
@@ -148,17 +168,34 @@ c      min_dist_4p8=30./3600.
          endif
       ENDDO
 100   continue
-c      write(*,*) icand,irr,ixx
 
       isource=0
       do while(ok)
-         read(13,*,end=98) ra,dec,code
+         read(13,'(a)',end=98) string 
+         !print *,'string ',string(1:lenact(string))
+         read(string,*,end=98) ra,dec,code
+         !read(13,*,end=98) ra,dec,code
          if ((code .gt. 0.) .or. (code .le. -50000.) .or. (code .eq. -9999)) then
             isource=isource+1
          endif
       enddo
 98    continue
-c      write(*,*) isource
+      offset = isource
+      !write(*,*) isource
+
+      allocate(ra_hst(arrsize(6)),dec_hst(arrsize(6)),poserr_hst(arrsize(6)))
+      allocate(ra_gaia(arrsize(6)),dec_gaia(arrsize(6)))
+      allocate(ra_panstarrs(arrsize(6)),dec_panstarrs(arrsize(6)))
+      allocate(ra_radio(arrsize(6)),dec_radio(arrsize(6)))
+      allocate(ra_unwise(arrsize(6)),dec_unwise(arrsize(6)),poserr_unwise(arrsize(6)))
+      allocate(frequency_hst(arrsize(6),2),flux_hst(arrsize(6),2),hstvmag(arrsize(6),2))
+      allocate(frequency_gaiag(arrsize(6)),flux_gaiag(arrsize(6)),gaiagmag(arrsize(6)))
+      allocate(frequency_gaiab(arrsize(6)),flux_gaiab(arrsize(6)),gaiabmag(arrsize(6)))
+      allocate(frequency_gaiar(arrsize(6)),flux_gaiar(arrsize(6)),gaiarmag(arrsize(6)))
+      allocate(frequency_panstarrsg(arrsize(6)),flux_panstarrsg(arrsize(6)),panstarrsgmag(arrsize(6)))
+      allocate(frequency_panstarrsr(arrsize(6)),flux_panstarrsr(arrsize(6)),panstarrsrmag(arrsize(6)))
+      allocate(frequency_radio(arrsize(6)),flux_radio(arrsize(6)))
+      allocate(flux_ir(arrsize(6),2),irmag(arrsize(6),2),frequency_ir(arrsize(6),2),slopegaia(6))   
 
       allocate(ra_uv(arrsize(6)),dec_uv(arrsize(6)),poserr_uv(arrsize(6)))
       allocate(frequency_uv(arrsize(6),2),flux_uv(arrsize(6),2),FluxL_uv(arrsize(6),2),FluxU_uv(arrsize(6),2),uvmag(arrsize(6),2),uvmagerr(arrsize(6),2))
@@ -173,6 +210,11 @@ c      write(*,*) isource
 
       igam=0
       iuv=0
+      ihst=0
+      igaia=0
+      ipanstarrs=0
+      iunwise=0
+      iradio=0
       i4p8=0
       READ(lu_in,'(a)') string
       is = index(string(1:len(string)),'=')
@@ -190,6 +232,7 @@ c      write(*,*) isource
       read(string(is+1:ie-1),*) nh
       DO WHILE(ok)
          READ(lu_in,'(a)',end=99) string
+         !print *,'string ',string(1:lenact(string))
          ie=index(string(1:len(string)),',')
          read(string(1:ie-1),*) filen
          is=ie
@@ -247,47 +290,168 @@ c      write(*,*) isource
             read(string(is+1:ie-1),*) uvmagerr(iuv,2)
             if (uvmagerr(iuv,2) .le. -999.) uvmagerr(iuv,2)=0.
             CALL  mag2flux (nh,uvmag(iuv,2),'fuv',flux_uv(iuv,2),frequency_uv(iuv,2))
-         CALL  mag2flux (nh,uvmag(iuv,2)-uvmagerr(iuv,2),'fuv',FluxU_uv(iuv,2),frequency_uv(iuv,2))
-         CALL  mag2flux (nh,uvmag(iuv,2)+uvmagerr(iuv,2),'fuv',FluxL_uv(iuv,2),frequency_uv(iuv,2))
+            CALL  mag2flux (nh,uvmag(iuv,2)-uvmagerr(iuv,2),'fuv',FluxU_uv(iuv,2),frequency_uv(iuv,2))
+            CALL  mag2flux (nh,uvmag(iuv,2)+uvmagerr(iuv,2),'fuv',FluxL_uv(iuv,2),frequency_uv(iuv,2))
             CALL  mag2flux (nh,uvmag(iuv,1),'nuv',flux_uv(iuv,1),frequency_uv(iuv,1))
-         CALL  mag2flux (nh,uvmag(iuv,1)-uvmagerr(iuv,1),'nuv',FluxU_uv(iuv,1),frequency_uv(iuv,1))
-         CALL  mag2flux (nh,uvmag(iuv,1)+uvmagerr(iuv,1),'nuv',FluxL_uv(iuv,1),frequency_uv(iuv,1))
+            CALL  mag2flux (nh,uvmag(iuv,1)-uvmagerr(iuv,1),'nuv',FluxU_uv(iuv,1),frequency_uv(iuv,1))
+            CALL  mag2flux (nh,uvmag(iuv,1)+uvmagerr(iuv,1),'nuv',FluxL_uv(iuv,1),frequency_uv(iuv,1))
             poserr_uv(iuv)=1.
-         else if (catalog(1:8) == 'fermi8yr') then
-            igam=igam+1
-            ra_gam(igam)=ra
-            dec_gam(igam)=dec
+         else if (catalog(1:4) == 'nvss') then
+            iradio = iradio + 1
+            ra_radio(iradio)=ra
+            dec_radio(iradio)=dec
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) poserr_gam(igam)
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) flux_gam(igam)
+            !is=ie
+            !ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) flux_radio(iradio)
+            !print *,'flux_radio mjy NVSS iradio ',flux_radio(iradio),iradio
+            flux_radio(iradio) = flux_radio(iradio)*1.4e9*1.e-26
+            frequency_radio(iradio) = 1.4e9
+         else if (catalog(1:5) == 'first') then
+            iradio = iradio + 1
+            ra_radio(iradio)=ra
+            dec_radio(iradio)=dec
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) Ferr_gam(igam)
             is=ie
             ie=index(string(is+1:len(string)),',')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) slope_gam(igam)
+            read(string(is+1:ie-1),*) flux_radio(iradio)
+            !print *,'FIRST flux_radio mJy iradio ',flux_radio(iradio),iradio
+            flux_radio(iradio) = flux_radio(iradio)*1.4e9*1.e-26
+            frequency_radio(iradio) = 1.4e9
+            !print *,'flux_radio(iradio) ',flux_radio(iradio)
+         else if (catalog(1:4) == 'racs') then
+            iradio = iradio + 1
+            ra_radio(iradio)=ra
+            dec_radio(iradio)=dec
             is=ie
-            ie=index(string(is+1:len(string)),' ')+is
-            if (is .ne. ie-1) read(string(is+1:ie-1),*) specerr_gam(igam)
-            FluxU_gam(igam)=flux_gam(igam)+Ferr_gam(igam)
-            FluxL_gam(igam)=flux_gam(igam)-Ferr_gam(igam)
-            call fluxtofdens(slope_gam(igam),1.,100.,flux_gam(igam),1.,fdens,nudens)
-            flux_gam(igam)=fdens
-            frequency_gam(igam)=nudens
-            call fluxtofdens(slope_gam(igam),1.,100.,FluxU_gam(igam),1.,fdens,nudens)
-            FluxU_gam(igam)=fdens
-            call fluxtofdens(slope_gam(igam),1.,100.,FluxL_gam(igam),1.,fdens,nudens)
-            FluxL_gam(igam)=fdens
+            ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) flux_radio(iradio)
+            flux_radio(iradio) = flux_radio(iradio)*8.9e8*1.e-26
+            frequency_radio(iradio) = 8.9e8
+         else if (catalog(1:4) == 'sums') then
+            iradio = iradio + 1
+            ra_radio(iradio)=ra
+            dec_radio(iradio)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) flux_radio(iradio)
+            flux_radio(iradio) = flux_radio(iradio)*8.9e8*1.e-26
+            frequency_radio(iradio) = 8.9e8
+         else if (catalog(1:7) == 'vlassql') then
+            iradio = iradio + 1
+            ra_radio(iradio)=ra
+            dec_radio(iradio)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) flux_radio(iradio)
+            !print *,'VLASS flux_radio mJy iradio ',flux_radio(iradio), iradio
+            flux_radio(iradio) = flux_radio(iradio)*3.0e9*1.e-26
+            frequency_radio(iradio) = 8.9e8
+         else if (catalog(1:9) == 'panstarrs') then
+            ipanstarrs=ipanstarrs+1
+            ra_panstarrs(ipanstarrs)=ra
+            dec_panstarrs(ipanstarrs)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            read(string(is+1:lenact(string)),*) panstarrsgmag(ipanstarrs)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            read(string(is+1:lenact(string)),*) panstarrsrmag(ipanstarrs)
+            if ( panstarrsgmag(ipanstarrs) < -99. ) then 
+                if (panstarrsrmag(ipanstarrs) > -10.) then
+                    panstarrsgmag(ipanstarrs) = panstarrsrmag(ipanstarrs)+1.0
+                else
+                   panstarrsgmag(ipanstarrs) = 25.
+                endif
+            endif
+            CALL  mag2flux (nh,panstarrsgmag(ipanstarrs),'psg',flux_panstarrsg(ipanstarrs),frequency_panstarrsg(ipanstarrs))
+            CALL  mag2flux (nh,panstarrsrmag(ipanstarrs),'psr',flux_panstarrsr(ipanstarrs),frequency_panstarrsr(ipanstarrs))
+         else if (catalog(1:4) == 'gaia') then
+            igaia=igaia+1
+            ra_gaia(igaia)=ra
+            dec_gaia(igaia)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            read(string(is+1:lenact(string)),*) gaiagmag(igaia)
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            read(string(is+1:lenact(string)),*) gaiabmag(igaia)
+            ie=index(string(is+1:len(string)),',')+is
+            is=ie
+            read(string(is+1:lenact(string)),*) gaiarmag(igaia)
+            !print *,'gaiagmag gaiabmag gaiarmag ',gaiagmag(igaia),gaiabmag(igaia),gaiarmag(igaia)
+            CALL  mag2flux (nh,gaiagmag(igaia),'gG ',flux_gaiag(igaia),frequency_gaiag(igaia))
+            CALL  mag2flux (nh,gaiabmag(igaia),'bpG',flux_gaiab(igaia),frequency_gaiab(igaia))
+            CALL  mag2flux (nh,gaiarmag(igaia),'rpG',flux_gaiar(igaia),frequency_gaiar(igaia))
+            !print *,'flux_gaiar flux_gaiab ',flux_gaiar(igaia),flux_gaiab(igaia)
+            !print *,'frequency_gaiar frequency_gaiab ',frequency_gaiar(igaia),frequency_gaiab(igaia)
+         else if (catalog(1:3) == 'hst') then
+            ihst=ihst+1
+            ra_hst(ihst)=ra
+            dec_hst(ihst)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            !print *,'is,is ',is,ie
+            if (ie > is+1) then 
+                read(string(is+1:ie-1),*) poserr_hst(ihst) 
+            else
+                poserr_hst(ihst) = 2.
+            endif
+            do i = 1,2
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+            enddo
+            read(string(is+1:ie-1),*) hstbmag 
+            do i = 1,2
+               is=ie
+               ie=index(string(is+1:len(string)),',')+is
+            enddo
+            read(string(is+1:ie-1),*) hstvmag(ihst,1)
+            if (hstvmag(ihst,1) > 25.) then 
+                if (hstbmag < 25.) then
+                   hstvmag(ihst,1) = hstbmag
+                else
+                   hstvmag(ihst,1) = 25.
+                endif
+            endif
+            CALL  mag2flux (nh,hstvmag(ihst,1),'V  ',flux_hst(ihst,1),frequency_hst(ihst,1))
+         else if (catalog(1:6) == 'unwise') then
+            iunwise = iunwise +1
+            ra_unwise(iunwise)=ra
+            dec_unwise(iunwise)=dec
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) irmag(iunwise,1)
+            is=ie
+            ie=index(string(is+1:len(string)),',')+is
+            read(string(is+1:ie-1),*) irmag(iunwise,2)
+            if ( (irmag(iunwise,1) > 0.0) .and. (irmag(iunwise,2) > 0.0) ) then
+               irmag(iunwise,1) = 22.5-2.5*log10(irmag(iunwise,1)) ! this conversion from vizier flux to mag comes from a note in vizier catalog
+               irmag(iunwise,2) = 22.5-2.5*log10(irmag(iunwise,2)) ! this conversion from vizier flux to mag comes from a note in vizier catalog
+               call mag2flux (nh,irmag(iunwise,1),'ww1',flux_ir(iunwise,1),frequency_ir(iunwise,1))
+               call mag2flux (nh,irmag(iunwise,2),'ww2',flux_ir(iunwise,2),frequency_ir(iunwise,2))
+               !print *,'irmag(iunwise,1),irmag(iunwise,2)',irmag(iunwise,1),irmag(iunwise,2)
+               !print *,'flux_ir(iunwise,1) flux_ir(iunwise,2)',flux_ir(iunwise,1),flux_ir(iunwise,2)
+            else
+               flux_ir(iunwise,1) = 0.
+               flux_ir(iunwise,2) = 0.
+            endif
          endif
       ENDDO
 99    continue
       close(lu_in)
-      close(11)
-c      write(*,*) i4p8,iuv,igam
-
+      !close(11)
 
       allocate(xxss_type(arrsize(1)),rrss_type(arrsize(2)),pass2(arrsize(1)+arrsize(2)))
       allocate(nreprr(arrsize(2)),trackrr(arrsize(2)),repnumberrr(arrsize(2)),posindrr(arrsize(2)))
@@ -298,19 +462,17 @@ c      write(*,*) i4p8,iuv,igam
 
       nrepxx(1:ixx)=0
       ixxss=0
+      ixxss=0
       ixxrep=0
       do i=1,ixx
          if (i .ne. 1) then
             do j=1,i-1
                call DIST_SKY(abs(ra_xx(i)),dec_xx(i),abs(ra_xx(j)),dec_xx(j),dist)
                if (dist*3600. .lt. 18.) then
-                  !write(*,*) 'nearby X-ray',ra_xx(i),dec_xx(i),xx_type(ixx)
                   ixxrep=ixxrep+1
-c                  xrayrepeat(nrep(i),i)=j
                   trackxx(i)=trackxx(j)
                   nrepxx(trackxx(i))=nrepxx(trackxx(i))+1
                   repnumberxx(i)=nrepxx(trackxx(i))
-c                  write(*,*) i,track(i),xx_type(i),poserr_xx(i),nrep(track(i))
                   goto 97
                endif
             enddo
@@ -319,15 +481,13 @@ c                  write(*,*) i,track(i),xx_type(i),poserr_xx(i),nrep(track(i))
          trackxx(i)=ixxss
          nrepxx(trackxx(i))=1
          repnumberxx(i)=nrepxx(trackxx(i))
-c         write(*,*) i,track(i),xx_type(i),poserr_xx(i)!,back(i,repnumber(i))
-97    continue
+97       continue
       enddo
       if (ixxss+ixxrep .ne. ixx ) write(*,*) 'Warning! may have the wrong number.'
 
 c xrt 1sxps chandra
 c bmw xmm xmmsl
 c rass wga ipc
-c      write(*,*) '========================'
 
       do i=1,ixxss
          do j=1,ixx
@@ -340,7 +500,6 @@ c      write(*,*) '========================'
                   posindxx(trackxx(j))=j
                   xxss_type(trackxx(j))=xx_type(j)
                else
-c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                   if ((xx_type(j) .eq. 55) .or. (xx_type(j) .eq. 59) .or. (xx_type(j) .eq. 58) .or.
      &                (xx_type(j) .eq. 61) .or. (xx_type(j) .eq. 64)) then
                      if ((xxss_type(trackxx(j)) .ne. 55) .or. (xxss_type(trackxx(j)) .ne. 59)
@@ -386,7 +545,6 @@ c                  write(*,*) j,track(j),xx_type(j),poserr_xx(j),repnumber(j)
                endif
             endif
          enddo
-c         write(*,*) i,posind(i),ra_xxss(i),dec_xxss(i),nrep(i),back(i,1:nrep(i))
       enddo
 
       nreprr(1:irr)=0
@@ -397,13 +555,10 @@ c         write(*,*) i,posind(i),ra_xxss(i),dec_xxss(i),nrep(i),back(i,1:nrep(i)
             do j=1,i-1
                call DIST_SKY(ra_rr(i),dec_rr(i),ra_rr(j),dec_rr(j),dist)
                if (dist*3600. .lt. 18.) then
-                  !write(*,*) 'nearby X-ray',ra_xx(i),dec_xx(i),xx_type(ixx)
                   irrrep=irrrep+1
-c                  xrayrepeat(nrep(i),i)=j
                   trackrr(i)=trackrr(j) !for repeated sources track back to the number
                   nreprr(trackrr(i))=nreprr(trackrr(i))+1 !repeated number
                   repnumberrr(i)=nreprr(trackrr(i))
-c                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))
                   goto 96
                endif
             enddo
@@ -412,9 +567,9 @@ c                  write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackr
          trackrr(i)=irrss
          nreprr(trackrr(i))=1
          repnumberrr(i)=nreprr(trackrr(i))
-c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))!,back(i,repnumber(i))
 96    continue
       enddo
+      !print *,'irrss - ',irrss
       if (irrss+irrrep .ne. irr ) write(*,*) 'Warning! may have the wrong number.'
 
       do i=1,irrss
@@ -428,7 +583,6 @@ c         write(*,*) i,trackrr(i),rr_type(i),poserr_rr(i),nreprr(trackrr(i))!,ba
                   posindrr(trackrr(j))=j
                   rrss_type(trackrr(j))=rr_type(j)
                else
-c                  write(*,*) j,trackrr(j),rr_type(j),poserr_rr(j),repnumberrr(j)
                   if (rr_type(j) .eq. 1) then
                      if (rrss_type(trackrr(j)) .ne. 1) then
                         ra_rrss(trackrr(j))=ra_rr(j)
@@ -465,11 +619,12 @@ c                  write(*,*) j,trackrr(j),rr_type(j),poserr_rr(j),repnumberrr(j
                endif
             endif
          enddo
-c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:nreprr(i))
       enddo
 
       open(12,file=output_file,status='unknown',iostat=ier)
+      open(15,file=output_file2,status='unknown',iostat=ier)
       ipass=0
+      !print *,'irrss ',irrss
       do i=1,irrss
          ii1=0
          ii2=0
@@ -479,48 +634,35 @@ c         write(*,*) i,posindrr(i),ra_rrss(i),dec_rrss(i),nreprr(i),backrr(i,1:n
             nnralpha=0
             do j=1,iuv
                call DIST_SKY(ra_rr(k),dec_rr(k),ra_uv(j),dec_uv(j),dist)
-               min_dist=sqrt(poserr_uv(j)**2+poserr_rr(k)**2)
-c               write(*,*) dist,min_dist,flux_rr(k)/frequency_rr(k)
-               if ((dist*3600. .lt. max(min_dist,2.)) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
+               max_dist=sqrt(poserr_uv(j)**2+poserr_rr(k)**2)
+               if ((dist*3600. .lt. max(max_dist,2.)) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
                   if (flux_uv(j,1) .ne. 0.) then
                      aruv = 1.-log10(flux_rr(k)/flux_uv(j,1))/log10(frequency_rr(k)/frequency_uv(j,1))
                   else
                      aruv = 1.-log10(flux_rr(k)/flux_uv(j,2))/log10(frequency_rr(k)/frequency_uv(j,2))
                   endif
-c                  write(*,*) aruv
                   if (aruv .le. 0.75 ) then
                      ii1=ii1+1 !!!remove UV-r slope strange source 0.85
                      nnruv=nnruv+1
-                     if (ii1 .eq. 1) then
-                         write(*,'(a,i4,a)') "----------------------------------------"
-                         write (*,'(a,i4)') "source nr.", isource+ii1
-                     endif
-                     if ((ii1 .eq. 1) .or. ((m .ne. 1) .and. (nnruv .eq. 1)))
-     &                 write(*,'(f9.5,2x,f9.5,a,f9.3,a,2x,i2)') ra_rr(k),dec_rr(k)," radio source ",
-     &                 flux_rr(k)/frequency_rr(k)/1.E-26," mJy",rr_type(k)
-c                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
-c                     write(*,'(6x,"radio-UV slope: ",f6.3)') aruv
                   endif
                endif
             enddo
             do j=1,i4p8
                call DIST_SKY(ra_rr(k),dec_rr(k),ra_4p8(j),dec_4p8(j),dist)
-               min_dist=sqrt(poserr_4p8(j)**2+poserr_rr(k)**2)
-               if ((dist*3600. .lt. min_dist ) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
+               max_dist=sqrt(poserr_4p8(j)**2+poserr_rr(k)**2)
+               if ((dist*3600. .lt. max_dist ) .and. (flux_rr(k)/frequency_rr(k) .ge. 10*1.e-26)) then
                   alphar = 1.-log10(flux_rr(k)/flux_4p8(j))/log10(frequency_rr(k)/frequency_4p8(j))
                   if (alphar .le. 0.7 ) then
                      ii2=ii2+1 !!!remove radio extended sources
                      nnralpha=nnralpha+1
                      if ((ii2 .eq. 1) .and. (ii1 .eq. 0)) then
-                         write(*,'(a,i4,a)') "----------------------------------------"
-                         write (*,'(a,i4)') "source nr.", isource+ii1+ii2
+                         !write(*,'(a,i4,a)') "----------------------------------------"
+                         !write (*,'(a,i4)') "source nr.", isource+ii1+ii2
+                         offset = offset +ii1+ii2
                      endif
-                     if (((ii2 .eq. 1) .and. (ii1 .eq. 0)) .or. ((m .ne. 1) .and. (nnruv .eq. 0)
-     &                .and. (nnralpha .eq. 1))) write(*,'(f9.5,2x,f9.5,a,f9.3,a,2x,i2)')  ra_rr(k),
-     &                dec_rr(k)," radio source ",flux_rr(k)/frequency_rr(k)/1.E-26," mJy",rr_type(k)
-c                     write(*,'(a,f9.3," mJy",10x,f7.3," arcsec away")')
-c     &                type_4p8(j),flux_4p8(j)/flux2nufnu_4p8,dist*3600.
-c                     write(*,'("radio slope: ",f6.3)') alphar
+c                     !if (((ii2 .eq. 1) .and. (ii1 .eq. 0)) .or. ((m .ne. 1) .and. (nnruv .eq. 0)
+c     !&                .and. (nnralpha .eq. 1))) write(*,'(f9.5,2x,f9.5,a,f9.3,a,2x,i2)')  ra_rr(k),
+c     !&                dec_rr(k)," radio source ",flux_rr(k)/frequency_rr(k)/1.E-26," mJy",rr_type(k)
                   endif
                endif
             enddo
@@ -528,11 +670,11 @@ c                     write(*,'("radio slope: ",f6.3)') alphar
          if (ii1+ii2 .gt. 0.) then
             ipass=ipass+1
             CALL RXgraphic_code(flux_rr(posindrr(i))/frequency_rr(posindrr(i))/1.E-26,'R',code)
-            write (12,'(f9.5,2x,f9.5,2x,i6)') ra_rr(posindrr(i)),dec_rr(posindrr(i)),int(code)
+            write (12,'(f9.5,2x,f9.5,2x,i6," N.A.")') ra_rr(posindrr(i)),dec_rr(posindrr(i)),int(code)
             pass2(ipass)=i
          endif
       enddo
-
+      !print *,'ixxss ',ixxss
       do i=1,ixxss
          ii1=0
          do m=1,nrepxx(i)
@@ -540,8 +682,8 @@ c                     write(*,'("radio slope: ",f6.3)') alphar
             nnuvx=0
             do j=1,iuv
                call DIST_SKY(abs(ra_xx(k)),dec_xx(k),ra_uv(j),dec_uv(j),dist)
-               min_dist=sqrt(poserr_uv(j)**2+poserr_xx(k)**2)
-               if ((dist*3600. .le. max(min_dist,2.) ) .and. (poserr_xx(k) .le. 20.)
+               max_dist=sqrt(poserr_uv(j)**2+poserr_xx(k)**2)
+               if ((dist*3600. .le. max(max_dist,2.) ) .and. (poserr_xx(k) .le. 20.)
      &              .and. (flux_xx(k) .ne. 0. ) ) then
                   if (flux_uv(j,1) .ne. 0.) then
                      auvx = 1.-log10(flux_uv(j,1)/flux_xx(k))/log10(frequency_uv(j,1)/frequency_xx(k))
@@ -552,14 +694,10 @@ c                     write(*,'("radio slope: ",f6.3)') alphar
                      ii1=ii1+1 !!!remove UV-x slope strange source 0.85
                      nnuvx=nnuvx+1
                      if (ii1 .eq. 1) then
-                        write(*,'(a,i4,a)') "----------------------------------------"
-                        write(*,'(a,i4)') "source nr.", ipass+ii1+isource
+                        !write(*,'(a,i4,a)') "----------------------------------------"
+                        !write(*,'(a,i4)') "source nr.", ipass+ii1+isource
+                        offset = offset + ipass+ii1
                      endif
-                     if ((ii1 .eq. 1) .or. ((m .ne. 1) .and. (nnuvx .eq. 1)))
-     $                  write(*,'(f9.5,2x,f9.5,a,es10.3,2x,i2)')  abs(ra_xx(k)),
-     $                  dec_xx(k)," X-ray source with 1 keV flux ",flux_xx(k),xx_type(k)
-c                     write(*,'("GALEX : ",2(f6.3,2x),10x,f7.3," arcsec away")') uvmag(j,1),uvmag(j,2),dist*3600.
-c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
                   endif
                endif
             enddo
@@ -567,7 +705,234 @@ c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
          if (ii1 .gt. 0.) then
              ipass=ipass+1
              CALL RXgraphic_code(flux_xx(posindxx(i)),'X',code)
-             write (12,'(f9.5,2x,f9.5,2x,i6)') abs(ra_xx(posindxx(i))),dec_xx(posindxx(i)),int(code)
+             write (12,'(f9.5,2x,f9.5,2x,i6," N.A.")') abs(ra_xx(posindxx(i))),dec_xx(posindxx(i)),int(code)
+             pass2(ipass)=i+irr
+         endif
+      enddo
+      write(15,'(''alpha_ox,alpha_irx,alpha_iro,alpha_ro,alpha_rx,alpha_w1w2,alpha_rmag-gmag,ra,dec,fx_1kev'')')
+      do i=1,ixxss
+         ii1=0
+         iaox = 0
+         airx = 0
+         arx = 0
+         do m=1,nrepxx(i)
+           k=backxx(i,m)
+           nnox=0
+           if (flux_xx(k) > 0. ) then 
+              if ( (ipanstarrs > 0) .and. (igaia < 1) ) then
+                 do j=1,ipanstarrs
+                    aox = -99.
+                    arg = -99.
+                    call DIST_SKY(abs(ra_xx(k)),dec_xx(k),ra_panstarrs(j),dec_panstarrs(j),dist)
+                    if (poserr_xx(k) < 3.0) poserr_xx(k) = 3.0
+                    p_err=1.0
+                    max_dist=sqrt(p_err**2+poserr_xx(k)**2)*1.25 ! increase matching radius by 25% 
+                    if ( (dist*3600. .le. max_dist) .and. (flux_xx(k) .ne. 0. ) ) then
+                        if ( (flux_panstarrsg(j) > 0.) .and. (panstarrsgmag(j) < 24.9) ) then
+                           aox  = 1.-log10(flux_panstarrsg(j)/flux_xx(k))/log10(frequency_panstarrsg(j)/frequency_xx(k))
+                        endif
+                        airx = -99.
+                        airo = -99.
+                        aw1w2 = -99.
+                        if (iunwise > 0) then 
+                           do l=1,iunwise
+                              call DIST_SKY(ra_panstarrs(j),dec_panstarrs(j),ra_unwise(l),dec_unwise(l),dist)
+                              if ( (dist*3600. < 3.) .and. (flux_ir(l,2) > 8.e-14) .and. (flux_xx(k) .ne. 0. )) then
+                                  airx = 1.-log10(flux_ir(l,2)/flux_xx(k))/log10(frequency_ir(l,2)/frequency_xx(k)) 
+                                  aw1w2 = log10(flux_ir(l,1)/flux_ir(l,2))/log10(frequency_ir(l,1)/frequency_ir(l,2))
+                                  if ( flux_panstarrsg(j) > 0.) then
+                                     airo  = 1.-log10(flux_ir(l,2)/flux_panstarrsg(j))/log10(frequency_ir(l,2)/frequency_panstarrsg(j))
+                                  endif
+                              endif
+                           enddo
+                        endif
+                        written = .FALSE.
+                        if (iradio > 0) then
+                           do l=1,iradio
+                              arx = -99.
+                              aro = -99.
+                              call DIST_SKY(ra_panstarrs(j),dec_panstarrs(j),ra_radio(l),dec_radio(l),dist)
+                              if (flux_radio(l) > 1.e-14) then
+                                 max_dist = 8
+                              else
+                                 max_dist = 6
+                              endif
+                              if (dist*3600. .le. max_dist) then
+                                 if ( ( flux_radio(l) > 0. ) .and. (flux_xx(k) .ne. 0. ) ) then
+                                    arx  = 1.-log10(flux_radio(l)/flux_xx(k))/log10(frequency_radio(l)/frequency_xx(k))
+                                    aro  = 1.-log10(flux_radio(l)/flux_panstarrsg(j))/log10(frequency_radio(l)/frequency_panstarrsg(j))
+                                 endif
+                                 if ( (aox > -90) .OR. (airx > -90) .OR. (airo > -90) .OR. (arx > -90.) .or. (arg > -90.) ) then
+                                    !print *,'aox airx airo arx ',aox,airx,airo,arx
+                                    ragood = ra_panstarrs(j)
+                                    decgood = dec_panstarrs(j)
+                                    write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",
+     &                                          f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)') 
+     &                                          aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                                    written = .TRUE.
+                                 endif
+                              endif
+                           enddo
+                        endif
+                        if (.NOT. written) then 
+                           if ( (aox > -90) .OR. (airx > -90) .OR. (airo > -90) .OR. (arx > -90.) .OR. (aro > -90.)) then
+                              ragood = ra_panstarrs(j)
+                              decgood = dec_panstarrs(j)
+                              write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)')
+     &                                    aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                           endif
+                        endif
+                    endif
+                 enddo
+              else if (igaia > 0) then
+                 do j=1,igaia
+                    aox = -99.
+                    call DIST_SKY(abs(ra_xx(k)),dec_xx(k),ra_gaia(j),dec_gaia(j),dist)
+                    if (poserr_xx(k) < 3.) poserr_xx(k) = 3.0
+                    p_err=1.0
+                    max_dist=sqrt(p_err**2+poserr_xx(k)**2)*1.25 ! increase matching radius by 25% 
+                    !print *,'gaiagmag(j) dist*3600. max_dist ',gaiagmag(j),dist*3600.,max_dist
+                    if ( (dist*3600. .le. max_dist) .and. (flux_xx(k) .ne. 0. ) ) then
+                        if ( gaiagmag(j) < 24. ) then
+                           aox  = 1.-log10(flux_gaiag(j)/flux_xx(k))/log10(frequency_gaiag(j)/frequency_xx(k))
+                           if ( flux_gaiab(j) > 0. .AND. flux_gaiar(j) > 0.) then
+                              arg  = 1.-log10(flux_gaiar(j)/flux_gaiab(j))/
+     &                                  log10(frequency_gaiar(j)/frequency_gaiab(j))
+                              !print *,'arg from gaia ',arg
+                           endif
+                        endif
+                        airx = -99.
+                        airo = -99.
+                        aw1w2 = -99.
+                        if (iunwise > 0) then 
+                           do l=1,iunwise
+                              call DIST_SKY(ra_gaia(j),dec_gaia(j),ra_unwise(l),dec_unwise(l),dist)
+                              if ( (dist*3600. < 3.) .and. (flux_ir(l,2) > 1.e-13) .and. (flux_xx(k) .ne. 0. )) then
+                                  airx = 1.-log10(flux_ir(l,2)/flux_xx(k))/log10(frequency_ir(l,2)/frequency_xx(k)) 
+                                  aw1w2 = log10(flux_ir(l,1)/flux_ir(l,2))/log10(frequency_ir(l,1)/frequency_ir(l,2))
+                                  if ( gaiagmag(j) < 24. ) then
+                                     airo  = 1.-log10(flux_ir(l,2)/flux_gaiag(j))/log10(frequency_ir(l,2)/frequency_gaiag(j))
+                                     !print *,'aox airx airo',aox,airx,airo
+                                  endif
+                              endif
+                           enddo
+                        endif
+                        written = .FALSE.
+                        if (iradio > 0) then
+                           do l=1,iradio
+                              arx = -99.
+                              aro = -99.
+                              call DIST_SKY(ra_gaia(j),dec_gaia(j),ra_radio(l),dec_radio(l),dist)
+                              if (flux_radio(l) > 1.e-14) then
+                                 max_dist = 8
+                              else
+                                 max_dist = 5
+                              endif
+                              dist = dist * 3600.
+                              if (dist .le. max_dist) then
+                                 if ( ( flux_radio(l) > 0. ) .and. (flux_xx(k) > 0. ) ) then
+                                    arx  = 1.-log10(flux_radio(l)/flux_xx(k))/log10(frequency_radio(l)/frequency_xx(k))
+                                    aro  = 1.-log10(flux_radio(l)/flux_gaiag(j))/log10(frequency_radio(l)/frequency_gaiag(j))
+                                 endif
+                                 if ( (aox > -90) .OR. (airx > -90) .OR. (airo > -90) .OR. (arx > -90.) ) then
+                                    ragood = ra_gaia(j)
+                                    decgood = dec_gaia(j)
+                                    write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",
+     &                                          f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)') 
+     &                                          aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                                    written = .TRUE.
+                                 endif
+                              endif
+                           enddo
+                        endif
+                        if (.NOT. written) then 
+                           if ( (aox > -90) .OR. (airx > -90) .OR. (airo > -90) .OR. (arx > -90.) .OR. (aro > -90.)) then
+                              ragood = ra_gaia(j)
+                              decgood = dec_gaia(j)
+                              write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)')
+     &                                    aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                           endif
+                        endif
+                    endif
+
+                 enddo
+              else if (ihst > 0) then
+                do j=1,ihst
+                  aox = -99.
+                  call DIST_SKY(abs(ra_xx(k)),dec_xx(k),ra_hst(j),dec_hst(j),dist)
+                  if (poserr_xx(k) < 1.2) poserr_xx(k) = 1.2
+                  max_dist=sqrt(poserr_hst(j)**2+poserr_xx(k)**2)*1.25 ! increase matching radius by 25% 
+                  !print *,'dist max_dist poserr_xx(k) ',dist*3600.,max_dist,poserr_xx(k)
+                  if ( (dist*3600. .le. max_dist) .and. (flux_xx(k) .ne. 0. ) ) then
+                      if (aox .EQ. -99.) then 
+                         if (hstvmag(j,1) > 24.) then
+                            aox = -99.
+                         else if (flux_xx(k) > 0.) then
+                            aox  = 1.-log10(flux_hst(j,1)/flux_xx(k))/log10(frequency_hst(j,1)/frequency_xx(k))
+                         endif
+                      endif
+                      airx = -99.
+                      airo = -99.
+                      aw1w2 = -99.
+                      do l=1,iunwise
+                         call DIST_SKY(ra_hst(j),dec_hst(j),ra_unwise(l),dec_unwise(l),dist)
+                         if ( (dist*3600. < 2.) .and. (flux_ir(l,2) > 1.e-13) .and. (flux_xx(k) > 0.) ) then
+                            airx = 1.-log10(flux_ir(l,2)/flux_xx(k))/log10(frequency_ir(l,2)/frequency_xx(k)) 
+                            aw1w2 = log10(flux_ir(l,1)/flux_ir(l,2))/log10(frequency_ir(l,1)/frequency_ir(l,2))
+                            if (hstvmag(j,1) > 24.) then
+                               airo = -99.
+                            else
+                               airo = 1.-log10(flux_ir(l,2)/flux_hst(j,1))/log10(frequency_ir(l,2)/frequency_hst(j,1)) 
+                            endif
+                         endif
+                      enddo
+                      if (iradio > 0) then
+                         do l=1,iradio
+                            arx = -99.
+                            aro = -99.
+                            call DIST_SKY(ra_hst(j),dec_hst(j),ra_radio(l),dec_radio(l),dist)
+                            if (flux_radio(l) > 1.e-14) then
+                               max_dist = 8
+                            else
+                               max_dist = 4
+                            endif
+                            if (dist*3600. .le. max_dist) then
+                               if ( ( flux_radio(l) > 0. ) .and. (flux_xx(k) .ne. 0. ) ) then
+                                  arx  = 1.-log10(flux_radio(l)/flux_xx(k))/log10(frequency_radio(l)/frequency_xx(k))
+                                  aro  = 1.-log10(flux_radio(l)/flux_hst(j,1))/log10(frequency_radio(l)/frequency_hst(j,1))
+                               endif
+                               if ( (aox > -90) .OR. (airx > -90) .OR. (airo > -90) .OR. (arx > -90.) .OR. (aro > -90.)) then
+                               !print *,'aox airx airo arx ',aox,airx,airo,arx
+                                  ragood = ra_gaia(j)
+                                  decgood = dec_gaia(j)
+                                  write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)') 
+     &                                        aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                               endif
+                            endif
+                         enddo
+                      endif
+                      if (aox .le. 1.1) then
+                         ii1=ii1+1 !!!remove o-x slope strange source 0.85
+                         nnox=nnox+1
+                         if (ii1 .eq. 1) then
+                            !write(*,'("----------------------------------------")')
+                            !write(*,'(a,i4)') "source nr.", ipass+ii1+isource
+                            offset = offset + ipass+ii1
+                         endif
+                      endif
+                      ragood = ra_hst(j)
+                      decgood = dec_hst(j)
+                      write (15,'(f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f6.2,", ",f9.5,", ",f9.5,", ",e9.3)') 
+     &                            aox,airx,airo,aro,arx,aw1w2,arg,ragood,decgood,flux_xx(k)
+                  endif
+               enddo
+            endif
+           endif
+         enddo
+         if (ii1 .gt. 0.) then
+             ipass=ipass+1
+             CALL RXgraphic_code(flux_xx(posindxx(i)),'X',code)
+             write (12,'(f9.5,2x,f9.5,2x,i6," N.A.")') abs(ra_xx(posindxx(i))),dec_xx(posindxx(i)),int(code)
              pass2(ipass)=i+irr
          endif
       enddo
@@ -584,14 +949,14 @@ c                     write(*,'(6x,"UV-X-ray slope: ",f6.3)') auvx
       deallocate(frequency_gam,flux_gam,FluxL_gam,FluxU_gam,Ferr_gam)
 
       if ((ipass .eq. 0) .and. (isource .ne. 0)) then
-         print *,achar(27),'[35;1m No Candidates Found in Intermediate Phase',achar(27),'[0m'
+         print *,achar(27),'[35;1m No Candidates Found in the Intermediate Phase',achar(27),'[0m'
          stop
       endif
       if (ipass+isource .eq. 0) then
          print *,achar(27),'[31;1m No Candidates Found！',achar(27),'[0m'
+         write(12,'("No Blazar Candidates Found")') 
          stop
       endif
-c      write(*,*) pass2(1:ipass)
 
       do i=1,ipass
          k=pass2(i)
@@ -620,7 +985,6 @@ c      write(*,*) pass2(1:ipass)
          endif
       enddo
       write(12,*) ipass
-
       deallocate(ra_rr,dec_rr,ra_xx,dec_xx)
       deallocate(rr_type,xx_type,xpts)
       deallocate(frequency_rr,flux_rr,FluxL_rr,FluxU_rr,poserr_rr)
@@ -654,7 +1018,6 @@ c      write(*,*) pass2(1:ipass)
 
       SUBROUTINE fluxtofdens(gamma,bandl,bandu,flux,gev,fdens,nudens)
       real*4 bandu,bandl,flux,nudens,fdens,conval,gev,gamma
-      !write(*,*) alpha,flux,kev,bandu,bandl
       if (gamma .ne. 2. ) then
       conval=(1./(-gamma+1.))*((bandu)**(-gamma+1.)-(bandl)**(-gamma+1.))
       else
@@ -680,25 +1043,25 @@ c      write(*,*) pass2(1:ipass)
       radio_component = 0.
       x_ray_component = 0.
       IF (RX == 'R') THEN
-      radio_component=int(alog10(flux/rfl_min)/alog10(rfl_max/rfl_min)*99.)
-      IF (radio_component .GE. 99) THEN
-      radio_component = 99
-      ELSE IF (radio_component .LE. 1) THEN
-      radio_component = 1
-      ENDIF
-      code = -90000
-      ELSE IF (RX == 'X') THEN
-      IF (flux > xfl_min) THEN
-      x_ray_component=int(alog10(flux/xfl_min)/alog10(xfl_max/xfl_min)*99.)
-      ELSE
-      x_ray_component = 1
-      ENDIF
-      IF (x_ray_component .GE. 99) THEN
-      x_ray_component = 99
-      ELSE IF (x_ray_component .Lt. 1) THEN
-      x_ray_component = 1
-      ENDIF
-      code = -80000
+         radio_component=int(alog10(flux/rfl_min)/alog10(rfl_max/rfl_min)*99.)
+         IF (radio_component .GE. 99) THEN
+            radio_component = 99
+         ELSE IF (radio_component .LE. 1) THEN
+            radio_component = 1
+         ENDIF
+         code = -90000
+         ELSE IF (RX == 'X') THEN
+            IF (flux > xfl_min) THEN
+               x_ray_component=int(alog10(flux/xfl_min)/alog10(xfl_max/xfl_min)*99.)
+            ELSE
+               x_ray_component = 1
+            ENDIF
+         IF (x_ray_component .GE. 99) THEN
+            x_ray_component = 99
+         ELSE IF (x_ray_component .Lt. 1) THEN
+            x_ray_component = 1
+         ENDIF
+         code = -80000
       ENDIF
       code = code -radio_component-100*x_ray_component
       RETURN
@@ -710,13 +1073,20 @@ c  converts u,v,i,h,b,r,j,k magnitudes into monochromatic fluxes
 c  in units of erg/cm2/s for nufnu vs nu plots
 c
       IMPLICIT none
-      REAL*4 nh, flux , av , m_band, a_band, Rv
-      REAL*4 c, lambda, const, frequency, a
+      REAL*4 nh, flux, av , m_band, a_band, Rv
+      REAL*4 c, lambda, frequency, a
       REAL*4 x,aa,bb,c1,c2,dx,px,ebv
+      REAL*8 const
       CHARACTER*3 filter
-c        print *,' nh, m_band, filter ', nh, m_band,filter
-c        call upc(filter)
-      IF ((filter(1:3).NE.'fuv') .and. (filter(1:3).NE.'nuv')) THEN
+      IF ( (filter(1:3).NE.'fuv') .and. (filter(1:3).NE.'nuv') .and. 
+     &     (filter(1:1).NE.'V')   .and. (filter(1:3).NE.'ww1') .and. 
+     &     (filter(1:3).NE.'psg') .and. (filter(1:3).NE.'psr')   .and. 
+     &     (filter(1:3).NE.'psi') .and. (filter(1:3).NE.'psz')   .and. 
+     &     (filter(1:3).NE.'psy') .and. 
+     &     (filter(1:1).NE.'g')   .and. (filter(1:1).NE.'u')   .and. 
+     &     (filter(1:2).NE.'gG') .and. (filter(1:3).NE.'bpG') .and.
+     &     (filter(1:2).NE.'rpG') .and. (filter(1:3).NE.'rvs') .and.
+     &     (filter(1:1).NE.'r')   .and. (filter(1:3).NE.'ww2') ) THEN
          write (*,*) ' mag2flux: Filter not supported  '
          stop
       ENDIF
@@ -732,32 +1102,78 @@ c in UV apply the UV relation from Fitzpatrick 1999
       else if (filter(1:3) == 'nuv') then
          lambda=2271.
          const=log10(3631.)-23.
+      else if (filter(1:1) == 'V') then
+         lambda=5500.d0
+         const=log10(3640.d0)-23.d0
+      else if (filter(1:3) == 'ww1') then
+         lambda=34000.
+         const=log10(309.540)-23.
+      else if (filter(1:3) == 'ww2') then 
+         lambda=46000.
+         const=log10(171.787)-23.
+      else if (filter(1:3) == 'u  ') then !effective wavelength from SDSS, Doi et al. 2010 ApJ 139, 1628
+         !m_band=m_band-0.04 !calibrate of the SDSS u band to AB mag
+         lambda=3568.d0
+         const=log10(3631.)-23.d0 !3631 is the 0 mag flux of AB mag system
+      else if (filter(1:3) == 'g  ') then
+         lambda=4653.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'psg') then !tonry et al. 2012 Panstarrs mags are in the AB magnitude system
+         lambda=4814.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'psr') then
+         lambda=6176.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'psi') then
+         lambda=7522.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'psz') then
+         lambda=8665.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'psy') then
+         lambda=9620.d0
+         const=log10(3631.d0)-23.d0
+      else if (filter(1:3) == 'rpG') then
+         lambda=7770.d0 ! GAIA DR3
+         const=log10(2555.d0)-23.d0 !!!!the zero mag. flux are estimated from Vega flux(22.3061)!!!
+      else if (filter(1:3) == 'bpG') then
+         lambda=5111.d0 ! GAIA DR3
+         const=log10(3552.d0)-23.d0 !!!!the zero mag. flux are estimated from Vega flux(23.4318)!!!
+      else if (filter(1:2) == 'gG') then
+         lambda=6730.d0 !!!Jordi et al. 2010
+         !lambda=6405.d0 ! Gaia DR2 in flight calibration
+         const=log10(3296.d0)-23.d0 !!!!the zero mag. flux are estimated from Vega flux(25.6885)!!!
+      else if (filter(1:3) == 'r  ') then
+         lambda=6400.d0
+         const=log10(3080.d0)-23.d0
       endif
 c lambda from Amstrongs to microns
       x=10000./lambda
+      a_band = 0.
       if ((x .le. 1.1) .and. (x .ge. 0.3)) then
-      a_band=(0.574*(x**1.61)-0.527*(x**1.61)/Rv)*av ! the a_lambda
+         a_band=(0.574*(x**1.61)-0.527*(x**1.61)/Rv)*av ! the a_lambda
       else if ((x .le. 3.3) .and. (x .ge. 1.1)) then
-      x=x-1.82
-      aa=1+(0.17699*x)-(0.50447*x**2)-(0.02427*x**3)+(0.73085*x**4)
+         x=x-1.82
+         aa=1+(0.17699*x)-(0.50447*x**2)-(0.02427*x**3)+(0.73085*x**4)
      &     +(0.01979*x**5)-(0.77530*x**6)+(0.32999*x**7)
-      bb=1.41338*x+(2.28305*x**2)+(1.07233*x**3)-(5.38434*x**4)
+         bb=1.41338*x+(2.28305*x**2)+(1.07233*x**3)-(5.38434*x**4)
      &    -(0.662251*x**5)+(5.30260*x**6)-(2.09002*x**7)
-      a_band=(aa+(bb/Rv))*av
+         a_band=(aa+(bb/Rv))*av
       else if ((x .le. 10.) .and. (x .ge. 3.3)) then
-      c2=-0.824+4.717/Rv
-      c1=2.03-3.007*c2
-      dx=(x*x)/((x**2-4.596**2)+(x*0.99)**2)
-      px=0.5392*(x-5.9)**2+0.05644*(x-5.9)**2
-      if (x .le. 5.9) px=0.
-      a_band=(c1+c2*x+3.23*dx+0.41*px)*ebv+av
+         c2=-0.824+4.717/Rv
+         c1=2.03-3.007*c2
+         dx=(x*x)/((x**2-4.596**2)+(x*0.99)**2)
+         px=0.5392*(x-5.9)**2+0.05644*(x-5.9)**2
+         if (x .le. 5.9) px=0.
+         a_band=(c1+c2*x+3.23*dx+0.41*px)*ebv+av
       endif
       c=2.9979e10
       a=1.0
       frequency=c/(lambda*1.e-8)
-      flux = 10.**(-0.4*(m_band -a_band)+const)*frequency
-      if (m_band .le. 0.) flux=0.
-!m_band=0.
-!lambda=0.
+      if (m_band .le. 0.) then
+         flux=0. 
+      else
+         flux = 10.**(-0.4*(m_band -a_band)+const)*frequency
+      endif
       RETURN
       END

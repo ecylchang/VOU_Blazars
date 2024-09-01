@@ -56,7 +56,8 @@ c      REAL*8 ra, dec,ra_center,dec_center,ra2,dec2
         write (*,*) ' Error ',ier,' opening file ', input_file2
       ENDIF
       open(lu_out,file=output_file,status='unknown',iostat=ier)
-      write(lu_out,'(''<HTML style="background-color:#aaa9ad">'')')
+c      write(lu_out,'(''<HTML style="background-color:#aaa9ad">'')')
+      write(lu_out,'(''<HTML style="background-color:#ffffff">'')')
       write(lu_out,'(''<style>'')')
       write(lu_out,'(''sm {'')')
       write(lu_out,'(''  font-size: 15px;'')')
@@ -94,6 +95,7 @@ c      write(lu_out,'(''<img class="logoImg" src="https://firmamentoo.web.app/st
          write(lu_out,'(''<input id="NVSS" type="radio"   name="survey" value="NVSS"><label for="NVSS">NVSS</label><br>'')')
          write(lu_out,'(''<input id="VLASS_Epoch1" type="radio"   name="survey" value="VLASS_Epoch1"><label for="VLASS_Epoch1">VLASS-1</label><br>'')')
          write(lu_out,'(''<input id="VLASS2.2" type="radio"   name="survey" value="VLASS2.2"><label for="VLASS2.2">VLASS2.2</label><br>'')')
+         write(lu_out,'(''<input id="VCSS1" type="radio"   name="survey" value="VCSS1"><label for="VCSS1">VCSS1</label><br>'')')
          write(lu_out,'(''<input id="TGSS ADR" type="radio"   name="survey" value="TGSS ADR"><label for="TGSS ADR">TGSS ADR</label><br>'')')
       ENDIF
       IF (dec_center < 40.) THEN 
@@ -140,6 +142,7 @@ c      write(lu_out,'(''<input id="GALEX" type="radio"  name="survey" value="P/G
       write(lu_out,'(''<input id="XMM-PN" type="radio"  name="survey" value="XMM/PN/color"><label for="XMM/PN/color">XMM-PN</label><br>'')')
       write(lu_out,'(''<input id="Chandra" type="radio"  name="survey" value="Chandra color"><label for="Chandra color">Chandra</label><br>'')')
       write(lu_out,'(''<input id="RASS" type="radio"  name="survey" value="P/RASS"><label for="P/RASS">RASS</label><br>'')')
+      write(lu_out,'(''<input type="radio" name="survey" id="erass1_rgb" value="eRASS1" /><label for="erass1_rgb">eRASS1</label><br>'')') 
       write(lu_out,'(''<input id="Swift-BAT" type="radio"  name="survey" value="Swift-BAT"><label for="Swift-BAT">Swift-BAT(14-20keV)</label><br>'')')
       write(lu_out,'(''<input id="MAXI-GSC" type="radio"  name="survey" value="MAXI-GSC"><label for="MAXI-GSC">MAXI-GSC</label><br>'')')
       write(lu_out,'(''<br><b><center>&gamma;-ray surveys</center></b><br>'')')
@@ -187,14 +190,21 @@ c      write(lu_out,'(''<input id="CONSTELLAIONS6" type="radio"  name="survey" v
      &          ''equatorial'',a,'',5,{imgFormat:'',a,''jpg'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
             write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''cubehelix'',a,'');'')')a1,a1
 
-            write(lu_out,'(''hipsDir = "http://archive-new.nrao.edu/vlass/HiPS/VLASS2.2/Quicklook/";'')')
+            write(lu_out,'(''hipsDir = "https://archive-new.nrao.edu/vlass/HiPS/VLASS2.2/Quicklook/";'')')
             write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')
             write(lu_out,'(''aladin.setImageSurvey(aladin.createImageSurvey('',a,''VLASS2.2'',a,
      &          '','',a,''VLASS2.2'',a,'',hipsDir,'',a,
      &          ''equatorial'',a,'',9,{imgFormat:'',a,''png'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
             write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''rainbow'',a,'');'')')a1,a1
 
-            write(lu_out,'(''hipsDir = "http://archive-new.nrao.edu/vlass/HiPS/VLASS_Epoch1/Quicklook/";'')')
+            write(lu_out,'(''hipsDir = "https://archive-new.nrao.edu/vlass/HiPS/VCSS1/Images_vcss1_HiPS/";'')')
+            write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')
+            write(lu_out,'(''aladin.setImageSurvey(aladin.createImageSurvey('',a,''VCSS1'',a,
+     &          '','',a,''VCSS1'',a,'',hipsDir,'',a,
+     &          ''equatorial'',a,'',8,{imgFormat:'',a,''png'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
+            write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''rainbow'',a,'');'')')a1,a1
+
+            write(lu_out,'(''hipsDir = "https://archive-new.nrao.edu/vlass/HiPS/VLASS_Epoch1/Quicklook/";'')')
             write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')
             write(lu_out,'(''aladin.setImageSurvey(aladin.createImageSurvey('',a,''VLASS_Epoch1'',a,
      &          '','',a,''VLASS_Epoch1'',a,'',hipsDir,'',a,
@@ -221,6 +231,20 @@ c      write(lu_out,'(''<input id="CONSTELLAIONS6" type="radio"  name="survey" v
      &          '','',a,''SkyMapper'',a,'',hipsDir,'',a,
      &          ''equatorial'',a,'',9,{imgFormat:'',a,''jpg'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
             write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''native'',a,'');'')')a1,a1
+
+            write(lu_out,'(''hipsDir = "https://alaskybis.cds.unistra.fr/RASS/";'')')
+            write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')
+            write(lu_out,'(''aladin.setImageSurvey(aladin.createImageSurvey('',a,''P/RASS'',a,
+     &          '','',a,''RASS'',a,'',hipsDir,'',a,
+     &          ''equatorial'',a,'',4,{imgFormat:'',a,''jpg'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
+            write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''rainbow'',a,'');'')')a1,a1
+
+            write(lu_out,'(''hipsDir = "https://catsweb.oas.inaf.it/RASS_P/rgb/";'')')
+            write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')
+            write(lu_out,'(''aladin.setImageSurvey(aladin.createImageSurvey('',a,''eRASS1'',a,
+     &          '','',a,''erass1_rgb'',a,'',hipsDir,'',a,
+     &          ''equatorial'',a,'',4,{imgFormat:'',a,''jpg'',a,''}));'')') a1,a1,a1,a1,a1,a1,a1,a1
+            write(lu_out,'(''aladin.getBaseImageLayer(hipsDir).getColorMap(hipsDir).update('',a,''rainbow'',a,'');'')')a1,a1
 
             write(lu_out,'(''hipsDir = "https://alaskybis.cds.unistra.fr/RASS/";'')')
             write(lu_out,'(''hipsDir = hipsDir.substring(0,hipsDir.lastIndexOf("/",hipsDir.length));'')')

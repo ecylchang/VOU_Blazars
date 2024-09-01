@@ -1,0 +1,260 @@
+import csv
+import math
+import argparse
+import sys
+import os
+import numpy as np
+import time
+
+# Function to calculate the sky distance between two points
+def sky_distance(ra1, dec1, ra2, dec2):
+    # Convert coordinates to radians
+    ra1 = math.radians(ra1)
+    dec1 = math.radians(dec1)
+    ra2 = math.radians(ra2)
+    dec2 = math.radians(dec2)
+
+    # Haversine formula for sky distance
+    d_ra = ra2 - ra1
+    d_dec = dec2 - dec1
+    a = math.sin(d_dec/2)**2 + math.cos(dec1) * math.cos(dec2) * math.sin(d_ra/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a)) * 57.32
+    #57.32 converts radians to deg
+    return c
+
+def decode_panstarrs_quality_flag(quality_flag):
+    # Define the binary flags
+    QF_OBJ_EXT = 0b00000001
+    QF_OBJ_EXT_ALT = 0b00000010
+    QF_OBJ_GOOD = 0b00000100
+    QF_OBJ_GOOD_ALT = 0b00001000
+    QF_OBJ_GOOD_STACK = 0b00010000
+    QF_OBJ_BEST_STACK = 0b00100000
+    QF_OBJ_SUSPECT_STACK = 0b01000000
+    QF_OBJ_BAD_STACK = 0b10000000
+
+    # Check if necessary flags are set
+    if quality_flag & (QF_OBJ_EXT | QF_OBJ_EXT_ALT | QF_OBJ_GOOD | QF_OBJ_GOOD_ALT | QF_OBJ_GOOD_STACK | QF_OBJ_BEST_STACK) != 0:
+        return True  # Indicates good-quality measurement
+    else:
+        return False  # Indicates issues
+
+path ='tmp/'
+input_file_hstgsc = path+'hstgsc_out.txt'
+input_file_panstarrs = path+'panstarrs.i.csv'
+input_file_gaia = path+'gaia2.i.csv'
+
+no_optical_sources = False
+
+if os.path.exists(input_file_panstarrs):
+    input_file_optical=input_file_panstarrs
+elif os.path.exists(input_file_gaia):
+    input_file_optical=input_file_gaia
+elif os.path.exists(input_file_hstgsc):
+    input_file_optical=input_file_hstgsc
+else:
+   print(f"No data on optical sources in field of view")
+   no_optical_sources = True
+
+#print("input_file_optical ",input_file_optical)
+orig_file_candidates = path+'candidates.csv'
+input_file_candidates = path+'phase1_candidates.csv'
+file_find_out = path+'find_out_temp.txt'
+output_file_candidates = path+'phase1_candidates.csv'
+temporary_file=path+'temp.txt'
+
+if no_optical_sources:
+   os.replace(orig_file_candidates, output_file_candidates)
+   sys.exit(1)
+
+with open(file_find_out, 'r') as fo, open(temporary_file, 'w') as te:
+    for line in fo:
+        parts = line.split('"')
+        if len(parts) > 1:
+            parts[1] = parts[1].replace(" ", "")
+        modified_line = '"'.join(parts)
+        te.write(modified_line)
+os.replace(temporary_file, file_find_out)
+
+
+if os.path.exists(input_file_candidates):
+    with open(input_file_candidates, mode='r') as cand:
+        csv_reader_candd = csv.reader(cand)
+        header = next(csv_reader_candd)  # Skip the header row
+        data = list(csv_reader_candd)
+    #print("len(data) ",len(data))
+    if len(data) > 0:
+        np.save('candidates_data.npy', data)
+        file_candidates = True
+    else:
+        file_candidates = False
+else:
+    file_candidates = False
+
+#print("file_candidates ",file_candidates)
+
+if not no_optical_sources:
+    with open(input_file_optical, mode='r') as opt:
+        csv_reader_cando = csv.reader(opt)
+        header = next(csv_reader_cando)  # Skip the header row
+        data = list(csv_reader_cando)
+    np.save('optical_data.npy', data)
+    no_optical_sources = False
+
+with open(file_find_out, mode='r') as ffo:
+          lines = ffo.readlines()
+data = np.array([line.split() for line in lines])
+np.save('findout_data.npy', data)
+
+count = 0 
+with open(file_find_out, mode='w') as findout:
+    optical_sources = np.load('optical_data.npy') 
+    find_out_sources  = np.load('findout_data.npy')
+    if file_candidates:
+       phase1_candidates = np.load('candidates_data.npy')
+    with open(output_file_candidates, mode='w') as out_cand:
+        out_cand.write("Number,R.A.,Dec.,Type,Name\n")
+        for rrow in find_out_sources:
+           rafindout = float(rrow[0])
+           decfindout = float(rrow[1])
+           #print ("--- > rafindout decfindout ",rafindout,decfindout)
+           brightest_mag = 10000
+           code = float(rrow[2])
+           name = rrow[3]
+           if file_candidates:
+               if len(phase1_candidates) > 0:
+                   for row in phase1_candidates:
+                        found = False
+                        toprint = True
+                        ra = float(row[1])
+                        dec = float(row[2])
+                        ra_good = ra
+                        dec_good = dec
+                        cat = row[3]
+                        obj_id = row[4]
+                        distc = sky_distance(ra, dec, rafindout, decfindout)
+                        distc = distc* 3600
+                        min_dist = 8
+                        if cat == 'cluster?' or cat == 'X-extended':
+                            min_dist = 12
+                        if distc < min_dist:
+                            found = True
+                            if no_optical_sources and cat != 'cluster?' and cat != 'X-extended': 
+                                print("Source with no optical counterpart has been removed at Ra :",ra," Dec :",dec,"Obj ID",obj_id)
+                            else:
+                                brightest_mag = 10000
+                                for rrrow in optical_sources:
+                                    ra_opt=1
+                                    dec_opt=1
+                                    mag = 100
+                                    if input_file_optical == input_file_hstgsc:
+                                       ra_opt=float(rrrow[1])
+                                       dec_opt=float(rrrow[2])
+                                       if rrrow[7] != '99.99':
+                                          mag = float(rrrow[7]) 
+                                    elif input_file_optical == input_file_gaia:
+                                       ra_opt = float(rrrow[0])
+                                       dec_opt = float(rrrow[2])
+                                       if rrrow[7] != '':
+                                          mag  = float(rrrow[7])
+                                    distd = sky_distance(ra_opt, dec_opt, ra, dec)
+                                    distd = distd* 3600 
+                                    if distd < 10.0:
+                                        #distance_penalty = distd/1.3
+                                        distance_penalty = distd/4
+                                        mag += distance_penalty
+                                        if mag < brightest_mag:
+                                            brightest_mag = mag
+                                            ra_good = ra_opt
+                                            dec_good = dec_opt
+                                if brightest_mag != 10000:
+                                    findout.write(f'{ra_good:.5f}    {dec_good:.5f}  {code:.0f}  {obj_id}\n')
+                                    if code > 0 or (code > -100000 and code < -20000): 
+                                        count += 1 
+                                        out_cand.write(f'{count:.0f},{ra_good:.5f},{dec_good:.5f},{cat},{obj_id}\n')
+                                    toprint = False
+                                elif input_file_optical != input_file_panstarrs:
+                                    findout.write(f'{ra:.5f}    {dec:.5f}  {code:.0f}  {obj_id}\n')
+                                    if code > 0 or (code > -100000 and code < -20000): 
+                                        count += 1 
+                                        out_cand.write(f'{count:.0f},{ra:.5f},{dec:.5f},{cat},{obj_id}\n')
+                                    toprint = False
+                                if toprint:
+                                   if os.path.exists(input_file_panstarrs):
+                                       with open(input_file_panstarrs, mode='r') as pstarr:
+                                          csv_reader_pst = csv.reader(pstarr)
+                                          header = next(csv_reader_pst)  # Skip the header row
+                                          datapst = list(csv_reader_pst)
+                                          brightest_mag = 10000
+                                          for rowpst in datapst:
+                                             ra_opt = float(rowpst[0])
+                                             dec_opt = float(rowpst[1])
+                                             mag  = abs(float(rowpst[6]))
+                                             gmag = float(rowpst[4])
+                                             rmag = float(rowpst[6])
+                                             imag = float(rowpst[8])
+                                             quality_flag = int(rowpst[18])
+                                             good_quality_flag = decode_panstarrs_quality_flag(quality_flag)
+                                             #print("quality_flag good_quality_flag ",quality_flag,good_quality_flag)
+                                             if good_quality_flag:
+                                                if mag > 90 and gmag > 0:
+                                                   mag = gmag
+                                                elif mag > 90 and imag > 0:
+                                                   mag = imag
+                                                kron_gmag = float(rowpst[15])
+                                                kron_rmag = float(rowpst[16])
+                                                distd = sky_distance(ra_opt, dec_opt, ra, dec)
+                                                distd = distd* 3600
+                                                host_galaxy_image = False
+                                                if rmag > 0 and kron_rmag >0:
+                                                   deltarmag = rmag - kron_rmag
+                                                else:
+                                                   deltarmag = -99
+                                                if gmag > 0 and kron_gmag > 0:
+                                                   deltagmag = gmag - kron_gmag
+                                                else:
+                                                   deltagmag = -99
+                                                if deltagmag > 0.05:
+                                                   host_galaxy_image = True
+                                                min_dist = 10
+                                                if cat == 'cluster?' or cat == 'X-extended' or host_galaxy_image:
+                                                    min_dist = 12
+                                                if distd < min_dist:
+                                                   #distance_penalty = distd/1
+                                                   distance_penalty = distd/4
+                                                   mag += distance_penalty
+                                                   if mag < brightest_mag:
+                                                       brightest_mag = mag
+                                                       ra_good = ra_opt
+                                                       dec_good = dec_opt
+                                                       toprint = False
+                                          if brightest_mag != 10000:
+                                             findout.write(f'{ra_good:.5f}    {dec_good:.5f}  {code:.0f}  {obj_id}\n')
+                                             if code > -100000:
+                                             #if code > 0 or (code > -100000 and code < -20000):
+                                                count += 1
+                                                #print(f'{count:.0f},{ra_good:.5f},{dec_good:.5f},{cat},{obj_id}\n')
+                                                out_cand.write(f'{count:.0f},{ra_good:.5f},{dec_good:.5f},{cat},{obj_id}\n')
+                                                toprint = False
+                                          elif cat == 'cluster?' or cat == 'X-extended':
+                                             findout.write(f'{ra:.5f}    {dec:.5f}  {code:.0f}  {obj_id}\n')
+                                             if code > 0 or (code > -100000 and code < -20000):
+                                                count += 1
+                                                out_cand.write(f'{count:.0f},{ra:.5f},{dec:.5f},{cat},{obj_id}\n')
+                                                toprint = False
+                                if toprint:
+                                    print("Source with no optical counterpart has been removed at Ra :",ra," Dec :",dec,"Obj ID",obj_id)
+                                    toprint = False
+                   if not found:
+                       count += 1 
+                       #if code > 69999: 
+                       if code > 969999: 
+                           findout.write(f'{rafindout:.5f}    {decfindout:.5f}  {code:.0f}  {name}\n')
+                           out_cand.write(f'{count:.0f},{rafindout:.5f},{decfindout:.5f},HSTGSC,{name}\n')
+               else:
+                   count += 1 
+                   #print("Here 2")
+                   findout.write(f'{rafindout:.5f}    {decfindout:.5f}  {code:.0f}  {name}\n')
+                   out_cand.write(f'{count:.0f},{rafindout:.5f},{decfindout:.5f},HSTGSC,{name}\n')
+           else:
+               print("Source has been removed at Ra :",rafindout," Dec :",decfindout,"Obj ID",name)

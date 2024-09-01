@@ -626,7 +626,7 @@ c
 
       subroutine nhdeabsorb2(flag_nh,emin,emax,alpha,anh,reduce,iflag)
 c
-c    Calculates cont-rate to flux conversion and nh obsrptoin correction factors
+c    Calculates count-rate to flux conversion and nh absorption correction factors
 c    for various satellites, instruments and filters
 c
       IMPLICIT none
@@ -662,23 +662,8 @@ c
       COMMON /esp   / nh , gamm , bk , ifl , t , itype , gamma1 ,
      &                gamma2 , break_energy
       ok = .TRUE.
-c      flag_nh = 1
-c      CALL rdforn(stringin,length)
-c      IF ( length > 0 ) THEN
-c         CALL rmvlbk(stringin)
-c         read(stringin,*) emin,emax,alpha,anh
          ekev = 1.
          model = 1
-c      ELSE
-c         string = ' '
-c         WRITE (*,'('' Enter 1 for nh Galactic absorption correction factor'',/,
-c     &           '' 0 for count-rate flux conversion factor (d/f='',i2,'') '',$)') flag_nh
-c         READ (*,'(a)') string
-c         IF (string.NE.' ') read (string(1:lenact(string)),*) flag_nh
-c      ENDIF
-c Open configuration file
-c      lu_pf = 15
-c      webprograms='./bin/fort'
       filename = webprograms(1:lenact(webprograms)) //
      &'/count_rate/countrates2.cf'
       OPEN (15,FILE=filename,STATUS='old')
@@ -725,15 +710,7 @@ c read configuration file
       ENDDO
 100   CONTINUE
       IF (flag_nh .NE. 1) THEN
-c         WRITE (*,*) ' Available satellites/instruments '
-c         DO ii =1,i
-c           write (*,'(2x,i2,2x,a,2x,a)') ii,satellite(ii),instrument(ii)
-c         ENDDO
-c         WRITE (*,'(''Enter satellite/detector number :'',$)')
-c         READ (*,*) iflag
          file_eff_area=f_eff_area(iflag)
-c         emin=eemin(iflag)
-c         emax=eemax(iflag)
          emin_area=emin!eemin_area(iflag)
          emax_area=emax!eemax_area(iflag)
          emin_areas=eemin_areas(iflag)
@@ -742,7 +719,6 @@ c         emax=eemax(iflag)
          emax_aream=eemax_aream(iflag)
          emin_areah=eemin_areah(iflag)
          emax_areah=eemax_areah(iflag)
-c         lu_input = 11
          OPEN (16,FILE=file_eff_area,STATUS='old')
          ok = .TRUE.
          i = 1
@@ -751,63 +727,13 @@ c         lu_input = 11
             i = i + 1
          ENDDO
  200     CONTINUE
-c         write (*,*) ' lines in eff_area ',i-1
          DO j = i , 5000
            energy(j) = energy(i-1)
            eff_area(j) = eff_area(i-1)
          ENDDO
          CLOSE (16)
          CALL frelun(16)
-c      ELSE
-c        emin = 0.3
-c        emax = 2.0
       ENDIF
-c      IF (lenact(stringin) == 0 ) THEN
-c         emin = 0.3
-c         emax = 2.0
-c         string = ' '
-c         WRITE (*,'('' Energy range for flux (d/f='',2(1x,f5.1),'')'',$)')
-c     &         emin, emax
-c         READ (*,'(a)') string
-c         IF (string.NE.' ') read (string(1:lenact(string)),*) emin, emax
-c         WRITE (*,'('' Energy for flux density calculation (d/f='',f3.1,
-c     &            ''keV)'',$)') ekev
-c         ekev = 1.0
-c         READ (*,'(a)') string
-c         IF (string.NE.' ') read (string(1:lenact(string)),*) ekev
-c         model = 1
-c         string = ' '
-c         WRITE (*,99001)
-c         READ (*,'(a)') string
-c         IF (string.NE.' ') read (string(1:lenact(string)),*) model
-c         IF ( model.EQ.0 ) GOTO 99999
-c         IF ( model.LT.1 .OR. model.GT.7 ) THEN
-c            STOP '** wrong model type, try again **'
-c         ENDIF
-c         IF ( model.GE.4 .AND. model.LT.7 ) THEN
-c            STOP'** model not supported yet **'
-c         ENDIF
-c         IF ( model.EQ.1 ) THEN
-c            WRITE (*,'('' enter energy slope :'',$)')
-c            READ (*,*) alpha
-c         ELSEIF ( model.EQ.2 .OR. model.EQ.3 ) THEN
-c            WRITE (*,'('' enter temperature in keV :'',$)')
-c            READ (*,*) tt
-c            tt = tt/8.6171E-8
-c         ELSEIF ( model.EQ.7 ) THEN
-c            WRITE (*,'('' enter energy slope before break :'',$)')
-c            READ (*,*) alpha1
-c            WRITE (*,'('' enter energy slope after break :'',$)')
-c            READ (*,*) alpha2
-c            WRITE (*,'('' enter break energy in kev :'',$)')
-c            READ (*,*) bbreak_energy
-c            WRITE (*,'('' enter redshift :'',$)')
-c            READ (*,*) redshift
-c            bbreak_energy = bbreak_energy/(1.+redshift)
-c         ENDIF
-c         WRITE (*,'('' Enter Nh :'',$)')
-c         READ (*,*) anh
-c      ENDIF
       IF ( alpha.EQ.1 ) alpha = alpha + 0.0001
       umalpha=1.-alpha
       IF (umalpha.eq.0.) THEN
@@ -840,34 +766,17 @@ c         WRITE(*,'(''Integrated flux correction factor ='',f8.2)') aa8/ak
 cccccccccccccccc
          ifear = 1
 c ifear = 1 => flux NOT corrected for Galactic absorption
-c         WRITE (*,'('' Emitted/Observed flux d/f=observed flux) : '',$)')
-c         READ (*,'(a)') yesno
-c         IF ( yesno.EQ.'e' .OR. yesno.EQ.'E' ) THEN
             ifear = 0
-c         ELSE
-c            ifear = 1
-c         ENDIF
          CALL energycr(1.,alpha,tt,anh,0.,model,5,ak,emin,emax,
      &             emin_area,emax_area,aa7,ifear,alpha1,alpha2,
      &             bbreak_energy)
-c         WRITE (*,
-c     &         '('' 1ct/s ('',f5.2,  ''-'',f5.2,'' keV)= '',
-c     &          1pg9.3,0p,'' erg cm-2 s-1'',2x,''('',f5.2,  ''-'',
-c     &         f5.2,'' keV)'')') emin_area, emax_area, ak , emin , emax
          fekev=ak*conv
          nufnu = fekev*ekev*ekev*2.418e-12
          reduce=ak
-c         WRITE (*,'("fx(",f4.2,"keV) :",f6.3," microJy")') ekev, fekev
-c         WRITE (*,'("nuFnu((",f4.2,"keV) :",1pe12.4," erg/cm2/s")') ekev, nufnu
       ENDIF
-c 500  WRITE (*,99004)
 99001 FORMAT (/,' Model type',/,'   1 -> power law',/,
      &        '   2 -> black body',/,'   3 -> thermal bremsstrahlung',/,
      &        '   7 -> double power law     (d/f=1) : ',$)
-c99002 FORMAT (/,' Model type',/,'   1 -> power law',/,
-c     &        '   2 -> black body',/,'   3 -> thermal bremsstrahlung',/,
-c     &        '   7 -> double power law        ',/,'   0 -> stop : ',$)
-c99004 FORMAT (/,T5,' >>> ERROR: cannot open input file',/)
 99999 CONTINUE
       close(15)
       return

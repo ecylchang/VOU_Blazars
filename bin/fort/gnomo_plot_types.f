@@ -49,7 +49,6 @@ c      real*4,dimension(:),allocatable :: x1,y1,racat,deccat
 
 * External references :
       !data symb_size /9.,7.,6.,5.,3.5,2.5,1.6,1.0,0.8,0.4/
-c      COMMON /ecetype/pro_scale,radius_scale,axis_unit
       COMMON /ecetype/pro_scale,radius_scale
 
       i = 0
@@ -61,7 +60,6 @@ c
 c Get input parameters
 c
       CALL rdforn(stringin,length)
-c      write(*,*) stringin,length
       IF ( length.NE.0 ) then
          in = index(stringin(1:length),',')
          filein=stringin(1:in-1)
@@ -71,7 +69,6 @@ c      write(*,*) stringin,length
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/error')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/find_out')
          if (iskip .eq. 0) iskip=index(filein(1:len(filein)),'/RX')
-c         write(*,*) iskip
          im=index(stringin(in+1:length),',')+in
          fileout=stringin(in+1:im-1)
          in=im
@@ -80,9 +77,7 @@ c         write(*,*) iskip
          in=im
          im = index(stringin(in+1:length),',')+in
          webprograms=stringin(in+1:im-1)
-         !write(*,*) filein,fileout,device,webprograms
          ip = index(stringin(im+1:length),',')+im
-c         strzoom = stringin(im+1:ip-1)
 
          INQUIRE (FILE=filein,EXIST=there)
             IF (.NOT.there) THEN
@@ -101,13 +96,6 @@ c         strzoom = stringin(im+1:ip-1)
          STOP
       ENDIF
 
-c      write(*,*) ra_center,dec_center,ra_o,dec_o,ra_err2,dec_err2
-c      ra_err2=ra_err2-1.71 !6.56-4.41
-c      dec_err2
-c      ra_o=ra_o+0.15 !0.8 +0.95-0.65 0.15
-c      dec_o=dec_o+0.1 !0.4 +0.5-0.3
-c      write(*,*) ra_o,dec_o
-
       iarr=0
       iconfig=0
       arrsize(1:30)=0
@@ -117,8 +105,6 @@ c      write(*,*) ra_o,dec_o
       ellipserot_2=-ellipserot_2
       lu_out = 11
       lu_infile = 12
-c      call getlun(lu_infile)
-c      fileout='candidates_image_position.txt'
       array_size=webprograms(1:lenact(webprograms))//'/array_size.cf'
       open(lu_infile,file=filein,status='old')
       open(lu_out,file=fileout,status='unknown')
@@ -146,10 +132,8 @@ c      fileout='candidates_image_position.txt'
       enddo
 700   continue
       close(18)
-      !write(*,*) arrsize
 
       allocate(code(arrsize(3)),epos(arrsize(3)),ra(arrsize(3)),dec(arrsize(3)))
-c      allocate(x1(500),y1(500),racat(500),deccat(500))
       allocate(x(arrsize(11)),y(arrsize(11)))
       allocate(run_alpha(arrsize(12)),run_dec(arrsize(12)),x_grid(arrsize(12)),y_grid(arrsize(12)),afmin(arrsize(12)),afmax(arrsize(12)))
 
@@ -237,7 +221,6 @@ c   draw the grid
       CALL pgslw(3)
       CALL pgwindow(ra_center+radius/cc,ra_center-radius/cc,dec_center-radius,dec_center+radius)
       step = nint(2.*radius/cc/6.*10.)/10.
-c      CALL pgtbox('BNSTDY',step,0,'BNSTDY',step,0)
       CALL pgtbox('BCNSTDY',step,0,'BCNSTDY',step,0)
       CALL pgwindow(-radius*radius_scale/cc,+radius*radius_scale/cc,-radius*radius_scale,+radius*radius_scale)
       CALL pgbox('CTMI',0.0,0,'CTMI',0.0,0)
@@ -387,7 +370,6 @@ c     now draw the grid
       CALL chdec(ddec,id,idm,decsec,1)
       sign = '+'
       IF (ddec < 0. ) sign = '-'
-c      write(title,'(a,2f11.4)') 'Image centre: ',ra_center,dec_center
       write(title,'(a,I2.2,1x,I2.2,1x,f4.1,a,a,
      &  I2.2,1x,I2.2,1x,f4.1)')
      & 'Image centre R.A.=',rah,irm,rasec,' Dec.=',
@@ -415,7 +397,6 @@ c     colore
 
       call pgsci(1)
       CALL pgscr(10,.7,.2,.7)
-      !write(*,*) n_points
       if (n_points .gt. 35000) n_points=35000
 
       deallocate(run_alpha,run_dec,x_grid,y_grid,afmin,afmax)
@@ -436,7 +417,6 @@ c     colore
 
       DO j = 1,n_points
          IF ((code(j) .GT. 10000) .or. (code(j) .LT. -40000)) isource=isource+1
-c        IF ((code(j) .gt. 10000) .or. (code(j) .eq.-50000) .or. code(j) .eq. -60000)
          IF (code(j) .EQ. -9999) isource=isource+1
          if ((code(j) .GT. 10000) .or. (code(j) .LE. -10000)) then
             om = int(code(j)/10000.)
@@ -485,11 +465,9 @@ c PG
                      write(tcol11(icol11),'(a)') "    "
                   ENDIF
                   IF (om .lt. -4) om=om+4
-!                  if (om .eq. -3) write(tcol11(icol11),'(a)') "    "
                   IF (om .EQ. -1 ) THEN      ! WHSP
                      s11(icol11) = 12
                      csx11(icol11)= 1.6
-                     !if (code(i) .lt. -30000.)
                   ELSE IF (om .EQ. -4) THEN  ! Cluster of galaxies
                      s11(icol11) = 63
                      csx11(icol11)= 1.4
@@ -511,7 +489,6 @@ c add radio counterparts/ extra radio counpornents, remove crates components
                         csx12(icol12)= 0.
                      endif
                   ENDIF
-                  !write(*,*) icol12,icol11
                ELSE
                   icol12 = icol12 +1 !single radio and X-ray sources
                   ra_col12(icol12)=ra(j)
@@ -552,12 +529,14 @@ c              cs = max(1.0,cradio*8./99.)
                icol14 = icol14 + 1
                ra_col14(icol14)=ra(j)
                dec_col14(icol14)=dec(j)
-               if (om .eq. -11) then
+               if ( (om .eq. -11) .or. (om .eq. -12)) then
                   s14(icol14)=7 !for gamma-ray source
                else if (om .eq. -22) then ! for GRB
                   s14(icol14)=10
                else if (om .eq. -33) then ! for 4FGL-radio
                   s14(icol14)=-3
+               else if (om .eq. -44) then ! for 4LAC-DR3
+                  s14(icol14)=25 
                else if ((om .eq. -70) .or. (om .eq. -77)) then !quasar
                   s14(icol14)=20
                else
